@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About Bal Jyoti Public School, Ghaziabad</title>
+<title>Academics - Bal Jyoti Public School, Ghaziabad</title>
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -270,6 +270,48 @@
       gap:14px; min-width:0;
     }
   }
+
+  /* ---------- ACADEMIC LADDER ---------- */
+  .ladder{position:relative; padding-left:36px; margin-top:10px;}
+  .ladder::before{
+    content:""; position:absolute; left:9px; top:8px; bottom:8px; width:2px;
+    background:linear-gradient(var(--flame), var(--maroon));
+  }
+  .rung{position:relative; padding:0 0 40px 22px;}
+  .rung:last-child{padding-bottom:0;}
+  .rung::before{
+    content:""; position:absolute; left:-36px; top:2px; width:20px; height:20px;
+    background:var(--flame); border:3px solid var(--paper); border-radius:50%;
+    box-shadow:0 0 0 2px var(--flame-deep);
+  }
+  .rung h3{font-size:1.15rem;}
+  .rung .tag{font-size:.78rem; font-weight:700; color:var(--maroon); text-transform:uppercase; letter-spacing:.06em;}
+  .rung p{color:var(--slate); margin-top:6px; max-width:60ch;}
+
+  /* ---------- FACILITIES ---------- */
+  .fac-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  @media (max-width:880px){ .fac-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:560px){ .fac-grid{grid-template-columns:1fr;} }
+  .fac-card{
+    background:var(--white); border:1px solid var(--line); border-radius:16px; padding:26px;
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .fac-card:hover{transform:translateY(-4px); box-shadow:0 14px 30px rgba(0,0,0,.08);}
+  .fac-card .ico{width:38px; height:38px; margin-bottom:16px; color:var(--maroon);}
+  .fac-card h3{font-size:1.05rem; margin-bottom:8px;}
+  .fac-card p{color:var(--slate); font-size:.92rem;}
+
+  /* ---------- STUDENT LIFE ---------- */
+  .chip-row{display:flex; flex-wrap:wrap; gap:12px; margin-top:8px; justify-content:center;}
+  .chip{
+    background:var(--white); border:1px solid var(--line); padding:9px 18px; border-radius:999px;
+    font-size:.9rem; font-weight:600;
+  }
+  .timeline{display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:36px;}
+  @media (max-width:780px){ .timeline{grid-template-columns:1fr;} }
+  .tl-card{border-left:3px solid var(--flame-deep); padding:6px 0 6px 20px; background:var(--white); border-radius:0 12px 12px 0; padding:16px 20px;}
+  .tl-card h4{font-size:1rem; margin-bottom:6px;}
+  .tl-card p{color:var(--slate); font-size:.9rem;}
 </style>
 </head>
 <body>
@@ -294,18 +336,18 @@
     <nav class="links" id="nav">
       <a href="index.html">Home</a>
       <div class="nav-dropdown">
-        <a href="#">About ▾</a>
+        <a href="about.html">About ▾</a>
         <div class="dropdown-menu">
-          <a href="#">About Us</a>
+          <a href="about.html">About Us</a>
           <a href="leaders.html">Our Leaders</a>
           <a href="disclosure.html">Mandatory Disclosure</a>
           <a href="gallery.html">Gallery</a>
         </div>
       </div>
       <div class="nav-dropdown">
-        <a href="academics.html">Academics ▾</a>
+        <a href="#">Academics ▾</a>
         <div class="dropdown-menu">
-          <a href="academics.html">Academics</a>
+          <a href="#">Academics</a>
           <a href="student-life.html">Student Life</a>
           <a href="facilities.html">Facilities</a>
         </div>
@@ -321,108 +363,54 @@
 
 <section class="hero">
   <div class="wrap inner">
-    <div class="eyebrow">About Bal Jyoti Public School</div>
-    <h1>Inspiring young minds, building bright futures.</h1>
-    <p>Inspiring Young Minds <span class="dot">•</span> Building Bright Futures <span class="dot">•</span> Since 1987</p>
+    <div class="eyebrow">Academics</div>
+    <h1>A clear path from first steps to the final board exam.</h1>
+    <p>CBSE curriculum <span class="dot">•</span> Nursery to Class XII <span class="dot">•</span> One school, every stage</p>
   </div>
 </section>
 
-<section id="who-we-are">
+<section id="ladder-section">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">Who We Are</div>
-      <h2>Inspiring Excellence Since 1987</h2>
-      <p class="tag">Providing quality education with strong values, academic excellence, and holistic development.</p>
+      <div class="eyebrow">The Academic Ladder</div>
+      <h2>Every stage builds on the one before it</h2>
+      <p class="tag">From a child's first day in Nursery to the choices they make in the Senior Secondary years.</p>
     </div>
-    <div class="who-grid">
-      <div>
-        <p>For nearly four decades, Bal Jyoti Public School has been committed to providing quality education that nurtures confident learners, responsible citizens, and future leaders. Established in 1987, the school has earned the trust of thousands of families through its dedication to academic excellence, strong values, and holistic development.</p>
-        <p>Affiliated with the Central Board of Secondary Education (CBSE), Bal Jyoti Public School offers education from Nursery to Class XII in a safe, inclusive, and stimulating environment where every child is encouraged to discover their unique potential.</p>
-        <p>Our experienced team of 55+ dedicated educators believes every child learns differently. Through innovative teaching methods, personalized attention, and activity-based learning, we help students develop strong academic foundations along with creativity, communication, leadership, and life skills.</p>
-        <p>Education at Bal Jyoti Public School extends beyond textbooks. Students actively participate in sports, cultural activities, science exhibitions, technology-enabled learning, environmental awareness programmes, and community service initiatives that prepare them for future success.</p>
-        <p>With a modern campus designed for 2,000 students, smart classrooms, science laboratories, computer labs, library, sports facilities, and a caring atmosphere, we provide an environment where children enjoy learning every day.</p>
-        <p>Our partnership with parents forms the cornerstone of every student's success. Together, we strive to create a community where discipline, respect, compassion, integrity, and excellence become lifelong values.</p>
+    <div class="ladder">
+      <div class="rung">
+        <div class="tag">Nursery – UKG</div>
+        <h3>Pre-Primary</h3>
+        <p>A gentle, activity-based introduction to school life — spoken language, motor skills, numbers and social habits, taught through play, stories and rhymes.</p>
       </div>
-      <div class="fact-card">
-        <h3>
-          <svg class="flame-dot" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#8E0E20"/></svg>
-          School at a Glance
-        </h3>
-        <ul class="fact-list">
-          <li><span>Established</span><b>1987</b></li>
-          <li><span>Board</span><b>CBSE</b></li>
-          <li><span>Classes</span><b>Nursery – XII</b></li>
-          <li><span>Student Capacity</span><b>2,000+</b></li>
-          <li><span>Teachers</span><b>55+</b></li>
-          <li><span>Medium</span><b>English</b></li>
-          <li><span>Campus</span><b>Safe &amp; Green</b></li>
-          <li><span>Facilities</span><b>Smart Classrooms, Labs, Library &amp; Sports</b></li>
-        </ul>
+      <div class="rung">
+        <div class="tag">Class I – V</div>
+        <h3>Primary</h3>
+        <p>Core literacy and numeracy are built up alongside EVS, computer familiarity and the start of formal art, music and physical education periods.</p>
       </div>
-    </div>
-  </div>
-</section>
-
-<section class="alt" id="vision-mission">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">Vision &amp; Mission</div>
-      <h2>Building Bright Futures</h2>
-    </div>
-    <div class="vm-grid">
-      <div class="vm-card">
-        <h3>Our Vision</h3>
-        <p>To empower every learner with knowledge, values, creativity, and confidence, enabling them to become compassionate individuals and responsible global citizens.</p>
+      <div class="rung">
+        <div class="tag">Class VI – VIII</div>
+        <h3>Middle School</h3>
+        <p>Subjects widen into full Science, Social Science and Mathematics streams, with growing independence expected in homework, projects and classroom discussion.</p>
       </div>
-      <div class="vm-card">
-        <h3>Our Mission</h3>
-        <ul class="mission-list">
-          <li>Deliver quality CBSE education.</li>
-          <li>Promote innovation and lifelong learning.</li>
-          <li>Develop discipline and strong moral values.</li>
-          <li>Encourage excellence in academics, sports, arts, and leadership.</li>
-          <li>Create a safe and inclusive learning environment.</li>
-        </ul>
+      <div class="rung">
+        <div class="tag">Class IX – X</div>
+        <h3>Secondary</h3>
+        <p>Structured preparation for the CBSE Class X board examination, with regular assessments, doubt-clearing sessions and skill-based subjects as per the CBSE framework.</p>
       </div>
-    </div>
-    <div class="values-row">
-      <span class="value-chip">Excellence</span>
-      <span class="value-chip">Integrity</span>
-      <span class="value-chip">Respect</span>
-      <span class="value-chip">Discipline</span>
-      <span class="value-chip">Compassion</span>
-      <span class="value-chip">Innovation</span>
-      <span class="value-chip">Leadership</span>
-    </div>
-  </div>
-</section>
-
-<section id="why-trust-us">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">Why Parents Trust Us</div>
-      <h2>Why Choose Bal Jyoti Public School?</h2>
-    </div>
-    <div class="trust-grid">
-      <div class="trust-item"><span class="check">✓</span> Established Legacy Since 1987</div>
-      <div class="trust-item"><span class="check">✓</span> CBSE Curriculum</div>
-      <div class="trust-item"><span class="check">✓</span> Experienced &amp; Caring Faculty</div>
-      <div class="trust-item"><span class="check">✓</span> Smart Classrooms</div>
-      <div class="trust-item"><span class="check">✓</span> Safe &amp; Secure Campus</div>
-      <div class="trust-item"><span class="check">✓</span> Academic Excellence</div>
-      <div class="trust-item"><span class="check">✓</span> Sports &amp; Co-Curricular Activities</div>
-      <div class="trust-item"><span class="check">✓</span> Individual Attention</div>
-      <div class="trust-item"><span class="check">✓</span> Value-Based Education</div>
-      <div class="trust-item"><span class="check">✓</span> Future-Ready Learning</div>
+      <div class="rung">
+        <div class="tag">Class XI – XII</div>
+        <h3>Senior Secondary</h3>
+        <p>Stream-based study (Science / Commerce / Humanities, subject to availability) with focused board-exam preparation and guidance toward higher education and career choices.</p>
+      </div>
     </div>
   </div>
 </section>
 
 <section class="join">
   <div class="wrap">
-    <h2>Join the Bal Jyoti Family</h2>
-    <p>Give your child the opportunity to learn, grow, and succeed in an environment that inspires excellence every day.</p>
-    <a class="btn" href="https://wa.me/919910363101?text=Hello%2C%20I%20am%20looking%20for%20admission%20information." target="_blank" rel="noopener">Enquire About Admission</a>
+    <h2>See the full picture</h2>
+    <p>Academic life at Bal Jyoti also includes co-curricular activities and campus facilities that support learning beyond the classroom.</p>
+    <a class="btn" href="student-life.html">Explore Student Life</a>
   </div>
 </section>
 

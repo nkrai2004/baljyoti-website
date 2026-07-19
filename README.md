@@ -8,13 +8,20 @@ Static, self-contained HTML website for Bal Jyoti Public School, Ghaziabad. No b
 |---------------------|-----------------------------------------|
 | `index.html`         | Home                                    |
 | `about.html`         | About Us                                |
+| `academics.html`     | Academics                               |
+| `student-life.html`  | Student Life                            |
+| `facilities.html`    | Facilities                              |
 | `admission.html`     | Admissions                              |
 | `careers.html`       | Careers / Jobs                          |
 | `leaders.html`       | Our Leaders (Chairman & Director)       |
 | `gallery.html`       | Photo Gallery                           |
 | `disclosure.html`    | CBSE Mandatory Public Disclosure        |
+| `login.html`         | Staff / Parent / Student portal login (front-end only — see note below) |
 
-All pages are cross-linked via the header "Back to Home" link and the footer navigation row, and every page has a fixed WhatsApp button in the bottom-right corner.
+All pages share the same navigation: **About** (dropdown: About Us, Our Leaders, Mandatory Disclosure, Gallery), **Academics** (dropdown: Academics, Student Life, Facilities), **Admission**, **Careers**, **Contact**, **Login**, and an **Apply Now** button that always jumps to the admission form. Every page also has a fixed WhatsApp button and the admissions banner/popup.
+
+**About `login.html`**: this is a front-end shell only — the "Sign in with Google Workspace" and "Send Login Code" buttons currently just show a placeholder alert. Wiring this up to real Google Identity Services / Apps Script authentication is part of the planned ERP backend (see the separate architecture document) and is not yet connected.
+
 
 ## Deploying on GitHub Pages
 

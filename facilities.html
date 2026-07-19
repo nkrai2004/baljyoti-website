@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About Bal Jyoti Public School, Ghaziabad</title>
+<title>Facilities - Bal Jyoti Public School, Ghaziabad</title>
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -270,6 +270,48 @@
       gap:14px; min-width:0;
     }
   }
+
+  /* ---------- ACADEMIC LADDER ---------- */
+  .ladder{position:relative; padding-left:36px; margin-top:10px;}
+  .ladder::before{
+    content:""; position:absolute; left:9px; top:8px; bottom:8px; width:2px;
+    background:linear-gradient(var(--flame), var(--maroon));
+  }
+  .rung{position:relative; padding:0 0 40px 22px;}
+  .rung:last-child{padding-bottom:0;}
+  .rung::before{
+    content:""; position:absolute; left:-36px; top:2px; width:20px; height:20px;
+    background:var(--flame); border:3px solid var(--paper); border-radius:50%;
+    box-shadow:0 0 0 2px var(--flame-deep);
+  }
+  .rung h3{font-size:1.15rem;}
+  .rung .tag{font-size:.78rem; font-weight:700; color:var(--maroon); text-transform:uppercase; letter-spacing:.06em;}
+  .rung p{color:var(--slate); margin-top:6px; max-width:60ch;}
+
+  /* ---------- FACILITIES ---------- */
+  .fac-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  @media (max-width:880px){ .fac-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:560px){ .fac-grid{grid-template-columns:1fr;} }
+  .fac-card{
+    background:var(--white); border:1px solid var(--line); border-radius:16px; padding:26px;
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .fac-card:hover{transform:translateY(-4px); box-shadow:0 14px 30px rgba(0,0,0,.08);}
+  .fac-card .ico{width:38px; height:38px; margin-bottom:16px; color:var(--maroon);}
+  .fac-card h3{font-size:1.05rem; margin-bottom:8px;}
+  .fac-card p{color:var(--slate); font-size:.92rem;}
+
+  /* ---------- STUDENT LIFE ---------- */
+  .chip-row{display:flex; flex-wrap:wrap; gap:12px; margin-top:8px; justify-content:center;}
+  .chip{
+    background:var(--white); border:1px solid var(--line); padding:9px 18px; border-radius:999px;
+    font-size:.9rem; font-weight:600;
+  }
+  .timeline{display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:36px;}
+  @media (max-width:780px){ .timeline{grid-template-columns:1fr;} }
+  .tl-card{border-left:3px solid var(--flame-deep); padding:6px 0 6px 20px; background:var(--white); border-radius:0 12px 12px 0; padding:16px 20px;}
+  .tl-card h4{font-size:1rem; margin-bottom:6px;}
+  .tl-card p{color:var(--slate); font-size:.9rem;}
 </style>
 </head>
 <body>
@@ -294,9 +336,9 @@
     <nav class="links" id="nav">
       <a href="index.html">Home</a>
       <div class="nav-dropdown">
-        <a href="#">About ▾</a>
+        <a href="about.html">About ▾</a>
         <div class="dropdown-menu">
-          <a href="#">About Us</a>
+          <a href="about.html">About Us</a>
           <a href="leaders.html">Our Leaders</a>
           <a href="disclosure.html">Mandatory Disclosure</a>
           <a href="gallery.html">Gallery</a>
@@ -307,7 +349,7 @@
         <div class="dropdown-menu">
           <a href="academics.html">Academics</a>
           <a href="student-life.html">Student Life</a>
-          <a href="facilities.html">Facilities</a>
+          <a href="#">Facilities</a>
         </div>
       </div>
       <a href="admission.html">Admission</a>
@@ -321,108 +363,58 @@
 
 <section class="hero">
   <div class="wrap inner">
-    <div class="eyebrow">About Bal Jyoti Public School</div>
-    <h1>Inspiring young minds, building bright futures.</h1>
-    <p>Inspiring Young Minds <span class="dot">•</span> Building Bright Futures <span class="dot">•</span> Since 1987</p>
+    <div class="eyebrow">Facilities</div>
+    <h1>What the campus offers every day.</h1>
+    <p>Smart classrooms <span class="dot">•</span> Labs &amp; library <span class="dot">•</span> A safe, well-equipped campus</p>
   </div>
 </section>
 
-<section id="who-we-are">
+<section id="facilities-grid">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">Who We Are</div>
-      <h2>Inspiring Excellence Since 1987</h2>
-      <p class="tag">Providing quality education with strong values, academic excellence, and holistic development.</p>
+      <div class="eyebrow">On Campus</div>
+      <h2>Built to support real learning</h2>
     </div>
-    <div class="who-grid">
-      <div>
-        <p>For nearly four decades, Bal Jyoti Public School has been committed to providing quality education that nurtures confident learners, responsible citizens, and future leaders. Established in 1987, the school has earned the trust of thousands of families through its dedication to academic excellence, strong values, and holistic development.</p>
-        <p>Affiliated with the Central Board of Secondary Education (CBSE), Bal Jyoti Public School offers education from Nursery to Class XII in a safe, inclusive, and stimulating environment where every child is encouraged to discover their unique potential.</p>
-        <p>Our experienced team of 55+ dedicated educators believes every child learns differently. Through innovative teaching methods, personalized attention, and activity-based learning, we help students develop strong academic foundations along with creativity, communication, leadership, and life skills.</p>
-        <p>Education at Bal Jyoti Public School extends beyond textbooks. Students actively participate in sports, cultural activities, science exhibitions, technology-enabled learning, environmental awareness programmes, and community service initiatives that prepare them for future success.</p>
-        <p>With a modern campus designed for 2,000 students, smart classrooms, science laboratories, computer labs, library, sports facilities, and a caring atmosphere, we provide an environment where children enjoy learning every day.</p>
-        <p>Our partnership with parents forms the cornerstone of every student's success. Together, we strive to create a community where discipline, respect, compassion, integrity, and excellence become lifelong values.</p>
+    <div class="fac-grid">
+      <div class="fac-card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="18" height="10" rx="2"/><circle cx="7.5" cy="19" r="1.5"/><circle cx="16.5" cy="19" r="1.5"/><path d="M3 11h18"/></svg>
+        <h3>School Transport</h3>
+        <p>Bus pick-up and drop-off service is available for students commuting from across the Lal Kuan and Ghaziabad area.</p>
       </div>
-      <div class="fact-card">
-        <h3>
-          <svg class="flame-dot" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#8E0E20"/></svg>
-          School at a Glance
-        </h3>
-        <ul class="fact-list">
-          <li><span>Established</span><b>1987</b></li>
-          <li><span>Board</span><b>CBSE</b></li>
-          <li><span>Classes</span><b>Nursery – XII</b></li>
-          <li><span>Student Capacity</span><b>2,000+</b></li>
-          <li><span>Teachers</span><b>55+</b></li>
-          <li><span>Medium</span><b>English</b></li>
-          <li><span>Campus</span><b>Safe &amp; Green</b></li>
-          <li><span>Facilities</span><b>Smart Classrooms, Labs, Library &amp; Sports</b></li>
-        </ul>
+      <div class="fac-card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19V6a2 2 0 0 1 2-2h5v15"/><path d="M20 19V6a2 2 0 0 0-2-2h-5v15"/><path d="M4 19h16"/></svg>
+        <h3>Library</h3>
+        <p>A dedicated reading space with reference books, textbooks and fiction to build a habit of reading beyond the classroom.</p>
       </div>
-    </div>
-  </div>
-</section>
-
-<section class="alt" id="vision-mission">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">Vision &amp; Mission</div>
-      <h2>Building Bright Futures</h2>
-    </div>
-    <div class="vm-grid">
-      <div class="vm-card">
-        <h3>Our Vision</h3>
-        <p>To empower every learner with knowledge, values, creativity, and confidence, enabling them to become compassionate individuals and responsible global citizens.</p>
+      <div class="fac-card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 3h6v6l5 9a2 2 0 0 1-2 3H6a2 2 0 0 1-2-3l5-9V3Z"/><path d="M9 3h6"/></svg>
+        <h3>Science &amp; Computer Labs</h3>
+        <p>Practical, hands-on lab periods that turn Science and Computer Science lessons into real experiments and exercises.</p>
       </div>
-      <div class="vm-card">
-        <h3>Our Mission</h3>
-        <ul class="mission-list">
-          <li>Deliver quality CBSE education.</li>
-          <li>Promote innovation and lifelong learning.</li>
-          <li>Develop discipline and strong moral values.</li>
-          <li>Encourage excellence in academics, sports, arts, and leadership.</li>
-          <li>Create a safe and inclusive learning environment.</li>
-        </ul>
+      <div class="fac-card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11Z"/></svg>
+        <h3>Safety &amp; Security</h3>
+        <p>CCTV surveillance across the premises and supervised entry/exit help keep the day-to-day campus environment secure.</p>
       </div>
-    </div>
-    <div class="values-row">
-      <span class="value-chip">Excellence</span>
-      <span class="value-chip">Integrity</span>
-      <span class="value-chip">Respect</span>
-      <span class="value-chip">Discipline</span>
-      <span class="value-chip">Compassion</span>
-      <span class="value-chip">Innovation</span>
-      <span class="value-chip">Leadership</span>
-    </div>
-  </div>
-</section>
-
-<section id="why-trust-us">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">Why Parents Trust Us</div>
-      <h2>Why Choose Bal Jyoti Public School?</h2>
-    </div>
-    <div class="trust-grid">
-      <div class="trust-item"><span class="check">✓</span> Established Legacy Since 1987</div>
-      <div class="trust-item"><span class="check">✓</span> CBSE Curriculum</div>
-      <div class="trust-item"><span class="check">✓</span> Experienced &amp; Caring Faculty</div>
-      <div class="trust-item"><span class="check">✓</span> Smart Classrooms</div>
-      <div class="trust-item"><span class="check">✓</span> Safe &amp; Secure Campus</div>
-      <div class="trust-item"><span class="check">✓</span> Academic Excellence</div>
-      <div class="trust-item"><span class="check">✓</span> Sports &amp; Co-Curricular Activities</div>
-      <div class="trust-item"><span class="check">✓</span> Individual Attention</div>
-      <div class="trust-item"><span class="check">✓</span> Value-Based Education</div>
-      <div class="trust-item"><span class="check">✓</span> Future-Ready Learning</div>
+      <div class="fac-card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
+        <h3>Sports &amp; Play Areas</h3>
+        <p>Open grounds and structured sports periods support the annual Sports Day along with regular physical education classes.</p>
+      </div>
+      <div class="fac-card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>
+        <h3>Well-Equipped Classrooms</h3>
+        <p>Classrooms are designed to support both traditional teaching and interactive, activity-based lessons across grade levels.</p>
+      </div>
     </div>
   </div>
 </section>
 
 <section class="join">
   <div class="wrap">
-    <h2>Join the Bal Jyoti Family</h2>
-    <p>Give your child the opportunity to learn, grow, and succeed in an environment that inspires excellence every day.</p>
-    <a class="btn" href="https://wa.me/919910363101?text=Hello%2C%20I%20am%20looking%20for%20admission%20information." target="_blank" rel="noopener">Enquire About Admission</a>
+    <h2>Want to see the campus in person?</h2>
+    <p>Schedule a visit and see the classrooms, labs and library for yourself.</p>
+    <a class="btn" href="admission.html#apply">Book a Campus Visit</a>
   </div>
 </section>
 

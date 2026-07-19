@@ -60,7 +60,7 @@
   }
   .brand{display:flex; align-items:center; gap:12px;}
   .brand:hover .word{color:var(--maroon);}
-  .brand .mark{width:40px; height:40px; flex:none; object-fit:contain; border-radius:50%;}
+  .brand .mark{width:56px; height:56px; flex:none; object-fit:contain; border-radius:50%;}
   .brand .word{font-family:'Fraunces', serif; font-weight:700; font-size:1.05rem; letter-spacing:.02em;}
   .brand .word span{display:block; font-family:'Source Sans 3',sans-serif; font-weight:600; font-size:.68rem; letter-spacing:.12em; color:var(--slate); text-transform:uppercase;}
   nav.links{display:flex; gap:20px; align-items:center; flex-wrap:wrap; justify-content:flex-end;}
@@ -72,6 +72,12 @@
     padding:10px 18px; border-radius:999px; font-size:.86rem!important;
   }
   .nav-cta::after{display:none;}
+  .nav-login{
+    border:1.5px solid var(--ink); padding:8px 16px; border-radius:999px; font-weight:700; font-size:.85rem!important;
+  }
+  .nav-login:hover{background:var(--ink); color:var(--white)!important;}
+  .nav-login::after{display:none;}
+
   .burger{display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:6px;}
   .burger span{width:24px; height:2px; background:var(--ink); display:block;}
 
@@ -314,6 +320,28 @@
   .popup-btn-primary:hover{background:#57081A;}
   .popup-btn-secondary{border:2px solid var(--ink); color:var(--ink); padding:10px 20px; border-radius:999px; font-weight:700; font-size:.9rem; display:block;}
   .popup-btn-secondary:hover{background:var(--ink); color:var(--white);}
+
+  /* ---- ABOUT DROPDOWN ---- */
+  .nav-dropdown{position:relative;}
+  .dropdown-menu{
+    position:absolute; top:100%; left:0; margin-top:10px; background:var(--white);
+    border:1px solid var(--line); border-radius:12px; box-shadow:0 16px 32px rgba(0,0,0,.14);
+    padding:8px; min-width:210px; opacity:0; visibility:hidden; transform:translateY(6px);
+    transition:opacity .2s ease, transform .2s ease, visibility .2s ease; z-index:60;
+  }
+  .nav-dropdown:hover .dropdown-menu, .nav-dropdown:focus-within .dropdown-menu{
+    opacity:1; visibility:visible; transform:translateY(0);
+  }
+  .dropdown-menu a{display:block; padding:10px 12px; border-radius:8px; font-size:.88rem; white-space:nowrap;}
+  .dropdown-menu a::after{display:none;}
+  .dropdown-menu a:hover{background:var(--paper-deep); color:var(--maroon);}
+  @media (max-width:940px){
+    .dropdown-menu{
+      position:static; opacity:1; visibility:visible; transform:none; box-shadow:none;
+      border:none; padding:0 0 0 16px; margin-top:10px; display:flex; flex-direction:column;
+      gap:14px; min-width:0;
+    }
+  }
 </style>
 </head>
 <body>
@@ -336,15 +364,28 @@
       <span></span><span></span><span></span>
     </button>
     <nav class="links" id="nav">
-      <a href="about.html">About</a>
-      <a href="#academics">Academics</a>
-      <a href="#facilities">Facilities</a>
-      <a href="#student-life">Student Life</a>
+      <a href="index.html">Home</a>
+      <div class="nav-dropdown">
+        <a href="about.html">About ▾</a>
+        <div class="dropdown-menu">
+          <a href="about.html">About Us</a>
+          <a href="leaders.html">Our Leaders</a>
+          <a href="disclosure.html">Mandatory Disclosure</a>
+          <a href="gallery.html">Gallery</a>
+        </div>
+      </div>
+      <div class="nav-dropdown">
+        <a href="academics.html">Academics ▾</a>
+        <div class="dropdown-menu">
+          <a href="academics.html">Academics</a>
+          <a href="student-life.html">Student Life</a>
+          <a href="facilities.html">Facilities</a>
+        </div>
+      </div>
       <a href="admission.html">Admission</a>
       <a href="careers.html">Careers</a>
-      <a href="leaders.html">Our Leaders</a>
-      <a href="gallery.html">Gallery</a>
       <a href="#contact">Contact</a>
+      <a href="login.html" class="nav-login">Login</a>
       <a href="admission.html#apply" class="nav-cta">Apply Now</a>
     </nav>
   </div>
@@ -648,11 +689,15 @@
       <div class="foot-links">
         <h5>More Pages</h5>
         <a href="about.html">About Us</a>
+        <a href="academics.html">Academics</a>
+        <a href="student-life.html">Student Life</a>
+        <a href="facilities.html">Facilities</a>
         <a href="admission.html">Admission</a>
         <a href="careers.html">Careers</a>
         <a href="leaders.html">Our Leaders</a>
         <a href="gallery.html">Gallery</a>
         <a href="disclosure.html">Mandatory Disclosure</a>
+        <a href="login.html">Login</a>
       </div>
     </div>
     <div class="foot-bottom">
