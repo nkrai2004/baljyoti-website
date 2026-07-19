@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admissions - Bal Jyoti Public School, Ghaziabad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1A1A1A;
+    --paper:#FFFFFF;
+    --paper-deep:#F7EEEF;
+    --flame:#C8102E;
+    --flame-deep:#8E0E20;
+    --maroon:#6E0B1E;
+    --slate:#55606B;
+    --line: rgba(0,0,0,0.1);
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Source Sans 3', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    line-height:1.15;
+    color:var(--ink);
+  }
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:1100px; margin:0 auto; padding:0 24px;}
+  .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:.14em;
+    font-size:.78rem;
+    font-weight:700;
+    color:var(--flame-deep);
+  }
+
+  /* ---- HEADER ---- */
+  header.site{
+    background:var(--white); border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:30;
+  }
+  .nav-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px; max-width:1100px; margin:0 auto; gap:16px; flex-wrap:wrap;
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand .mark{width:38px; height:38px; flex:none;}
+  .brand .word{font-family:'Fraunces', serif; font-weight:700; font-size:1.02rem;}
+  .brand .word span{display:block; font-family:'Source Sans 3',sans-serif; font-weight:600; font-size:.66rem; letter-spacing:.12em; color:var(--slate); text-transform:uppercase;}
+  .nav-actions{display:flex; gap:12px; align-items:center;}
+  .back-link{
+    display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:.9rem;
+    border:2px solid var(--ink); padding:9px 18px; border-radius:999px;
+  }
+  .back-link:hover{background:var(--ink); color:var(--white);}
+  .nav-cta{
+    background:var(--maroon); color:var(--white); font-weight:700; font-size:.9rem;
+    padding:9px 18px; border-radius:999px;
+  }
+  .nav-cta:hover{background:#57081A;}
+
+  /* ---- HERO ---- */
+  .hero{
+    background:linear-gradient(155deg,var(--ink) 0%, #331013 55%, var(--maroon) 100%);
+    color:var(--white); padding:76px 0 56px; text-align:center; position:relative; overflow:hidden;
+  }
+  .hero::before{
+    content:""; position:absolute; inset:0;
+    background:radial-gradient(circle at 20% 20%, rgba(200,16,46,.35), transparent 55%),
+               radial-gradient(circle at 85% 75%, rgba(200,16,46,.25), transparent 50%);
+  }
+  .hero .inner{position:relative; z-index:1;}
+  .hero .eyebrow{color:#F6B6BE;}
+  .hero h1{font-size:clamp(2rem,4.4vw,3.1rem); margin:14px auto 16px; max-width:18ch; color:var(--white);}
+  .hero p{color:#EBD3D7; font-size:1.05rem; max-width:52ch; margin:0 auto 30px;}
+  .hero-btn-row{display:flex; justify-content:center; gap:14px; flex-wrap:wrap;}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:14px 28px; border-radius:999px; font-weight:700; font-size:.95rem;
+    transition:transform .2s ease, background .2s ease; cursor:pointer; border:2px solid transparent;
+  }
+  .btn-light{background:var(--white); color:var(--maroon);}
+  .btn-light:hover{transform:translateY(-2px); background:#F3E4E6;}
+  .btn-outline-light{border-color:var(--white); color:var(--white);}
+  .btn-outline-light:hover{transform:translateY(-2px); background:var(--white); color:var(--ink);}
+  .btn-primary{background:var(--maroon); color:var(--white);}
+  .btn-primary:hover{transform:translateY(-2px); background:#57081A;}
+  .btn-outline-dark{border-color:var(--ink); color:var(--ink);}
+  .btn-outline-dark:hover{transform:translateY(-2px); background:var(--ink); color:var(--paper);}
+
+  .hero-stats{
+    margin-top:40px; display:grid; grid-template-columns:repeat(4,1fr); gap:18px;
+    max-width:760px; margin-left:auto; margin-right:auto; border-top:1px solid rgba(255,255,255,.18); padding-top:24px;
+  }
+  @media (max-width:640px){ .hero-stats{grid-template-columns:repeat(2,1fr);} }
+  .hero-stats .num{font-family:'Fraunces',serif; font-weight:700; font-size:1.4rem; color:var(--white);}
+  .hero-stats .lbl{font-size:.76rem; color:#D9B9BE; text-transform:uppercase; letter-spacing:.06em; margin-top:2px;}
+
+  /* ---- GENERIC SECTION ---- */
+  section{padding:76px 0;}
+  section.alt{background:var(--paper-deep);}
+  .sec-head{max-width:680px; margin:0 auto 44px; text-align:center;}
+  .sec-head h2{font-size:clamp(1.7rem,3vw,2.3rem); margin-top:10px;}
+  .sec-head p.tag{color:var(--slate); margin-top:12px; font-size:1.02rem;}
+
+  /* ---- WHY CHOOSE ---- */
+  .why-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media (max-width:880px){ .why-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:560px){ .why-grid{grid-template-columns:1fr;} }
+  .why-card{background:var(--white); border:1px solid var(--line); border-radius:14px; padding:22px;}
+  .why-card .num-badge{
+    width:32px; height:32px; border-radius:50%; background:var(--paper-deep); color:var(--maroon);
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-family:'Fraunces',serif; margin-bottom:12px; font-size:.92rem;
+  }
+  .why-card h4{font-size:1rem; margin-bottom:6px;}
+  .why-card p{color:var(--slate); font-size:.9rem;}
+
+  .fee-note{
+    margin-top:32px; background:var(--white); border:1px dashed var(--flame-deep);
+    border-radius:14px; padding:22px 26px;
+  }
+  .fee-note h4{font-size:1rem; margin-bottom:6px; color:var(--maroon);}
+  .fee-note p{color:var(--slate); font-size:.9rem;}
+
+  /* ---- STEPS ---- */
+  .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:22px;}
+  @media (max-width:880px){ .steps{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:560px){ .steps{grid-template-columns:1fr;} }
+  .step{background:var(--white); border:1px solid var(--line); border-radius:16px; padding:24px; position:relative;}
+  .step .n{font-family:'Fraunces',serif; font-size:1.6rem; color:var(--flame-deep); font-weight:700;}
+  .step h4{margin:8px 0 6px; font-size:1rem;}
+  .step p{color:var(--slate); font-size:.88rem;}
+
+  /* ---- ELIGIBILITY / DOCS ---- */
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:32px;}
+  @media (max-width:820px){ .two-col{grid-template-columns:1fr;} }
+  .panel{background:var(--white); border:1px solid var(--line); border-radius:18px; padding:30px;}
+  .panel h3{font-size:1.1rem; margin-bottom:14px; color:var(--maroon);}
+  .panel p.lead-note{color:var(--slate); font-size:.9rem; margin-bottom:16px;}
+  .docs-list{list-style:none;}
+  .docs-list li{display:flex; align-items:flex-start; gap:10px; font-size:.92rem; color:var(--slate); padding:8px 0; border-bottom:1px dashed var(--line);}
+  .docs-list li:last-child{border-bottom:none;}
+  .docs-list li svg{width:18px; height:18px; flex:none; margin-top:2px; color:var(--flame-deep);}
+  .age-table{width:100%; border-collapse:collapse; font-size:.9rem;}
+  .age-table th, .age-table td{text-align:left; padding:10px 6px; border-bottom:1px dashed var(--line); color:var(--slate);}
+  .age-table th{color:var(--ink); font-weight:700;}
+  .panel-note{margin-top:14px; font-size:.8rem; color:var(--slate); font-style:italic;}
+
+  /* ---- FAQ ---- */
+  .faq{display:flex; flex-direction:column; gap:12px; max-width:760px; margin:0 auto;}
+  .faq details{background:var(--white); border:1px solid var(--line); border-radius:12px; padding:6px 22px;}
+  .faq summary{
+    cursor:pointer; padding:15px 0; font-weight:700; font-size:.98rem;
+    list-style:none; display:flex; justify-content:space-between; align-items:center; gap:12px;
+  }
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq summary::after{content:"+"; font-size:1.3rem; color:var(--flame-deep); font-weight:700; flex:none;}
+  .faq details[open] summary::after{content:"\2013";}
+  .faq .faq-a{padding:0 0 16px; color:var(--slate); font-size:.92rem;}
+
+  /* ---- CONTACT STRIP ---- */
+  .contact-strip{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media (max-width:820px){ .contact-strip{grid-template-columns:1fr;} }
+  .contact-box{background:var(--white); border:1px solid var(--line); border-radius:16px; padding:24px; text-align:center;}
+  .contact-box .ico{width:30px; height:30px; margin:0 auto 12px; color:var(--maroon);}
+  .contact-box h4{font-size:.98rem; margin-bottom:6px;}
+  .contact-box p{color:var(--slate); font-size:.9rem;}
+  .contact-box a.link{color:var(--maroon); font-weight:700;}
+
+  /* ---- JOIN CTA ---- */
+  .join{
+    background:linear-gradient(135deg,var(--maroon),var(--flame));
+    color:var(--white); text-align:center; padding:64px 0;
+  }
+  .join h2{color:var(--white); font-size:clamp(1.6rem,3vw,2.1rem);}
+  .join p{color:#FBE3E6; max-width:52ch; margin:14px auto 28px; font-size:1.02rem;}
+  .join .hero-btn-row{margin-top:0;}
+
+  footer{background:var(--ink); color:#B98D93; text-align:center; padding:32px 24px 26px; font-size:.82rem;}
+  footer .footer-links{margin-bottom:16px; display:flex; flex-wrap:wrap; justify-content:center; gap:10px 18px; font-size:.84rem;}
+  footer .footer-links a{color:#EBD3D7; font-weight:600;}
+  footer .footer-links a:hover{color:#C8102E;}
+  footer .footer-links .sep{color:#5A2530;}
+  footer b{color:var(--white);}
+
+  /* ---- WHATSAPP FLOATING BUTTON ---- */
+  .whatsapp-fab{
+    position:fixed; right:20px; bottom:20px; z-index:9999;
+    width:60px; height:60px; border-radius:50%;
+    background:#25D366; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 10px 26px rgba(0,0,0,.3);
+    transition:transform .2s ease;
+  }
+  .whatsapp-fab:hover{ transform:scale(1.08); }
+  .whatsapp-fab svg{ width:30px; height:30px; position:relative; z-index:2; }
+  .whatsapp-ping{
+    position:absolute; inset:0; border-radius:50%; background:#25D366;
+    animation:wa-pulse 2.2s ease-out infinite; z-index:1;
+  }
+  @keyframes wa-pulse{
+    0%{ transform:scale(1); opacity:.55; }
+    100%{ transform:scale(1.9); opacity:0; }
+  }
+  @media (max-width:480px){
+    .whatsapp-fab{ width:52px; height:52px; right:14px; bottom:14px; }
+    .whatsapp-fab svg{ width:26px; height:26px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="nav-row">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M24 6c3 5-2 7-2 11a5 5 0 0 0 10 0c0-2-1-3-1-3 3 3 5 7 5 11 0 6.6-5.4 12-12 12S12 30.6 12 24c0-9 8-13 12-18Z" fill="#C8102E"/>
+        <path d="M8 34c4 3 8 4 16 4s12-1 16-4" stroke="#6E0B1E" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <div class="word">BAL JYOTI<span>Public School · Ghaziabad</span></div>
+    </div>
+    <div class="nav-actions">
+      <a class="back-link" href="index.html">← Back to Home</a>
+      <a class="nav-cta" href="#apply">Apply Now</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap inner">
+    <div class="eyebrow">Admissions</div>
+    <h1>Begin your child's journey with us.</h1>
+    <p>Admissions are now open for the 2026–27 session, Nursery to Class XII. Here's everything you need to know before you apply.</p>
+    <div class="hero-btn-row">
+      <a class="btn btn-light" href="https://wa.me/919910363101?text=Hello%2C%20I%20am%20looking%20for%20admission%20information." target="_blank" rel="noopener">Enquire on WhatsApp</a>
+      <a class="btn btn-outline-light" href="#eligibility">Check Eligibility &amp; Documents</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="num">1986</div><div class="lbl">Est. Since</div></div>
+      <div><div class="num">CBSE</div><div class="lbl">Board</div></div>
+      <div><div class="num">N–XII</div><div class="lbl">Classes</div></div>
+      <div><div class="num">2130361</div><div class="lbl">Affiliation No.</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="why-choose">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Prospective Parents</div>
+      <h2>Why Families Choose Bal Jyoti</h2>
+      <p class="tag">A few honest reasons families keep choosing us for their children's first school.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="num-badge">01</div>
+        <h4>A Track Record Since 1986</h4>
+        <p>Four decades of running a CBSE school in Ghaziabad, with generations of local families as alumni.</p>
+      </div>
+      <div class="why-card">
+        <div class="num-badge">02</div>
+        <h4>One School, Nursery to XII</h4>
+        <p>No disruptive school change as your child grows — the same campus and community from first admission to board exams.</p>
+      </div>
+      <div class="why-card">
+        <div class="num-badge">03</div>
+        <h4>Budget-Friendly Fees</h4>
+        <p>Independently reported fee data has placed Bal Jyoti's fees well below the average for schools in Ghaziabad.</p>
+      </div>
+      <div class="why-card">
+        <div class="num-badge">04</div>
+        <h4>Transport Included</h4>
+        <p>Bus pick-up and drop-off is available across parts of Lal Kuan and Ghaziabad, easing the daily commute.</p>
+      </div>
+      <div class="why-card">
+        <div class="num-badge">05</div>
+        <h4>A Monitored, Safe Campus</h4>
+        <p>CCTV coverage and supervised entry/exit give parents peace of mind through the school day.</p>
+      </div>
+      <div class="why-card">
+        <div class="num-badge">06</div>
+        <h4>Room to Grow Beyond Academics</h4>
+        <p>Art, dance, music, sports and excursions run alongside academics, not as an afterthought.</p>
+      </div>
+    </div>
+    <div class="fee-note">
+      <h4>A Note on Fees</h4>
+      <p>Third-party school-comparison platforms have reported Bal Jyoti's monthly fee for Class 1 at approximately ₹1,067 — notably lower than Ghaziabad's citywide average of about ₹4,292. Fee structures can change each session, so please confirm the current fee slab directly with the school office.</p>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="apply">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">The Process</div>
+      <h2>How to Apply</h2>
+      <p class="tag">Admissions are handled directly by the school office. Here's the general process families can expect.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="n">01</div>
+        <h4>Enquire</h4>
+        <p>Reach out by phone, WhatsApp or email to check seat availability for your child's class.</p>
+      </div>
+      <div class="step">
+        <div class="n">02</div>
+        <h4>Visit the Campus</h4>
+        <p>Visit the school to see the facilities and collect the admission form and fee details in person.</p>
+      </div>
+      <div class="step">
+        <div class="n">03</div>
+        <h4>Submit Documents</h4>
+        <p>Complete the form along with the required documents and submit it at the school office.</p>
+      </div>
+      <div class="step">
+        <div class="n">04</div>
+        <h4>Confirmation</h4>
+        <p>Once verified, the school confirms admission and shares fee payment and orientation details.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="eligibility">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Before You Visit</div>
+      <h2>Eligibility &amp; Documents</h2>
+      <p class="tag">A general guide to help you prepare — the school office will confirm exact requirements for your child's class.</p>
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <h3>Age Guidelines</h3>
+        <p class="lead-note">Age criteria are reviewed and set by CBSE and state authorities each academic year, so exact cut-off dates can shift from session to session.</p>
+        <table class="age-table">
+          <tr><th>Class</th><th>Typical Age Group</th></tr>
+          <tr><td>Nursery</td><td>Around 3+ years</td></tr>
+          <tr><td>LKG</td><td>Around 4+ years</td></tr>
+          <tr><td>UKG</td><td>Around 5+ years</td></tr>
+          <tr><td>Class I</td><td>Around 6+ years</td></tr>
+        </table>
+        <p class="panel-note">Indicative only. Please confirm the current session's exact age cut-off with the school office before applying.</p>
+      </div>
+      <div class="panel">
+        <h3>Documents You'll Typically Need</h3>
+        <ul class="docs-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 13l4 4L19 7"/></svg><span>Child's birth certificate</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 13l4 4L19 7"/></svg><span>Transfer Certificate (Class I and above, if applicable)</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 13l4 4L19 7"/></svg><span>Previous school's report card / mark sheet</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 13l4 4L19 7"/></svg><span>Address proof of parent/guardian</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 13l4 4L19 7"/></svg><span>Aadhaar card copies (child and parents)</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 13l4 4L19 7"/></svg><span>Passport-size photographs</span></li>
+        </ul>
+        <p class="panel-note">Note: confirm the exact document list with the school office before your visit.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">FAQ</div>
+      <h2>Questions Parents Often Ask</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>Is Bal Jyoti Public School co-educational?</summary>
+        <div class="faq-a">Yes. It is a co-educational, English-medium day school affiliated to CBSE, serving Nursery through Class XII.</div>
+      </details>
+      <details>
+        <summary>Is school transport available for my area?</summary>
+        <div class="faq-a">Bus pick-up and drop-off is available across parts of Lal Kuan and Ghaziabad. Please check with the office to confirm your specific route.</div>
+      </details>
+      <details>
+        <summary>What is the minimum age for Nursery admission?</summary>
+        <div class="faq-a">Age criteria are set each academic year in line with CBSE and state norms. Please confirm the current cut-off age with the school office when you enquire.</div>
+      </details>
+      <details>
+        <summary>Does the school offer a hostel or boarding facility?</summary>
+        <div class="faq-a">No. Bal Jyoti is a day school; it does not currently offer hostel or boarding facilities.</div>
+      </details>
+      <details>
+        <summary>How do I schedule a campus visit?</summary>
+        <div class="faq-a">Message the school office on WhatsApp or call ahead, and the team will help you fix a convenient time to tour the campus.</div>
+      </details>
+      <details>
+        <summary>What documents are required at the time of admission?</summary>
+        <div class="faq-a">Generally the child's birth certificate, previous report card, transfer certificate (where applicable), address proof, Aadhaar copies and photographs. The office will confirm the exact list for your child's class.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section id="contact-quick">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Reach Us</div>
+      <h2>Talk to the Admission Team</h2>
+    </div>
+    <div class="contact-strip">
+      <div class="contact-box">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5a2 2 0 0 1 2-2h3l2 5-2 1a11 11 0 0 0 5 5l1-2 5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 5Z"/></svg>
+        <h4>WhatsApp / Phone</h4>
+        <p><a class="link" href="https://wa.me/919910363101" target="_blank" rel="noopener">+91 99103 63101</a></p>
+      </div>
+      <div class="contact-box">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        <h4>Email</h4>
+        <p><a class="link" href="mailto:info@baljyoti.com">info@baljyoti.com</a></p>
+      </div>
+      <div class="contact-box">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22s8-4.5 8-11a8 8 0 1 0-16 0c0 6.5 8 11 8 11Z"/><circle cx="12" cy="11" r="3"/></svg>
+        <h4>Visit</h4>
+        <p>Lal Kuan, Near GT Road &amp; NH-24, Ghaziabad – 201009</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="join">
+  <div class="wrap">
+    <h2>Ready to begin the process?</h2>
+    <p>Call, WhatsApp or email the school office — the team is happy to answer questions about seats, fees and documents.</p>
+    <div class="hero-btn-row">
+      <a class="btn btn-light" href="https://wa.me/919910363101?text=Hello%2C%20I%20am%20looking%20for%20admission%20information." target="_blank" rel="noopener">Message on WhatsApp</a>
+      <a class="btn btn-outline-light" href="mailto:info@baljyoti.com">Email the Office</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-links"><a href="index.html">Home</a><span class="sep">·</span><a href="about.html">About</a><span class="sep">·</span><a href="admission.html">Admission</a><span class="sep">·</span><a href="careers.html">Careers</a><span class="sep">·</span><a href="leaders.html">Our Leaders</a><span class="sep">·</span><a href="gallery.html">Gallery</a><span class="sep">·</span><a href="disclosure.html">Disclosure</a></div>
+  <b>Bal Jyoti Public School</b> · Lal Kuan, Ghaziabad · CBSE Affiliation No. 2130361
+</footer>
+
+
+<a class="whatsapp-fab" href="https://wa.me/919910363101?text=Hello%2C%20I%20am%20looking%20for%20admission%20information." target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp for admission enquiries" title="WhatsApp Us for Admission">
+  <span class="whatsapp-ping"></span>
+  <svg viewBox="0 0 32 32" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+    <path d="M16.004 3C9.377 3 4 8.373 4 15c0 2.386.7 4.607 1.908 6.472L4 29l7.72-1.874A11.94 11.94 0 0 0 16.004 27C22.63 27 28 21.627 28 15S22.63 3 16.004 3Zm.001 21.818c-1.99 0-3.85-.57-5.42-1.552l-.389-.232-4.58 1.112 1.13-4.463-.253-.399A9.77 9.77 0 0 1 5.2 15c0-5.965 4.84-10.818 10.805-10.818S26.809 9.035 26.809 15 21.97 24.818 16.005 24.818Zm5.61-8.15c-.307-.154-1.816-.897-2.098-.999-.281-.102-.486-.154-.69.154-.204.307-.79.998-.968 1.204-.178.205-.357.23-.664.077-.307-.154-1.297-.478-2.47-1.523-.913-.814-1.53-1.82-1.708-2.128-.178-.307-.019-.473.135-.626.139-.138.307-.358.46-.537.153-.18.204-.307.307-.512.102-.205.05-.384-.026-.538-.077-.154-.69-1.663-.945-2.278-.249-.6-.503-.518-.69-.527l-.588-.01c-.204 0-.537.077-.818.384-.281.307-1.073 1.05-1.073 2.56 0 1.512 1.098 2.972 1.251 3.177.153.205 2.163 3.303 5.242 4.632.733.317 1.305.506 1.75.647.735.234 1.404.201 1.933.122.59-.088 1.816-.742 2.073-1.459.256-.717.256-1.332.179-1.46-.077-.128-.281-.204-.588-.358Z"/>
+  </svg>
+</a>
+
+</body>
+</html>

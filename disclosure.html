@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mandatory Public Disclosure - Bal Jyoti Public School, Ghaziabad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1A1A1A;
+    --paper:#FFFFFF;
+    --paper-deep:#F7EEEF;
+    --flame:#C8102E;
+    --flame-deep:#8E0E20;
+    --maroon:#6E0B1E;
+    --slate:#55606B;
+    --line: rgba(0,0,0,0.1);
+    --white:#FFFFFF;
+    --warn-bg:#FFF7E6;
+    --warn-line:#E3A008;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Source Sans 3', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    line-height:1.15;
+    color:var(--ink);
+  }
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:1000px; margin:0 auto; padding:0 24px;}
+  .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:.14em;
+    font-size:.78rem;
+    font-weight:700;
+    color:var(--flame-deep);
+  }
+
+  /* ---- HEADER ---- */
+  header.site{
+    background:var(--white); border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:30;
+  }
+  .nav-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px; max-width:1000px; margin:0 auto; gap:16px; flex-wrap:wrap;
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand .mark{width:38px; height:38px; flex:none;}
+  .brand .word{font-family:'Fraunces', serif; font-weight:700; font-size:1.02rem;}
+  .brand .word span{display:block; font-family:'Source Sans 3',sans-serif; font-weight:600; font-size:.66rem; letter-spacing:.12em; color:var(--slate); text-transform:uppercase;}
+  .back-link{
+    display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:.9rem;
+    border:2px solid var(--ink); padding:9px 18px; border-radius:999px;
+  }
+  .back-link:hover{background:var(--ink); color:var(--white);}
+
+  /* ---- HERO ---- */
+  .hero{
+    background:linear-gradient(155deg,var(--ink) 0%, #331013 55%, var(--maroon) 100%);
+    color:var(--white); padding:56px 0 44px; text-align:center; position:relative; overflow:hidden;
+  }
+  .hero::before{
+    content:""; position:absolute; inset:0;
+    background:radial-gradient(circle at 20% 20%, rgba(200,16,46,.35), transparent 55%),
+               radial-gradient(circle at 85% 75%, rgba(200,16,46,.25), transparent 50%);
+  }
+  .hero .inner{position:relative; z-index:1;}
+  .hero .eyebrow{color:#F6B6BE;}
+  .hero h1{font-size:clamp(1.7rem,3.6vw,2.5rem); margin:12px auto 12px; max-width:24ch; color:var(--white);}
+  .hero p{color:#EBD3D7; font-size:.98rem; max-width:56ch; margin:0 auto;}
+
+  /* ---- SECTION GENERIC ---- */
+  section{padding:56px 0;}
+  section.alt{background:var(--paper-deep);}
+
+  .disc-notice{
+    background:var(--warn-bg); border:1px solid var(--warn-line); border-radius:14px;
+    padding:18px 22px; margin-bottom:40px; font-size:.88rem; color:#5A4200; display:flex; gap:12px; align-items:flex-start;
+  }
+  .disc-notice svg{width:20px; height:20px; flex:none; margin-top:2px; color:#B8860B;}
+
+  .disc-block{margin-bottom:48px;}
+  .disc-block:last-child{margin-bottom:0;}
+  .disc-block h2{
+    font-size:1.3rem; display:flex; align-items:center; gap:12px; margin-bottom:4px;
+  }
+  .disc-block .part-letter{
+    width:34px; height:34px; border-radius:50%; background:var(--maroon); color:var(--white);
+    display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:700; flex:none;
+  }
+  .disc-block p.sub{color:var(--slate); font-size:.88rem; margin:6px 0 18px 46px;}
+
+  table.disc-table{width:100%; border-collapse:collapse; background:var(--white); border:1px solid var(--line); border-radius:12px; overflow:hidden;}
+  table.disc-table tr{border-bottom:1px solid var(--line);}
+  table.disc-table tr:last-child{border-bottom:none;}
+  table.disc-table td{padding:13px 18px; font-size:.92rem; vertical-align:top;}
+  table.disc-table td.label{color:var(--slate); width:46%; font-weight:600;}
+  table.disc-table td.value{color:var(--ink); font-weight:600;}
+  .to-update{color:var(--flame-deep); font-weight:700; font-style:italic; font-size:.86rem; text-decoration:underline; text-underline-offset:3px; cursor:pointer;}
+  .to-update:hover{color:var(--maroon);}
+
+  .doc-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px;}
+  @media (max-width:640px){ .doc-grid{grid-template-columns:1fr;} }
+  .doc-card{
+    background:var(--white); border:1px solid var(--line); border-radius:12px; padding:16px 18px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .doc-card span{font-size:.9rem; font-weight:600;}
+  .doc-badge{
+    font-size:.74rem; font-weight:700; padding:5px 12px; border-radius:999px; flex:none;
+    background:var(--warn-bg); color:#8A6300; border:1px solid var(--warn-line);
+    cursor:pointer; transition:background .2s ease, color .2s ease;
+  }
+  .doc-badge:hover{background:#E3A008; color:var(--white);}
+
+  .contact-line{
+    margin-top:56px; padding-top:28px; border-top:1px solid var(--line);
+    text-align:center; color:var(--slate); font-size:.9rem;
+  }
+  .contact-line a{color:var(--maroon); font-weight:700;}
+
+  footer{background:var(--ink); color:#B98D93; text-align:center; padding:32px 24px 26px; font-size:.82rem;}
+  footer .footer-links{margin-bottom:16px; display:flex; flex-wrap:wrap; justify-content:center; gap:10px 18px; font-size:.84rem;}
+  footer .footer-links a{color:#EBD3D7; font-weight:600;}
+  footer .footer-links a:hover{color:#C8102E;}
+  footer .footer-links .sep{color:#5A2530;}
+  footer b{color:var(--white);}
+
+  /* ---- WHATSAPP FLOATING BUTTON ---- */
+  .whatsapp-fab{
+    position:fixed; right:20px; bottom:20px; z-index:9999;
+    width:60px; height:60px; border-radius:50%;
+    background:#25D366; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 10px 26px rgba(0,0,0,.3);
+    transition:transform .2s ease;
+  }
+  .whatsapp-fab:hover{ transform:scale(1.08); }
+  .whatsapp-fab svg{ width:30px; height:30px; position:relative; z-index:2; }
+  .whatsapp-ping{
+    position:absolute; inset:0; border-radius:50%; background:#25D366;
+    animation:wa-pulse 2.2s ease-out infinite; z-index:1;
+  }
+  @keyframes wa-pulse{
+    0%{ transform:scale(1); opacity:.55; }
+    100%{ transform:scale(1.9); opacity:0; }
+  }
+  @media (max-width:480px){
+    .whatsapp-fab{ width:52px; height:52px; right:14px; bottom:14px; }
+    .whatsapp-fab svg{ width:26px; height:26px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="nav-row">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M24 6c3 5-2 7-2 11a5 5 0 0 0 10 0c0-2-1-3-1-3 3 3 5 7 5 11 0 6.6-5.4 12-12 12S12 30.6 12 24c0-9 8-13 12-18Z" fill="#C8102E"/>
+        <path d="M8 34c4 3 8 4 16 4s12-1 16-4" stroke="#6E0B1E" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <div class="word">BAL JYOTI<span>Public School · Ghaziabad</span></div>
+    </div>
+    <a class="back-link" href="index.html">← Back to Home</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap inner">
+    <div class="eyebrow">CBSE Compliance</div>
+    <h1>Mandatory Public Disclosure</h1>
+    <p>Information disclosed in accordance with the CBSE Affiliation Bye-Laws, as required for all CBSE-affiliated schools.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+
+    <div class="disc-notice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg>
+      <p>This page follows the standard CBSE Mandatory Public Disclosure format (Sections A–E). Fields marked <span class="to-update">"To be updated"</span> require confirmation from the school administration before this page is published — please do not publish this page with placeholder values left in place.</p>
+    </div>
+
+    <!-- SECTION A -->
+    <div class="disc-block">
+      <h2><span class="part-letter">A</span>General Information</h2>
+      <p class="sub">Basic identification and contact details of the school.</p>
+      <table class="disc-table">
+        <tr><td class="label">Name of the School</td><td class="value">Bal Jyoti Public School</td></tr>
+        <tr><td class="label">Affiliation No.</td><td class="value">2130361</td></tr>
+        <tr><td class="label">School Code</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+        <tr><td class="label">Complete Address with Pin Code</td><td class="value">Lal Kuan, Near GT Road &amp; NH-24, P.O. Shahpur Bamheta, Ghaziabad, Uttar Pradesh – 201009</td></tr>
+        <tr><td class="label">Principal Name &amp; Qualification</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+        <tr><td class="label">School Email ID</td><td class="value">info@baljyoti.com</td></tr>
+        <tr><td class="label">Contact Details (Landline / Mobile)</td><td class="value">+91 99103 63101</td></tr>
+        <tr><td class="label">Year of Establishment</td><td class="value">1986</td></tr>
+        <tr><td class="label">Managing Body</td><td class="value">Krishna Gopal Samitee, Uttar Pradesh</td></tr>
+      </table>
+    </div>
+
+    <!-- SECTION B -->
+    <div class="disc-block">
+      <h2><span class="part-letter">B</span>Documents &amp; Information</h2>
+      <p class="sub">Copies of statutory certificates, as required to be published on the school website. Each item below should link to a scanned PDF once available.</p>
+      <div class="doc-grid">
+        <div class="doc-card"><span>Copy of Affiliation / Upgradation Letter</span><a class="doc-badge" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></div>
+        <div class="doc-card"><span>Copy of Societies / Trust Registration Certificate</span><a class="doc-badge" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></div>
+        <div class="doc-card"><span>Copy of No Objection Certificate (NOC) from State Govt.</span><a class="doc-badge" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></div>
+        <div class="doc-card"><span>Copy of Recognition Certificate under RTE Act</span><a class="doc-badge" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></div>
+        <div class="doc-card"><span>Copy of Valid Building Safety Certificate</span><a class="doc-badge" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></div>
+        <div class="doc-card"><span>Copy of Valid Fire Safety Certificate</span><a class="doc-badge" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></div>
+        <div class="doc-card"><span>Copy of DEO Certificate</span><a class="doc-badge" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></div>
+        <div class="doc-card"><span>Self-Certification for Affiliation / Upgradation</span><a class="doc-badge" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></div>
+        <div class="doc-card"><span>Self-Certification u/s 4/12 of RTE Act</span><a class="doc-badge" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></div>
+        <div class="doc-card"><span>Water, Health &amp; Sanitation Certificate</span><a class="doc-badge" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></div>
+      </div>
+    </div>
+
+    <!-- SECTION C -->
+    <div class="disc-block">
+      <h2><span class="part-letter">C</span>Results &amp; Academics</h2>
+      <p class="sub">Fee structure, calendar and Board examination performance.</p>
+      <table class="disc-table">
+        <tr><td class="label">Fee Structure of the School</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+        <tr><td class="label">Annual Academic Calendar</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+        <tr><td class="label">List of School Management Committee (SMC)</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+        <tr><td class="label">List of Parents-Teachers Association (PTA) Members</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+        <tr><td class="label">Last 3 Years' Board Exam Results (Class X)</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+        <tr><td class="label">Last 3 Years' Board Exam Results (Class XII)</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+      </table>
+    </div>
+
+    <!-- SECTION D -->
+    <div class="disc-block">
+      <h2><span class="part-letter">D</span>Staff (Information)</h2>
+      <p class="sub">Details of teaching and support staff strength.</p>
+      <table class="disc-table">
+        <tr><td class="label">Total No. of Teachers</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+        <tr><td class="label">PGT / TGT / PRT Break-up</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+        <tr><td class="label">Teacher–Section Ratio</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+        <tr><td class="label">Details of Special Educator</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+        <tr><td class="label">Details of Counsellor / Wellness Teacher</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+      </table>
+    </div>
+
+    <!-- SECTION E -->
+    <div class="disc-block">
+      <h2><span class="part-letter">E</span>School Infrastructure</h2>
+      <p class="sub">Details of the physical campus and facilities.</p>
+      <table class="disc-table">
+        <tr><td class="label">Total Campus Area</td><td class="value">Approx. 8,855 sq. m</td></tr>
+        <tr><td class="label">No. &amp; Size of Classrooms</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+        <tr><td class="label">No. &amp; Size of Laboratories</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+        <tr><td class="label">Internet Facility</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+        <tr><td class="label">No. of Girls' Toilets</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+        <tr><td class="label">No. of Boys' Toilets</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+        <tr><td class="label">Link to YouTube Video of Infrastructure</td><td class="value"><a class="to-update" href="PASTE-LINK-HERE" target="_blank" rel="noopener">Click Here</a></td></tr>
+      </table>
+    </div>
+
+    <div class="contact-line">
+      For queries regarding any information on this page, please contact the school office at <a href="mailto:info@baljyoti.com">info@baljyoti.com</a> or <a href="tel:+919910363101">+91 99103 63101</a>.
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="footer-links"><a href="index.html">Home</a><span class="sep">·</span><a href="about.html">About</a><span class="sep">·</span><a href="admission.html">Admission</a><span class="sep">·</span><a href="careers.html">Careers</a><span class="sep">·</span><a href="leaders.html">Our Leaders</a><span class="sep">·</span><a href="gallery.html">Gallery</a><span class="sep">·</span><a href="disclosure.html">Disclosure</a></div>
+  <b>Bal Jyoti Public School</b> · Lal Kuan, Ghaziabad · CBSE Affiliation No. 2130361
+</footer>
+
+
+<a class="whatsapp-fab" href="https://wa.me/919910363101?text=Hello%2C%20I%20am%20looking%20for%20admission%20information." target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp for admission enquiries" title="WhatsApp Us for Admission">
+  <span class="whatsapp-ping"></span>
+  <svg viewBox="0 0 32 32" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+    <path d="M16.004 3C9.377 3 4 8.373 4 15c0 2.386.7 4.607 1.908 6.472L4 29l7.72-1.874A11.94 11.94 0 0 0 16.004 27C22.63 27 28 21.627 28 15S22.63 3 16.004 3Zm.001 21.818c-1.99 0-3.85-.57-5.42-1.552l-.389-.232-4.58 1.112 1.13-4.463-.253-.399A9.77 9.77 0 0 1 5.2 15c0-5.965 4.84-10.818 10.805-10.818S26.809 9.035 26.809 15 21.97 24.818 16.005 24.818Zm5.61-8.15c-.307-.154-1.816-.897-2.098-.999-.281-.102-.486-.154-.69.154-.204.307-.79.998-.968 1.204-.178.205-.357.23-.664.077-.307-.154-1.297-.478-2.47-1.523-.913-.814-1.53-1.82-1.708-2.128-.178-.307-.019-.473.135-.626.139-.138.307-.358.46-.537.153-.18.204-.307.307-.512.102-.205.05-.384-.026-.538-.077-.154-.69-1.663-.945-2.278-.249-.6-.503-.518-.69-.527l-.588-.01c-.204 0-.537.077-.818.384-.281.307-1.073 1.05-1.073 2.56 0 1.512 1.098 2.972 1.251 3.177.153.205 2.163 3.303 5.242 4.632.733.317 1.305.506 1.75.647.735.234 1.404.201 1.933.122.59-.088 1.816-.742 2.073-1.459.256-.717.256-1.332.179-1.46-.077-.128-.281-.204-.588-.358Z"/>
+  </svg>
+</a>
+
+</body>
+</html>
