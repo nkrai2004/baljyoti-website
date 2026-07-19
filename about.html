@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>About Bal Jyoti Public School, Ghaziabad</title>
+<link rel="icon" type="image/png" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -54,7 +55,8 @@
     padding:14px 24px; max-width:1100px; margin:0 auto; gap:16px;
   }
   .brand{display:flex; align-items:center; gap:12px;}
-  .brand .mark{width:38px; height:38px; flex:none;}
+  .brand:hover .word{color:var(--maroon);}
+  .brand .mark{width:38px; height:38px; flex:none; object-fit:contain; border-radius:50%;}
   .brand .word{font-family:'Fraunces', serif; font-weight:700; font-size:1.02rem;}
   .brand .word span{display:block; font-family:'Source Sans 3',sans-serif; font-weight:600; font-size:.66rem; letter-spacing:.12em; color:var(--slate); text-transform:uppercase;}
   .back-link{
@@ -178,19 +180,69 @@
     .whatsapp-fab{ width:52px; height:52px; right:14px; bottom:14px; }
     .whatsapp-fab svg{ width:26px; height:26px; }
   }
+
+  /* ---- TOP ANNOUNCEMENT BANNER ---- */
+  .ann-bar{
+    background:var(--maroon); color:var(--white); text-align:center;
+    padding:11px 44px; font-size:.86rem; font-weight:600; position:relative; z-index:40;
+  }
+  .ann-bar-inner{display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; max-width:1100px; margin:0 auto;}
+  .ann-cta{background:var(--white); color:var(--maroon); padding:6px 16px; border-radius:999px; font-weight:700; font-size:.8rem; flex:none;}
+  .ann-cta:hover{background:#F3E4E6;}
+  .ann-close{
+    position:absolute; right:14px; top:50%; transform:translateY(-50%);
+    background:none; border:none; color:rgba(255,255,255,.8); font-size:1.2rem; cursor:pointer; line-height:1; padding:2px 8px;
+  }
+  .ann-close:hover{color:#fff;}
+  @media (max-width:560px){ .ann-bar{padding:10px 40px;} .ann-bar-inner{font-size:.8rem;} }
+
+  /* ---- ADMISSION POPUP ---- */
+  .admission-popup-overlay{
+    position:fixed; inset:0; background:rgba(26,26,26,.6); z-index:300;
+    display:none; align-items:center; justify-content:center; padding:20px;
+  }
+  .admission-popup-overlay.show{display:flex;}
+  .admission-popup{
+    background:var(--white); border-radius:20px; padding:36px; max-width:400px; width:100%;
+    text-align:center; box-shadow:0 30px 60px rgba(0,0,0,.35); position:relative;
+    animation:popIn .3s ease;
+  }
+  @keyframes popIn{ from{transform:scale(.92); opacity:0;} to{transform:scale(1); opacity:1;} }
+  .popup-close{
+    position:absolute; top:14px; right:14px; background:none; border:none; font-size:1.5rem;
+    color:var(--slate); cursor:pointer; line-height:1; padding:4px 9px; border-radius:50%;
+  }
+  .popup-close:hover{color:var(--white); background:var(--maroon);}
+  .popup-icon{
+    width:56px; height:56px; border-radius:50%; margin:0 auto 16px;
+    background:linear-gradient(135deg,var(--maroon),var(--flame));
+    display:flex; align-items:center; justify-content:center; font-size:1.6rem;
+  }
+  .admission-popup h3{font-size:1.25rem; margin-bottom:10px;}
+  .admission-popup p{color:var(--slate); font-size:.92rem; margin-bottom:24px;}
+  .popup-actions{display:flex; flex-direction:column; gap:10px;}
+  .popup-btn-primary{background:var(--maroon); color:var(--white); padding:12px 20px; border-radius:999px; font-weight:700; font-size:.92rem; display:block;}
+  .popup-btn-primary:hover{background:#57081A;}
+  .popup-btn-secondary{border:2px solid var(--ink); color:var(--ink); padding:10px 20px; border-radius:999px; font-weight:700; font-size:.9rem; display:block;}
+  .popup-btn-secondary:hover{background:var(--ink); color:var(--white);}
 </style>
 </head>
 <body>
+<div class="ann-bar" id="annBar">
+  <div class="ann-bar-inner">
+    <span>🎓 Admission Closing Soon — Limited Seats for 2026–27</span>
+    <a class="ann-cta" href="admission.html#apply">Apply Now</a>
+    <button class="ann-close" onclick="document.getElementById('annBar').style.display='none'" aria-label="Close banner">×</button>
+  </div>
+</div>
+
 
 <header class="site">
   <div class="nav-row">
-    <div class="brand">
-      <svg class="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M24 6c3 5-2 7-2 11a5 5 0 0 0 10 0c0-2-1-3-1-3 3 3 5 7 5 11 0 6.6-5.4 12-12 12S12 30.6 12 24c0-9 8-13 12-18Z" fill="#C8102E"/>
-        <path d="M8 34c4 3 8 4 16 4s12-1 16-4" stroke="#6E0B1E" stroke-width="3" stroke-linecap="round"/>
-      </svg>
+    <a class="brand" href="index.html" aria-label="Bal Jyoti Public School - Home">
+      <img class="mark" src="logo.png" alt="Bal Jyoti Public School logo">
       <div class="word">BAL JYOTI<span>Public School · Ghaziabad</span></div>
-    </div>
+    </a>
     <a class="back-link" href="index.html">← Back to Home</a>
   </div>
 </header>
@@ -199,7 +251,7 @@
   <div class="wrap inner">
     <div class="eyebrow">About Bal Jyoti Public School</div>
     <h1>Inspiring young minds, building bright futures.</h1>
-    <p>Inspiring Young Minds <span class="dot">•</span> Building Bright Futures <span class="dot">•</span> Since 1986</p>
+    <p>Inspiring Young Minds <span class="dot">•</span> Building Bright Futures <span class="dot">•</span> Since 1987</p>
   </div>
 </section>
 
@@ -207,12 +259,12 @@
   <div class="wrap">
     <div class="sec-head">
       <div class="eyebrow">Who We Are</div>
-      <h2>Inspiring Excellence Since 1986</h2>
+      <h2>Inspiring Excellence Since 1987</h2>
       <p class="tag">Providing quality education with strong values, academic excellence, and holistic development.</p>
     </div>
     <div class="who-grid">
       <div>
-        <p>For nearly four decades, Bal Jyoti Public School has been committed to providing quality education that nurtures confident learners, responsible citizens, and future leaders. Established in 1986, the school has earned the trust of thousands of families through its dedication to academic excellence, strong values, and holistic development.</p>
+        <p>For nearly four decades, Bal Jyoti Public School has been committed to providing quality education that nurtures confident learners, responsible citizens, and future leaders. Established in 1987, the school has earned the trust of thousands of families through its dedication to academic excellence, strong values, and holistic development.</p>
         <p>Affiliated with the Central Board of Secondary Education (CBSE), Bal Jyoti Public School offers education from Nursery to Class XII in a safe, inclusive, and stimulating environment where every child is encouraged to discover their unique potential.</p>
         <p>Our experienced team of 55+ dedicated educators believes every child learns differently. Through innovative teaching methods, personalized attention, and activity-based learning, we help students develop strong academic foundations along with creativity, communication, leadership, and life skills.</p>
         <p>Education at Bal Jyoti Public School extends beyond textbooks. Students actively participate in sports, cultural activities, science exhibitions, technology-enabled learning, environmental awareness programmes, and community service initiatives that prepare them for future success.</p>
@@ -225,7 +277,7 @@
           School at a Glance
         </h3>
         <ul class="fact-list">
-          <li><span>Established</span><b>1986</b></li>
+          <li><span>Established</span><b>1987</b></li>
           <li><span>Board</span><b>CBSE</b></li>
           <li><span>Classes</span><b>Nursery – XII</b></li>
           <li><span>Student Capacity</span><b>2,000+</b></li>
@@ -280,7 +332,7 @@
       <h2>Why Choose Bal Jyoti Public School?</h2>
     </div>
     <div class="trust-grid">
-      <div class="trust-item"><span class="check">✓</span> Established Legacy Since 1986</div>
+      <div class="trust-item"><span class="check">✓</span> Established Legacy Since 1987</div>
       <div class="trust-item"><span class="check">✓</span> CBSE Curriculum</div>
       <div class="trust-item"><span class="check">✓</span> Experienced &amp; Caring Faculty</div>
       <div class="trust-item"><span class="check">✓</span> Smart Classrooms</div>
@@ -314,6 +366,34 @@
     <path d="M16.004 3C9.377 3 4 8.373 4 15c0 2.386.7 4.607 1.908 6.472L4 29l7.72-1.874A11.94 11.94 0 0 0 16.004 27C22.63 27 28 21.627 28 15S22.63 3 16.004 3Zm.001 21.818c-1.99 0-3.85-.57-5.42-1.552l-.389-.232-4.58 1.112 1.13-4.463-.253-.399A9.77 9.77 0 0 1 5.2 15c0-5.965 4.84-10.818 10.805-10.818S26.809 9.035 26.809 15 21.97 24.818 16.005 24.818Zm5.61-8.15c-.307-.154-1.816-.897-2.098-.999-.281-.102-.486-.154-.69.154-.204.307-.79.998-.968 1.204-.178.205-.357.23-.664.077-.307-.154-1.297-.478-2.47-1.523-.913-.814-1.53-1.82-1.708-2.128-.178-.307-.019-.473.135-.626.139-.138.307-.358.46-.537.153-.18.204-.307.307-.512.102-.205.05-.384-.026-.538-.077-.154-.69-1.663-.945-2.278-.249-.6-.503-.518-.69-.527l-.588-.01c-.204 0-.537.077-.818.384-.281.307-1.073 1.05-1.073 2.56 0 1.512 1.098 2.972 1.251 3.177.153.205 2.163 3.303 5.242 4.632.733.317 1.305.506 1.75.647.735.234 1.404.201 1.933.122.59-.088 1.816-.742 2.073-1.459.256-.717.256-1.332.179-1.46-.077-.128-.281-.204-.588-.358Z"/>
   </svg>
 </a>
+
+
+<div class="admission-popup-overlay" id="admissionPopup">
+  <div class="admission-popup">
+    <button class="popup-close" onclick="document.getElementById('admissionPopup').classList.remove('show')" aria-label="Close">×</button>
+    <div class="popup-icon">🎓</div>
+    <h3>Admissions Open for 2026–27</h3>
+    <p>Nursery to Class XII — seats are limited this session. Start your child's application today.</p>
+    <div class="popup-actions">
+      <a class="popup-btn-primary" href="admission.html#apply">Apply Now</a>
+      <a class="popup-btn-secondary" href="https://wa.me/919910363101?text=Hello%2C%20I%20am%20looking%20for%20admission%20information." target="_blank" rel="noopener">WhatsApp Us</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    var alreadyShown = false;
+    try{ alreadyShown = sessionStorage.getItem('bjps_popup_shown'); }catch(e){}
+    if(!alreadyShown){
+      setTimeout(function(){
+        var el = document.getElementById('admissionPopup');
+        if(el){ el.classList.add('show'); }
+        try{ sessionStorage.setItem('bjps_popup_shown','1'); }catch(e){}
+      }, 4000);
+    }
+  })();
+</script>
 
 </body>
 </html>
