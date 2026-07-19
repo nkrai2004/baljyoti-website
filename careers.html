@@ -59,17 +59,28 @@
   .brand .mark{width:38px; height:38px; flex:none; object-fit:contain; border-radius:50%;}
   .brand .word{font-family:'Fraunces', serif; font-weight:700; font-size:1.02rem;}
   .brand .word span{display:block; font-family:'Source Sans 3',sans-serif; font-weight:600; font-size:.66rem; letter-spacing:.12em; color:var(--slate); text-transform:uppercase;}
-  .nav-actions{display:flex; gap:12px; align-items:center;}
-  .back-link{
-    display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:.9rem;
-    border:2px solid var(--ink); padding:9px 18px; border-radius:999px;
-  }
-  .back-link:hover{background:var(--ink); color:var(--white);}
+  nav.links{display:flex; gap:22px; align-items:center; flex-wrap:wrap; justify-content:flex-end;}
+  nav.links a{font-weight:600; font-size:.9rem; color:var(--ink); position:relative; padding:4px 0; white-space:nowrap;}
+  nav.links a::after{content:""; position:absolute; left:0; bottom:-2px; width:0; height:2px; background:var(--flame-deep); transition:width .25s ease;}
+  nav.links a:hover::after{width:100%;}
   .nav-cta{
-    background:var(--maroon); color:var(--white); font-weight:700; font-size:.9rem;
-    padding:9px 18px; border-radius:999px;
+    background:var(--maroon); color:var(--white)!important; font-weight:700;
+    padding:9px 18px; border-radius:999px; font-size:.86rem!important;
   }
-  .nav-cta:hover{background:#57081A;}
+  .nav-cta::after{display:none;}
+  .burger{display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:6px;}
+  .burger span{width:24px; height:2px; background:var(--ink); display:block;}
+
+  @media (max-width:940px){
+    nav.links{
+      position:fixed; top:70px; left:0; right:0; bottom:0;
+      background:var(--paper); flex-direction:column; align-items:flex-start;
+      padding:30px 24px; gap:22px; transform:translateX(100%);
+      transition:transform .3s ease; overflow-y:auto; justify-content:flex-start;
+    }
+    nav.links.open{transform:translateX(0);}
+    .burger{display:flex;}
+  }
 
   /* ---- HERO ---- */
   .hero{
@@ -286,10 +297,21 @@
       <img class="mark" src="logo.png" alt="Bal Jyoti Public School logo">
       <div class="word">BAL JYOTI<span>Public School · Ghaziabad</span></div>
     </a>
-    <div class="nav-actions">
-      <a class="back-link" href="index.html">← Back to Home</a>
-      <a class="nav-cta" href="#apply">Send Your Resume</a>
-    </div>
+    <button class="burger" aria-label="Menu" onclick="document.getElementById('nav').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="links" id="nav">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="index.html#academics">Academics</a>
+      <a href="index.html#facilities">Facilities</a>
+      <a href="admission.html">Admission</a>
+      <a href="careers.html">Careers</a>
+      <a href="leaders.html">Our Leaders</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="index.html#contact">Contact</a>
+      <a href="admission.html#apply" class="nav-cta">Apply Now</a>
+    </nav>
   </div>
 </header>
 
