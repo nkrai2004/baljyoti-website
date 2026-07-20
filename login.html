@@ -373,8 +373,14 @@
   <div class="wrap" style="max-width:480px;">
     <div class="panel" style="background:var(--white); border:1px solid var(--line); border-radius:18px; padding:32px;">
       <div style="display:flex; gap:8px; margin-bottom:26px; background:var(--paper-deep); border-radius:999px; padding:5px;">
-        <button type="button" class="role-tab active" data-role="staff" style="flex:1; border:none; background:var(--maroon); color:var(--white); font-weight:700; font-size:.85rem; padding:10px 0; border-radius:999px; cursor:pointer;">Staff / Teacher</button>
-        <button type="button" class="role-tab" data-role="parent" style="flex:1; border:none; background:transparent; color:var(--ink); font-weight:700; font-size:.85rem; padding:10px 0; border-radius:999px; cursor:pointer;">Parent / Student</button>
+        <div class="g_id_signin"
+     data-type="standard"
+     data-theme="filled_blue"
+     data-size="large"
+     data-shape="pill"
+     data-text="signin_with"
+     data-logo_alignment="left">
+</div><button type="button" class="role-tab" data-role="parent" style="flex:1; border:none; background:transparent; color:var(--ink); font-weight:700; font-size:.85rem; padding:10px 0; border-radius:999px; cursor:pointer;">Parent / Student</button>
       </div>
 
       <div id="staffLogin">
@@ -449,6 +455,13 @@
     }
   })();
 </script>
-
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+  <div id="g_id_onload"
+     data-client_id="449862246796-bm23j5sna6gk1uj3o0krtoqlsfjmfq44.apps.googleusercontent.com"
+     data-context="signin"
+     data-ux_mode="popup"
+     data-callback="handleCredentialResponse"
+     data-auto_prompt="false">
+</div>
 </body>
 </html>
