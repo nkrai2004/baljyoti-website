@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>BJPS OS Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+
+--maroon:#6E0B1E;
+--red:#C8102E;
+--dark:#1A1A1A;
+--light:#F7EEEF;
+--white:#ffffff;
+--gray:#667085;
+--border:#ececec;
+
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+
+font-family:'Source Sans 3',sans-serif;
+background:#fafafa;
+color:#222;
+
+}
+
+header{
+
+position:sticky;
+top:0;
+z-index:999;
+
+background:rgba(255,255,255,.95);
+backdrop-filter:blur(8px);
+
+border-bottom:1px solid #eee;
+
+}
+
+.nav{
+
+max-width:1400px;
+margin:auto;
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+padding:15px 30px;
+
+}
+
+.logo{
+
+display:flex;
+align-items:center;
+gap:15px;
+
+}
+
+.logo img{
+
+width:55px;
+
+}
+
+.logo h2{
+
+font-family:Fraunces;
+font-size:22px;
+
+}
+
+.logo small{
+
+display:block;
+font-family:'Source Sans 3';
+font-size:12px;
+letter-spacing:2px;
+color:#777;
+
+}
+
+.menu{
+
+display:flex;
+gap:25px;
+
+}
+
+.menu a{
+
+text-decoration:none;
+color:#333;
+font-weight:600;
+
+}
+
+.menu a:hover{
+
+color:var(--red);
+
+}
+
+.profile{
+
+background:var(--maroon);
+padding:10px 18px;
+border-radius:40px;
+color:white;
+
+}
+
+.hero{
+
+padding:50px;
+
+background:linear-gradient(135deg,#1a1a1a,#6E0B1E);
+
+color:white;
+
+}
+
+.hero h1{
+
+font-family:Fraunces;
+font-size:42px;
+margin-bottom:15px;
+
+}
+
+.hero p{
+
+font-size:18px;
+opacity:.85;
+
+}
+
+.container{
+
+max-width:1400px;
+margin:auto;
+padding:40px;
+
+}
+
+.cards{
+
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:25px;
+
+}
+
+.card{
+
+background:white;
+
+padding:30px;
+
+border-radius:18px;
+
+box-shadow:0 10px 25px rgba(0,0,0,.06);
+
+transition:.3s;
+
+}
+
+.card:hover{
+
+transform:translateY(-6px);
+
+}
+
+.card h3{
+
+font-size:14px;
+color:#777;
+text-transform:uppercase;
+
+}
+
+.card h2{
+
+margin-top:10px;
+font-size:36px;
+font-family:Fraunces;
+color:var(--maroon);
+
+}
+
+.grid{
+
+display:grid;
+
+grid-template-columns:2fr 1fr;
+
+gap:25px;
+
+margin-top:35px;
+
+}
+
+.panel{
+
+background:white;
+
+padding:30px;
+
+border-radius:18px;
+
+box-shadow:0 10px 25px rgba(0,0,0,.06);
+
+}
+
+.panel h2{
+
+font-family:Fraunces;
+margin-bottom:20px;
+
+}
+
+table{
+
+width:100%;
+border-collapse:collapse;
+
+}
+
+th,td{
+
+padding:14px;
+
+border-bottom:1px solid #eee;
+
+text-align:left;
+
+}
+
+th{
+
+background:#fafafa;
+
+}
+
+.notice{
+
+padding:15px;
+border-left:4px solid var(--red);
+background:#fff7f7;
+margin-bottom:15px;
+
+}
+
+.btn{
+
+display:inline-block;
+padding:12px 24px;
+background:var(--maroon);
+color:white;
+text-decoration:none;
+border-radius:50px;
+margin-top:15px;
+
+}
+
+footer{
+
+margin-top:60px;
+background:#111;
+color:#aaa;
+text-align:center;
+padding:25px;
+
+}
+
+@media(max-width:900px){
+
+.grid{
+
+grid-template-columns:1fr;
+
+}
+
+.menu{
+
+display:none;
+
+}
+
+.hero{
+
+padding:35px;
+
+}
+
+.container{
+
+padding:20px;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="nav">
+
+<div class="logo">
+
+<img src="logo.png">
+
+<div>
+
+<h2>Bal Jyoti Public School</h2>
+
+<small>BJPS OPERATING SYSTEM</small>
+
+</div>
+
+</div>
+
+<div class="menu">
+
+<a href="#">Dashboard</a>
+
+<a href="#">Students</a>
+
+<a href="#">Teachers</a>
+
+<a href="#">Fees</a>
+
+<a href="#">Attendance</a>
+
+<a href="#">Reports</a>
+
+</div>
+
+<div class="profile">
+
+Administrator
+
+</div>
+
+</div>
+
+</header>
+
+<section class="hero">
+
+<h1>School Dashboard</h1>
+
+<p>Welcome to Bal Jyoti Public School Operating System</p>
+
+</section>
+
+<div class="container">
+
+<div class="cards">
+
+<div class="card">
+
+<h3>Total Students</h3>
+
+<h2>524</h2>
+
+</div>
+
+<div class="card">
+
+<h3>Teachers</h3>
+
+<h2>38</h2>
+
+</div>
+
+<div class="card">
+
+<h3>Today's Attendance</h3>
+
+<h2>96%</h2>
+
+</div>
+
+<div class="card">
+
+<h3>Fee Collection</h3>
+
+<h2>₹4.2L</h2>
+
+</div>
+
+</div>
+
+<div class="grid">
+
+<div class="panel">
+
+<h2>Recent Admissions</h2>
+
+<table>
+
+<tr>
+
+<th>Name</th>
+
+<th>Class</th>
+
+<th>Status</th>
+
+</tr>
+
+<tr>
+
+<td>Aarav Sharma</td>
+
+<td>VI</td>
+
+<td>Approved</td>
+
+</tr>
+
+<tr>
+
+<td>Riya Singh</td>
+
+<td>IX</td>
+
+<td>Pending</td>
+
+</tr>
+
+<tr>
+
+<td>Mohit Kumar</td>
+
+<td>XI</td>
+
+<td>Documents Pending</td>
+
+</tr>
+
+</table>
+
+</div>
+
+<div class="panel">
+
+<h2>Announcements</h2>
+
+<div class="notice">
+
+🎓 Admissions Open 2026-27
+
+</div>
+
+<div class="notice">
+
+📚 PTM on Saturday
+
+</div>
+
+<div class="notice">
+
+🏆 Sports Week Begins
+
+</div>
+
+<a href="#" class="btn">
+
+View All
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+<footer>
+
+© 2026 Bal Jyoti Public School • BJPS-OS
+
+</footer>
+
+</body>
+</html>
