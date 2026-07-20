@@ -145,13 +145,22 @@ color:#999;
 
 <p>Staff & Teachers Portal</p>
 
-<button class="google">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
-<img src="https://developers.google.com/identity/images/g-logo.png">
+<div id="g_id_onload"
+     data-client_id="449862246796-bm23j5sna6gk1uj3o0krtoqlsfjmfq44.apps.googleusercontent.com"
+     data-context="signin"
+     data-ux_mode="popup"
+     data-callback="handleCredentialResponse">
+</div>
 
-Continue with Google
-
-</button>
+<div class="g_id_signin"
+     data-type="standard"
+     data-theme="filled_blue"
+     data-size="large"
+     data-text="continue_with"
+     data-shape="pill">
+</div>
 
 <div class="note">
 
