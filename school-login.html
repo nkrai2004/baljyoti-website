@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     
 <title>BJPS-OS Staff Login</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -161,6 +162,16 @@ color:#999;
      data-text="continue_with"
      data-shape="pill">
 </div>
+     <script>
+function handleCredentialResponse(response) {
+
+    // For now just verify that Google returned a credential
+    console.log(response);
+
+    alert("Google Login Successful!");
+
+}
+</script>
 
 <div class="note">
 
