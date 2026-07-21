@@ -1,510 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>BJPS OS Dashboard</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BJPS-OS Universal Demo Form</title>
 <style>
-
-:root{
-
---maroon:#6E0B1E;
---red:#C8102E;
---dark:#1A1A1A;
---light:#F7EEEF;
---white:#ffffff;
---gray:#667085;
---border:#ececec;
-
-}
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
-body{
-
-font-family:'Source Sans 3',sans-serif;
-background:#fafafa;
-color:#222;
-
-}
-
-header{
-
-position:sticky;
-top:0;
-z-index:999;
-
-background:rgba(255,255,255,.95);
-backdrop-filter:blur(8px);
-
-border-bottom:1px solid #eee;
-
-}
-
-.nav{
-
-max-width:1400px;
-margin:auto;
-
-display:flex;
-justify-content:space-between;
-align-items:center;
-
-padding:15px 30px;
-
-}
-
-.logo{
-
-display:flex;
-align-items:center;
-gap:15px;
-
-}
-
-.logo img{
-
-width:55px;
-
-}
-
-.logo h2{
-
-font-family:Fraunces;
-font-size:22px;
-
-}
-
-.logo small{
-
-display:block;
-font-family:'Source Sans 3';
-font-size:12px;
-letter-spacing:2px;
-color:#777;
-
-}
-
-.menu{
-
-display:flex;
-gap:25px;
-
-}
-
-.menu a{
-
-text-decoration:none;
-color:#333;
-font-weight:600;
-
-}
-
-.menu a:hover{
-
-color:var(--red);
-
-}
-
-.profile{
-
-background:var(--maroon);
-padding:10px 18px;
-border-radius:40px;
-color:white;
-
-}
-
-.hero{
-
-padding:50px;
-
-background:linear-gradient(135deg,#1a1a1a,#6E0B1E);
-
-color:white;
-
-}
-
-.hero h1{
-
-font-family:Fraunces;
-font-size:42px;
-margin-bottom:15px;
-
-}
-
-.hero p{
-
-font-size:18px;
-opacity:.85;
-
-}
-
-.container{
-
-max-width:1400px;
-margin:auto;
-padding:40px;
-
-}
-
-.cards{
-
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:25px;
-
-}
-
-.card{
-
-background:white;
-
-padding:30px;
-
-border-radius:18px;
-
-box-shadow:0 10px 25px rgba(0,0,0,.06);
-
-transition:.3s;
-
-}
-
-.card:hover{
-
-transform:translateY(-6px);
-
-}
-
-.card h3{
-
-font-size:14px;
-color:#777;
-text-transform:uppercase;
-
-}
-
-.card h2{
-
-margin-top:10px;
-font-size:36px;
-font-family:Fraunces;
-color:var(--maroon);
-
-}
-
-.grid{
-
-display:grid;
-
-grid-template-columns:2fr 1fr;
-
-gap:25px;
-
-margin-top:35px;
-
-}
-
-.panel{
-
-background:white;
-
-padding:30px;
-
-border-radius:18px;
-
-box-shadow:0 10px 25px rgba(0,0,0,.06);
-
-}
-
-.panel h2{
-
-font-family:Fraunces;
-margin-bottom:20px;
-
-}
-
-table{
-
-width:100%;
-border-collapse:collapse;
-
-}
-
-th,td{
-
-padding:14px;
-
-border-bottom:1px solid #eee;
-
-text-align:left;
-
-}
-
-th{
-
-background:#fafafa;
-
-}
-
-.notice{
-
-padding:15px;
-border-left:4px solid var(--red);
-background:#fff7f7;
-margin-bottom:15px;
-
-}
-
-.btn{
-
-display:inline-block;
-padding:12px 24px;
-background:var(--maroon);
-color:white;
-text-decoration:none;
-border-radius:50px;
-margin-top:15px;
-
-}
-
-footer{
-
-margin-top:60px;
-background:#111;
-color:#aaa;
-text-align:center;
-padding:25px;
-
-}
-
-@media(max-width:900px){
-
-.grid{
-
-grid-template-columns:1fr;
-
-}
-
-.menu{
-
-display:none;
-
-}
-
-.hero{
-
-padding:35px;
-
-}
-
-.container{
-
-padding:20px;
-
-}
-
-}
-
+body{font-family:Arial,sans-serif;background:#eef4fb;margin:0}
+header{background:#0b4ea2;color:#fff;padding:18px;text-align:center}
+.container{max-width:1000px;margin:20px auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+h2{color:#0b4ea2;border-bottom:2px solid #ddd;padding-bottom:6px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.full{grid-column:1/-1}
+label{display:block;font-weight:bold;margin-bottom:4px}
+input,select,textarea{width:100%;padding:10px;border:1px solid #bbb;border-radius:6px;box-sizing:border-box}
+textarea{height:80px}
+.radio-group,.check-group{display:flex;gap:15px;flex-wrap:wrap}
+button{padding:10px 18px;border:none;border-radius:6px;background:#0b4ea2;color:#fff;cursor:pointer}
+button:hover{background:#083b7a}
+.preview img,.preview video{max-width:200px;margin-top:8px}
+audio,video{width:100%}
+progress,meter{width:100%}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #ccc;padding:8px}
+footer{text-align:center;color:#666;padding:20px}
 </style>
-
 </head>
-
 <body>
-
 <header>
-
-<div class="nav">
-
-<div class="logo">
-
-<img src="logo.png">
-
-<div>
-
-<h2>Bal Jyoti Public School</h2>
-
-<small>BJPS OPERATING SYSTEM</small>
-
-</div>
-
-</div>
-
-<div class="menu">
-
-<a href="#">Dashboard</a>
-
-<a href="#">Students</a>
-
-<a href="#">Teachers</a>
-
-<a href="#">Fees</a>
-
-<a href="#">Attendance</a>
-
-<a href="#">Reports</a>
-
-</div>
-
-<div class="profile">
-
-Administrator
-
-</div>
-
-</div>
-
+<h1>Bal Jyoti Public School</h1>
+<p>BJPS-OS Universal HTML Demo Form</p>
 </header>
 
-<section class="hero">
-
-<h1>School Dashboard</h1>
-
-<p>Welcome to Bal Jyoti Public School Operating System</p>
-
-</section>
-
 <div class="container">
+<form id="demoForm">
 
-<div class="cards">
-
-<div class="card">
-
-<h3>Total Students</h3>
-
-<h2>524</h2>
-
-</div>
-
-<div class="card">
-
-<h3>Teachers</h3>
-
-<h2>38</h2>
-
-</div>
-
-<div class="card">
-
-<h3>Today's Attendance</h3>
-
-<h2>96%</h2>
-
-</div>
-
-<div class="card">
-
-<h3>Fee Collection</h3>
-
-<h2>₹4.2L</h2>
-
-</div>
-
-</div>
-
+<h2>Text Inputs</h2>
 <div class="grid">
+<div><label>Text</label><input type="text"></div>
+<div><label>Password</label><input type="password"></div>
+<div><label>Email</label><input type="email"></div>
+<div><label>Telephone</label><input type="tel"></div>
+<div><label>Number</label><input type="number"></div>
+<div><label>Search</label><input type="search"></div>
+<div><label>URL</label><input type="url"></div>
+<div><label>Hidden Field</label><input type="hidden" value="BJPS001"><input value="Hidden value created" disabled></div>
+<div class="full"><label>Textarea</label><textarea></textarea></div>
+</div>
 
-<div class="panel">
+<h2>Date & Time</h2>
+<div class="grid">
+<div><label>Date</label><input type="date"></div>
+<div><label>Time</label><input type="time"></div>
+<div><label>Date Time</label><input type="datetime-local"></div>
+<div><label>Month</label><input type="month"></div>
+<div><label>Week</label><input type="week"></div>
+<div><label>Color</label><input type="color"></div>
+</div>
 
-<h2>Recent Admissions</h2>
+<h2>Selection Controls</h2>
+<div class="grid">
+<div>
+<label>Dropdown</label>
+<select>
+<option>Nursery</option><option>LKG</option><option>UKG</option>
+<option>I</option><option>II</option><option>XII</option>
+</select>
+</div>
 
+<div>
+<label>Multi Select</label>
+<select multiple size="5">
+<option>Cricket</option>
+<option>Football</option>
+<option>Chess</option>
+<option>Basketball</option>
+<option>Music</option>
+</select>
+</div>
+
+<div>
+<label>Radio Buttons</label>
+<div class="radio-group">
+<label><input type="radio" name="g"> Male</label>
+<label><input type="radio" name="g"> Female</label>
+<label><input type="radio" name="g"> Other</label>
+</div>
+</div>
+
+<div>
+<label>Checkboxes</label>
+<div class="check-group">
+<label><input type="checkbox"> Aadhaar</label>
+<label><input type="checkbox"> TC</label>
+<label><input type="checkbox"> Photo</label>
+<label><input type="checkbox"> Bus</label>
+</div>
+</div>
+</div>
+
+<h2>Range, Meter & Progress</h2>
+<div class="grid">
+<div><label>Range Slider</label><input type="range" min="0" max="100"></div>
+<div><label>Progress</label><progress value="60" max="100"></progress></div>
+<div class="full"><label>Meter</label><meter min="0" max="100" value="75"></meter></div>
+</div>
+
+<h2>Media Upload</h2>
+<div class="grid">
+<div><label>Image Upload</label><input type="file" accept="image/*"></div>
+<div><label>Camera Capture</label><input type="file" accept="image/*" capture="environment"></div>
+<div><label>Audio Upload</label><input type="file" accept="audio/*"></div>
+<div><label>Audio Record</label><input type="file" accept="audio/*" capture></div>
+<div><label>Video Upload</label><input type="file" accept="video/*"></div>
+<div><label>Video Capture</label><input type="file" accept="video/*" capture></div>
+<div><label>PDF Upload</label><input type="file" accept=".pdf"></div>
+<div><label>Word Upload</label><input type="file" accept=".doc,.docx"></div>
+<div><label>Excel Upload</label><input type="file" accept=".xls,.xlsx"></div>
+<div><label>ZIP Upload</label><input type="file" accept=".zip"></div>
+<div class="full"><label>Multiple Files</label><input type="file" multiple></div>
+</div>
+
+<h2>HTML Elements</h2>
 <table>
-
-<tr>
-
-<th>Name</th>
-
-<th>Class</th>
-
-<th>Status</th>
-
-</tr>
-
-<tr>
-
-<td>Aarav Sharma</td>
-
-<td>VI</td>
-
-<td>Approved</td>
-
-</tr>
-
-<tr>
-
-<td>Riya Singh</td>
-
-<td>IX</td>
-
-<td>Pending</td>
-
-</tr>
-
-<tr>
-
-<td>Mohit Kumar</td>
-
-<td>XI</td>
-
-<td>Documents Pending</td>
-
-</tr>
-
+<tr><th>Field</th><th>Example</th></tr>
+<tr><td>Status</td><td>Active</td></tr>
+<tr><td>School</td><td>Bal Jyoti Public School</td></tr>
 </table>
 
+<h2>Media Players</h2>
+<label>Audio Player</label>
+<audio controls></audio>
+<label>Video Player</label>
+<video controls></video>
+
+<h2>Buttons</h2>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<button type="submit">Submit</button>
+<button type="reset">Reset</button>
+<button type="button" onclick="window.print()">Print</button>
+<button type="button" onclick="alert('Save Draft Placeholder')">Save Draft</button>
 </div>
 
-<div class="panel">
-
-<h2>Announcements</h2>
-
-<div class="notice">
-
-🎓 Admissions Open 2026-27
-
-</div>
-
-<div class="notice">
-
-📚 PTM on Saturday
-
-</div>
-
-<div class="notice">
-
-🏆 Sports Week Begins
-
-</div>
-
-<a href="#" class="btn">
-
-View All
-
-</a>
-
-</div>
-
-</div>
-
+</form>
 </div>
 
 <footer>
-
-© 2026 Bal Jyoti Public School • BJPS-OS
-
+Lesson 1 Demo • Google Sheets integration will be added in Lesson 2.
 </footer>
+
+<script>
+document.getElementById('demoForm').addEventListener('submit',function(e){
+e.preventDefault();
+alert('Form submitted successfully!\\n\\nNext lesson: Send this data to Google Sheets.');
+});
+</script>
 
 </body>
 </html>
