@@ -1,0 +1,1 @@
+function handleCredentialResponse(r){const p=JSON.parse(atob(r.credential.split('.')[1]));if(!p.email.endsWith('@baljyoti.com')){document.getElementById('status').innerHTML='Access denied';return;}window.location='dashboard.html';}
