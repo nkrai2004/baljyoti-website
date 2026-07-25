@@ -31,18 +31,30 @@
 
     </div>
 
-    <script>
+   <script>
 
-        document.getElementById("userName").innerHTML =
-            sessionStorage.getItem("userName");
+// Check if user is logged in
+const userName = sessionStorage.getItem("userName");
 
-        document.getElementById("userRole").innerHTML =
-            sessionStorage.getItem("userRole");
+if (!userName) {
 
-        document.getElementById("userEmail").innerHTML =
-            sessionStorage.getItem("userEmail");
+    // No login found
+    window.location.href = "index.html";
 
-    </script>
+} else {
+
+    // Display user details
+    document.getElementById("userName").innerHTML = userName;
+
+    document.getElementById("userRole").innerHTML =
+        sessionStorage.getItem("userRole");
+
+    document.getElementById("userEmail").innerHTML =
+        sessionStorage.getItem("userEmail");
+
+}
+
+</script>
 
 </body>
 
