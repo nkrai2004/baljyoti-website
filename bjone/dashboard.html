@@ -1,61 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>BJ ONE Dashboard</title>
 
     <link rel="stylesheet" href="css/style.css">
 
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <style>
+
+        body{
+            margin:0;
+            font-family:Arial,Helvetica,sans-serif;
+            background:#f4f6f9;
+        }
+
+        .header{
+            background:#0d47a1;
+            color:white;
+            padding:15px 30px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+
+        .container{
+            max-width:900px;
+            margin:40px auto;
+            background:white;
+            border-radius:12px;
+            padding:30px;
+            box-shadow:0 5px 20px rgba(0,0,0,.1);
+        }
+
+        .profile{
+            text-align:center;
+        }
+
+        .profile img{
+            width:90px;
+            margin-bottom:15px;
+        }
+
+        h1{
+            margin-bottom:5px;
+        }
+
+        p{
+            color:#666;
+            margin:6px;
+        }
+
+        .cards{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+            gap:20px;
+            margin-top:40px;
+        }
+
+        .card{
+            background:#f8f9fa;
+            padding:25px;
+            border-radius:10px;
+            text-align:center;
+            font-size:18px;
+            cursor:pointer;
+            transition:.3s;
+        }
+
+        .card:hover{
+            background:#e3f2fd;
+        }
+
+        button{
+
+            background:#d32f2f;
+            color:white;
+            border:none;
+            padding:10px 20px;
+            border-radius:6px;
+            cursor:pointer;
+
+        }
+
+        button:hover{
+
+            background:#b71c1c;
+
+        }
+
+    </style>
+
 </head>
 
 <body>
 
-    <div class="card">
+<div class="header">
 
-        <img src="../logo.png" class="logo">
+    <h2>BJ ONE</h2>
 
-        <h1>Welcome to BJ ONE</h1>
+    <button onclick="logout()">Logout</button>
 
-        <hr>
+</div>
 
-        <h2 id="userName">Loading...</h2>
+<div class="container">
 
-        <p id="userRole">Loading...</p>
+    <div class="profile">
 
-        <p id="userEmail">Loading...</p>
+        <img src="../logo.png">
+
+        <h1 id="userName">Loading...</h1>
+
+        <p id="userRole"></p>
+
+        <p id="userEmail"></p>
 
     </div>
 
-   <script>
+    <div class="cards">
 
-// Check if user is logged in
-const userName = sessionStorage.getItem("userName");
+        <div class="card">
+            👨‍🎓 Students
+        </div>
 
-if (!userName) {
+        <div class="card">
+            👩‍🏫 Teachers
+        </div>
 
-    // No login found
-    window.location.href = "index.html";
+        <div class="card">
+            💰 Fees
+        </div>
 
-} else {
+        <div class="card">
+            🚌 Transport
+        </div>
 
-    // Display user details
-    document.getElementById("userName").innerHTML = userName;
+        <div class="card">
+            📚 Academics
+        </div>
 
-    document.getElementById("userRole").innerHTML =
-        sessionStorage.getItem("userRole");
+        <div class="card">
+            ⚙ Settings
+        </div>
 
-    document.getElementById("userEmail").innerHTML =
-        sessionStorage.getItem("userEmail");
+    </div>
+
+</div>
+
+<script>
+
+// Check Login
+
+const userName=sessionStorage.getItem("userName");
+
+if(!userName){
+
+    window.location.href="index.html";
+
+}
+
+// Show User Details
+
+document.getElementById("userName").innerHTML=sessionStorage.getItem("userName");
+
+document.getElementById("userRole").innerHTML=sessionStorage.getItem("userRole");
+
+document.getElementById("userEmail").innerHTML=sessionStorage.getItem("userEmail");
+
+// Logout
+
+function logout(){
+
+    sessionStorage.clear();
+
+    if(window.google && google.accounts && google.accounts.id){
+
+        google.accounts.id.disableAutoSelect();
+
+    }
+
+    window.location.href="index.html";
 
 }
 
 </script>
 
 </body>
-
 </html>
