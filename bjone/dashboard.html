@@ -1,1 +1,49 @@
-<html><body><h1>BJ ONE Dashboard</h1></body></html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BJ ONE Dashboard</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+    <div class="card">
+
+        <img src="../logo.png" class="logo">
+
+        <h1>Welcome to BJ ONE</h1>
+
+        <hr>
+
+        <h2 id="userName">Loading...</h2>
+
+        <p id="userRole">Loading...</p>
+
+        <p id="userEmail">Loading...</p>
+
+    </div>
+
+    <script>
+
+        document.getElementById("userName").innerHTML =
+            sessionStorage.getItem("userName");
+
+        document.getElementById("userRole").innerHTML =
+            sessionStorage.getItem("userRole");
+
+        document.getElementById("userEmail").innerHTML =
+            sessionStorage.getItem("userEmail");
+
+    </script>
+
+</body>
+
+</html>
