@@ -1,10 +1,20 @@
+<!--
+=========================================================
+BJ ONE - Bal Jyoti One ERP
+File        : app.html
+Version     : v0.0.9
+Date        : 26-Jul-2026
+Time        : 10:08 IST
+Author      : ChatGPT + Nishant Rai
+Description : Main Application Shell with Auto Dashboard
+=========================================================
+-->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BJ ONE</title>
+<title>BJ ONE ERP</title>
 
 <style>
 
@@ -18,12 +28,13 @@ font-family:Arial,Helvetica,sans-serif;
 body{
 background:#f4f6f9;
 height:100vh;
+overflow:hidden;
 }
 
 .header{
 height:70px;
-background:#0d47a1;
-color:white;
+background:#0D47A1;
+color:#fff;
 display:flex;
 justify-content:space-between;
 align-items:center;
@@ -57,7 +68,7 @@ height:calc(100vh - 70px);
 
 .sidebar{
 width:250px;
-background:white;
+background:#fff;
 border-right:1px solid #ddd;
 padding:20px;
 overflow-y:auto;
@@ -67,6 +78,7 @@ overflow-y:auto;
 flex:1;
 padding:25px;
 overflow:auto;
+background:#f4f6f9;
 }
 
 .menu-item{
@@ -79,12 +91,12 @@ transition:.2s;
 }
 
 .menu-item:hover{
-background:#e3f2fd;
+background:#E3F2FD;
 }
 
 .menu-item.active{
-background:#0d47a1;
-color:white;
+background:#0D47A1;
+color:#fff;
 font-weight:bold;
 }
 
@@ -97,9 +109,7 @@ font-weight:bold;
 <div class="header">
 
 <div class="logo">
-
-BJ ONE
-
+BJ ONE ERP
 </div>
 
 <div class="user">
@@ -107,9 +117,7 @@ BJ ONE
 <span id="userName"></span>
 
 <button class="logout" onclick="logout()">
-
 Logout
-
 </button>
 
 </div>
@@ -130,9 +138,7 @@ Logout
 
 <div class="content" id="content">
 
-<h2>Welcome</h2>
-
-<p>Select a module from the menu.</p>
+Loading Dashboard...
 
 </div>
 
@@ -140,30 +146,21 @@ Logout
 
 <script>
 
-//==============================
-// Login Check
-//==============================
+/********************************************************
+Version : v0.0.9
+********************************************************/
 
 if(!sessionStorage.getItem("userName")){
-window.location.href="index.html";
+location.href="index.html";
 }
 
-//==============================
-// Show User
-//==============================
-
-document.getElementById("userName").innerHTML =
+document.getElementById("userName").innerHTML=
 sessionStorage.getItem("userName");
 
-//==============================
-// Modules
-//==============================
+const modules=
+JSON.parse(sessionStorage.getItem("userModules"))||[];
 
-const modules =
-JSON.parse(sessionStorage.getItem("userModules")) || [];
-
-const icons = {
-
+const icons={
 Dashboard:"🏠",
 Students:"👨‍🎓",
 Teachers:"👩‍🏫",
@@ -172,20 +169,19 @@ Transport:"🚌",
 Reports:"📊",
 Academics:"📚",
 Settings:"⚙"
-
 };
 
-const menu = document.getElementById("menu");
-
-//==============================
-// Load Module
-//==============================
+const menu=document.getElementById("menu");
 
 function loadModule(module){
 
 let file="";
 
 switch(module){
+
+case "Dashboard":
+file="modules/dashboard.html";
+break;
 
 case "Students":
 file="modules/students.html";
@@ -194,34 +190,27 @@ break;
 default:
 
 document.getElementById("content").innerHTML=
-"<h2>"+module+"</h2><br><p>This module is coming soon.</p>";
+"<h2>"+module+"</h2><br><p>Module coming soon...</p>";
 
 return;
 
 }
 
 fetch(file)
-
-.then(res=>res.text())
-
+.then(r=>r.text())
 .then(html=>{
 
 document.getElementById("content").innerHTML=html;
 
 })
-
 .catch(()=>{
 
 document.getElementById("content").innerHTML=
-"<h2>Error</h2><p>Unable to load module.</p>";
+"<h2>Error Loading Module</h2>";
 
 });
 
 }
-
-//==============================
-// Build Menu
-//==============================
 
 modules.forEach(function(module){
 
@@ -229,15 +218,12 @@ const item=document.createElement("div");
 
 item.className="menu-item";
 
-item.innerHTML=(icons[module] || "📁")+" "+module;
+item.innerHTML=(icons[module]||"📁")+" "+module;
 
 item.onclick=function(){
 
-document.querySelectorAll(".menu-item").forEach(function(x){
-
-x.classList.remove("active");
-
-});
+document.querySelectorAll(".menu-item")
+.forEach(x=>x.classList.remove("active"));
 
 item.classList.add("active");
 
@@ -247,11 +233,17 @@ loadModule(module);
 
 menu.appendChild(item);
 
-});
+/* Auto Open Dashboard */
 
-//==============================
-// Logout
-//==============================
+if(module==="Dashboard"){
+
+item.classList.add("active");
+
+loadModule("Dashboard");
+
+}
+
+});
 
 function logout(){
 
@@ -263,12 +255,11 @@ google.accounts.id.disableAutoSelect();
 
 }
 
-window.location.href="index.html";
+location.href="index.html";
 
 }
 
 </script>
 
 </body>
-
 </html>
