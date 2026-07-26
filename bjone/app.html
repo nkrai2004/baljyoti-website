@@ -4,7 +4,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>BJ ONE</title>
 
 <style>
@@ -66,55 +65,27 @@ overflow-y:auto;
 
 .content{
 flex:1;
-padding:40px;
+padding:25px;
+overflow:auto;
 }
 
 .menu-item{
-
 padding:14px;
-
-margin-bottom:10px;
-
+margin-bottom:8px;
 background:#f5f5f5;
-
 border-radius:8px;
-
 cursor:pointer;
-
 transition:.2s;
-
 }
 
 .menu-item:hover{
-
 background:#e3f2fd;
-
 }
 
 .menu-item.active{
-
 background:#0d47a1;
-
 color:white;
-
 font-weight:bold;
-
-}
-
-#pageTitle{
-
-font-size:34px;
-
-margin-bottom:10px;
-
-}
-
-#pageContent{
-
-font-size:18px;
-
-color:#555;
-
 }
 
 </style>
@@ -157,19 +128,11 @@ Logout
 
 </div>
 
-<div class="content">
+<div class="content" id="content">
 
-<h1 id="pageTitle">
+<h2>Welcome</h2>
 
-Welcome
-
-</h1>
-
-<p id="pageContent">
-
-Select a module from the left menu.
-
-</p>
+<p>Select a module from the menu.</p>
 
 </div>
 
@@ -177,29 +140,29 @@ Select a module from the left menu.
 
 <script>
 
-// Check Login
+//==============================
+// Login Check
+//==============================
 
 if(!sessionStorage.getItem("userName")){
-
 window.location.href="index.html";
-
 }
 
+//==============================
 // Show User
+//==============================
 
-document.getElementById("userName").innerHTML=
-
+document.getElementById("userName").innerHTML =
 sessionStorage.getItem("userName");
 
-// Read Modules
+//==============================
+// Modules
+//==============================
 
-const modules=
-
+const modules =
 JSON.parse(sessionStorage.getItem("userModules")) || [];
 
-// Icons
-
-const icons={
+const icons = {
 
 Dashboard:"🏠",
 Students:"👨‍🎓",
@@ -212,9 +175,53 @@ Settings:"⚙"
 
 };
 
-// Build Menu
+const menu = document.getElementById("menu");
 
-const menu=document.getElementById("menu");
+//==============================
+// Load Module
+//==============================
+
+function loadModule(module){
+
+let file="";
+
+switch(module){
+
+case "Students":
+file="modules/students.html";
+break;
+
+default:
+
+document.getElementById("content").innerHTML=
+"<h2>"+module+"</h2><br><p>This module is coming soon.</p>";
+
+return;
+
+}
+
+fetch(file)
+
+.then(res=>res.text())
+
+.then(html=>{
+
+document.getElementById("content").innerHTML=html;
+
+})
+
+.catch(()=>{
+
+document.getElementById("content").innerHTML=
+"<h2>Error</h2><p>Unable to load module.</p>";
+
+});
+
+}
+
+//==============================
+// Build Menu
+//==============================
 
 modules.forEach(function(module){
 
@@ -222,23 +229,19 @@ const item=document.createElement("div");
 
 item.className="menu-item";
 
-item.innerHTML=(icons[module]||"📁")+" "+module;
+item.innerHTML=(icons[module] || "📁")+" "+module;
 
 item.onclick=function(){
 
-document.querySelectorAll(".menu-item").forEach(function(m){
+document.querySelectorAll(".menu-item").forEach(function(x){
 
-m.classList.remove("active");
+x.classList.remove("active");
 
 });
 
 item.classList.add("active");
 
-document.getElementById("pageTitle").innerHTML=module;
-
-document.getElementById("pageContent").innerHTML=
-
-"You clicked the <b>"+module+"</b> module.";
+loadModule(module);
 
 };
 
@@ -246,7 +249,9 @@ menu.appendChild(item);
 
 });
 
+//==============================
 // Logout
+//==============================
 
 function logout(){
 
