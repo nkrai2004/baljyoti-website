@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -39,8 +38,8 @@ font-weight:bold;
 
 .user{
 display:flex;
-gap:15px;
 align-items:center;
+gap:15px;
 }
 
 .logout{
@@ -67,14 +66,14 @@ overflow-y:auto;
 
 .content{
 flex:1;
-padding:30px;
+padding:40px;
 }
 
 .menu-item{
 
-padding:12px;
+padding:14px;
 
-margin-bottom:8px;
+margin-bottom:10px;
 
 background:#f5f5f5;
 
@@ -89,6 +88,32 @@ transition:.2s;
 .menu-item:hover{
 
 background:#e3f2fd;
+
+}
+
+.menu-item.active{
+
+background:#0d47a1;
+
+color:white;
+
+font-weight:bold;
+
+}
+
+#pageTitle{
+
+font-size:34px;
+
+margin-bottom:10px;
+
+}
+
+#pageContent{
+
+font-size:18px;
+
+color:#555;
 
 }
 
@@ -134,15 +159,15 @@ Logout
 
 <div class="content">
 
-<h1>
+<h1 id="pageTitle">
 
 Welcome
 
 </h1>
 
-<p>
+<p id="pageContent">
 
-BJ ONE School ERP
+Select a module from the left menu.
 
 </p>
 
@@ -152,9 +177,7 @@ BJ ONE School ERP
 
 <script>
 
-//--------------------------
 // Check Login
-//--------------------------
 
 if(!sessionStorage.getItem("userName")){
 
@@ -162,49 +185,34 @@ window.location.href="index.html";
 
 }
 
-//--------------------------
-// Show Name
-//--------------------------
+// Show User
 
 document.getElementById("userName").innerHTML=
 
 sessionStorage.getItem("userName");
 
-//--------------------------
 // Read Modules
-//--------------------------
 
 const modules=
 
 JSON.parse(sessionStorage.getItem("userModules")) || [];
 
-//--------------------------
 // Icons
-//--------------------------
 
 const icons={
 
 Dashboard:"🏠",
-
 Students:"👨‍🎓",
-
 Teachers:"👩‍🏫",
-
 Fees:"💰",
-
 Transport:"🚌",
-
 Reports:"📊",
-
 Academics:"📚",
-
 Settings:"⚙"
 
 };
 
-//--------------------------
 // Build Menu
-//--------------------------
 
 const menu=document.getElementById("menu");
 
@@ -214,15 +222,31 @@ const item=document.createElement("div");
 
 item.className="menu-item";
 
-item.innerHTML=(icons[module] || "📁")+" "+module;
+item.innerHTML=(icons[module]||"📁")+" "+module;
+
+item.onclick=function(){
+
+document.querySelectorAll(".menu-item").forEach(function(m){
+
+m.classList.remove("active");
+
+});
+
+item.classList.add("active");
+
+document.getElementById("pageTitle").innerHTML=module;
+
+document.getElementById("pageContent").innerHTML=
+
+"You clicked the <b>"+module+"</b> module.";
+
+};
 
 menu.appendChild(item);
 
 });
 
-//--------------------------
 // Logout
-//--------------------------
 
 function logout(){
 
