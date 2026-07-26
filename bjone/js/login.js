@@ -4,13 +4,13 @@
  *****************************************************/
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbzHI4gDpZEOPNYr1JJn1SnDlJeWa_ldYLkcFijg7ql8NwoAmq6ZknPCjIvw6Bm_uOhzWg/exec";
+"https://script.google.com/macros/s/AKfycbzHI4gDpZEOPNYr1JJn1SnDlJeWa_ldYLkcFijg7ql8NwoAmq6ZknPCjIvw6Bm_uOhzWg/exec";
 
 function handleCredentialResponse(response) {
 
     try {
 
-        // Decode Google JWT
+        // Decode Google Login Token
         const payload = JSON.parse(atob(response.credential.split('.')[1]));
 
         const email = payload.email;
@@ -19,50 +19,43 @@ function handleCredentialResponse(response) {
             "Checking user permissions...";
 
         fetch(API_URL + "?email=" + encodeURIComponent(email))
-            .then(res => res.json())
-            .then(user => {
+        .then(res => res.json())
+        .then(user => {
 
-                console.log("API Response:", user);
+            console.log(user);
 
-                if (!user.success) {
-                    alert("User is not authorised.");
-                    return;
-                }
+            if (!user.success) {
 
-                // ===========================
-                // Save User Session
-                // ===========================
+                alert("User is not authorised.");
 
-                sessionStorage.setItem("userName", user.name);
-                sessionStorage.setItem("userRole", user.role);
-                sessionStorage.setItem("userEmail", user.email);
-                sessionStorage.setItem("userStatus", user.status);
-                sessionStorage.setItem("userDashboard", user.dashboard);
+                return;
 
-                // Save Modules Array
-                sessionStorage.setItem(
-                    "userModules",
-                    JSON.stringify(user.modules)
-                );
+            }
 
-                console.log(
-                    "Modules Saved:",
-                    JSON.parse(sessionStorage.getItem("userModules"))
-                );
+            // Save User Session
+            sessionStorage.setItem("userName", user.name);
+            sessionStorage.setItem("userRole", user.role);
+            sessionStorage.setItem("userEmail", user.email);
+            sessionStorage.setItem("userStatus", user.status);
+            sessionStorage.setItem("userDashboard", user.dashboard);
+            sessionStorage.setItem("userModules", JSON.stringify(user.modules));
 
-                // Redirect
-                window.location.href = "dashboard.html";
+            // Open Main Application
+            window.location.href = "app.html";
 
-            })
-            .catch(error => {
+        })
 
-                console.error(error);
+        .catch(error => {
 
-                alert("Unable to connect to server.");
+            console.error(error);
 
-            });
+            alert("Unable to connect to BJ ONE Server.");
 
-    } catch (err) {
+        });
+
+    }
+
+    catch(err){
 
         console.error(err);
 
