@@ -1,1 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>BJ ONE ERP | Sign In</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',Arial,sans-serif;
+}
+
+body{
+
+    background:linear-gradient(135deg,#C62828,#8E0000);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+
+}
+
+.login-card{
+
+    width:430px;
+    background:#fff;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 20px 50px rgba(0,0,0,.25);
+
+}
+
+.header{
+
+    background:#C62828;
+    color:#fff;
+    text-align:center;
+    padding:35px;
+
+}
+
+.logo{
+
+    width:90px;
+    height:90px;
+    margin:auto;
+    margin-bottom:20px;
+    border-radius:50%;
+    background:#fff;
+    color:#C62828;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:32px;
+    font-weight:bold;
+
+}
+
+.header h1{
+
+    font-size:30px;
+    margin-bottom:8px;
+
+}
+
+.header p{
+
+    opacity:.9;
+
+}
+
+.content{
+
+    padding:40px;
+    text-align:center;
+
+}
+
+.content h2{
+
+    color:#C62828;
+    margin-bottom:15px;
+
+}
+
+.content p{
+
+    color:#666;
+    line-height:28px;
+    margin-bottom:35px;
+
+}
+
+.google-btn{
+
+    width:100%;
+    padding:15px;
+    border:2px solid #ddd;
+    border-radius:10px;
+    background:#fff;
+    cursor:pointer;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:15px;
+    font-size:17px;
+    font-weight:600;
+    transition:.3s;
+
+}
+
+.google-btn:hover{
+
+    background:#f8f8f8;
+    border-color:#C62828;
+
+}
+
+.google-icon{
+
+    font-size:28px;
+
+}
+
+.note{
+
+    margin-top:25px;
+    color:#888;
+    font-size:14px;
+    line-height:24px;
+
+}
+
+.footer{
+
+    background:#fafafa;
+    border-top:1px solid #eee;
+    padding:18px;
+    text-align:center;
+    color:#777;
+    font-size:13px;
+
+}
+
+@media(max-width:480px){
+
+.login-card{
+
+width:95%;
+
+}
+
+.content{
+
+padding:25px;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="login-card">
+
+<div class="header">
+
+<div class="logo">
+
+BJ
+
+</div>
+
+<h1>BJ ONE ERP</h1>
+
+<p>Bal Jyoti Public School</p>
+
+</div>
+
+<div class="content">
+
+<h2>Welcome</h2>
+
+<p>
+
+Sign in using your official
+<strong>@baljyoti.com</strong>
+Google Workspace account.
+
+</p>
+
+<button
+class="google-btn"
+onclick="googleLogin()">
+
+<span class="google-icon">🔵</span>
+
+Continue with Google
+
+</button>
+
+<div class="note">
+
+Only authorised
+<strong>@baljyoti.com</strong>
+accounts can access BJ ONE ERP.
+
+</div>
+
+</div>
+
+<div class="footer">
+
+Version 0.1.0
+
+<br><br>
+
+© 2026 Bal Jyoti Public School
+
+</div>
+
+</div>
+
+<script>
+
+function googleLogin(){
+
+    alert("Google Sign-In will be connected in the next step.");
+
+}
+
+</script>
+
+</body>
+</html>
