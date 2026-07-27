@@ -46,7 +46,7 @@ const CONFIG = {
       GITHUB
     ---------------------------------------------*/
 
-    GITHUB_URL:
+
         APP_URL:
     "https://baljyoti.com/bj-one-erp/",
 
