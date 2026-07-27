@@ -1,8 +1,8 @@
 /*=========================================================
 BJ ONE ERP
 File        : auth.js
-Version     : 1.1.0
-Date        : 27 July 2026
+Version     : 1.2.0
+Date        : 28 July 2026
 Author      : Nishant Rai & ChatGPT
 Description : Google Authentication Module
 =========================================================*/
@@ -15,11 +15,28 @@ const Auth = {
 
     init() {
 
-        console.log("Initializing Authentication...");
+        console.log("====================================");
+        console.log("BJ ONE ERP Authentication");
+        console.log("====================================");
 
-        if (typeof google === "undefined") {
-            console.error("Google Identity Services library not loaded.");
+        if (typeof CONFIG === "undefined") {
+
+            console.error("CONFIG not found.");
+
+            alert("Configuration file not loaded.");
+
             return;
+
+        }
+
+        if (typeof google === "undefined" || !google.accounts || !google.accounts.id) {
+
+            console.error("Google Identity Services library not loaded.");
+
+            alert("Google Sign-In library could not be loaded.");
+
+            return;
+
         }
 
         google.accounts.id.initialize({
@@ -32,7 +49,7 @@ const Auth = {
 
         this.initialized = true;
 
-        console.log("Authentication Initialized Successfully.");
+        console.log("Authentication initialized successfully.");
 
     },
 
@@ -42,33 +59,36 @@ const Auth = {
 
             console.log("Google Authentication Successful");
 
-            console.log(response);
+            if (!response || !response.credential) {
 
-            if (!response.credential) {
-
-                alert("Authentication failed.");
+                alert("Authentication failed. No credential received.");
 
                 return;
 
             }
 
-            // Store Google ID Token temporarily
+            // Store Google ID Token
             sessionStorage.setItem("google_token", response.credential);
 
-            console.log("Token stored successfully.");
+            console.log("Google token stored successfully.");
 
-            console.log("Redirecting to dashboard...");
-
-            window.location.href = "dashboard.html";
+            // Redirect to dashboard
+            window.location.href = CONFIG.DASHBOARD_PAGE;
 
         }
         catch (error) {
 
-            console.error(error);
+            console.error("Authentication Error:", error);
 
-            alert("Login failed.");
+            alert("Login failed.\n\n" + error.message);
 
         }
+
+    },
+
+    isLoggedIn() {
+
+        return sessionStorage.getItem("google_token") !== null;
 
     },
 
@@ -76,9 +96,15 @@ const Auth = {
 
         sessionStorage.clear();
 
-        google.accounts.id.disableAutoSelect();
+        if (typeof google !== "undefined" &&
+            google.accounts &&
+            google.accounts.id) {
 
-        window.location.href = "login.html";
+            google.accounts.id.disableAutoSelect();
+
+        }
+
+        window.location.href = CONFIG.LOGIN_PAGE;
 
     }
 
