@@ -3,10 +3,10 @@
 =========================================================
 BJ ONE ERP
 File        : login.html
-Version     : 1.0.1
+Version     : 1.1.0
 Date        : 27 July 2026
 Author      : Nishant Rai & ChatGPT
-Description : Google Workspace Authentication
+Description : Google Workspace Login Page
 =========================================================
 -->
 
@@ -15,7 +15,7 @@ Description : Google Workspace Authentication
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>BJ ONE ERP | Login</title>
 
@@ -24,252 +24,110 @@ Description : Google Workspace Authentication
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-
 <style>
 
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Poppins',sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
 }
 
 body{
 
-background:linear-gradient(135deg,#B71C1C,#D32F2F);
+    background:#C62828;
 
-min-height:100vh;
+    display:flex;
 
-display:flex;
+    justify-content:center;
 
-justify-content:center;
+    align-items:center;
 
-align-items:center;
-
-padding:30px;
+    height:100vh;
 
 }
 
-.card{
+.login-box{
 
-width:1000px;
+    width:420px;
 
-max-width:100%;
+    background:#FFFFFF;
 
-background:#fff;
+    border-radius:16px;
 
-border-radius:20px;
+    padding:40px;
 
-overflow:hidden;
+    text-align:center;
 
-display:flex;
-
-box-shadow:0 25px 60px rgba(0,0,0,.25);
+    box-shadow:0 20px 40px rgba(0,0,0,.25);
 
 }
 
-.left{
+.logo{
 
-width:50%;
+    width:90px;
 
-background:#C62828;
+    height:90px;
 
-color:white;
+    border-radius:50%;
 
-padding:60px;
+    margin:auto;
 
-display:flex;
+    display:block;
 
-flex-direction:column;
+    object-fit:contain;
 
-justify-content:center;
-
-align-items:center;
-
-text-align:center;
+    margin-bottom:20px;
 
 }
 
-.left img{
+h1{
 
-width:140px;
+    color:#C62828;
 
-height:140px;
+    margin-bottom:8px;
 
-object-fit:contain;
-
-background:white;
-
-padding:10px;
-
-border-radius:50%;
-
-margin-bottom:30px;
+    font-size:28px;
 
 }
 
-.left h1{
+h3{
 
-font-size:42px;
+    color:#666;
 
-margin-bottom:15px;
+    font-weight:500;
 
-}
-
-.left h3{
-
-font-weight:400;
-
-margin-bottom:25px;
-
-}
-
-.left p{
-
-line-height:30px;
-
-font-size:17px;
-
-}
-
-.right{
-
-width:50%;
-
-padding:60px;
-
-display:flex;
-
-flex-direction:column;
-
-justify-content:center;
-
-}
-
-.right h2{
-
-font-size:34px;
-
-color:#C62828;
-
-margin-bottom:10px;
-
-}
-
-.subtitle{
-
-color:#666;
-
-margin-bottom:35px;
-
-line-height:28px;
-
-}
-
-.login-panel{
-
-border:1px solid #eee;
-
-padding:35px;
-
-border-radius:15px;
-
-background:#fafafa;
+    margin-bottom:30px;
 
 }
 
 #googleButton{
 
-display:flex;
+    display:flex;
 
-justify-content:center;
+    justify-content:center;
 
-margin-bottom:20px;
-
-}
-
-.status{
-
-margin-top:20px;
-
-padding:12px;
-
-border-radius:8px;
-
-display:none;
-
-font-size:15px;
+    margin-bottom:20px;
 
 }
 
-.success{
+#status{
 
-background:#E8F5E9;
+    color:#666;
 
-color:#2E7D32;
+    font-size:14px;
 
-}
-
-.error{
-
-background:#FFEBEE;
-
-color:#C62828;
-
-}
-
-.loading{
-
-background:#FFF8E1;
-
-color:#EF6C00;
+    margin-top:15px;
 
 }
 
 .footer{
 
-margin-top:35px;
+    margin-top:30px;
 
-text-align:center;
+    font-size:12px;
 
-font-size:13px;
-
-color:#777;
-
-}
-
-@media(max-width:900px){
-
-.card{
-
-flex-direction:column;
-
-}
-
-.left,.right{
-
-width:100%;
-
-}
-
-.left{
-
-padding:40px;
-
-}
-
-.right{
-
-padding:35px;
-
-}
-
-.left h1{
-
-font-size:30px;
-
-}
+    color:#888;
 
 }
 
@@ -279,195 +137,67 @@ font-size:30px;
 
 <body>
 
-<div class="card">
+<div class="login-box">
 
-<div class="left">
+    <img src="assets/images/logo.png" class="logo" alt="Bal Jyoti Public School">
 
-<img src="assets/images/logo.png" alt="School Logo">
+    <h1>BJ ONE ERP</h1>
 
-<h1>BJ ONE ERP</h1>
+    <h3>Bal Jyoti Public School</h3>
 
-<h3>Bal Jyoti Public School</h3>
+    <div id="googleButton"></div>
 
-<p>
+    <div id="status">
+        Initializing authentication...
+    </div>
 
-School Operating System
-
-<br><br>
-
-Please sign in using your official
-
-<strong>@baljyoti.com</strong>
-
-Google Workspace account.
-
-</p>
+    <div class="footer">
+        © 2026 Bal Jyoti Public School
+    </div>
 
 </div>
 
-<div class="right">
+<!-- Configuration -->
+<script src="config.js"></script>
 
-<h2>Welcome</h2>
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
-<p class="subtitle">
-
-Secure access for authorised staff members.
-
-</p>
-
-<div class="login-panel">
-
-<div id="googleButton"></div>
-
-<div id="loading" class="status loading">
-
-Authenticating...
-
-</div>
-
-<div id="success" class="status success">
-
-Login Successful.
-
-Redirecting...
-
-</div>
-
-<div id="error" class="status error"></div>
-
-</div>
-
-<div class="footer">
-
-Version 1.0.1
-
-<br>
-
-© 2026 Bal Jyoti Public School
-
-</div>
-
-</div>
-
-</div>
+<!-- Authentication -->
+<script src="auth.js"></script>
 
 <script>
 
-const CLIENT_ID="594079296208-rrfpja5335vp8cv9vt8fnofub0au20pb.apps.googleusercontent.com";
+window.addEventListener("load", function(){
 
-window.onload=function(){
+    const status = document.getElementById("status");
 
-google.accounts.id.initialize({
+    const timer = setInterval(function(){
 
-client_id:CLIENT_ID,
+        if(typeof Auth !== "undefined" && Auth.initialized){
 
-callback:onGoogleLogin
+            clearInterval(timer);
+
+            status.innerHTML = "Authentication Ready.";
+
+            google.accounts.id.renderButton(
+
+                document.getElementById("googleButton"),
+
+                {
+                    theme: "outline",
+                    size: "large",
+                    width: 320,
+                    text: "continue_with"
+                }
+
+            );
+
+        }
+
+    },200);
 
 });
-
-google.accounts.id.renderButton(
-
-document.getElementById("googleButton"),
-
-{
-
-theme:"outline",
-
-size:"large",
-
-shape:"pill",
-
-width:340,
-
-text:"continue_with"
-
-}
-
-);
-
-};
-
-function onGoogleLogin(response){
-
-showLoading();
-
-const profile=parseJwt(response.credential);
-
-if(!profile.email.endsWith("@baljyoti.com")){
-
-showError("Only @baljyoti.com users are allowed.");
-
-google.accounts.id.disableAutoSelect();
-
-return;
-
-}
-
-showSuccess();
-
-console.log(profile);
-
-setTimeout(function(){
-
-window.location.href="dashboard.html";
-
-},1500);
-
-}
-
-function parseJwt(token){
-
-let base64Url=token.split('.')[1];
-
-let base64=base64Url.replace(/-/g,'+').replace(/_/g,'/');
-
-let jsonPayload=decodeURIComponent(atob(base64).split('').map(function(c){
-
-return '%'+('00'+c.charCodeAt(0).toString(16)).slice(-2);
-
-}).join(''));
-
-return JSON.parse(jsonPayload);
-
-}
-
-function hideAll(){
-
-document.getElementById("loading").style.display="none";
-
-document.getElementById("success").style.display="none";
-
-document.getElementById("error").style.display="none";
-
-}
-
-function showLoading(){
-
-hideAll();
-
-document.getElementById("loading").style.display="block";
-
-}
-
-function showSuccess(){
-
-hideAll();
-
-document.getElementById("success").style.display="block";
-
-}
-
-function showError(message){
-
-hideAll();
-
-const error=document.getElementById("error");
-
-error.innerHTML=message;
-
-error.style.display="block";
-
-}
 
 </script>
 
