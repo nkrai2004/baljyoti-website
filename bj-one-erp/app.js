@@ -1,11 +1,7 @@
-
 /*=========================================================
 BJ ONE ERP
 File        : api.js
-Version     : 1.0.0
-Date        : 28 July 2026
-Author      : Nishant Rai & ChatGPT
-Description : API Communication Module
+Version     : 1.0.1
 =========================================================*/
 
 "use strict";
@@ -16,31 +12,25 @@ const API = {
 
         try {
 
-            console.log("Connecting to API...");
-            console.log(CONFIG.API_URL);
-
             const response = await fetch(CONFIG.API_URL);
 
             if (!response.ok) {
-                throw new Error("Unable to connect to API.");
+                throw new Error("HTTP Status : " + response.status);
             }
 
             const data = await response.json();
 
-            console.log("Dashboard Data Received");
-
-            console.log(data);
-
             return data;
 
-        }
-        catch (error) {
+        } catch (error) {
 
-            console.error("API Error :", error);
+            alert(
+                "API ERROR\n\n" +
+                error.name + "\n\n" +
+                error.message
+            );
 
-            alert("Unable to load dashboard data.");
-
-            return null;
+            throw error;
 
         }
 
