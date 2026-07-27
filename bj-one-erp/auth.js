@@ -1,8 +1,9 @@
 /*=========================================================
 BJ ONE ERP
 File        : auth.js
-Version     : 1.0.0
+Version     : 1.1.0
 Date        : 27 July 2026
+Author      : Nishant Rai & ChatGPT
 Description : Google Authentication Module
 =========================================================*/
 
@@ -22,11 +23,14 @@ const Auth = {
         }
 
         google.accounts.id.initialize({
+
             client_id: CONFIG.GOOGLE_CLIENT_ID,
-            callback: Auth.handleCredentialResponse
+
+            callback: this.handleCredentialResponse.bind(this)
+
         });
 
-        Auth.initialized = true;
+        this.initialized = true;
 
         console.log("Authentication Initialized Successfully.");
 
@@ -34,19 +38,53 @@ const Auth = {
 
     handleCredentialResponse(response) {
 
-        console.log("Google Authentication Successful");
+        try {
 
-        console.log(response);
+            console.log("Google Authentication Successful");
 
-        // Step 2:
-        // We will send response.credential
-        // to Google Apps Script for verification.
+            console.log(response);
+
+            if (!response.credential) {
+
+                alert("Authentication failed.");
+
+                return;
+
+            }
+
+            // Store Google ID Token temporarily
+            sessionStorage.setItem("google_token", response.credential);
+
+            console.log("Token stored successfully.");
+
+            console.log("Redirecting to dashboard...");
+
+            window.location.href = "dashboard.html";
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            alert("Login failed.");
+
+        }
+
+    },
+
+    logout() {
+
+        sessionStorage.clear();
+
+        google.accounts.id.disableAutoSelect();
+
+        window.location.href = "login.html";
 
     }
 
 };
 
-window.addEventListener("load", () => {
+window.addEventListener("load", function () {
 
     Auth.init();
 
