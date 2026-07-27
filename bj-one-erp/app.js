@@ -1,7 +1,7 @@
 /*=========================================================
 BJ ONE ERP
 File        : app.js
-Version     : 1.0.0
+Version     : 1.1.0
 Date        : 28 July 2026
 Author      : Nishant Rai & ChatGPT
 Description : Main Application Controller
@@ -11,23 +11,21 @@ Description : Main Application Controller
 
 const App = {
 
-    version: "1.0.0",
+    version: "1.1.0",
 
     async start() {
 
-        console.log("==================================");
-        console.log("BJ ONE ERP");
-        console.log("Version : " + this.version);
-        console.log("==================================");
+        console.log("====================================");
+        console.log(CONFIG.APP_NAME);
+        console.log("Version :", this.version);
+        console.log("====================================");
 
-        // Check login
-        const token = sessionStorage.getItem("google_token");
-
-        if (!token) {
+        // Check Login
+        if (!sessionStorage.getItem("google_token")) {
 
             alert("Please login first.");
 
-            window.location.href = "login.html";
+            window.location.href = CONFIG.LOGIN_PAGE;
 
             return;
 
@@ -35,7 +33,6 @@ const App = {
 
         console.log("User authenticated.");
 
-        // Load Dashboard
         await this.loadDashboard();
 
     },
@@ -44,17 +41,20 @@ const App = {
 
         try {
 
+            console.log("Loading dashboard...");
+
             const data = await API.getDashboardData();
 
-            if (!data) {
+            if (!Array.isArray(data) || data.length < 2) {
 
-                alert("No dashboard data received.");
-
-                return;
+                throw new Error("Invalid dashboard data received from server.");
 
             }
 
-            let dashboard = {};
+            console.log("Dashboard Data:");
+            console.table(data);
+
+            const dashboard = {};
 
             for (let i = 1; i < data.length; i++) {
 
@@ -67,14 +67,18 @@ const App = {
             this.setValue("attendance", dashboard.TodayAttendance + "%");
             this.setValue("fees", "₹" + dashboard.FeeCollectionToday);
 
-            console.log("Dashboard Loaded Successfully.");
+            console.log("Dashboard loaded successfully.");
 
         }
+
         catch (error) {
 
-            console.error(error);
+            console.error("Dashboard Error:", error);
 
-            alert("Dashboard Loading Failed");
+            alert(
+                "Dashboard Loading Failed\n\n" +
+                error.message
+            );
 
         }
 
@@ -84,11 +88,15 @@ const App = {
 
         const element = document.getElementById(id);
 
-        if (element) {
+        if (!element) {
 
-            element.innerHTML = value;
+            console.warn("Element not found:", id);
+
+            return;
 
         }
+
+        element.textContent = value;
 
     },
 
@@ -96,13 +104,21 @@ const App = {
 
         sessionStorage.clear();
 
-        window.location.href = "login.html";
+        if (typeof Auth !== "undefined") {
+
+            Auth.logout();
+
+        } else {
+
+            window.location.href = CONFIG.LOGIN_PAGE;
+
+        }
 
     }
 
 };
 
-window.addEventListener("load", function () {
+window.addEventListener("DOMContentLoaded", function () {
 
     App.start();
 
