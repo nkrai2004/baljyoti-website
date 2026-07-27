@@ -3,10 +3,10 @@
 =========================================================
 BJ ONE ERP
 File        : login.html
-Version     : 1.0.0
+Version     : 1.0.1
 Date        : 27 July 2026
 Author      : Nishant Rai & ChatGPT
-Description : Google Workspace Login
+Description : Google Workspace Authentication
 =========================================================
 -->
 
@@ -15,9 +15,9 @@ Description : Google Workspace Login
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>BJ ONE ERP | Sign In</title>
+<title>BJ ONE ERP | Login</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,9 +37,9 @@ font-family:'Poppins',sans-serif;
 
 body{
 
-background:linear-gradient(135deg,#8B0000,#C62828);
+background:linear-gradient(135deg,#B71C1C,#D32F2F);
 
-height:100vh;
+min-height:100vh;
 
 display:flex;
 
@@ -47,17 +47,17 @@ justify-content:center;
 
 align-items:center;
 
-overflow:hidden;
+padding:30px;
 
 }
 
-.container{
+.card{
 
 width:1000px;
 
-max-width:95%;
+max-width:100%;
 
-background:white;
+background:#fff;
 
 border-radius:20px;
 
@@ -97,11 +97,13 @@ width:140px;
 
 height:140px;
 
-border-radius:50%;
+object-fit:contain;
 
 background:white;
 
 padding:10px;
+
+border-radius:50%;
 
 margin-bottom:30px;
 
@@ -128,8 +130,6 @@ margin-bottom:25px;
 line-height:30px;
 
 font-size:17px;
-
-opacity:.95;
 
 }
 
@@ -159,117 +159,89 @@ margin-bottom:10px;
 
 .subtitle{
 
-color:#777;
+color:#666;
 
-margin-bottom:40px;
+margin-bottom:35px;
 
 line-height:28px;
 
 }
 
-.login-box{
+.login-panel{
 
-background:#fafafa;
-
-border:1px solid #eeeeee;
-
-border-radius:15px;
+border:1px solid #eee;
 
 padding:35px;
 
+border-radius:15px;
+
+background:#fafafa;
+
 }
 
-#buttonDiv{
+#googleButton{
 
 display:flex;
 
 justify-content:center;
 
-margin-top:20px;
-
 margin-bottom:20px;
 
 }
 
-.note{
-
-text-align:center;
-
-color:#777;
-
-font-size:14px;
-
-line-height:24px;
+.status{
 
 margin-top:20px;
 
-}
+padding:12px;
 
-.version{
-
-margin-top:40px;
-
-text-align:center;
-
-color:#999;
-
-font-size:13px;
-
-}
-
-.loading{
+border-radius:8px;
 
 display:none;
 
-text-align:center;
-
-margin-top:20px;
-
-color:#C62828;
-
-font-weight:600;
+font-size:15px;
 
 }
 
 .success{
 
-display:none;
+background:#E8F5E9;
 
-margin-top:20px;
-
-background:#e8f5e9;
-
-color:#2e7d32;
-
-padding:12px;
-
-border-radius:8px;
-
-text-align:center;
+color:#2E7D32;
 
 }
 
 .error{
 
-display:none;
+background:#FFEBEE;
 
-margin-top:20px;
+color:#C62828;
 
-background:#ffebee;
+}
 
-color:#c62828;
+.loading{
 
-padding:12px;
+background:#FFF8E1;
 
-border-radius:8px;
+color:#EF6C00;
+
+}
+
+.footer{
+
+margin-top:35px;
 
 text-align:center;
+
+font-size:13px;
+
+color:#777;
 
 }
 
 @media(max-width:900px){
 
-.container{
+.card{
 
 flex-direction:column;
 
@@ -295,7 +267,7 @@ padding:35px;
 
 .left h1{
 
-font-size:32px;
+font-size:30px;
 
 }
 
@@ -307,21 +279,19 @@ font-size:32px;
 
 <body>
 
-<div class="container">
+<div class="card">
 
 <div class="left">
 
-<img src="assets/images/logo.png" alt="Bal Jyoti Public School Logo">
+<img src="assets/images/logo.png" alt="School Logo">
 
 <h1>BJ ONE ERP</h1>
 
-<h3>School Operating System</h3>
+<h3>Bal Jyoti Public School</h3>
 
 <p>
 
-Welcome to the Digital Campus of
-
-<strong>Bal Jyoti Public School.</strong>
+School Operating System
 
 <br><br>
 
@@ -337,55 +307,39 @@ Google Workspace account.
 
 <div class="right">
 
-<h2>Sign In</h2>
+<h2>Welcome</h2>
 
 <p class="subtitle">
 
-Access Admissions, Students, Fees,
-
-Attendance, HR, Examination,
-
-Transport and Reports.
+Secure access for authorised staff members.
 
 </p>
 
-<div class="login-box">
+<div class="login-panel">
 
-<div id="buttonDiv"></div>
+<div id="googleButton"></div>
 
-<div class="loading" id="loading">
+<div id="loading" class="status loading">
 
-Signing you in...
-
-</div>
-
-<div class="success" id="success">
-
-Authentication Successful
+Authenticating...
 
 </div>
 
-<div class="error" id="error">
+<div id="success" class="status success">
 
-Access Denied
+Login Successful.
 
-</div>
-
-<p class="note">
-
-Only authorised
-
-<strong>@baljyoti.com</strong>
-
-users can access BJ ONE ERP.
-
-</p>
+Redirecting...
 
 </div>
 
-<div class="version">
+<div id="error" class="status error"></div>
 
-Version 1.0.0
+</div>
+
+<div class="footer">
+
+Version 1.0.1
 
 <br>
 
@@ -407,13 +361,13 @@ google.accounts.id.initialize({
 
 client_id:CLIENT_ID,
 
-callback:handleCredentialResponse
+callback:onGoogleLogin
 
 });
 
 google.accounts.id.renderButton(
 
-document.getElementById("buttonDiv"),
+document.getElementById("googleButton"),
 
 {
 
@@ -423,7 +377,9 @@ size:"large",
 
 shape:"pill",
 
-width:320
+width:340,
+
+text:"continue_with"
 
 }
 
@@ -431,19 +387,15 @@ width:320
 
 };
 
-function handleCredentialResponse(response){
+function onGoogleLogin(response){
 
-document.getElementById("loading").style.display="block";
+showLoading();
 
-const payload=parseJwt(response.credential);
+const profile=parseJwt(response.credential);
 
-if(!payload.email.endsWith("@baljyoti.com")){
+if(!profile.email.endsWith("@baljyoti.com")){
 
-document.getElementById("loading").style.display="none";
-
-document.getElementById("error").style.display="block";
-
-document.getElementById("error").innerHTML="Only @baljyoti.com accounts are allowed.";
+showError("Only @baljyoti.com users are allowed.");
 
 google.accounts.id.disableAutoSelect();
 
@@ -451,9 +403,9 @@ return;
 
 }
 
-document.getElementById("loading").style.display="none";
+showSuccess();
 
-document.getElementById("success").style.display="block";
+console.log(profile);
 
 setTimeout(function(){
 
@@ -465,17 +417,55 @@ window.location.href="dashboard.html";
 
 function parseJwt(token){
 
-var base64Url=token.split('.')[1];
+let base64Url=token.split('.')[1];
 
-var base64=base64Url.replace(/-/g,'+').replace(/_/g,'/');
+let base64=base64Url.replace(/-/g,'+').replace(/_/g,'/');
 
-var jsonPayload=decodeURIComponent(atob(base64).split('').map(function(c){
+let jsonPayload=decodeURIComponent(atob(base64).split('').map(function(c){
 
 return '%'+('00'+c.charCodeAt(0).toString(16)).slice(-2);
 
 }).join(''));
 
 return JSON.parse(jsonPayload);
+
+}
+
+function hideAll(){
+
+document.getElementById("loading").style.display="none";
+
+document.getElementById("success").style.display="none";
+
+document.getElementById("error").style.display="none";
+
+}
+
+function showLoading(){
+
+hideAll();
+
+document.getElementById("loading").style.display="block";
+
+}
+
+function showSuccess(){
+
+hideAll();
+
+document.getElementById("success").style.display="block";
+
+}
+
+function showError(message){
+
+hideAll();
+
+const error=document.getElementById("error");
+
+error.innerHTML=message;
+
+error.style.display="block";
 
 }
 
