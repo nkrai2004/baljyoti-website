@@ -19,11 +19,9 @@ const API = {
             console.log(CONFIG.API_URL);
 
             const response = await fetch(CONFIG.API_URL, {
-                method: "GET",
-                headers: {
-                    "Accept": "application/json"
-                }
-            });
+    method: "GET",
+    redirect: "follow"
+});
 
             console.log("HTTP Status:", response.status);
 
