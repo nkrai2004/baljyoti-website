@@ -3,8 +3,8 @@
 =========================================================
 BJ ONE ERP
 File        : login.html
-Version     : 1.1.0
-Date        : 27 July 2026
+Version     : 1.2.0
+Date         : 28 July 2026
 Author      : Nishant Rai & ChatGPT
 Description : Google Workspace Login Page
 =========================================================
@@ -22,7 +22,8 @@ Description : Google Workspace Login Page
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet">
 
 <style>
 
@@ -71,13 +72,11 @@ body{
 
     border-radius:50%;
 
-    margin:auto;
-
     display:block;
 
-    object-fit:contain;
+    margin:0 auto 20px;
 
-    margin-bottom:20px;
+    object-fit:contain;
 
 }
 
@@ -139,7 +138,9 @@ h3{
 
 <div class="login-box">
 
-<img src="https://baljyoti.com/logo.png" class="logo" alt="Bal Jyoti Public School">
+    <img src="https://baljyoti.com/logo.png"
+         class="logo"
+         alt="Bal Jyoti Public School">
 
     <h1>BJ ONE ERP</h1>
 
@@ -163,17 +164,24 @@ h3{
 <!-- Google Identity Services -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-
+<!-- Authentication -->
+<script src="auth.js"></script>
 
 <script>
 
-window.addEventListener("load", function(){
+window.addEventListener("load", function () {
 
     const status = document.getElementById("status");
 
-    const timer = setInterval(function(){
+    const timer = setInterval(function () {
 
-        if(typeof Auth !== "undefined" && Auth.initialized){
+        if (
+            typeof Auth !== "undefined" &&
+            Auth.initialized &&
+            typeof google !== "undefined" &&
+            google.accounts &&
+            google.accounts.id
+        ) {
 
             clearInterval(timer);
 
@@ -194,17 +202,12 @@ window.addEventListener("load", function(){
 
         }
 
-    },200);
+    }, 300);
 
 });
 
 </script>
-<!-- Google Sign-In Library -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 
-<!-- BJ ONE ERP Scripts -->
-<script src="config.js"></script>
-<script src="auth.js"></script>
 </body>
 
 </html>
