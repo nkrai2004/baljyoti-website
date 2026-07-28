@@ -1,11 +1,13 @@
-/*=========================================================
+/*
+=========================================================
 BJ ONE ERP
 File        : auth.js
-Version     : 1.2.0
+Version     : 2.0.0
 Date        : 28 July 2026
 Author      : Nishant Rai & ChatGPT
-Description : Google Authentication Module
-=========================================================*/
+Description : Google Authentication Manager
+=========================================================
+*/
 
 "use strict";
 
@@ -13,92 +15,92 @@ const Auth = {
 
     initialized: false,
 
-    init() {
+    init: function () {
 
-        console.log("====================================");
-        console.log("BJ ONE ERP Authentication");
-        console.log("====================================");
-
+        // Check configuration
         if (typeof CONFIG === "undefined") {
 
-            console.error("CONFIG not found.");
-
-            alert("Configuration file not loaded.");
+            alert("CONFIG not found. Please check config.js");
 
             return;
 
         }
 
-        if (typeof google === "undefined" || !google.accounts || !google.accounts.id) {
+        // Wait until Google library is available
+        let attempts = 0;
 
-            console.error("Google Identity Services library not loaded.");
+        const timer = setInterval(function () {
 
-            alert("Google Sign-In library could not be loaded.");
+            attempts++;
 
-            return;
+            if (
+                typeof google !== "undefined" &&
+                google.accounts &&
+                google.accounts.id
+            ) {
 
-        }
+                clearInterval(timer);
 
-        google.accounts.id.initialize({
+                google.accounts.id.initialize({
 
-            client_id: CONFIG.GOOGLE_CLIENT_ID,
+                    client_id: CONFIG.GOOGLE_CLIENT_ID,
 
-            callback: this.handleCredentialResponse.bind(this)
+                    callback: Auth.handleCredentialResponse
 
-        });
+                });
 
-        this.initialized = true;
+                Auth.initialized = true;
 
-        console.log("Authentication initialized successfully.");
-
-    },
-
-    handleCredentialResponse(response) {
-
-        try {
-
-            console.log("Google Authentication Successful");
-
-            if (!response || !response.credential) {
-
-                alert("Authentication failed. No credential received.");
-
-                return;
+                console.log("Google Sign-In initialized.");
 
             }
 
-            // Store Google ID Token
-            sessionStorage.setItem("google_token", response.credential);
+            if (attempts > 50) {
 
-            console.log("Google token stored successfully.");
+                clearInterval(timer);
 
-            // Redirect to dashboard
-            window.location.href = CONFIG.DASHBOARD_PAGE;
+                alert("Google Sign-In library could not be loaded.");
 
-        }
-        catch (error) {
+            }
 
-            console.error("Authentication Error:", error);
-
-            alert("Login failed.\n\n" + error.message);
-
-        }
+        }, 200);
 
     },
 
-    isLoggedIn() {
+    handleCredentialResponse: function (response) {
+
+        if (!response || !response.credential) {
+
+            alert("Login failed.");
+
+            return;
+
+        }
+
+        sessionStorage.setItem(
+            "google_token",
+            response.credential
+        );
+
+        window.location.href = CONFIG.DASHBOARD_PAGE;
+
+    },
+
+    isLoggedIn: function () {
 
         return sessionStorage.getItem("google_token") !== null;
 
     },
 
-    logout() {
+    logout: function () {
 
-        sessionStorage.clear();
+        sessionStorage.removeItem("google_token");
 
-        if (typeof google !== "undefined" &&
+        if (
+            typeof google !== "undefined" &&
             google.accounts &&
-            google.accounts.id) {
+            google.accounts.id
+        ) {
 
             google.accounts.id.disableAutoSelect();
 
@@ -110,8 +112,13 @@ const Auth = {
 
 };
 
+// Only initialize on the login page
 window.addEventListener("load", function () {
 
-    Auth.init();
+    if (document.getElementById("googleButton")) {
+
+        Auth.init();
+
+    }
 
 });
