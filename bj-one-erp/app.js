@@ -1,7 +1,7 @@
 /*=========================================================
 BJ ONE ERP
 File        : app.js
-Version     : 1.1.0
+Version     : 2.0.0
 Date        : 28 July 2026
 Author      : Nishant Rai & ChatGPT
 Description : Main Application Controller
@@ -11,12 +11,14 @@ Description : Main Application Controller
 
 const App = {
 
-    version: "1.1.0",
+    version: "2.0.0",
 
     async start() {
 
+        console.clear();
+
         console.log("====================================");
-        console.log(CONFIG.APP_NAME);
+        console.log("BJ ONE ERP");
         console.log("Version :", this.version);
         console.log("====================================");
 
@@ -32,17 +34,32 @@ const App = {
         }
 
         console.log("User authenticated.");
-        const name = sessionStorage.getItem("user_name");
 
-const welcome = document.getElementById("welcomeUser");
-
-if (welcome && name) {
-
-    welcome.textContent = "Welcome, " + name;
-
-}
+        this.loadUserProfile();
 
         await this.loadDashboard();
+
+        // Future Step
+        // await this.loadModules();
+
+    },
+
+    loadUserProfile() {
+
+        const name = sessionStorage.getItem("user_name") || "User";
+
+        const email = sessionStorage.getItem("user_email") || "";
+
+        const welcome = document.getElementById("welcomeUser");
+
+        if (welcome) {
+
+            welcome.innerHTML = `
+                <strong>${name}</strong><br>
+                <small>${email}</small>
+            `;
+
+        }
 
     },
 
@@ -56,11 +73,10 @@ if (welcome && name) {
 
             if (!Array.isArray(data) || data.length < 2) {
 
-                throw new Error("Invalid dashboard data received from server.");
+                throw new Error("Invalid dashboard data received.");
 
             }
 
-            console.log("Dashboard Data:");
             console.table(data);
 
             const dashboard = {};
@@ -71,10 +87,10 @@ if (welcome && name) {
 
             }
 
-            this.setValue("students", dashboard.TotalStudents);
-            this.setValue("staff", dashboard.TotalStaff);
-            this.setValue("attendance", dashboard.TodayAttendance + "%");
-            this.setValue("fees", "₹" + dashboard.FeeCollectionToday);
+            this.setValue("students", dashboard.TotalStudents || 0);
+            this.setValue("staff", dashboard.TotalStaff || 0);
+            this.setValue("attendance", (dashboard.TodayAttendance || 0) + "%");
+            this.setValue("fees", "₹" + (dashboard.FeeCollectionToday || 0));
 
             console.log("Dashboard loaded successfully.");
 
@@ -82,7 +98,7 @@ if (welcome && name) {
 
         catch (error) {
 
-            console.error("Dashboard Error:", error);
+            console.error(error);
 
             alert(
                 "Dashboard Loading Failed\n\n" +
@@ -97,15 +113,31 @@ if (welcome && name) {
 
         const element = document.getElementById(id);
 
-        if (!element) {
+        if (element) {
 
-            console.warn("Element not found:", id);
-
-            return;
+            element.textContent = value;
 
         }
 
-        element.textContent = value;
+    },
+
+    async loadModules() {
+
+        try {
+
+            const data = await API.getModules();
+
+            console.table(data);
+
+            // Dynamic Sidebar will be added in next step.
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+        }
 
     },
 
@@ -117,7 +149,9 @@ if (welcome && name) {
 
             Auth.logout();
 
-        } else {
+        }
+
+        else {
 
             window.location.href = CONFIG.LOGIN_PAGE;
 
