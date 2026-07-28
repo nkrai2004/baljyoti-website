@@ -67,24 +67,29 @@ const Auth = {
 
     },
 
-    handleCredentialResponse: function (response) {
+  handleCredentialResponse: function (response) {
 
-        if (!response || !response.credential) {
+    if (!response || !response.credential) {
 
-            alert("Login failed.");
+        alert("Login failed.");
 
-            return;
+        return;
 
-        }
+    }
 
-        sessionStorage.setItem(
-            "google_token",
-            response.credential
-        );
+    const token = response.credential;
 
-        window.location.href = CONFIG.DASHBOARD_PAGE;
+    sessionStorage.setItem("google_token", token);
 
-    },
+    // Decode JWT payload
+    const payload = JSON.parse(atob(token.split(".")[1]));
+
+    sessionStorage.setItem("user_name", payload.name || "");
+    sessionStorage.setItem("user_email", payload.email || "");
+
+    window.location.href = CONFIG.DASHBOARD_PAGE;
+
+},
 
     isLoggedIn: function () {
 
