@@ -46,7 +46,7 @@ const CONFIG = {
     // ==========================================
 
     API_URL:
-        "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE",
+        "https://script.google.com/macros/s/AKfycbwDZFT3qHy0upPtqCyB0krbXFV25f_kYwAoBhQTyfuAcBe4whpl9xkZqeCavzUZ5eCt/exec",
 
     // Example:
     // "https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec"
