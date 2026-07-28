@@ -32,6 +32,15 @@ const App = {
         }
 
         console.log("User authenticated.");
+        const name = sessionStorage.getItem("user_name");
+
+const welcome = document.getElementById("welcomeUser");
+
+if (welcome && name) {
+
+    welcome.textContent = "Welcome, " + name;
+
+}
 
         await this.loadDashboard();
 
