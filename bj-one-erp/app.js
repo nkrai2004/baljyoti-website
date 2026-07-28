@@ -52,7 +52,7 @@ if (welcome && name) {
 
             console.log("Loading dashboard...");
 
-            const data = await API.getDashboardData();
+            const data = await API.getDashboard();
 
             if (!Array.isArray(data) || data.length < 2) {
 
