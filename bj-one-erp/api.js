@@ -1,65 +1,78 @@
 /*=========================================================
 BJ ONE ERP
 File        : api.js
-Version     : 1.1.0
-Date        : 28 July 2026
-Author      : Nishant Rai & ChatGPT
-Description : API Communication Module
+Version     : 2.0.0
+Date         : 28 July 2026
+Author       : Nishant Rai & ChatGPT
+Description  : ERP API Manager
 =========================================================*/
 
 "use strict";
 
 const API = {
 
-    async getDashboardData() {
+    async get(action = "dashboard") {
 
         try {
 
-            console.log("Connecting to API...");
-            console.log(CONFIG.API_URL);
+            const url = CONFIG.API_URL + "?action=" + action;
 
-            const response = await fetch(CONFIG.API_URL, {
-    method: "GET",
-    redirect: "follow"
-});
+            console.log("API Request :", url);
 
-            console.log("HTTP Status:", response.status);
+            const response = await fetch(url, {
+                method: "GET",
+                redirect: "follow"
+            });
 
             if (!response.ok) {
-                throw new Error("HTTP Status: " + response.status);
-            }
 
-            const text = await response.text();
-
-            console.log("Raw Response:");
-            console.log(text);
-
-            let data;
-
-            try {
-
-                data = JSON.parse(text);
-
-            } catch (e) {
-
-                throw new Error("Server did not return valid JSON.\n\nResponse:\n" + text);
+                throw new Error("HTTP Status : " + response.status);
 
             }
 
-            return data;
+            return await response.json();
 
-        } catch (error) {
+        }
+
+        catch (error) {
 
             console.error(error);
 
-            alert(
-                "API ERROR\n\n" +
-                error.message
-            );
+            alert("API Error\n\n" + error.message);
 
             throw error;
 
         }
+
+    },
+
+    async getDashboard() {
+
+        return await this.get("dashboard");
+
+    },
+
+    async getUsers() {
+
+        return await this.get("users");
+
+    },
+
+    async getRoles() {
+
+        return await this.get("roles");
+
+    },
+
+    async getModules() {
+
+        return await this.get("modules");
+
+    },
+
+    async getConfig() {
+
+        return await this.get("config");
 
     }
 
