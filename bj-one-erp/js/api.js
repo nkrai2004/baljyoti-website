@@ -1,73 +1,199 @@
-/*=========================================================
+/*
+=========================================================
 BJ ONE ERP
 File        : api.js
-Version     : 3.1.0
+Version     : 4.0.0
 Date        : 30 July 2026
-Description : ERP API Manager
-=========================================================*/
+Author      : Nishant Rai & ChatGPT
+Description : API Communication Layer
+=========================================================
+*/
 
 "use strict";
 
 const API = {
 
-    async get(action = "dashboard", params = {}) {
+    baseUrl: CONFIG.API_URL,
 
-        let url = CONFIG.API_URL + "?action=" + encodeURIComponent(action);
+    async request(action, data = {}) {
 
-        Object.keys(params).forEach(key => {
-            url += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(params[key]);
-        });
+        try {
 
-        console.log("API:", url);
+            const params = new URLSearchParams();
 
-        const response = await fetch(url);
+            params.append("action", action);
 
-        if (!response.ok) {
-            throw new Error("HTTP " + response.status);
+            Object.keys(data).forEach(function (key) {
+
+                if (
+                    data[key] !== undefined &&
+                    data[key] !== null
+                ) {
+
+                    params.append(key, data[key]);
+
+                }
+
+            });
+
+            const url =
+                API.baseUrl + "?" + params.toString();
+
+            console.log("GET :", url);
+
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "HTTP " + response.status
+                );
+
+            }
+
+            const json = await response.json();
+
+            return json;
+
+        } catch (error) {
+
+            console.error(error);
+
+            return {
+
+                success: false,
+
+                message: error.message
+
+            };
+
         }
 
-        return await response.json();
+    },
+
+    async post(action, data = {}) {
+
+        try {
+
+            const formData = new FormData();
+
+            formData.append("action", action);
+
+            Object.keys(data).forEach(function (key) {
+
+                formData.append(key, data[key]);
+
+            });
+
+            const response = await fetch(API.baseUrl, {
+
+                method: "POST",
+
+                body: formData
+
+            });
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "HTTP " + response.status
+                );
+
+            }
+
+            const json = await response.json();
+
+            return json;
+
+        } catch (error) {
+
+            console.error(error);
+
+            return {
+
+                success: false,
+
+                message: error.message
+
+            };
+
+        }
 
     },
 
-    getDashboard() {
-        return this.get("dashboard");
+    async login(email) {
+
+        return await API.request(
+
+            "login",
+
+            {
+
+                email: email
+
+            }
+
+        );
+
     },
 
-    getUsers() {
-        return this.get("users");
+    async dashboard() {
+
+        return await API.request(
+
+            "dashboard"
+
+        );
+
     },
 
-    getRoles() {
-        return this.get("roles");
+    async getLeadSources() {
+
+        return await API.request(
+
+            "leadSources"
+
+        );
+
     },
 
-    getModules() {
-        return this.get("modules");
+    async saveAdmission(data) {
+
+        return await API.post(
+
+            "saveAdmission",
+
+            data
+
+        );
+
     },
 
-    getRoleModules(role) {
-        return this.get("roleModules", {
-            role: role
-        });
+    async listAdmissions() {
+
+        return await API.request(
+
+            "listAdmissions"
+
+        );
+
     },
 
-    /* ---------- ADMISSION ---------- */
+    async dashboardStats() {
 
-    getAdmissionLeads() {
-        return this.get("admissionLeads");
-    },
+        return await API.request(
 
-    getLeadSources() {
-        return this.get("leadSources");
-    },
+            "dashboardStats"
 
-    saveAdmissionLead(data) {
-        return this.get("saveAdmissionLead", data);
-    },
+        );
 
-    getConfig() {
-        return this.get("config");
     }
 
 };
+
+console.log("API Engine Loaded");
