@@ -1,9 +1,8 @@
 /*
 =========================================================
 BJ ONE ERP
-File        : api.js
-Version     : 4.0.0
-Description : Google Apps Script API Layer
+api.js
+Version 5.0
 =========================================================
 */
 
@@ -13,40 +12,27 @@ const API = {
 
     baseURL: CONFIG.API_URL,
 
-    async request(action, data = {}) {
+    async get(action, params = {}) {
+
+        const url = new URL(this.baseURL);
+
+        url.searchParams.append("action", action);
+
+        Object.keys(params).forEach(key => {
+
+            url.searchParams.append(key, params[key]);
+
+        });
 
         try {
 
-            const payload = {
-                action: action,
-                ...data
-            };
+            const response = await fetch(url);
 
-            const response = await fetch(this.baseURL, {
+            return await response.json();
 
-                method: "POST",
+        }
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify(payload)
-
-            });
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "HTTP Error : " + response.status
-                );
-
-            }
-
-            const result = await response.json();
-
-            return result;
-
-        } catch (error) {
+        catch (error) {
 
             console.error(error);
 
@@ -62,207 +48,53 @@ const API = {
 
     },
 
-    async login(idToken) {
+    login(email) {
 
-        return await this.request("login", {
+        return this.get("login", {
 
-            token: idToken
-
-        });
-
-    },
-
-    async dashboard() {
-
-        return await this.request("dashboard");
-
-    },
-
-    async getAdmissions() {
-
-        return await this.request("getAdmissions");
-
-    },
-
-    async getAdmission(id) {
-
-        return await this.request("getAdmission", {
-
-            id: id
+            email: email
 
         });
 
     },
 
-    async createAdmission(data) {
+    dashboard() {
 
-        return await this.request(
-
-            "createAdmission",
-
-            data
-
-        );
+        return this.get("dashboard");
 
     },
 
-    async updateAdmission(data) {
+    modules(role) {
 
-        return await this.request(
+        return this.get("roleModules", {
 
-            "updateAdmission",
+            role: role
 
-            data
-
-        );
+        });
 
     },
 
-    async deleteAdmission(id) {
+    users() {
 
-        return await this.request(
-
-            "deleteAdmission",
-
-            {
-
-                id: id
-
-            }
-
-        );
+        return this.get("users");
 
     },
 
-    async uploadPhoto(base64Image) {
+    roles() {
 
-        return await this.request(
-
-            "uploadPhoto",
-
-            {
-
-                image: base64Image
-
-            }
-
-        );
+        return this.get("roles");
 
     },
 
-    async getStudents() {
+    config() {
 
-        return await this.request(
-
-            "getStudents"
-
-        );
+        return this.get("config");
 
     },
 
-    async getAttendance(date) {
+    admissionLeads() {
 
-        return await this.request(
-
-            "getAttendance",
-
-            {
-
-                date: date
-
-            }
-
-        );
-
-    },
-
-    async saveAttendance(data) {
-
-        return await this.request(
-
-            "saveAttendance",
-
-            data
-
-        );
-
-    },
-
-    async getFees() {
-
-        return await this.request(
-
-            "getFees"
-
-        );
-
-    },
-
-    async saveFee(data) {
-
-        return await this.request(
-
-            "saveFee",
-
-            data
-
-        );
-
-    },
-
-    async getStaff() {
-
-        return await this.request(
-
-            "getStaff"
-
-        );
-
-    },
-
-    async getTransport() {
-
-        return await this.request(
-
-            "getTransport"
-
-        );
-
-    },
-
-    async getLibrary() {
-
-        return await this.request(
-
-            "getLibrary"
-
-        );
-
-    },
-
-    async getInventory() {
-
-        return await this.request(
-
-            "getInventory"
-
-        );
-
-    },
-
-    async reports(type) {
-
-        return await this.request(
-
-            "reports",
-
-            {
-
-                report: type
-
-            }
-
-        );
+        return this.get("admissionLeads");
 
     }
 
