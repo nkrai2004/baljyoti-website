@@ -11,57 +11,42 @@
             <div class="grid-2">
 
                 <div class="form-group">
-                    <label>Admission No.</label>
-                    <input type="text"
-                           id="admissionNo"
-                           readonly>
+                    <label>Admission No. <span class="required">*</span></label>
+                    <input type="text" id="admissionNo" readonly>
                 </div>
 
                 <div class="form-group">
-                    <label>Admission Date</label>
-                    <input type="date"
-                           id="admissionDate">
+                    <label>Admission Date <span class="required">*</span></label>
+                    <input type="date" id="admissionDate">
                 </div>
 
                 <div class="form-group">
-                    <label>Student Name *</label>
-                    <input type="text"
-                           id="studentName"
-                           required>
+                    <label>Student Name <span class="required">*</span></label>
+                    <input type="text" id="studentName" placeholder="Enter Student Name">
                 </div>
 
                 <div class="form-group">
-                    <label>Gender *</label>
-
+                    <label>Gender</label>
                     <select id="gender">
-
-                        <option value="">Select</option>
-
+                        <option value="">Select Gender</option>
                         <option>Male</option>
-
                         <option>Female</option>
-
                         <option>Other</option>
-
                     </select>
-
                 </div>
 
                 <div class="form-group">
                     <label>Date of Birth</label>
-                    <input type="date"
-                           id="dob">
+                    <input type="date" id="dob">
                 </div>
 
                 <div class="form-group">
-                    <label>Class</label>
-
+                    <label>Class Applying For</label>
                     <select id="studentClass">
-
+                        <option value="">Select Class</option>
                         <option>Nursery</option>
                         <option>LKG</option>
                         <option>UKG</option>
-
                         <option>I</option>
                         <option>II</option>
                         <option>III</option>
@@ -74,71 +59,87 @@
                         <option>X</option>
                         <option>XI</option>
                         <option>XII</option>
-
                     </select>
-
                 </div>
 
                 <div class="form-group">
                     <label>Father's Name</label>
-                    <input type="text"
-                           id="fatherName">
+                    <input type="text" id="fatherName">
                 </div>
 
                 <div class="form-group">
                     <label>Mother's Name</label>
+                    <input type="text" id="motherName">
+                </div>
+
+                <div class="form-group">
+                    <label>Mobile Number <span class="required">*</span></label>
+                    <input type="tel" id="mobile" maxlength="10">
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email">
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label>Residential Address</label>
+                <textarea id="address" rows="3"></textarea>
+            </div>
+
+            <div class="grid-2">
+
+                <div class="form-group">
+
+                    <label>Student Photograph</label>
+
+                    <div class="photo-box">
+                        <img id="photoPreview"
+                             src="https://via.placeholder.com/150x180?text=Photo"
+                             alt="Student Photo">
+                    </div>
+
+                    <br>
+
+                    <input type="file"
+                           id="photo"
+                           accept="image/*">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Search Admission</label>
+
                     <input type="text"
-                           id="motherName">
-                </div>
+                           id="searchAdmission"
+                           placeholder="Search by Name / Mobile / Admission No"
+                           onkeyup="Admission.search(this.value)">
 
-                <div class="form-group">
-                    <label>Mobile Number *</label>
-                    <input type="tel"
-                           id="mobile">
-                </div>
-
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email"
-                           id="email">
                 </div>
 
             </div>
 
-            <div class="form-group">
-
-                <label>Address</label>
-
-                <textarea id="address"
-                          rows="3"></textarea>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Student Photograph</label>
-
-                <input type="file"
-                       id="photo"
-                       accept="image/*">
-
-            </div>
-
-            <div class="mt-20">
+            <div class="action-bar">
 
                 <button type="button"
                         class="btn"
                         onclick="Admission.save()">
-
-                    Save Admission
-
+                    💾 Save Admission
                 </button>
 
                 <button type="reset"
-                        class="btn btn-secondary">
+                        class="btn btn-secondary"
+                        onclick="Admission.generateAdmissionNo()">
+                    🔄 Reset
+                </button>
 
-                    Reset
-
+                <button type="button"
+                        class="btn btn-success"
+                        onclick="window.print()">
+                    🖨 Print Form
                 </button>
 
             </div>
@@ -156,17 +157,11 @@
             <thead>
 
                 <tr>
-
-                    <th>Admission No.</th>
-
+                    <th>Admission No</th>
                     <th>Name</th>
-
                     <th>Class</th>
-
                     <th>Mobile</th>
-
                     <th>Action</th>
-
                 </tr>
 
             </thead>
