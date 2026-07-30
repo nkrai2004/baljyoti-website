@@ -1,199 +1,154 @@
-/*=========================================================
+/*
+=========================================================
 BJ ONE ERP
 File        : app.js
-Version     : 3.0.0
-Date        : 30 July 2026
-Author      : Nishant Rai & ChatGPT
+Version     : 3.0
 Description : Main Application Controller
-=========================================================*/
-
-"use strict";
+=========================================================
+*/
 
 const App = {
 
-    version: "3.0.0",
+    currentModule: "dashboard",
 
-    async start() {
+    modules: [
 
-        console.clear();
+        {
+            id: "dashboard",
+            name: "Dashboard",
+            icon: "🏠"
+        },
 
-        console.log("====================================");
-        console.log("BJ ONE ERP");
-        console.log("Version :", this.version);
-        console.log("====================================");
+        {
+            id: "admission",
+            name: "Admissions",
+            icon: "🎓"
+        },
 
-        if (!sessionStorage.getItem("google_token")) {
+        {
+            id: "students",
+            name: "Students",
+            icon: "👨‍🎓"
+        },
 
-            alert("Please login first.");
+        {
+            id: "attendance",
+            name: "Attendance",
+            icon: "📅"
+        },
 
-            window.location.href = CONFIG.LOGIN_PAGE;
+        {
+            id: "fees",
+            name: "Fees",
+            icon: "💰"
+        },
+
+        {
+            id: "staff",
+            name: "Staff",
+            icon: "👨‍🏫"
+        },
+
+        {
+            id: "transport",
+            name: "Transport",
+            icon: "🚌"
+        },
+
+        {
+            id: "library",
+            name: "Library",
+            icon: "📚"
+        },
+
+        {
+            id: "inventory",
+            name: "Inventory",
+            icon: "📦"
+        },
+
+        {
+            id: "reports",
+            name: "Reports",
+            icon: "📊"
+        }
+
+    ],
+
+    init() {
+
+        console.log("BJ ONE ERP Started");
+
+        this.buildSidebar();
+
+        this.showWelcome();
+
+    },
+
+    buildSidebar() {
+
+        const menu = document.getElementById("sidebarMenu");
+
+        if (!menu) return;
+
+        menu.innerHTML = "";
+
+        this.modules.forEach(module => {
+
+            const li = document.createElement("li");
+
+            li.innerHTML = `${module.icon} ${module.name}`;
+
+            li.dataset.module = module.id;
+
+            if (module.id === this.currentModule) {
+                li.style.background = "#C62828";
+            }
+
+            li.onclick = () => {
+
+                this.openModule(module.id);
+
+            };
+
+            menu.appendChild(li);
+
+        });
+
+    },
+
+    openModule(moduleId) {
+
+        this.currentModule = moduleId;
+
+        this.buildSidebar();
+
+        if (moduleId === "dashboard") {
+
+            location.reload();
 
             return;
 
         }
 
-        console.log("User authenticated.");
-
-        this.loadUserProfile();
-
-        await this.loadDashboard();
-
-        await this.loadModules();
+        alert(moduleId + " module will be connected in next steps.");
 
     },
 
-    loadUserProfile() {
+    showWelcome() {
 
-        const name =
-            sessionStorage.getItem("user_name") || "User";
+        const user = JSON.parse(localStorage.getItem("bjUser"));
 
-        const email =
-            sessionStorage.getItem("user_email") || "";
+        const box = document.getElementById("welcomeUser");
 
-        const role =
-            sessionStorage.getItem("user_role") || "";
+        if (!box) return;
 
-        const welcome =
-            document.getElementById("welcomeUser");
+        if (user) {
 
-        if (welcome) {
-
-            welcome.innerHTML = `
-                <strong>${name}</strong><br>
-                <small>${email}</small><br>
-                <small><b>Role :</b> ${role}</small>
-            `;
-
-        }
-
-    },
-
-    async loadDashboard() {
-
-        try {
-
-            console.log("Loading Dashboard...");
-
-            const data = await API.getDashboard();
-
-            if (!Array.isArray(data) || data.length < 2) {
-
-                throw new Error("Invalid dashboard data.");
-
-            }
-
-            const dashboard = {};
-
-            for (let i = 1; i < data.length; i++) {
-
-                dashboard[data[i][0]] = data[i][1];
-
-            }
-
-            this.setValue(
-                "students",
-                dashboard.TotalStudents || 0
-            );
-
-            this.setValue(
-                "staff",
-                dashboard.TotalStaff || 0
-            );
-
-            this.setValue(
-                "attendance",
-                (dashboard.TodayAttendance || 0) + "%"
-            );
-
-            this.setValue(
-                "fees",
-                "₹" + (dashboard.FeeCollectionToday || 0)
-            );
-
-            console.log("Dashboard Loaded.");
-
-        }
-
-        catch (error) {
-
-            console.error(error);
-
-            alert(error.message);
-
-        }
-
-    },
-
-    setValue(id, value) {
-
-        const element =
-            document.getElementById(id);
-
-        if (element) {
-
-            element.textContent = value;
-
-        }
-
-    },
-    
-    async loadModules() {
-
-        try {
-
-            const role =
-                sessionStorage.getItem("user_role");
-
-            const result =
-                await API.getRoleModules(role);
-
-            if (!result.success) {
-
-                throw new Error(result.message);
-
-            }
-
-            const menu =
-                document.getElementById("sidebarMenu");
-
-            menu.innerHTML = "";
-
-            result.modules.forEach(module => {
-
-                const li =
-                    document.createElement("li");
-
-                li.innerHTML = module.moduleName;
-
-                li.onclick = function () {
-
-                    if (module.url) {
-
-                        window.location.href = module.url;
-
-                    }
-
-                };
-
-                menu.appendChild(li);
-
-            });
-
-            console.log(
-                result.modules.length +
-                " modules loaded."
-            );
-
-        }
-
-        catch (error) {
-
-            console.error(error);
-
-            alert(
-                "Unable to load modules.\n\n" +
-                error.message
-            );
+            box.innerHTML =
+                "Welcome <b>" +
+                user.name +
+                "</b>";
 
         }
 
@@ -201,30 +156,16 @@ const App = {
 
     logout() {
 
-        sessionStorage.clear();
+        localStorage.removeItem("bjUser");
 
-        if (typeof Auth !== "undefined") {
-
-            Auth.logout();
-
-        }
-
-        else {
-
-            window.location.href =
-                CONFIG.LOGIN_PAGE;
-
-        }
+        window.location.href = "login.html";
 
     }
 
 };
 
-window.addEventListener(
-    "DOMContentLoaded",
-    function () {
+window.onload = () => {
 
-        App.start();
+    App.init();
 
-    }
-);
+};
