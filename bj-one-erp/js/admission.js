@@ -1,11 +1,13 @@
 /*=========================================================
 BJ ONE ERP
 File        : admission.js
-Version     : 1.0.0
-Date         : 30 July 2026
-Author       : Nishant Rai & ChatGPT
-Description  : Admission CRM Dashboard
+Version     : 1.1.0
+Date        : 30 July 2026
+Author      : Nishant Rai & ChatGPT
+Description : Admission CRM Dashboard
 =========================================================*/
+
+"use strict";
 
 document.addEventListener("DOMContentLoaded", initAdmission);
 
@@ -43,7 +45,7 @@ function checkLogin() {
 
     const token = sessionStorage.getItem("google_token");
 
-    if (!user) {
+    if (!token) {
 
         alert("Session expired. Please login again.");
 
@@ -53,7 +55,13 @@ function checkLogin() {
 
     }
 
-    window.currentUser = user;
+    window.currentUser = {
+
+        name: sessionStorage.getItem("user_name"),
+        email: sessionStorage.getItem("user_email"),
+        role: sessionStorage.getItem("user_role")
+
+    };
 
 }
 
@@ -111,15 +119,10 @@ function updateDashboard(data) {
     const total = Math.max(data.length - 1, 0);
 
     document.getElementById("todayLeads").innerText = total;
-
     document.getElementById("todayFollowup").innerText = 0;
-
     document.getElementById("walkins").innerText = 0;
-
     document.getElementById("applications").innerText = 0;
-
     document.getElementById("admissions").innerText = 0;
-
     document.getElementById("documents").innerText = 0;
 
 }
@@ -150,21 +153,13 @@ function renderLeadTable(data) {
         const row = data[i];
 
         tbody.innerHTML += `
-
         <tr>
-
             <td>${row[0] || ""}</td>
-
             <td>${row[4] || ""}</td>
-
             <td>${row[7] || ""}</td>
-
             <td>${row[18] || ""}</td>
-
             <td>${row[19] || ""}</td>
-
         </tr>
-
         `;
 
     }
