@@ -1,125 +1,331 @@
-/*
 =========================================================
 BJ ONE ERP
-File        : config.js
+File        : login.html
+Version     : 1.2.0
+Date         : 28 July 2026
 Version     : 4.0.0
 Date        : 30 July 2026
 Author      : Nishant Rai & ChatGPT
-Description : Global Configuration
+Description : Google Workspace Login Page
+Description : Google Login Page
 =========================================================
-*/
+-->
 
-"use strict";
+@@ -15,118 +15,132 @@
+<head>
 
-const CONFIG = {
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    // =====================================================
-    // SCHOOL INFORMATION
-    // =====================================================
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    SCHOOL_NAME: "Bal Jyoti Public School",
+<title>BJ ONE ERP | Login</title>
 
-    ERP_NAME: "BJ ONE ERP",
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect"
+      href="https://fonts.googleapis.com">
 
-    ERP_VERSION: "4.0.0",
+<link rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin>
 
-    SCHOOL_CODE: "BJPS",
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet">
 
-    ACADEMIC_YEAR: "2026-27",
+<style>
 
-    // =====================================================
-    // GOOGLE AUTHENTICATION
-    // Replace with your Google OAuth Client ID
-    // =====================================================
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
 
-    GOOGLE_CLIENT_ID:
-        "PASTE_YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+body{
 
-    // =====================================================
-    // GOOGLE APPS SCRIPT WEB APP
-    // =====================================================
+    background:#C62828;
+height:100vh;
 
-    API_URL:
-        "https://script.google.com/macros/s/AKfycbwDZFT3qHy0upPtqCyB0krbXFV25f_kYwAoBhQTyfuAcBe4whpl9xkZqeCavzUZ5eCt/exec",
+    display:flex;
+display:flex;
 
-    // =====================================================
-    // APPLICATION PAGES
-    // =====================================================
+    justify-content:center;
+justify-content:center;
 
-    LOGIN_PAGE: "login.html",
+    align-items:center;
+align-items:center;
 
-    DASHBOARD_PAGE: "dashboard.html",
+    height:100vh;
+background:#f4f4f4;
 
-    // =====================================================
-    // STORAGE KEYS
-    // =====================================================
+}
 
-    STORAGE: {
+.login-box{
+.login-card{
 
-        TOKEN: "google_token",
+    width:420px;
+width:420px;
 
-        USER_NAME: "user_name",
+    background:#FFFFFF;
+background:#ffffff;
 
-        USER_EMAIL: "user_email",
+    border-radius:16px;
+padding:40px;
 
-        USER_ROLE: "user_role"
+    padding:40px;
+border-radius:16px;
 
-    },
+    text-align:center;
+box-shadow:0 10px 35px rgba(0,0,0,.12);
 
-    // =====================================================
-    // THEME
-    // =====================================================
+    box-shadow:0 20px 40px rgba(0,0,0,.25);
+text-align:center;
 
-    THEME: {
+}
 
-        PRIMARY: "#C62828",
+.logo{
 
-        SECONDARY: "#8E0000",
+    width:90px;
 
-        SUCCESS: "#2E7D32",
+    height:90px;
+width:90px;
 
-        WARNING: "#F9A825",
+    border-radius:50%;
+height:90px;
 
-        DANGER: "#C62828",
+    display:block;
+margin:auto;
 
-        BACKGROUND: "#F5F5F5",
+    margin:0 auto 20px;
+margin-bottom:20px;
 
-        CARD: "#FFFFFF",
+    object-fit:contain;
+display:block;
 
-        TEXT: "#333333"
+}
 
-    },
+h1{
 
-    // =====================================================
-    // SYSTEM SETTINGS
-    // =====================================================
+    color:#C62828;
+font-size:28px;
 
-    TIMEZONE: "Asia/Kolkata",
+    margin-bottom:8px;
+color:#C62828;
 
-    DATE_FORMAT: "dd/MM/yyyy",
+    font-size:28px;
+margin-bottom:8px;
 
-    CURRENCY: "INR",
+}
 
-    LANGUAGE: "en-IN",
+h3{
+.subtitle{
 
-    // =====================================================
-    // APPLICATION SETTINGS
-    // =====================================================
+    color:#666;
+font-size:15px;
 
-    ENABLE_DEBUG: true,
+    font-weight:500;
+color:#666;
 
-    SESSION_TIMEOUT: 60,
+    margin-bottom:30px;
+margin-bottom:30px;
 
-    AUTO_REFRESH: false
+}
 
+#googleButton{
+
+    display:flex;
+display:flex;
+
+    justify-content:center;
+justify-content:center;
+
+    margin-bottom:20px;
+margin-top:20px;
+
+}
+
+#status{
+.footer{
+
+    color:#666;
+margin-top:35px;
+
+    font-size:14px;
+font-size:13px;
+
+    margin-top:15px;
+color:#777;
+
+}
+
+.footer{
+.version{
+
+    margin-top:30px;
+margin-top:10px;
+
+    font-size:12px;
+font-size:12px;
+
+    color:#888;
+color:#999;
+
+}
+
+.loading{
+
+margin-top:15px;
+
+font-size:13px;
+
+color:#888;
+
+}
+
+@@ -136,75 +150,99 @@
+
+<body>
+
+<div class="login-box">
+<div class="login-card">
+
+<img src="assets/logo.png"
+     class="logo"
+     alt="Bal Jyoti Public School">
+
+<h1>
+
+BJ ONE ERP
+
+    <img src="https://baljyoti.com/logo.png"
+         class="logo"
+         alt="Bal Jyoti Public School">
+</h1>
+
+    <h1>BJ ONE ERP</h1>
+<div class="subtitle">
+
+    <h3>Bal Jyoti Public School</h3>
+Bal Jyoti Public School
+
+<br>
+
+Enterprise Resource Planning System
+
+</div>
+
+    <div id="googleButton"></div>
+<div id="googleButton"></div>
+
+    <div id="status">
+        Initializing authentication...
+    </div>
+<div class="loading">
+
+    <div class="footer">
+        © 2026 Bal Jyoti Public School
+    </div>
+Sign in using your authorised Google account.
+
+</div>
+
+<div class="footer">
+
+© 2026 Bal Jyoti Public School
+
+<div class="version">
+
+Version 4.0
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Google Identity -->
+
+<script src="https://accounts.google.com/gsi/client"
+        async
+        defer></script>
+
+<!-- Configuration -->
+<script src="config.js"></script>
+
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="js/config.js"></script>
+
+<!-- Authentication -->
+<script src="auth.js"></script>
+<script src="js/auth.js"></script>
+
+<script>
+
+window.addEventListener("load", function () {
+window.onload=function(){
+
+if(typeof Auth==="undefined") return;
+
+Auth.init();
+
+    const status = document.getElementById("status");
+setTimeout(function(){
+
+    const timer = setInterval(function () {
+if(typeof google!=="undefined" &&
+google.accounts &&
+google.accounts.id){
+
+        if (
+            typeof Auth !== "undefined" &&
+            Auth.initialized &&
+            typeof google !== "undefined" &&
+            google.accounts &&
+            google.accounts.id
+        ) {
+google.accounts.id.renderButton(
+
+            clearInterval(timer);
+document.getElementById("googleButton"),
+
+            status.innerHTML = "Authentication Ready.";
+{
+
+            google.accounts.id.renderButton(
+theme:"filled_blue",
+
+                document.getElementById("googleButton"),
+size:"large",
+
+                {
+                    theme: "outline",
+                    size: "large",
+                    width: 320,
+                    text: "continue_with"
+                }
+shape:"pill",
+
+            );
+width:320
+
+        }
+}
+
+);
+
+}
+
+    }, 300);
+},700);
+
+});
 };
 
-// Prevent accidental modification
-Object.freeze(CONFIG);
-Object.freeze(CONFIG.STORAGE);
-Object.freeze(CONFIG.THEME);
-
-// Startup Log
-console.log(
-    `${CONFIG.ERP_NAME} v${CONFIG.ERP_VERSION} Loaded Successfully`
-);
+</script>
