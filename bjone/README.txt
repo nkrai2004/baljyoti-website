@@ -1,1 +1,0 @@
-Starter. Verify Google ID token on backend before granting access.
