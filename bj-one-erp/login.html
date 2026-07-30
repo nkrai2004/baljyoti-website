@@ -3,10 +3,10 @@
 =========================================================
 BJ ONE ERP
 File        : login.html
-Version     : 1.2.0
-Date         : 28 July 2026
+Version     : 4.0.0
+Date        : 30 July 2026
 Author      : Nishant Rai & ChatGPT
-Description : Google Workspace Login Page
+Description : Google Login Page
 =========================================================
 -->
 
@@ -15,12 +15,18 @@ Description : Google Workspace Login Page
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
 <title>BJ ONE ERP | Login</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect"
+      href="https://fonts.googleapis.com">
+
+<link rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet">
@@ -28,105 +34,113 @@ Description : Google Workspace Login Page
 <style>
 
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
 }
 
 body{
 
-    background:#C62828;
+height:100vh;
 
-    display:flex;
+display:flex;
 
-    justify-content:center;
+justify-content:center;
 
-    align-items:center;
+align-items:center;
 
-    height:100vh;
+background:#f4f4f4;
 
 }
 
-.login-box{
+.login-card{
 
-    width:420px;
+width:420px;
 
-    background:#FFFFFF;
+background:#ffffff;
 
-    border-radius:16px;
+padding:40px;
 
-    padding:40px;
+border-radius:16px;
 
-    text-align:center;
+box-shadow:0 10px 35px rgba(0,0,0,.12);
 
-    box-shadow:0 20px 40px rgba(0,0,0,.25);
+text-align:center;
 
 }
 
 .logo{
 
-    width:90px;
+width:90px;
 
-    height:90px;
+height:90px;
 
-    border-radius:50%;
+margin:auto;
 
-    display:block;
+margin-bottom:20px;
 
-    margin:0 auto 20px;
-
-    object-fit:contain;
+display:block;
 
 }
 
 h1{
 
-    color:#C62828;
+font-size:28px;
 
-    margin-bottom:8px;
+color:#C62828;
 
-    font-size:28px;
+margin-bottom:8px;
 
 }
 
-h3{
+.subtitle{
 
-    color:#666;
+font-size:15px;
 
-    font-weight:500;
+color:#666;
 
-    margin-bottom:30px;
+margin-bottom:30px;
 
 }
 
 #googleButton{
 
-    display:flex;
+display:flex;
 
-    justify-content:center;
+justify-content:center;
 
-    margin-bottom:20px;
-
-}
-
-#status{
-
-    color:#666;
-
-    font-size:14px;
-
-    margin-top:15px;
+margin-top:20px;
 
 }
 
 .footer{
 
-    margin-top:30px;
+margin-top:35px;
 
-    font-size:12px;
+font-size:13px;
 
-    color:#888;
+color:#777;
+
+}
+
+.version{
+
+margin-top:10px;
+
+font-size:12px;
+
+color:#999;
+
+}
+
+.loading{
+
+margin-top:15px;
+
+font-size:13px;
+
+color:#888;
 
 }
 
@@ -136,75 +150,99 @@ h3{
 
 <body>
 
-<div class="login-box">
+<div class="login-card">
 
-    <img src="https://baljyoti.com/logo.png"
-         class="logo"
-         alt="Bal Jyoti Public School">
+<img src="assets/logo.png"
+     class="logo"
+     alt="Bal Jyoti Public School">
 
-    <h1>BJ ONE ERP</h1>
+<h1>
 
-    <h3>Bal Jyoti Public School</h3>
+BJ ONE ERP
 
-    <div id="googleButton"></div>
+</h1>
 
-    <div id="status">
-        Initializing authentication...
-    </div>
+<div class="subtitle">
 
-    <div class="footer">
-        © 2026 Bal Jyoti Public School
-    </div>
+Bal Jyoti Public School
+
+<br>
+
+Enterprise Resource Planning System
 
 </div>
 
+<div id="googleButton"></div>
+
+<div class="loading">
+
+Sign in using your authorised Google account.
+
+</div>
+
+<div class="footer">
+
+© 2026 Bal Jyoti Public School
+
+<div class="version">
+
+Version 4.0
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Google Identity -->
+
+<script src="https://accounts.google.com/gsi/client"
+        async
+        defer></script>
+
 <!-- Configuration -->
-<script src="config.js"></script>
 
-<!-- Google Identity Services -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="js/config.js"></script>
 
-<!-- Authentication -->
-<script src="auth.js"></script>
+<script src="js/auth.js"></script>
 
 <script>
 
-window.addEventListener("load", function () {
+window.onload=function(){
 
-    const status = document.getElementById("status");
+if(typeof Auth==="undefined") return;
 
-    const timer = setInterval(function () {
+Auth.init();
 
-        if (
-            typeof Auth !== "undefined" &&
-            Auth.initialized &&
-            typeof google !== "undefined" &&
-            google.accounts &&
-            google.accounts.id
-        ) {
+setTimeout(function(){
 
-            clearInterval(timer);
+if(typeof google!=="undefined" &&
+google.accounts &&
+google.accounts.id){
 
-            status.innerHTML = "Authentication Ready.";
+google.accounts.id.renderButton(
 
-            google.accounts.id.renderButton(
+document.getElementById("googleButton"),
 
-                document.getElementById("googleButton"),
+{
 
-                {
-                    theme: "outline",
-                    size: "large",
-                    width: 320,
-                    text: "continue_with"
-                }
+theme:"filled_blue",
 
-            );
+size:"large",
 
-        }
+shape:"pill",
 
-    }, 300);
+width:320
 
-});
+}
+
+);
+
+}
+
+},700);
+
+};
 
 </script>
 
