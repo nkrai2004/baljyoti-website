@@ -1,21 +1,33 @@
 /*=========================================================
 BJ ONE ERP
 File        : api.js
-Version     : 2.0.0
-Date         : 28 July 2026
-Author       : Nishant Rai & ChatGPT
-Description  : ERP API Manager
+Version     : 3.0.0
+Date        : 30 July 2026
+Author      : Nishant Rai & ChatGPT
+Description : ERP API Manager
 =========================================================*/
 
 "use strict";
 
 const API = {
 
-    async get(action = "dashboard") {
+    /*=====================================================
+      COMMON GET METHOD
+    =====================================================*/
+    async get(action = "dashboard", params = {}) {
 
         try {
 
-            const url = CONFIG.API_URL + "?action=" + action;
+            let url = CONFIG.API_URL + "?action=" + encodeURIComponent(action);
+
+            for (const key in params) {
+
+                url += "&" +
+                    encodeURIComponent(key) +
+                    "=" +
+                    encodeURIComponent(params[key]);
+
+            }
 
             console.log("API Request :", url);
 
@@ -46,30 +58,56 @@ const API = {
 
     },
 
+    /*=====================================================
+      DASHBOARD
+    =====================================================*/
     async getDashboard() {
 
         return await this.get("dashboard");
 
     },
 
+    /*=====================================================
+      USERS
+    =====================================================*/
     async getUsers() {
 
         return await this.get("users");
 
     },
 
+    /*=====================================================
+      ROLES
+    =====================================================*/
     async getRoles() {
 
         return await this.get("roles");
 
     },
 
+    /*=====================================================
+      MODULES
+    =====================================================*/
     async getModules() {
 
         return await this.get("modules");
 
     },
 
+    /*=====================================================
+      ROLE MODULES
+    =====================================================*/
+    async getRoleModules(role) {
+
+        return await this.get("roleModules", {
+            role: role
+        });
+
+    },
+
+    /*=====================================================
+      CONFIG
+    =====================================================*/
     async getConfig() {
 
         return await this.get("config");
