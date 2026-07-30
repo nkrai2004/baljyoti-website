@@ -4,119 +4,116 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
 <title>BJ ONE ERP | Login</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect"
+      href="https://fonts.googleapis.com">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet">
+
+<script src="https://accounts.google.com/gsi/client"
+        async
+        defer></script>
 
 <style>
 
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
 }
 
 body{
 
-    background:#f4f4f4;
+height:100vh;
 
-    display:flex;
+display:flex;
 
-    justify-content:center;
+justify-content:center;
 
-    align-items:center;
+align-items:center;
 
-    min-height:100vh;
+background:linear-gradient(135deg,#8E0000,#C62828);
 
 }
 
-.login-card{
+.login-box{
 
-    width:420px;
+width:420px;
 
-    background:#fff;
+background:#fff;
 
-    padding:40px;
+padding:40px;
 
-    border-radius:18px;
+border-radius:16px;
 
-    text-align:center;
+box-shadow:0 15px 40px rgba(0,0,0,.25);
 
-    box-shadow:0 15px 40px rgba(0,0,0,.15);
+text-align:center;
 
 }
 
 .logo{
 
-    width:90px;
+width:110px;
 
-    height:90px;
-
-    object-fit:contain;
-
-    margin-bottom:20px;
+margin-bottom:20px;
 
 }
 
-h1{
+h2{
 
-    color:#C62828;
+margin-bottom:8px;
 
-    margin-bottom:8px;
+color:#C62828;
 
 }
 
 .subtitle{
 
-    color:#666;
+color:#666;
 
-    margin-bottom:30px;
-
-    line-height:1.6;
+margin-bottom:30px;
 
 }
 
-#googleButton{
+#googleSignIn{
 
-    display:flex;
+display:flex;
 
-    justify-content:center;
+justify-content:center;
 
-    margin-bottom:25px;
-
-}
-
-.status{
-
-    color:#777;
-
-    font-size:14px;
-
-    margin-bottom:20px;
+margin-top:25px;
 
 }
 
 .footer{
 
-    color:#999;
+margin-top:35px;
 
-    font-size:13px;
+font-size:13px;
 
-    margin-top:20px;
+color:#888;
 
 }
 
 .version{
 
-    margin-top:8px;
+margin-top:10px;
 
-    font-size:12px;
+font-size:12px;
+
+color:#999;
 
 }
 
@@ -126,127 +123,47 @@ h1{
 
 <body>
 
-<div class="login-card">
+<div class="login-box">
 
 <img src="assets/logo.png"
      class="logo"
      alt="Bal Jyoti Public School">
 
-<h1>
+<h2>BJ ONE ERP</h2>
 
-BJ ONE ERP
-
-</h1>
-
-<div class="subtitle">
+<p class="subtitle">
 
 Bal Jyoti Public School
 
 <br>
 
-Enterprise Resource Planning System
+Enterprise Resource Planning
 
-</div>
+</p>
 
-<div id="googleButton"></div>
-
-<div id="status" class="status">
-
-Loading Google Sign-In...
-
-</div>
+<div id="googleSignIn"></div>
 
 <div class="footer">
 
-© 2026 Bal Jyoti Public School
+Please sign in using your
+
+authorized Google Workspace account.
+
+</div>
 
 <div class="version">
 
-Version 4.0
+Version 4.0.0
 
 </div>
 
 </div>
-
-</div>
-
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <script src="js/config.js"></script>
 
+<script src="js/api.js"></script>
+
 <script src="js/auth.js"></script>
-
-<script>
-
-window.addEventListener("load", function(){
-
-    const status=document.getElementById("status");
-
-    if(typeof Auth==="undefined"){
-
-        status.innerHTML="Authentication library not loaded.";
-
-        return;
-
-    }
-
-    Auth.init();
-
-    let retry=0;
-
-    const timer=setInterval(function(){
-
-        retry++;
-
-        if(
-
-            typeof google!=="undefined" &&
-
-            google.accounts &&
-
-            google.accounts.id &&
-
-            Auth.initialized
-
-        ){
-
-            clearInterval(timer);
-
-            google.accounts.id.renderButton(
-
-                document.getElementById("googleButton"),
-
-                {
-
-                    theme:"filled_blue",
-
-                    size:"large",
-
-                    shape:"pill",
-
-                    width:320
-
-                }
-
-            );
-
-            status.innerHTML="Please sign in with your school Google account.";
-
-        }
-
-        if(retry>50){
-
-            clearInterval(timer);
-
-            status.innerHTML="Unable to load Google Sign-In.";
-
-        }
-
-    },200);
-
-});
-
-</script>
 
 </body>
 
