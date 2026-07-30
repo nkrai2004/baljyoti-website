@@ -1,9 +1,8 @@
 /*=========================================================
 BJ ONE ERP
 File        : api.js
-Version     : 3.0.0
+Version     : 3.1.0
 Date        : 30 July 2026
-Author      : Nishant Rai & ChatGPT
 Description : ERP API Manager
 =========================================================*/
 
@@ -11,107 +10,64 @@ Description : ERP API Manager
 
 const API = {
 
-    /*=====================================================
-      COMMON GET METHOD
-    =====================================================*/
     async get(action = "dashboard", params = {}) {
 
-        try {
+        let url = CONFIG.API_URL + "?action=" + encodeURIComponent(action);
 
-            let url = CONFIG.API_URL + "?action=" + encodeURIComponent(action);
-
-            for (const key in params) {
-
-                url += "&" +
-                    encodeURIComponent(key) +
-                    "=" +
-                    encodeURIComponent(params[key]);
-
-            }
-
-            console.log("API Request :", url);
-
-            const response = await fetch(url, {
-                method: "GET",
-                redirect: "follow"
-            });
-
-            if (!response.ok) {
-
-                throw new Error("HTTP Status : " + response.status);
-
-            }
-
-            return await response.json();
-
-        }
-
-        catch (error) {
-
-            console.error(error);
-
-            alert("API Error\n\n" + error.message);
-
-            throw error;
-
-        }
-
-    },
-
-    /*=====================================================
-      DASHBOARD
-    =====================================================*/
-    async getDashboard() {
-
-        return await this.get("dashboard");
-
-    },
-
-    /*=====================================================
-      USERS
-    =====================================================*/
-    async getUsers() {
-
-        return await this.get("users");
-
-    },
-
-    /*=====================================================
-      ROLES
-    =====================================================*/
-    async getRoles() {
-
-        return await this.get("roles");
-
-    },
-
-    /*=====================================================
-      MODULES
-    =====================================================*/
-    async getModules() {
-
-        return await this.get("modules");
-
-    },
-
-    /*=====================================================
-      ROLE MODULES
-    =====================================================*/
-    async getRoleModules(role) {
-
-        return await this.get("roleModules", {
-            role: role
+        Object.keys(params).forEach(key => {
+            url += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(params[key]);
         });
 
+        console.log("API:", url);
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("HTTP " + response.status);
+        }
+
+        return await response.json();
+
     },
 
-    /*=====================================================
-      CONFIG
-    =====================================================*/
-    async getConfig() {
+    getDashboard() {
+        return this.get("dashboard");
+    },
 
-        return await this.get("config");
+    getUsers() {
+        return this.get("users");
+    },
 
+    getRoles() {
+        return this.get("roles");
+    },
+
+    getModules() {
+        return this.get("modules");
+    },
+
+    getRoleModules(role) {
+        return this.get("roleModules", {
+            role: role
+        });
+    },
+
+    /* ---------- ADMISSION ---------- */
+
+    getAdmissionLeads() {
+        return this.get("admissionLeads");
+    },
+
+    getLeadSources() {
+        return this.get("leadSources");
+    },
+
+    saveAdmissionLead(data) {
+        return this.get("saveAdmissionLead", data);
+    },
+
+    getConfig() {
+        return this.get("config");
     }
 
 };
