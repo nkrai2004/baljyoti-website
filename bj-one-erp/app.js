@@ -1,8 +1,8 @@
 /*=========================================================
 BJ ONE ERP
 File        : app.js
-Version     : 2.0.0
-Date        : 28 July 2026
+Version     : 3.0.0
+Date        : 30 July 2026
 Author      : Nishant Rai & ChatGPT
 Description : Main Application Controller
 =========================================================*/
@@ -11,7 +11,7 @@ Description : Main Application Controller
 
 const App = {
 
-    version: "2.0.0",
+    version: "3.0.0",
 
     async start() {
 
@@ -22,7 +22,6 @@ const App = {
         console.log("Version :", this.version);
         console.log("====================================");
 
-        // Check Login
         if (!sessionStorage.getItem("google_token")) {
 
             alert("Please login first.");
@@ -39,24 +38,30 @@ const App = {
 
         await this.loadDashboard();
 
-        // Future Step
-        // await this.loadModules();
+        await this.loadModules();
 
     },
 
     loadUserProfile() {
 
-        const name = sessionStorage.getItem("user_name") || "User";
+        const name =
+            sessionStorage.getItem("user_name") || "User";
 
-        const email = sessionStorage.getItem("user_email") || "";
+        const email =
+            sessionStorage.getItem("user_email") || "";
 
-        const welcome = document.getElementById("welcomeUser");
+        const role =
+            sessionStorage.getItem("user_role") || "";
+
+        const welcome =
+            document.getElementById("welcomeUser");
 
         if (welcome) {
 
             welcome.innerHTML = `
                 <strong>${name}</strong><br>
-                <small>${email}</small>
+                <small>${email}</small><br>
+                <small><b>Role :</b> ${role}</small>
             `;
 
         }
@@ -67,17 +72,15 @@ const App = {
 
         try {
 
-            console.log("Loading dashboard...");
+            console.log("Loading Dashboard...");
 
             const data = await API.getDashboard();
 
             if (!Array.isArray(data) || data.length < 2) {
 
-                throw new Error("Invalid dashboard data received.");
+                throw new Error("Invalid dashboard data.");
 
             }
-
-            console.table(data);
 
             const dashboard = {};
 
@@ -87,12 +90,27 @@ const App = {
 
             }
 
-            this.setValue("students", dashboard.TotalStudents || 0);
-            this.setValue("staff", dashboard.TotalStaff || 0);
-            this.setValue("attendance", (dashboard.TodayAttendance || 0) + "%");
-            this.setValue("fees", "₹" + (dashboard.FeeCollectionToday || 0));
+            this.setValue(
+                "students",
+                dashboard.TotalStudents || 0
+            );
 
-            console.log("Dashboard loaded successfully.");
+            this.setValue(
+                "staff",
+                dashboard.TotalStaff || 0
+            );
+
+            this.setValue(
+                "attendance",
+                (dashboard.TodayAttendance || 0) + "%"
+            );
+
+            this.setValue(
+                "fees",
+                "₹" + (dashboard.FeeCollectionToday || 0)
+            );
+
+            console.log("Dashboard Loaded.");
 
         }
 
@@ -100,10 +118,7 @@ const App = {
 
             console.error(error);
 
-            alert(
-                "Dashboard Loading Failed\n\n" +
-                error.message
-            );
+            alert(error.message);
 
         }
 
@@ -111,7 +126,8 @@ const App = {
 
     setValue(id, value) {
 
-        const element = document.getElementById(id);
+        const element =
+            document.getElementById(id);
 
         if (element) {
 
@@ -120,22 +136,64 @@ const App = {
         }
 
     },
-
+    
     async loadModules() {
 
         try {
 
-            const data = await API.getModules();
+            const role =
+                sessionStorage.getItem("user_role");
 
-            console.table(data);
+            const result =
+                await API.getRoleModules(role);
 
-            // Dynamic Sidebar will be added in next step.
+            if (!result.success) {
+
+                throw new Error(result.message);
+
+            }
+
+            const menu =
+                document.getElementById("sidebarMenu");
+
+            menu.innerHTML = "";
+
+            result.modules.forEach(module => {
+
+                const li =
+                    document.createElement("li");
+
+                li.innerHTML = module.moduleName;
+
+                li.onclick = function () {
+
+                    if (module.url) {
+
+                        window.location.href = module.url;
+
+                    }
+
+                };
+
+                menu.appendChild(li);
+
+            });
+
+            console.log(
+                result.modules.length +
+                " modules loaded."
+            );
 
         }
 
         catch (error) {
 
             console.error(error);
+
+            alert(
+                "Unable to load modules.\n\n" +
+                error.message
+            );
 
         }
 
@@ -153,7 +211,8 @@ const App = {
 
         else {
 
-            window.location.href = CONFIG.LOGIN_PAGE;
+            window.location.href =
+                CONFIG.LOGIN_PAGE;
 
         }
 
@@ -161,8 +220,11 @@ const App = {
 
 };
 
-window.addEventListener("DOMContentLoaded", function () {
+window.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    App.start();
+        App.start();
 
-});
+    }
+);
