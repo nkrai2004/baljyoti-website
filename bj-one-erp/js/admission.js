@@ -1,252 +1,335 @@
 /*
 =========================================================
 BJ ONE ERP
-Admission Module CSS
+Admission Module
 Version : 1.0
 =========================================================
 */
 
-.module-container{
-    width:100%;
-}
+"use strict";
 
-.grid-2{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:20px;
-}
+const Admission = {
 
-.grid-3{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:20px;
-}
+    admissions: [],
 
-.form-group{
-    display:flex;
-    flex-direction:column;
-}
+    init() {
 
-.form-group label{
-    font-weight:600;
-    margin-bottom:8px;
-    color:#444;
-}
+        this.setToday();
 
-.form-group input,
-.form-group select,
-.form-group textarea{
+        this.generateAdmissionNo();
 
-    width:100%;
-    padding:12px;
-    border:1px solid #d5d5d5;
-    border-radius:8px;
-    font-size:14px;
-    transition:.3s;
-    background:#fff;
+        this.bindPhotoPreview();
 
-}
+        this.loadAdmissions();
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus{
+    },
 
-    outline:none;
-    border-color:#C62828;
-    box-shadow:0 0 0 3px rgba(198,40,40,.15);
+    setToday() {
 
-}
+        const today = new Date().toISOString().split("T")[0];
 
-textarea{
+        const dateBox = document.getElementById("admissionDate");
 
-    resize:vertical;
+        if (dateBox) {
 
-}
+            dateBox.value = today;
 
-.photo-box{
+        }
 
-    width:150px;
-    height:180px;
-    border:2px dashed #C62828;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    overflow:hidden;
-    border-radius:10px;
-    background:#fafafa;
+    },
 
-}
+    generateAdmissionNo() {
 
-.photo-box img{
+        const no =
+            "BJPS" +
+            Date.now().toString().slice(-8);
 
-    width:100%;
-    height:100%;
-    object-fit:cover;
+        const box =
+            document.getElementById("admissionNo");
 
-}
+        if (box) {
 
-.action-bar{
+            box.value = no;
 
-    display:flex;
-    gap:12px;
-    margin-top:25px;
-    flex-wrap:wrap;
+        }
 
-}
+    },
 
-.search-bar{
+    bindPhotoPreview() {
 
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:20px;
-    gap:15px;
-    flex-wrap:wrap;
+        const file =
+            document.getElementById("photo");
 
-}
+        if (!file) return;
 
-.search-bar input{
+        file.addEventListener("change", e => {
 
-    width:320px;
-    max-width:100%;
+            const selected =
+                e.target.files[0];
 
-}
+            if (!selected) return;
 
-#admissionTable{
+            const reader = new FileReader();
 
-    width:100%;
-    border-collapse:collapse;
-    margin-top:15px;
+            reader.onload = function(ev) {
 
-}
+                let preview =
+                    document.getElementById("photoPreview");
 
-#admissionTable th{
+                if (!preview) {
 
-    background:#C62828;
-    color:#fff;
-    padding:12px;
-    text-align:left;
+                    preview =
+                        document.createElement("img");
 
-}
+                    preview.id = "photoPreview";
 
-#admissionTable td{
+                    preview.style.width = "120px";
 
-    padding:12px;
-    border-bottom:1px solid #e5e5e5;
+                    preview.style.marginTop = "10px";
 
-}
+                    file.parentNode.appendChild(preview);
 
-#admissionTable tbody tr:hover{
+                }
 
-    background:#f8f8f8;
+                preview.src = ev.target.result;
 
-}
+            };
 
-.table-action{
+            reader.readAsDataURL(selected);
 
-    display:flex;
-    gap:8px;
+        });
 
-}
+    },
 
-.btn-sm{
+    collectData() {
 
-    padding:6px 12px;
-    font-size:13px;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
+        return {
 
-}
+            admissionNo:
+                document.getElementById("admissionNo").value,
 
-.btn-edit{
+            admissionDate:
+                document.getElementById("admissionDate").value,
 
-    background:#1976D2;
-    color:#fff;
+            studentName:
+                document.getElementById("studentName").value.trim(),
 
-}
+            gender:
+                document.getElementById("gender").value,
 
-.btn-delete{
+            dob:
+                document.getElementById("dob").value,
 
-    background:#D32F2F;
-    color:#fff;
+            studentClass:
+                document.getElementById("studentClass").value,
 
-}
+            fatherName:
+                document.getElementById("fatherName").value,
 
-.btn-print{
+            motherName:
+                document.getElementById("motherName").value,
 
-    background:#2E7D32;
-    color:#fff;
+            mobile:
+                document.getElementById("mobile").value,
 
-}
+            email:
+                document.getElementById("email").value,
 
-.required{
+            address:
+                document.getElementById("address").value
 
-    color:red;
+        };
 
-}
+    },
 
-.success-message{
+    validate(data) {
 
-    background:#E8F5E9;
-    color:#2E7D32;
-    border-left:5px solid #2E7D32;
-    padding:15px;
-    margin-bottom:20px;
-    border-radius:6px;
+        if (data.studentName === "") {
 
-}
+            alert("Enter Student Name");
 
-.error-message{
+            return false;
 
-    background:#FFEBEE;
-    color:#C62828;
-    border-left:5px solid #C62828;
-    padding:15px;
-    margin-bottom:20px;
-    border-radius:6px;
+        }
 
-}
+        if (data.mobile === "") {
 
-.loading{
+            alert("Enter Mobile Number");
 
-    opacity:.6;
-    pointer-events:none;
+            return false;
 
-}
+        }
 
-@media(max-width:900px){
+        return true;
 
-    .grid-2{
+    },
 
-        grid-template-columns:1fr;
+    async save() {
+
+        const data =
+            this.collectData();
+
+        if (!this.validate(data)) {
+
+            return;
+
+        }
+
+        const result =
+            await API.createAdmission(data);
+
+        if (result.success) {
+
+            alert("Admission Saved Successfully");
+
+            document
+                .getElementById("admissionForm")
+                .reset();
+
+            this.setToday();
+
+            this.generateAdmissionNo();
+
+            this.loadAdmissions();
+
+        }
+
+        else {
+
+            alert(result.message || "Unable to Save");
+
+        }
+
+    },
+
+    async loadAdmissions() {
+
+        const tbody =
+            document.querySelector(
+                "#admissionTable tbody"
+            );
+
+        if (!tbody) return;
+
+        const result =
+            await API.getAdmissions();
+
+        tbody.innerHTML = "";
+
+        if (!result.success) {
+
+            return;
+
+        }
+
+        this.admissions =
+            result.data || [];
+
+        this.admissions.forEach(item => {
+
+            tbody.innerHTML += `
+
+<tr>
+
+<td>${item.admissionNo}</td>
+
+<td>${item.studentName}</td>
+
+<td>${item.studentClass}</td>
+
+<td>${item.mobile}</td>
+
+<td>
+
+<button class="btn-sm btn-edit"
+onclick="Admission.edit('${item.admissionNo}')">
+
+Edit
+
+</button>
+
+<button class="btn-sm btn-delete"
+onclick="Admission.remove('${item.admissionNo}')">
+
+Delete
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+        });
+
+    },
+
+    edit(id) {
+
+        alert(
+            "Edit Module Coming Soon\nAdmission : " + id
+        );
+
+    },
+
+    async remove(id) {
+
+        if (!confirm("Delete this Admission?")) {
+
+            return;
+
+        }
+
+        const result =
+            await API.deleteAdmission(id);
+
+        if (result.success) {
+
+            this.loadAdmissions();
+
+        }
+
+        else {
+
+            alert(result.message);
+
+        }
+
+    },
+
+    search(keyword) {
+
+        keyword =
+            keyword.toLowerCase();
+
+        const rows =
+            document.querySelectorAll(
+                "#admissionTable tbody tr"
+            );
+
+        rows.forEach(row => {
+
+            const text =
+                row.innerText.toLowerCase();
+
+            row.style.display =
+                text.includes(keyword)
+                ? ""
+                : "none";
+
+        });
 
     }
 
-    .grid-3{
+};
 
-        grid-template-columns:1fr;
+window.addEventListener("load", function () {
 
-    }
+    if (document.getElementById("admissionForm")) {
 
-    .search-bar{
-
-        flex-direction:column;
-        align-items:stretch;
+        Admission.init();
 
     }
 
-    .action-bar{
-
-        flex-direction:column;
-
-    }
-
-    #admissionTable{
-
-        display:block;
-        overflow-x:auto;
-
-    }
-
-}
+});
