@@ -1,9 +1,8 @@
 /*
 =========================================================
 BJ ONE ERP
-File        : auth.js
-Version     : 4.0.0
-Description : Authentication Module
+File : auth.js
+Version : 5.0
 =========================================================
 */
 
@@ -13,27 +12,25 @@ const Auth = {
 
     init() {
 
-        if (typeof google === "undefined") {
-            console.error("Google Identity Services not loaded.");
-            return;
-        }
-
         google.accounts.id.initialize({
+
             client_id: CONFIG.GOOGLE_CLIENT_ID,
-            callback: Auth.handleCredentialResponse
+
+            callback: this.handleCredentialResponse.bind(this)
+
         });
 
-        const btn = document.getElementById("googleSignIn");
+        google.accounts.id.renderButton(
 
-        if (btn) {
+            document.getElementById("googleSignIn"),
 
-            google.accounts.id.renderButton(btn, {
+            {
                 theme: "outline",
                 size: "large",
                 width: 300
-            });
+            }
 
-        }
+        );
 
     },
 
@@ -41,11 +38,22 @@ const Auth = {
 
         try {
 
-            const result = await API.login(response.credential);
+            // Decode Google JWT
+            const payload = JSON.parse(
+                atob(response.credential.split(".")[1])
+            );
+
+            const email = payload.email;
+            const name = payload.name;
+
+            console.log("Google User :", email);
+
+            // Authenticate with Apps Script
+            const result = await API.login(email);
 
             if (!result.success) {
 
-                alert(result.message || "Login failed.");
+                alert(result.message);
 
                 return;
 
@@ -57,13 +65,13 @@ const Auth = {
             );
 
             sessionStorage.setItem(
-                CONFIG.STORAGE.USER_NAME,
-                result.user.name
+                CONFIG.STORAGE.USER_EMAIL,
+                email
             );
 
             sessionStorage.setItem(
-                CONFIG.STORAGE.USER_EMAIL,
-                result.user.email
+                CONFIG.STORAGE.USER_NAME,
+                result.user.name || name
             );
 
             sessionStorage.setItem(
@@ -76,50 +84,11 @@ const Auth = {
 
         }
 
-        catch (e) {
+        catch (error) {
 
-            console.error(e);
+            console.error(error);
 
-            alert("Unable to login.");
-
-        }
-
-    },
-
-    isLoggedIn() {
-
-        return sessionStorage.getItem(
-            CONFIG.STORAGE.TOKEN
-        ) !== null;
-
-    },
-
-    getUser() {
-
-        return {
-
-            name: sessionStorage.getItem(
-                CONFIG.STORAGE.USER_NAME
-            ),
-
-            email: sessionStorage.getItem(
-                CONFIG.STORAGE.USER_EMAIL
-            ),
-
-            role: sessionStorage.getItem(
-                CONFIG.STORAGE.USER_ROLE
-            )
-
-        };
-
-    },
-
-    requireLogin() {
-
-        if (!this.isLoggedIn()) {
-
-            window.location.href =
-                CONFIG.LOGIN_PAGE;
+            alert("Login failed.");
 
         }
 
@@ -127,21 +96,7 @@ const Auth = {
 
     logout() {
 
-        sessionStorage.removeItem(
-            CONFIG.STORAGE.TOKEN
-        );
-
-        sessionStorage.removeItem(
-            CONFIG.STORAGE.USER_NAME
-        );
-
-        sessionStorage.removeItem(
-            CONFIG.STORAGE.USER_EMAIL
-        );
-
-        sessionStorage.removeItem(
-            CONFIG.STORAGE.USER_ROLE
-        );
+        sessionStorage.clear();
 
         window.location.href =
             CONFIG.LOGIN_PAGE;
@@ -150,12 +105,8 @@ const Auth = {
 
 };
 
-window.addEventListener("load", function () {
+window.onload = function () {
 
-    if (document.getElementById("googleSignIn")) {
+    Auth.init();
 
-        Auth.init();
-
-    }
-
-});
+};
