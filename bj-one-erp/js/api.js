@@ -2,7 +2,7 @@
 =========================================================
 BJ ONE ERP
 api.js
-Version 5.0
+Version 6.0
 =========================================================
 */
 
@@ -20,7 +20,11 @@ const API = {
 
         Object.keys(params).forEach(key => {
 
-            url.searchParams.append(key, params[key]);
+            if (params[key] !== undefined && params[key] !== null) {
+
+                url.searchParams.append(key, params[key]);
+
+            }
 
         });
 
@@ -48,6 +52,10 @@ const API = {
 
     },
 
+    /*==========================
+      Authentication
+    ==========================*/
+
     login(email) {
 
         return this.get("login", {
@@ -58,12 +66,6 @@ const API = {
 
     },
 
-    dashboard() {
-
-        return this.get("dashboard");
-
-    },
-
     modules(role) {
 
         return this.get("roleModules", {
@@ -71,6 +73,16 @@ const API = {
             role: role
 
         });
+
+    },
+
+    /*==========================
+      Dashboard
+    ==========================*/
+
+    dashboard() {
+
+        return this.get("dashboard");
 
     },
 
@@ -92,9 +104,77 @@ const API = {
 
     },
 
+    /*==========================
+      Admission Leads
+    ==========================*/
+
     admissionLeads() {
 
         return this.get("admissionLeads");
+
+    },
+
+    /*==========================
+      Admissions
+    ==========================*/
+
+    getAdmissions() {
+
+        return this.get("getAdmissions");
+
+    },
+
+    saveAdmission(data) {
+
+        return this.get("saveAdmission", data);
+
+    },
+
+    updateAdmission(data) {
+
+        return this.get("updateAdmission", data);
+
+    },
+
+    deleteAdmission(admissionNo) {
+
+        return this.get("deleteAdmission", {
+
+            admissionNo: admissionNo
+
+        });
+
+    },
+
+    /*==========================
+      Students
+    ==========================*/
+
+    getStudents() {
+
+        return this.get("students");
+
+    },
+
+    saveStudent(data) {
+
+        return this.get("saveStudent", data);
+
+    },
+
+    updateStudent(data) {
+
+        return this.get("updateStudent", data);
+
+    },
+
+    deleteStudent(studentId) {
+
+        return this.get("deleteStudent", {
+
+            studentId: studentId
+
+        });
 
     }
 
