@@ -3,30 +3,26 @@
 =========================================================
 BJ ONE ERP
 File        : dashboard.html
-Version     : 2.0.0
-Date        : 28 July 2026
+Version     : 2.1.0
+Date        : 30 July 2026
 Author      : Nishant Rai & ChatGPT
 Description : BJ ONE ERP Dashboard
 =========================================================
 -->
 
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>BJ ONE ERP | Dashboard</title>
 
-<link rel="preconnect"
-      href="https://fonts.googleapis.com">
-
-<link rel="preconnect"
-      href="https://fonts.gstatic.com"
-      crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet">
@@ -34,292 +30,185 @@ Description : BJ ONE ERP Dashboard
 <style>
 
 *{
-
-margin:0;
-
-padding:0;
-
-box-sizing:border-box;
-
-font-family:'Poppins',sans-serif;
-
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
 }
 
 body{
-
-background:#F5F5F5;
-
-color:#333;
-
+    background:#F5F5F5;
+    color:#333;
 }
 
 a{
-
-text-decoration:none;
-
-color:inherit;
-
+    text-decoration:none;
+    color:inherit;
 }
+
 .header{
-
-height:70px;
-
-background:#C62828;
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-padding:0 25px;
-
-color:#FFFFFF;
-
-box-shadow:0 2px 8px rgba(0,0,0,.15);
-
+    height:70px;
+    background:#C62828;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 25px;
+    color:#FFFFFF;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
 }
 
 .header-left{
-
-display:flex;
-
-align-items:center;
-
-gap:15px;
-
+    display:flex;
+    align-items:center;
+    gap:15px;
 }
 
 .logo{
-
-height:46px;
-
-width:46px;
-
-border-radius:50%;
-
-background:#FFFFFF;
-
-padding:4px;
-
-object-fit:contain;
-
+    height:46px;
+    width:46px;
+    border-radius:50%;
+    background:#FFFFFF;
+    padding:4px;
+    object-fit:contain;
 }
 
 .school-name{
-
-font-size:22px;
-
-font-weight:600;
-
+    font-size:22px;
+    font-weight:600;
 }
 
 .logout{
-
-background:#FFFFFF;
-
-color:#C62828;
-
-border:none;
-
-padding:10px 20px;
-
-border-radius:6px;
-
-cursor:pointer;
-
-font-weight:600;
-
-transition:.3s;
-
+    background:#FFFFFF;
+    color:#C62828;
+    border:none;
+    padding:10px 20px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:600;
+    transition:.3s;
 }
 
 .logout:hover{
-
-background:#EEEEEE;
-
+    background:#EEEEEE;
 }
 
 .container{
-
-display:flex;
-
-min-height:calc(100vh - 70px);
-
+    display:flex;
+    min-height:calc(100vh - 70px);
 }
 
 .sidebar{
-
-width:250px;
-
-background:#8E0000;
-
-color:#FFFFFF;
-
-padding:20px;
-
+    width:250px;
+    background:#8E0000;
+    color:#FFFFFF;
+    padding:20px;
 }
 
 .sidebar h3{
-
-margin-bottom:20px;
-
-font-size:20px;
-
+    margin-bottom:20px;
+    font-size:20px;
 }
 
 .menu{
-
-list-style:none;
-
+    list-style:none;
 }
 
 .menu li{
-
-padding:12px;
-
-margin-bottom:8px;
-
-border-radius:6px;
-
-cursor:pointer;
-
-transition:.3s;
-
+    padding:12px;
+    margin-bottom:8px;
+    border-radius:6px;
+    cursor:pointer;
+    transition:.3s;
 }
 
 .menu li:hover{
-
-background:#C62828;
-
+    background:#C62828;
 }
 
 .content{
-
-flex:1;
-
-padding:30px;
-
+    flex:1;
+    padding:30px;
 }
 
 .page-title{
-
-font-size:30px;
-
-font-weight:600;
-
-margin-bottom:25px;
-
+    font-size:30px;
+    font-weight:600;
+    margin-bottom:25px;
 }
 
 .cards{
-
-display:grid;
-
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-
-gap:20px;
-
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
 }
 
 .card{
-
-background:#FFFFFF;
-
-padding:25px;
-
-border-radius:12px;
-
-box-shadow:0 5px 20px rgba(0,0,0,.08);
-
+    background:#FFFFFF;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
 }
 
 .card-title{
-
-font-size:15px;
-
-color:#666666;
-
-margin-bottom:15px;
-
+    font-size:15px;
+    color:#666666;
+    margin-bottom:15px;
 }
 
 .card-value{
-
-font-size:34px;
-
-font-weight:700;
-
-color:#C62828;
-
+    font-size:34px;
+    font-weight:700;
+    color:#C62828;
 }
 
 .section{
-
-margin-top:30px;
-
-background:#FFFFFF;
-
-padding:25px;
-
-border-radius:12px;
-
-box-shadow:0 5px 20px rgba(0,0,0,.08);
-
+    margin-top:30px;
+    background:#FFFFFF;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
 }
 
 .section h3{
-
-margin-bottom:20px;
-
+    margin-bottom:20px;
 }
 
 table{
-
-width:100%;
-
-border-collapse:collapse;
-
+    width:100%;
+    border-collapse:collapse;
 }
 
 table th{
-
-background:#C62828;
-
-color:#FFFFFF;
-
-padding:12px;
-
-text-align:left;
-
+    background:#C62828;
+    color:#FFFFFF;
+    padding:12px;
+    text-align:left;
 }
 
 table td{
-
-padding:12px;
-
-border-bottom:1px solid #EEEEEE;
-
+    padding:12px;
+    border-bottom:1px solid #EEEEEE;
 }
 
 table tr:hover{
+    background:#FAFAFA;
+}
 
-background:#FAFAFA;
-
+.footer{
+    margin-top:30px;
+    text-align:center;
+    color:#777;
+    font-size:14px;
 }
 
 @media(max-width:900px){
 
 .container{
-
-flex-direction:column;
-
+    flex-direction:column;
 }
 
 .sidebar{
-
-width:100%;
-
+    width:100%;
 }
 
 }
@@ -327,280 +216,153 @@ width:100%;
 </style>
 
 </head>
-<body>
 
-<!-- =========================================
-HEADER
-========================================= -->
+<body>
 
 <header class="header">
 
     <div class="header-left">
 
-        <img src="/logo.png"
+        <img src="assets/logo.png"
              class="logo"
              alt="Bal Jyoti Public School">
 
         <div class="school-name">
-
             BJ ONE ERP
-
         </div>
 
     </div>
 
-    <button class="logout"
-            onclick="App.logout()">
-
+    <button class="logout" onclick="App.logout()">
         Logout
-
     </button>
 
 </header>
 
-<!-- =========================================
-MAIN CONTAINER
-========================================= -->
-
 <div class="container">
-
-    <!-- ===============================
-    SIDEBAR
-    ================================ -->
 
     <aside class="sidebar">
 
         <h3>Modules</h3>
-<ul class="menu" id="sidebarMenu">
 
-</ul>
+        <ul class="menu" id="sidebarMenu">
+        </ul>
 
     </aside>
 
-    <!-- ===============================
-    CONTENT
-    ================================ -->
-
     <main class="content">
 
-       <div class="page-title">
-    Dashboard
-</div>
+        <div id="mainContent">
 
-<div id="welcomeUser"
-     style="font-size:18px;
-            color:#555;
-            margin-bottom:20px;">
-    Welcome
-</div>
-        <!-- =========================================
-DASHBOARD CARDS
-========================================= -->
+            <div class="page-title">
+                Dashboard
+            </div>
 
-<div class="cards">
+            <div id="welcomeUser"
+                 style="font-size:18px;color:#555;margin-bottom:20px;">
+                Welcome
+            </div>
 
-    <!-- Total Students -->
+            <div class="cards">
 
-    <div class="card">
+                <div class="card">
+                    <div class="card-title">Total Students</div>
+                    <div class="card-value" id="students">0</div>
+                </div>
 
-        <div class="card-title">
+                <div class="card">
+                    <div class="card-title">Total Staff</div>
+                    <div class="card-value" id="staff">0</div>
+                </div>
 
-            Total Students
+                <div class="card">
+                    <div class="card-title">Today's Attendance</div>
+                    <div class="card-value" id="attendance">0%</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Today's Fee Collection</div>
+                    <div class="card-value" id="fees">₹0</div>
+                </div>
+
+            </div>
+
+            <div class="section">
+
+                <h3>Welcome to BJ ONE ERP</h3>
+
+                <p>
+                    Welcome to the BJ ONE ERP Dashboard.
+                    This system will manage students,
+                    admissions, staff, attendance,
+                    fees, examinations, transport,
+                    library, inventory and reports
+                    for Bal Jyoti Public School.
+                </p>
+
+            </div>
+
+            <div class="section">
+
+                <h3>Quick Actions</h3>
+
+                <table>
+
+                    <tr>
+                        <th>Module</th>
+                        <th>Status</th>
+                    </tr>
+
+                    <tr>
+                        <td>Student Management</td>
+                        <td>Ready for Development</td>
+                    </tr>
+
+                    <tr>
+                        <td>Admissions</td>
+                        <td>Ready for Development</td>
+                    </tr>
+
+                    <tr>
+                        <td>Attendance</td>
+                        <td>Ready for Development</td>
+                    </tr>
+
+                    <tr>
+                        <td>Fees</td>
+                        <td>Ready for Development</td>
+                    </tr>
+
+                    <tr>
+                        <td>Staff Management</td>
+                        <td>Ready for Development</td>
+                    </tr>
+
+                    <tr>
+                        <td>Reports</td>
+                        <td>Ready for Development</td>
+                    </tr>
+
+                </table>
+
+            </div>
+
+            <div class="footer">
+                © 2026 Bal Jyoti Public School | BJ ONE ERP Version 2.1
+            </div>
 
         </div>
-
-        <div class="card-value"
-             id="students">
-
-            0
-
-        </div>
-
-    </div>
-
-    <!-- Total Staff -->
-
-    <div class="card">
-
-        <div class="card-title">
-
-            Total Staff
-
-        </div>
-
-        <div class="card-value"
-             id="staff">
-
-            0
-
-        </div>
-
-    </div>
-
-    <!-- Today's Attendance -->
-
-    <div class="card">
-
-        <div class="card-title">
-
-            Today's Attendance
-
-        </div>
-
-        <div class="card-value"
-             id="attendance">
-
-            0%
-
-        </div>
-
-    </div>
-
-    <!-- Today's Fee Collection -->
-
-    <div class="card">
-
-        <div class="card-title">
-
-            Today's Fee Collection
-
-        </div>
-
-        <div class="card-value"
-             id="fees">
-
-            ₹0
-
-        </div>
-
-    </div>
-
-</div>
-
-<!-- =========================================
-WELCOME SECTION
-========================================= -->
-
-<div class="section">
-
-    <h3>
-
-        Welcome to BJ ONE ERP
-
-    </h3>
-
-    <p>
-
-        Welcome to the BJ ONE ERP Dashboard.
-
-        This system will manage students, admissions,
-        staff, attendance, fees, examinations,
-        transport, library, inventory and reports
-        for Bal Jyoti Public School.
-
-    </p>
-
-</div>
-<!-- =========================================
-QUICK ACTIONS
-========================================= -->
-
-<div class="section">
-
-    <h3>
-
-        Quick Actions
-
-    </h3>
-
-    <table>
-
-        <tr>
-
-            <th>Module</th>
-
-            <th>Status</th>
-
-        </tr>
-
-        <tr>
-
-            <td>Student Management</td>
-
-            <td>Ready for Development</td>
-
-        </tr>
-
-        <tr>
-
-            <td>Admissions</td>
-
-            <td>Ready for Development</td>
-
-        </tr>
-
-        <tr>
-
-            <td>Attendance</td>
-
-            <td>Ready for Development</td>
-
-        </tr>
-
-        <tr>
-
-            <td>Fees</td>
-
-            <td>Ready for Development</td>
-
-        </tr>
-
-        <tr>
-
-            <td>Staff Management</td>
-
-            <td>Ready for Development</td>
-
-        </tr>
-
-        <tr>
-
-            <td>Reports</td>
-
-            <td>Ready for Development</td>
-
-        </tr>
-
-    </table>
-
-</div>
-
-<!-- =========================================
-FOOTER
-========================================= -->
-
-<div style="margin-top:30px;
-            text-align:center;
-            color:#777;
-            font-size:14px;">
-
-    © 2026 Bal Jyoti Public School |
-    BJ ONE ERP Version 2.0
-
-</div>
 
     </main>
 
 </div>
 
-<!-- =========================================
-JAVASCRIPT
-========================================= -->
+<!-- JavaScript -->
 
-<script src="config.js"></script>
-<script src="auth.js"></script>
-<script src="api.js"></script>
-<script src="app.js"></script>
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
 
 </body>
 
