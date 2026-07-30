@@ -1,222 +1,251 @@
-/*=========================================================
+/*
+=========================================================
 BJ ONE ERP
-File        : admission.js
-Version     : 2.0.0
-Date        : 30 July 2026
-Author      : Nishant Rai & ChatGPT
-Description : Admission CRM Dashboard
-=========================================================*/
+Admission Module CSS
+Version : 1.0
+=========================================================
+*/
 
-"use strict";
+.module-container{
+    width:100%;
+}
 
-document.addEventListener("DOMContentLoaded", initAdmission);
+.grid-2{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:20px;
+}
 
-let currentUser = null;
+.grid-3{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+}
 
-/*=========================================================
- INITIALIZE
-=========================================================*/
-async function initAdmission() {
+.form-group{
+    display:flex;
+    flex-direction:column;
+}
 
-    try {
+.form-group label{
+    font-weight:600;
+    margin-bottom:8px;
+    color:#444;
+}
 
-        checkLogin();
+.form-group input,
+.form-group select,
+.form-group textarea{
 
-        await checkPermission();
-
-        await loadAdmissionLeads();
-
-        bindEvents();
-
-        console.log("Admission Module Loaded Successfully");
-
-    } catch (err) {
-
-        console.error(err);
-
-        alert(err.message);
-
-        // Keep the page here while debugging.
-        // window.location.href = "../dashboard.html";
-
-    }
+    width:100%;
+    padding:12px;
+    border:1px solid #d5d5d5;
+    border-radius:8px;
+    font-size:14px;
+    transition:.3s;
+    background:#fff;
 
 }
 
-/*=========================================================
- LOGIN
-=========================================================*/
-function checkLogin() {
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{
 
-    const token = sessionStorage.getItem("google_token");
-
-    if (!token) {
-
-        throw new Error("Session expired. Please login again.");
-
-    }
-
-    currentUser = {
-
-        name: sessionStorage.getItem("user_name") || "",
-
-        email: sessionStorage.getItem("user_email") || "",
-
-        role: sessionStorage.getItem("user_role") || ""
-
-    };
-
-    console.log("Current User :", currentUser);
+    outline:none;
+    border-color:#C62828;
+    box-shadow:0 0 0 3px rgba(198,40,40,.15);
 
 }
 
-/*=========================================================
- PERMISSION
-=========================================================*/
-async function checkPermission() {
+textarea{
 
-    if (!currentUser) {
-
-        throw new Error("Current user not available.");
-
-    }
-
-    if (!currentUser.role) {
-
-        throw new Error("User role missing.");
-
-    }
-
-    const response = await API.getRoleModules(currentUser.role);
-
-    console.log("Role Module Response :", response);
-
-    if (!response.success) {
-
-        throw new Error("Unable to verify permissions.");
-
-    }
-
-    const allowed = response.modules.some(function (m) {
-
-        return String(m.moduleId).toUpperCase() === "ADMISSION";
-
-    });
-
-    if (!allowed) {
-
-        throw new Error("Access denied for Admission Module.");
-
-    }
+    resize:vertical;
 
 }
 
-/*=========================================================
- LOAD LEADS
-=========================================================*/
-async function loadAdmissionLeads() {
+.photo-box{
 
-    const response = await API.getAdmissionLeads();
-
-    console.log("Admission Leads :", response);
-
-    if (!Array.isArray(response)) {
-
-        return;
-
-    }
-
-    updateDashboard(response);
-
-    renderLeadTable(response);
+    width:150px;
+    height:180px;
+    border:2px dashed #C62828;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    border-radius:10px;
+    background:#fafafa;
 
 }
 
-/*=========================================================
- DASHBOARD
-=========================================================*/
-function updateDashboard(data) {
+.photo-box img{
 
-    const total = Math.max(data.length - 1, 0);
-
-    const set = (id, value) => {
-        const el = document.getElementById(id);
-        if (el) el.innerText = value;
-    };
-
-    set("todayLeads", total);
-    set("todayFollowup", 0);
-    set("walkins", 0);
-    set("applications", 0);
-    set("admissions", 0);
-    set("documents", 0);
+    width:100%;
+    height:100%;
+    object-fit:cover;
 
 }
 
-/*=========================================================
- TABLE
-=========================================================*/
-function renderLeadTable(data) {
+.action-bar{
 
-    const tbody = document.getElementById("leadTable");
-
-    if (!tbody) return;
-
-    tbody.innerHTML = "";
-
-    if (data.length <= 1) {
-
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="5">No Leads Found</td>
-            </tr>`;
-
-        return;
-
-    }
-
-    for (let i = 1; i < data.length; i++) {
-
-        const row = data[i];
-
-        tbody.innerHTML += `
-            <tr>
-                <td>${row[0] || ""}</td>
-                <td>${row[4] || ""}</td>
-                <td>${row[7] || ""}</td>
-                <td>${row[18] || ""}</td>
-                <td>${row[19] || ""}</td>
-            </tr>`;
-    }
+    display:flex;
+    gap:12px;
+    margin-top:25px;
+    flex-wrap:wrap;
 
 }
 
-/*=========================================================
- EVENTS
-=========================================================*/
-function bindEvents() {
+.search-bar{
 
-    const newLeadBtn = document.getElementById("newLeadBtn");
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+    gap:15px;
+    flex-wrap:wrap;
 
-    if (newLeadBtn) {
+}
 
-        newLeadBtn.addEventListener("click", function () {
+.search-bar input{
 
-            alert("New Lead Module - Coming Next");
+    width:320px;
+    max-width:100%;
 
-        });
+}
+
+#admissionTable{
+
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+
+}
+
+#admissionTable th{
+
+    background:#C62828;
+    color:#fff;
+    padding:12px;
+    text-align:left;
+
+}
+
+#admissionTable td{
+
+    padding:12px;
+    border-bottom:1px solid #e5e5e5;
+
+}
+
+#admissionTable tbody tr:hover{
+
+    background:#f8f8f8;
+
+}
+
+.table-action{
+
+    display:flex;
+    gap:8px;
+
+}
+
+.btn-sm{
+
+    padding:6px 12px;
+    font-size:13px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+
+}
+
+.btn-edit{
+
+    background:#1976D2;
+    color:#fff;
+
+}
+
+.btn-delete{
+
+    background:#D32F2F;
+    color:#fff;
+
+}
+
+.btn-print{
+
+    background:#2E7D32;
+    color:#fff;
+
+}
+
+.required{
+
+    color:red;
+
+}
+
+.success-message{
+
+    background:#E8F5E9;
+    color:#2E7D32;
+    border-left:5px solid #2E7D32;
+    padding:15px;
+    margin-bottom:20px;
+    border-radius:6px;
+
+}
+
+.error-message{
+
+    background:#FFEBEE;
+    color:#C62828;
+    border-left:5px solid #C62828;
+    padding:15px;
+    margin-bottom:20px;
+    border-radius:6px;
+
+}
+
+.loading{
+
+    opacity:.6;
+    pointer-events:none;
+
+}
+
+@media(max-width:900px){
+
+    .grid-2{
+
+        grid-template-columns:1fr;
 
     }
 
-    const walkinBtn = document.getElementById("walkinBtn");
+    .grid-3{
 
-    if (walkinBtn) {
+        grid-template-columns:1fr;
 
-        walkinBtn.addEventListener("click", function () {
+    }
 
-            alert("Walk-in Module - Coming Next");
+    .search-bar{
 
-        });
+        flex-direction:column;
+        align-items:stretch;
+
+    }
+
+    .action-bar{
+
+        flex-direction:column;
+
+    }
+
+    #admissionTable{
+
+        display:block;
+        overflow-x:auto;
 
     }
 
