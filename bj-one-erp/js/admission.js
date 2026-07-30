@@ -41,7 +41,7 @@ async function initAdmission() {
 =========================================================*/
 function checkLogin() {
 
-    const user = JSON.parse(sessionStorage.getItem("user"));
+    const token = sessionStorage.getItem("google_token");
 
     if (!user) {
 
