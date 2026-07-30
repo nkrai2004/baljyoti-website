@@ -2,10 +2,8 @@
 =========================================================
 BJ ONE ERP
 File        : auth.js
-Version     : 3.0.0
-Date        : 30 July 2026
-Author      : Nishant Rai & ChatGPT
-Description : Google Authentication Manager
+Version     : 4.0.0
+Description : Authentication Module
 =========================================================
 */
 
@@ -13,128 +11,140 @@ Description : Google Authentication Manager
 
 const Auth = {
 
-    initialized: false,
+    init() {
 
-    init: function () {
-
-        if (typeof CONFIG === "undefined") {
-            alert("CONFIG not found.");
+        if (typeof google === "undefined") {
+            console.error("Google Identity Services not loaded.");
             return;
         }
 
-        let attempts = 0;
+        google.accounts.id.initialize({
+            client_id: CONFIG.GOOGLE_CLIENT_ID,
+            callback: Auth.handleCredentialResponse
+        });
 
-        const timer = setInterval(function () {
+        const btn = document.getElementById("googleSignIn");
 
-            attempts++;
+        if (btn) {
 
-            if (
-                typeof google !== "undefined" &&
-                google.accounts &&
-                google.accounts.id
-            ) {
+            google.accounts.id.renderButton(btn, {
+                theme: "outline",
+                size: "large",
+                width: 300
+            });
 
-                clearInterval(timer);
-
-                google.accounts.id.initialize({
-
-                    client_id: CONFIG.GOOGLE_CLIENT_ID,
-
-                    callback: Auth.handleCredentialResponse
-
-                });
-
-                Auth.initialized = true;
-
-                console.log("Google Sign-In Ready");
-
-            }
-
-            if (attempts > 50) {
-
-                clearInterval(timer);
-
-                alert("Unable to load Google Sign-In.");
-
-            }
-
-        }, 200);
+        }
 
     },
 
-    handleCredentialResponse: async function (response) {
-
-        if (!response || !response.credential) {
-
-            alert("Google Login Failed.");
-
-            return;
-
-        }
-
-        const token = response.credential;
-
-        const payload = JSON.parse(atob(token.split(".")[1]));
-
-        const email = (payload.email || "").toLowerCase();
+    async handleCredentialResponse(response) {
 
         try {
 
-            const url =
-                CONFIG.API_URL +
-                "?action=login&email=" +
-                encodeURIComponent(email);
+            const result = await API.login(response.credential);
 
-            const result = await fetch(url);
+            if (!result.success) {
 
-            const data = await result.json();
-
-            if (!data.success) {
-
-                alert(data.message);
+                alert(result.message || "Login failed.");
 
                 return;
 
             }
 
-            sessionStorage.setItem("google_token", token);
-            sessionStorage.setItem("user_name", data.user.name);
-            sessionStorage.setItem("user_email", data.user.email);
-            sessionStorage.setItem("user_role", data.user.role);
+            sessionStorage.setItem(
+                CONFIG.STORAGE.TOKEN,
+                response.credential
+            );
 
-            window.location.href = CONFIG.DASHBOARD_PAGE;
+            sessionStorage.setItem(
+                CONFIG.STORAGE.USER_NAME,
+                result.user.name
+            );
 
-        } catch (err) {
+            sessionStorage.setItem(
+                CONFIG.STORAGE.USER_EMAIL,
+                result.user.email
+            );
 
-            console.error(err);
+            sessionStorage.setItem(
+                CONFIG.STORAGE.USER_ROLE,
+                result.user.role
+            );
 
-            alert("Unable to connect to BJ ONE ERP Server.");
+            window.location.href =
+                CONFIG.DASHBOARD_PAGE;
+
+        }
+
+        catch (e) {
+
+            console.error(e);
+
+            alert("Unable to login.");
 
         }
 
     },
 
-    isLoggedIn: function () {
+    isLoggedIn() {
 
-        return sessionStorage.getItem("google_token") !== null;
+        return sessionStorage.getItem(
+            CONFIG.STORAGE.TOKEN
+        ) !== null;
 
     },
 
-    logout: function () {
+    getUser() {
 
-        sessionStorage.clear();
+        return {
 
-        if (
-            typeof google !== "undefined" &&
-            google.accounts &&
-            google.accounts.id
-        ) {
+            name: sessionStorage.getItem(
+                CONFIG.STORAGE.USER_NAME
+            ),
 
-            google.accounts.id.disableAutoSelect();
+            email: sessionStorage.getItem(
+                CONFIG.STORAGE.USER_EMAIL
+            ),
+
+            role: sessionStorage.getItem(
+                CONFIG.STORAGE.USER_ROLE
+            )
+
+        };
+
+    },
+
+    requireLogin() {
+
+        if (!this.isLoggedIn()) {
+
+            window.location.href =
+                CONFIG.LOGIN_PAGE;
 
         }
 
-        window.location.href = CONFIG.LOGIN_PAGE;
+    },
+
+    logout() {
+
+        sessionStorage.removeItem(
+            CONFIG.STORAGE.TOKEN
+        );
+
+        sessionStorage.removeItem(
+            CONFIG.STORAGE.USER_NAME
+        );
+
+        sessionStorage.removeItem(
+            CONFIG.STORAGE.USER_EMAIL
+        );
+
+        sessionStorage.removeItem(
+            CONFIG.STORAGE.USER_ROLE
+        );
+
+        window.location.href =
+            CONFIG.LOGIN_PAGE;
 
     }
 
@@ -142,7 +152,7 @@ const Auth = {
 
 window.addEventListener("load", function () {
 
-    if (document.getElementById("googleButton")) {
+    if (document.getElementById("googleSignIn")) {
 
         Auth.init();
 
