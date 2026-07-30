@@ -1,11 +1,8 @@
 /*
 =========================================================
 BJ ONE ERP
-File        : app.js
-Version     : 4.0.0
-Date        : 30 July 2026
-Author      : Nishant Rai & ChatGPT
-Description : Main Application Controller
+File : app.js
+Version : 5.0
 =========================================================
 */
 
@@ -16,67 +13,16 @@ const App = {
     currentModule: "dashboard",
 
     modules: [
-
-        {
-            id: "dashboard",
-            name: "Dashboard",
-            icon: "🏠"
-        },
-
-        {
-            id: "admission",
-            name: "Admissions",
-            icon: "🎓"
-        },
-
-        {
-            id: "students",
-            name: "Students",
-            icon: "👨‍🎓"
-        },
-
-        {
-            id: "attendance",
-            name: "Attendance",
-            icon: "📅"
-        },
-
-        {
-            id: "fees",
-            name: "Fees",
-            icon: "💰"
-        },
-
-        {
-            id: "staff",
-            name: "Staff",
-            icon: "👨‍🏫"
-        },
-
-        {
-            id: "transport",
-            name: "Transport",
-            icon: "🚌"
-        },
-
-        {
-            id: "library",
-            name: "Library",
-            icon: "📚"
-        },
-
-        {
-            id: "inventory",
-            name: "Inventory",
-            icon: "📦"
-        },
-
-        {
-            id: "reports",
-            name: "Reports",
-            icon: "📊"
-        }
-
+        { id: "dashboard", name: "Dashboard", icon: "🏠" },
+        { id: "admission", name: "Admissions", icon: "🎓" },
+        { id: "students", name: "Students", icon: "👨‍🎓" },
+        { id: "attendance", name: "Attendance", icon: "📅" },
+        { id: "fees", name: "Fees", icon: "💰" },
+        { id: "staff", name: "Staff", icon: "👨‍🏫" },
+        { id: "transport", name: "Transport", icon: "🚌" },
+        { id: "library", name: "Library", icon: "📚" },
+        { id: "inventory", name: "Inventory", icon: "📦" },
+        { id: "reports", name: "Reports", icon: "📊" }
     ],
 
     init() {
@@ -113,16 +59,13 @@ const App = {
 
             li.innerHTML = `${module.icon} ${module.name}`;
 
-            li.className =
-                module.id === this.currentModule
-                ? "active"
-                : "";
+            if (module.id === this.currentModule) {
 
-            li.onclick = () => {
+                li.classList.add("active");
 
-                this.openModule(module.id);
+            }
 
-            };
+            li.onclick = () => this.openModule(module.id);
 
             menu.appendChild(li);
 
@@ -130,7 +73,7 @@ const App = {
 
     },
 
-    openModule(moduleId) {
+    async openModule(moduleId) {
 
         this.currentModule = moduleId;
 
@@ -146,46 +89,70 @@ const App = {
 
         const content = document.getElementById("mainContent");
 
-        if (!content) return;
+        try {
 
-        content.innerHTML = `
+            const response = await fetch(`modules/${moduleId}.html`);
 
-            <div class="page-title">
+            if (!response.ok) {
 
-                ${this.getModuleName(moduleId)}
+                throw new Error("Unable to load module.");
 
-            </div>
+            }
 
-            <div class="section">
+            const html = await response.text();
 
-                <h3>${this.getModuleName(moduleId)}</h3>
+            content.innerHTML = html;
 
-                <p>
+            // CSS Loader
 
-                    This module is under development.
+            let css = document.getElementById("module-css");
 
-                </p>
+            if (!css) {
 
-                <br>
+                css = document.createElement("link");
 
-                <button class="btn"
-                        onclick="location.reload()">
+                css.rel = "stylesheet";
 
-                    Back to Dashboard
+                css.id = "module-css";
 
-                </button>
+                document.head.appendChild(css);
 
-            </div>
+            }
 
-        `;
+            css.href = `css/${moduleId}.css?v=${Date.now()}`;
 
-    },
+            // JS Loader
 
-    getModuleName(id) {
+            const oldScript = document.getElementById("module-js");
 
-        const module = this.modules.find(m => m.id === id);
+            if (oldScript) {
 
-        return module ? module.name : id;
+                oldScript.remove();
+
+            }
+
+            const script = document.createElement("script");
+
+            script.src = `js/${moduleId}.js?v=${Date.now()}`;
+
+            script.id = "module-js";
+
+            document.body.appendChild(script);
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            content.innerHTML = `
+                <div class="section">
+                    <h3>Error</h3>
+                    <p>${error.message}</p>
+                </div>
+            `;
+
+        }
 
     },
 
@@ -195,15 +162,11 @@ const App = {
 
         if (!welcome) return;
 
-        const userName =
-            sessionStorage.getItem(CONFIG.STORAGE.USER_NAME);
+        const name = sessionStorage.getItem(CONFIG.STORAGE.USER_NAME);
 
-        if (userName) {
+        if (name) {
 
-            welcome.innerHTML =
-                "Welcome <strong>" +
-                userName +
-                "</strong>";
+            welcome.innerHTML = `Welcome <strong>${name}</strong>`;
 
         }
 
@@ -211,7 +174,7 @@ const App = {
 
     logout() {
 
-        if (confirm("Are you sure you want to logout?")) {
+        if (confirm("Logout from BJ ONE ERP?")) {
 
             Auth.logout();
 
@@ -221,8 +184,8 @@ const App = {
 
 };
 
-window.addEventListener("load", function () {
+window.onload = function () {
 
     App.init();
 
-});
+};
