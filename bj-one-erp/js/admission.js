@@ -1,7 +1,7 @@
 /*=========================================================
 BJ ONE ERP
 File        : admission.js
-Version     : 1.1.0
+Version     : 2.0.0
 Date        : 30 July 2026
 Author      : Nishant Rai & ChatGPT
 Description : Admission CRM Dashboard
@@ -10,6 +10,8 @@ Description : Admission CRM Dashboard
 "use strict";
 
 document.addEventListener("DOMContentLoaded", initAdmission);
+
+let currentUser = null;
 
 /*=========================================================
  INITIALIZE
@@ -26,20 +28,23 @@ async function initAdmission() {
 
         bindEvents();
 
+        console.log("Admission Module Loaded Successfully");
+
     } catch (err) {
 
         console.error(err);
 
         alert(err.message);
 
-        window.location.href = "../dashboard.html";
+        // Keep the page here while debugging.
+        // window.location.href = "../dashboard.html";
 
     }
 
 }
 
 /*=========================================================
- LOGIN CHECK
+ LOGIN
 =========================================================*/
 function checkLogin() {
 
@@ -47,30 +52,44 @@ function checkLogin() {
 
     if (!token) {
 
-        alert("Session expired. Please login again.");
-
-        window.location.href = "../index.html";
-
-        return;
+        throw new Error("Session expired. Please login again.");
 
     }
 
-    window.currentUser = {
+    currentUser = {
 
-        name: sessionStorage.getItem("user_name"),
-        email: sessionStorage.getItem("user_email"),
-        role: sessionStorage.getItem("user_role")
+        name: sessionStorage.getItem("user_name") || "",
+
+        email: sessionStorage.getItem("user_email") || "",
+
+        role: sessionStorage.getItem("user_role") || ""
 
     };
+
+    console.log("Current User :", currentUser);
 
 }
 
 /*=========================================================
- PERMISSION CHECK
+ PERMISSION
 =========================================================*/
 async function checkPermission() {
 
-    const response = await API.getRoleModules(window.currentUser.role);
+    if (!currentUser) {
+
+        throw new Error("Current user not available.");
+
+    }
+
+    if (!currentUser.role) {
+
+        throw new Error("User role missing.");
+
+    }
+
+    const response = await API.getRoleModules(currentUser.role);
+
+    console.log("Role Module Response :", response);
 
     if (!response.success) {
 
@@ -86,18 +105,20 @@ async function checkPermission() {
 
     if (!allowed) {
 
-        throw new Error("Access denied.");
+        throw new Error("Access denied for Admission Module.");
 
     }
 
 }
 
 /*=========================================================
- LOAD ADMISSION LEADS
+ LOAD LEADS
 =========================================================*/
 async function loadAdmissionLeads() {
 
-    const response = await API.get("admissionLeads");
+    const response = await API.getAdmissionLeads();
+
+    console.log("Admission Leads :", response);
 
     if (!Array.isArray(response)) {
 
@@ -118,21 +139,28 @@ function updateDashboard(data) {
 
     const total = Math.max(data.length - 1, 0);
 
-    document.getElementById("todayLeads").innerText = total;
-    document.getElementById("todayFollowup").innerText = 0;
-    document.getElementById("walkins").innerText = 0;
-    document.getElementById("applications").innerText = 0;
-    document.getElementById("admissions").innerText = 0;
-    document.getElementById("documents").innerText = 0;
+    const set = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = value;
+    };
+
+    set("todayLeads", total);
+    set("todayFollowup", 0);
+    set("walkins", 0);
+    set("applications", 0);
+    set("admissions", 0);
+    set("documents", 0);
 
 }
 
 /*=========================================================
- LEAD TABLE
+ TABLE
 =========================================================*/
 function renderLeadTable(data) {
 
     const tbody = document.getElementById("leadTable");
+
+    if (!tbody) return;
 
     tbody.innerHTML = "";
 
@@ -140,9 +168,8 @@ function renderLeadTable(data) {
 
         tbody.innerHTML = `
             <tr>
-                <td colspan="5">No Leads Available</td>
-            </tr>
-        `;
+                <td colspan="5">No Leads Found</td>
+            </tr>`;
 
         return;
 
@@ -153,38 +180,44 @@ function renderLeadTable(data) {
         const row = data[i];
 
         tbody.innerHTML += `
-        <tr>
-            <td>${row[0] || ""}</td>
-            <td>${row[4] || ""}</td>
-            <td>${row[7] || ""}</td>
-            <td>${row[18] || ""}</td>
-            <td>${row[19] || ""}</td>
-        </tr>
-        `;
-
+            <tr>
+                <td>${row[0] || ""}</td>
+                <td>${row[4] || ""}</td>
+                <td>${row[7] || ""}</td>
+                <td>${row[18] || ""}</td>
+                <td>${row[19] || ""}</td>
+            </tr>`;
     }
 
 }
 
 /*=========================================================
- BUTTON EVENTS
+ EVENTS
 =========================================================*/
 function bindEvents() {
 
-    document
-        .getElementById("newLeadBtn")
-        .addEventListener("click", function () {
+    const newLeadBtn = document.getElementById("newLeadBtn");
 
-            alert("New Lead module will be added in next step.");
+    if (newLeadBtn) {
+
+        newLeadBtn.addEventListener("click", function () {
+
+            alert("New Lead Module - Coming Next");
+
+        });
+
+    }
+
+    const walkinBtn = document.getElementById("walkinBtn");
+
+    if (walkinBtn) {
+
+        walkinBtn.addEventListener("click", function () {
+
+            alert("Walk-in Module - Coming Next");
 
         });
 
-    document
-        .getElementById("walkinBtn")
-        .addEventListener("click", function () {
-
-            alert("Walk-in module will be added in next step.");
-
-        });
+    }
 
 }
