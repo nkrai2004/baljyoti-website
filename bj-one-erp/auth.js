@@ -2,8 +2,8 @@
 =========================================================
 BJ ONE ERP
 File        : auth.js
-Version     : 2.0.0
-Date        : 28 July 2026
+Version     : 3.0.0
+Date        : 30 July 2026
 Author      : Nishant Rai & ChatGPT
 Description : Google Authentication Manager
 =========================================================
@@ -17,16 +17,11 @@ const Auth = {
 
     init: function () {
 
-        // Check configuration
         if (typeof CONFIG === "undefined") {
-
-            alert("CONFIG not found. Please check config.js");
-
+            alert("CONFIG not found.");
             return;
-
         }
 
-        // Wait until Google library is available
         let attempts = 0;
 
         const timer = setInterval(function () {
@@ -51,7 +46,7 @@ const Auth = {
 
                 Auth.initialized = true;
 
-                console.log("Google Sign-In initialized.");
+                console.log("Google Sign-In Ready");
 
             }
 
@@ -59,7 +54,7 @@ const Auth = {
 
                 clearInterval(timer);
 
-                alert("Google Sign-In library could not be loaded.");
+                alert("Unable to load Google Sign-In.");
 
             }
 
@@ -67,29 +62,57 @@ const Auth = {
 
     },
 
-  handleCredentialResponse: function (response) {
+    handleCredentialResponse: async function (response) {
 
-    if (!response || !response.credential) {
+        if (!response || !response.credential) {
 
-        alert("Login failed.");
+            alert("Google Login Failed.");
 
-        return;
+            return;
 
-    }
+        }
 
-    const token = response.credential;
+        const token = response.credential;
 
-    sessionStorage.setItem("google_token", token);
+        const payload = JSON.parse(atob(token.split(".")[1]));
 
-    // Decode JWT payload
-    const payload = JSON.parse(atob(token.split(".")[1]));
+        const email = (payload.email || "").toLowerCase();
 
-    sessionStorage.setItem("user_name", payload.name || "");
-    sessionStorage.setItem("user_email", payload.email || "");
+        try {
 
-    window.location.href = CONFIG.DASHBOARD_PAGE;
+            const url =
+                CONFIG.API_URL +
+                "?action=login&email=" +
+                encodeURIComponent(email);
 
-},
+            const result = await fetch(url);
+
+            const data = await result.json();
+
+            if (!data.success) {
+
+                alert(data.message);
+
+                return;
+
+            }
+
+            sessionStorage.setItem("google_token", token);
+            sessionStorage.setItem("user_name", data.user.name);
+            sessionStorage.setItem("user_email", data.user.email);
+            sessionStorage.setItem("user_role", data.user.role);
+
+            window.location.href = CONFIG.DASHBOARD_PAGE;
+
+        } catch (err) {
+
+            console.error(err);
+
+            alert("Unable to connect to BJ ONE ERP Server.");
+
+        }
+
+    },
 
     isLoggedIn: function () {
 
@@ -99,7 +122,7 @@ const Auth = {
 
     logout: function () {
 
-        sessionStorage.removeItem("google_token");
+        sessionStorage.clear();
 
         if (
             typeof google !== "undefined" &&
@@ -117,7 +140,6 @@ const Auth = {
 
 };
 
-// Only initialize on the login page
 window.addEventListener("load", function () {
 
     if (document.getElementById("googleButton")) {
