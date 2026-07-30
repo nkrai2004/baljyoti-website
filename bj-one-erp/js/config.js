@@ -2,9 +2,7 @@
 =========================================================
 BJ ONE ERP
 File        : config.js
-Version     : 4.0.1
-Date        : 30 July 2026
-Author      : Nishant Rai & ChatGPT
+Version     : 4.0.0
 Description : Global Configuration
 =========================================================
 */
@@ -13,59 +11,73 @@ Description : Global Configuration
 
 const CONFIG = {
 
-    // School Information
-    SCHOOL_NAME: "Bal Jyoti Public School",
-    ERP_NAME: "BJ ONE ERP",
-    ERP_VERSION: "4.0.1",
-    SCHOOL_CODE: "BJPS",
-    ACADEMIC_YEAR: "2026-27",
-
-    // Google Authentication
-    GOOGLE_CLIENT_ID:
-        "594079296208-rrfpja5335vp8cv9vt8fnofub0au20pb.apps.googleusercontent.com",
-
-    // Google Apps Script Web App
+    // ==========================================
+    // GOOGLE APPS SCRIPT WEB APP URL
+    // ==========================================
     API_URL:
         "https://script.google.com/macros/s/AKfycbwDZFT3qHy0upPtqCyB0krbXFV25f_kYwAoBhQTyfuAcBe4whpl9xkZqeCavzUZ5eCt/exec",
 
-    // Pages
+    // ==========================================
+    // GOOGLE CLIENT ID
+    // ==========================================
+    GOOGLE_CLIENT_ID:
+        "594079296208-rrfpja5335vp8cv9vt8fnofub0au20pb.apps.googleusercontent.com",
+
+    // ==========================================
+    // APPLICATION
+    // ==========================================
+    APP_NAME: "BJ ONE ERP",
+
+    APP_VERSION: "4.0.0",
+
+    SCHOOL_NAME: "Bal Jyoti Public School",
+
+    // ==========================================
+    // PAGES
+    // ==========================================
     LOGIN_PAGE: "login.html",
+
     DASHBOARD_PAGE: "dashboard.html",
 
-    // Session Keys
+    // ==========================================
+    // SESSION STORAGE KEYS
+    // ==========================================
     STORAGE: {
+
         TOKEN: "google_token",
+
         USER_NAME: "user_name",
+
         USER_EMAIL: "user_email",
+
         USER_ROLE: "user_role"
+
     },
 
-    // Theme
-    THEME: {
-        PRIMARY: "#C62828",
-        SECONDARY: "#8E0000",
-        SUCCESS: "#2E7D32",
-        WARNING: "#F9A825",
-        DANGER: "#C62828",
-        BACKGROUND: "#F5F5F5",
-        CARD: "#FFFFFF",
-        TEXT: "#333333"
-    },
+    // ==========================================
+    // DEFAULT SETTINGS
+    // ==========================================
+    DEFAULT_ROLE: "Viewer",
 
-    // Regional Settings
-    TIMEZONE: "Asia/Kolkata",
-    DATE_FORMAT: "dd/MM/yyyy",
+    DEFAULT_TIMEOUT: 30000,
+
+    DATE_FORMAT: "DD-MM-YYYY",
+
     CURRENCY: "INR",
+
     LANGUAGE: "en-IN",
 
-    // Application Settings
-    ENABLE_DEBUG: true,
-    SESSION_TIMEOUT: 60,
-    AUTO_REFRESH: false
+    DEBUG: true
+
 };
 
+// Prevent accidental modification
 Object.freeze(CONFIG);
 Object.freeze(CONFIG.STORAGE);
-Object.freeze(CONFIG.THEME);
 
-console.log(`${CONFIG.ERP_NAME} v${CONFIG.ERP_VERSION} Loaded`);
+console.log(
+    CONFIG.APP_NAME +
+    " v" +
+    CONFIG.APP_VERSION +
+    " loaded successfully."
+);
