@@ -2,10 +2,14 @@
 =========================================================
 BJ ONE ERP
 File        : app.js
-Version     : 3.0
+Version     : 4.0.0
+Date        : 30 July 2026
+Author      : Nishant Rai & ChatGPT
 Description : Main Application Controller
 =========================================================
 */
+
+"use strict";
 
 const App = {
 
@@ -77,11 +81,21 @@ const App = {
 
     init() {
 
-        console.log("BJ ONE ERP Started");
+        this.checkLogin();
 
         this.buildSidebar();
 
         this.showWelcome();
+
+    },
+
+    checkLogin() {
+
+        if (!sessionStorage.getItem(CONFIG.STORAGE.TOKEN)) {
+
+            window.location.href = CONFIG.LOGIN_PAGE;
+
+        }
 
     },
 
@@ -99,11 +113,10 @@ const App = {
 
             li.innerHTML = `${module.icon} ${module.name}`;
 
-            li.dataset.module = module.id;
-
-            if (module.id === this.currentModule) {
-                li.style.background = "#C62828";
-            }
+            li.className =
+                module.id === this.currentModule
+                ? "active"
+                : "";
 
             li.onclick = () => {
 
@@ -131,24 +144,66 @@ const App = {
 
         }
 
-        alert(moduleId + " module will be connected in next steps.");
+        const content = document.getElementById("mainContent");
+
+        if (!content) return;
+
+        content.innerHTML = `
+
+            <div class="page-title">
+
+                ${this.getModuleName(moduleId)}
+
+            </div>
+
+            <div class="section">
+
+                <h3>${this.getModuleName(moduleId)}</h3>
+
+                <p>
+
+                    This module is under development.
+
+                </p>
+
+                <br>
+
+                <button class="btn"
+                        onclick="location.reload()">
+
+                    Back to Dashboard
+
+                </button>
+
+            </div>
+
+        `;
+
+    },
+
+    getModuleName(id) {
+
+        const module = this.modules.find(m => m.id === id);
+
+        return module ? module.name : id;
 
     },
 
     showWelcome() {
 
-        const user = JSON.parse(localStorage.getItem("bjUser"));
+        const welcome = document.getElementById("welcomeUser");
 
-        const box = document.getElementById("welcomeUser");
+        if (!welcome) return;
 
-        if (!box) return;
+        const userName =
+            sessionStorage.getItem(CONFIG.STORAGE.USER_NAME);
 
-        if (user) {
+        if (userName) {
 
-            box.innerHTML =
-                "Welcome <b>" +
-                user.name +
-                "</b>";
+            welcome.innerHTML =
+                "Welcome <strong>" +
+                userName +
+                "</strong>";
 
         }
 
@@ -156,16 +211,18 @@ const App = {
 
     logout() {
 
-        localStorage.removeItem("bjUser");
+        if (confirm("Are you sure you want to logout?")) {
 
-        window.location.href = "login.html";
+            Auth.logout();
+
+        }
 
     }
 
 };
 
-window.onload = () => {
+window.addEventListener("load", function () {
 
     App.init();
 
-};
+});
