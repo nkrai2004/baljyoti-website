@@ -3,9 +3,7 @@
 BJ ONE ERP
 File        : api.js
 Version     : 4.0.0
-Date        : 30 July 2026
-Author      : Nishant Rai & ChatGPT
-Description : API Communication Layer
+Description : Google Apps Script API Layer
 =========================================================
 */
 
@@ -13,102 +11,40 @@ Description : API Communication Layer
 
 const API = {
 
-    baseUrl: CONFIG.API_URL,
+    baseURL: CONFIG.API_URL,
 
     async request(action, data = {}) {
 
         try {
 
-            const params = new URLSearchParams();
-
-            params.append("action", action);
-
-            Object.keys(data).forEach(function (key) {
-
-                if (
-                    data[key] !== undefined &&
-                    data[key] !== null
-                ) {
-
-                    params.append(key, data[key]);
-
-                }
-
-            });
-
-            const url =
-                API.baseUrl + "?" + params.toString();
-
-            console.log("GET :", url);
-
-            const response = await fetch(url, {
-                method: "GET",
-                headers: {
-                    "Accept": "application/json"
-                }
-            });
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "HTTP " + response.status
-                );
-
-            }
-
-            const json = await response.json();
-
-            return json;
-
-        } catch (error) {
-
-            console.error(error);
-
-            return {
-
-                success: false,
-
-                message: error.message
-
+            const payload = {
+                action: action,
+                ...data
             };
 
-        }
-
-    },
-
-    async post(action, data = {}) {
-
-        try {
-
-            const formData = new FormData();
-
-            formData.append("action", action);
-
-            Object.keys(data).forEach(function (key) {
-
-                formData.append(key, data[key]);
-
-            });
-
-            const response = await fetch(API.baseUrl, {
+            const response = await fetch(this.baseURL, {
 
                 method: "POST",
 
-                body: formData
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(payload)
 
             });
 
             if (!response.ok) {
 
                 throw new Error(
-                    "HTTP " + response.status
+                    "HTTP Error : " + response.status
                 );
 
             }
 
-            const json = await response.json();
+            const result = await response.json();
 
-            return json;
+            return result;
 
         } catch (error) {
 
@@ -126,47 +62,43 @@ const API = {
 
     },
 
-    async login(email) {
+    async login(idToken) {
 
-        return await API.request(
+        return await this.request("login", {
 
-            "login",
+            token: idToken
 
-            {
-
-                email: email
-
-            }
-
-        );
+        });
 
     },
 
     async dashboard() {
 
-        return await API.request(
-
-            "dashboard"
-
-        );
+        return await this.request("dashboard");
 
     },
 
-    async getLeadSources() {
+    async getAdmissions() {
 
-        return await API.request(
-
-            "leadSources"
-
-        );
+        return await this.request("getAdmissions");
 
     },
 
-    async saveAdmission(data) {
+    async getAdmission(id) {
 
-        return await API.post(
+        return await this.request("getAdmission", {
 
-            "saveAdmission",
+            id: id
+
+        });
+
+    },
+
+    async createAdmission(data) {
+
+        return await this.request(
+
+            "createAdmission",
 
             data
 
@@ -174,26 +106,164 @@ const API = {
 
     },
 
-    async listAdmissions() {
+    async updateAdmission(data) {
 
-        return await API.request(
+        return await this.request(
 
-            "listAdmissions"
+            "updateAdmission",
+
+            data
 
         );
 
     },
 
-    async dashboardStats() {
+    async deleteAdmission(id) {
 
-        return await API.request(
+        return await this.request(
 
-            "dashboardStats"
+            "deleteAdmission",
+
+            {
+
+                id: id
+
+            }
+
+        );
+
+    },
+
+    async uploadPhoto(base64Image) {
+
+        return await this.request(
+
+            "uploadPhoto",
+
+            {
+
+                image: base64Image
+
+            }
+
+        );
+
+    },
+
+    async getStudents() {
+
+        return await this.request(
+
+            "getStudents"
+
+        );
+
+    },
+
+    async getAttendance(date) {
+
+        return await this.request(
+
+            "getAttendance",
+
+            {
+
+                date: date
+
+            }
+
+        );
+
+    },
+
+    async saveAttendance(data) {
+
+        return await this.request(
+
+            "saveAttendance",
+
+            data
+
+        );
+
+    },
+
+    async getFees() {
+
+        return await this.request(
+
+            "getFees"
+
+        );
+
+    },
+
+    async saveFee(data) {
+
+        return await this.request(
+
+            "saveFee",
+
+            data
+
+        );
+
+    },
+
+    async getStaff() {
+
+        return await this.request(
+
+            "getStaff"
+
+        );
+
+    },
+
+    async getTransport() {
+
+        return await this.request(
+
+            "getTransport"
+
+        );
+
+    },
+
+    async getLibrary() {
+
+        return await this.request(
+
+            "getLibrary"
+
+        );
+
+    },
+
+    async getInventory() {
+
+        return await this.request(
+
+            "getInventory"
+
+        );
+
+    },
+
+    async reports(type) {
+
+        return await this.request(
+
+            "reports",
+
+            {
+
+                report: type
+
+            }
 
         );
 
     }
 
 };
-
-console.log("API Engine Loaded");
