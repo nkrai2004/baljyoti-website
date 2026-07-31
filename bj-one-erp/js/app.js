@@ -31,6 +31,7 @@ const App = {
     const role = sessionStorage.getItem(CONFIG.STORAGE.USER_ROLE);
 
     const result = await API.modules(role);
+      console.log(result);
 
     if (result.success) {
 
