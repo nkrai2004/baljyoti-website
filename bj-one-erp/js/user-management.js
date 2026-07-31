@@ -7,4 +7,6 @@ User Management
 
 "use strict";
 
-console.log("User Management JS Loaded");
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("User Management JS Loaded");
+});
