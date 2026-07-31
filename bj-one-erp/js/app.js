@@ -57,7 +57,12 @@ const App = {
 
             const li = document.createElement("li");
 
-            li.innerHTML = `${module.icon} ${module.moduleName}`;
+           li.innerHTML = `
+    <span class="material-icons" style="font-size:20px;vertical-align:middle;margin-right:8px;">
+        ${module.icon}
+    </span>
+    ${module.moduleName}
+`;
 
             if (module.moduleId.toLowerCase() === this.currentModule) {
                 li.classList.add("active");
