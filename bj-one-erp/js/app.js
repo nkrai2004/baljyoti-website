@@ -23,6 +23,8 @@ const App = {
         { id: "library", name: "Library", icon: "📚" },
         { id: "inventory", name: "Inventory", icon: "📦" },
         { id: "reports", name: "Reports", icon: "📊" }
+        { id: "settings", name: "Settings", icon: "⚙️" },
+{ id: "user-management", name: "User Management", icon: "👤" }
     ],
 
     init() {
