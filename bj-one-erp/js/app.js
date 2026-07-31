@@ -94,9 +94,12 @@ const App = {
 
         try {
 
-            const module = this.modules.find(
-    m => m.moduleId.toLowerCase() === moduleId
+const module = this.modules.find(
+    m => m.moduleId.toLowerCase() === moduleId.toLowerCase()
 );
+
+console.log("Requested Module:", moduleId);
+console.log("Available Modules:", this.modules);
 
 if (!module) {
     throw new Error("Module configuration not found.");
