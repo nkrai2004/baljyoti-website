@@ -24,15 +24,25 @@ const App = {
 
     },
 
-    init() {
+  async init() {
 
-        this.checkLogin();
+    this.checkLogin();
 
-        this.buildSidebar();
+    const role = sessionStorage.getItem(CONFIG.STORAGE.USER_ROLE);
 
-        this.showWelcome();
+    const result = await API.modules(role);
 
-    },
+    if (result.success) {
+
+        this.modules = result.data;
+
+    }
+
+    this.buildSidebar();
+
+    this.showWelcome();
+
+},
 
     checkLogin() {
 
