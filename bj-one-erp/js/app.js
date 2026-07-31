@@ -94,7 +94,15 @@ const App = {
 
         try {
 
-            const response = await fetch(`modules/${moduleId}.html`);
+            const module = this.modules.find(
+    m => m.moduleId.toLowerCase() === moduleId
+);
+
+if (!module) {
+    throw new Error("Module configuration not found.");
+}
+
+const response = await fetch(module.url);
 
             if (!response.ok) {
                 throw new Error("Unable to load module.");
