@@ -105,7 +105,9 @@ if (!module) {
     throw new Error("Module configuration not found.");
 }
 
-const response = await fetch(module.url);
+console.log("Loading URL:", module.url);
+
+const response = await fetch(module.url.trim());
 
             if (!response.ok) {
                 throw new Error("Unable to load module.");
