@@ -2,7 +2,7 @@
 =========================================================
 BJ ONE ERP
 File : app.js
-Version : 5.0
+Version : 6.0
 =========================================================
 */
 
@@ -14,9 +14,22 @@ const App = {
 
     modules: [],
 
-    init() {
+    async init() {
 
         this.checkLogin();
+
+        const role = sessionStorage.getItem(CONFIG.STORAGE.USER_ROLE);
+
+        const result = await API.modules(role);
+
+        console.log("API Result:", result);
+        console.log("Modules:", result.modules);
+
+        if (result.success) {
+            this.modules = result.modules;
+        } else {
+            this.modules = [];
+        }
 
         this.buildSidebar();
 
@@ -24,33 +37,10 @@ const App = {
 
     },
 
-  async init() {
-
-    this.checkLogin();
-
-    const role = sessionStorage.getItem(CONFIG.STORAGE.USER_ROLE);
-
-    const result = await API.modules(role);
-      console.log("API Result:", result);
-console.log("Modules:", result.data);
-    if (result.success) {
-
-        this.modules = result.data;
-
-    }
-
-    this.buildSidebar();
-
-    this.showWelcome();
-
-},
-
     checkLogin() {
 
         if (!sessionStorage.getItem(CONFIG.STORAGE.TOKEN)) {
-
             window.location.href = CONFIG.LOGIN_PAGE;
-
         }
 
     },
@@ -67,15 +57,13 @@ console.log("Modules:", result.data);
 
             const li = document.createElement("li");
 
-            li.innerHTML = `${module.icon} ${module.name}`;
+            li.innerHTML = `${module.icon} ${module.moduleName}`;
 
-            if (module.id === this.currentModule) {
-
+            if (module.moduleId.toLowerCase() === this.currentModule) {
                 li.classList.add("active");
-
             }
 
-            li.onclick = () => this.openModule(module.id);
+            li.onclick = () => this.openModule(module.moduleId.toLowerCase());
 
             menu.appendChild(li);
 
@@ -104,16 +92,12 @@ console.log("Modules:", result.data);
             const response = await fetch(`modules/${moduleId}.html`);
 
             if (!response.ok) {
-
                 throw new Error("Unable to load module.");
-
             }
 
             const html = await response.text();
 
             content.innerHTML = html;
-
-            // CSS Loader
 
             let css = document.getElementById("module-css");
 
@@ -131,14 +115,10 @@ console.log("Modules:", result.data);
 
             css.href = `css/${moduleId}.css?v=${Date.now()}`;
 
-            // JS Loader
-
             const oldScript = document.getElementById("module-js");
 
             if (oldScript) {
-
                 oldScript.remove();
-
             }
 
             const script = document.createElement("script");
@@ -175,9 +155,7 @@ console.log("Modules:", result.data);
         const name = sessionStorage.getItem(CONFIG.STORAGE.USER_NAME);
 
         if (name) {
-
             welcome.innerHTML = `Welcome <strong>${name}</strong>`;
-
         }
 
     },
@@ -185,9 +163,7 @@ console.log("Modules:", result.data);
     logout() {
 
         if (confirm("Logout from BJ ONE ERP?")) {
-
             Auth.logout();
-
         }
 
     }
