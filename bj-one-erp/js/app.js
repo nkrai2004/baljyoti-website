@@ -12,20 +12,17 @@ const App = {
 
     currentModule: "dashboard",
 
-    modules: [
-        { id: "dashboard", name: "Dashboard", icon: "🏠" },
-        { id: "admission", name: "Admissions", icon: "🎓" },
-        { id: "students", name: "Students", icon: "👨‍🎓" },
-        { id: "attendance", name: "Attendance", icon: "📅" },
-        { id: "fees", name: "Fees", icon: "💰" },
-        { id: "staff", name: "Staff", icon: "👨‍🏫" },
-        { id: "transport", name: "Transport", icon: "🚌" },
-        { id: "library", name: "Library", icon: "📚" },
-        { id: "inventory", name: "Inventory", icon: "📦" },
-        { id: "reports", name: "Reports", icon: "📊" },
-        { id: "settings", name: "Settings", icon: "⚙️" },
-        { id: "user-management", name: "User Management", icon: "👤" }
-    ],
+    modules: [],
+
+    init() {
+
+        this.checkLogin();
+
+        this.buildSidebar();
+
+        this.showWelcome();
+
+    },
 
     init() {
 
