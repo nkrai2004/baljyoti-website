@@ -26,3 +26,15 @@ onAuthStateChanged(auth, (user) => {
     }
 
 });
+
+const missionTitle = document.getElementById("missionTitle");
+const missionDescription = document.getElementById("missionDescription");
+
+if (missionTitle && missionDescription) {
+
+    missionTitle.textContent = "Mathematics - Linear Equations";
+
+    missionDescription.textContent =
+        "Complete 10 adaptive questions and improve your problem-solving skills.";
+
+}
