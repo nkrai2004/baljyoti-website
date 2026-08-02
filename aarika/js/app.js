@@ -5,6 +5,9 @@ Version : v0.1 Genesis
 Author  : Project AARIKA
 ===========================================================
 */
+
+"use strict";
+
 import app from "../config/firebase-init.js";
 
 import {
@@ -29,6 +32,13 @@ const AARIKA = {
     initialized: false
 
 };
+
+/*----------------------------------------------------------
+ Firebase
+----------------------------------------------------------*/
+
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
 /*----------------------------------------------------------
  Bootstrap
@@ -61,9 +71,84 @@ function initializeApplication() {
 
     loadConfiguration();
 
+    initializeAuthentication();
+
     AARIKA.initialized = true;
 
     console.log("Application initialized.");
+
+}
+
+/*----------------------------------------------------------
+ Authentication
+----------------------------------------------------------*/
+
+function initializeAuthentication() {
+
+    const loginButton = document.getElementById("googleLogin");
+
+    if (loginButton) {
+
+        loginButton.addEventListener("click", async () => {
+
+            try {
+
+                await signInWithPopup(auth, provider);
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert("Login failed");
+
+            }
+
+        });
+
+    }
+
+    onAuthStateChanged(auth, (user) => {
+
+        const oldCard = document.getElementById("userCard");
+
+        if (oldCard) {
+
+            oldCard.remove();
+
+        }
+
+        if (!user) return;
+
+        const hero = document.querySelector(".hero");
+
+        hero.insertAdjacentHTML(
+            "beforeend",
+            `
+            <div class="card" id="userCard" style="margin-top:30px;text-align:center;">
+
+                <h3>Welcome ${user.displayName}</h3>
+
+                <p>${user.email}</p>
+
+                ${
+                    user.photoURL
+                    ? `<img
+                        src="${user.photoURL}"
+                        alt="Profile"
+                        style="
+                            width:90px;
+                            height:90px;
+                            border-radius:50%;
+                            margin-top:15px;
+                        ">`
+                    : ""
+                }
+
+            </div>
+            `
+        );
+
+    });
 
 }
 
@@ -108,9 +193,7 @@ function checkBrowser() {
 
     if (!window.fetch) {
 
-        alert(
-            "Your browser is not supported."
-        );
+        alert("Your browser is not supported.");
 
     }
 
@@ -123,16 +206,6 @@ function checkBrowser() {
 function loadConfiguration() {
 
     console.log("Loading configuration...");
-
-    /*
-        Future
-
-        Firebase Config
-        Feature Flags
-        Remote Config
-        API Endpoints
-
-    */
 
 }
 
@@ -147,95 +220,3 @@ window.addEventListener("error", function(event){
     console.error(event.message);
 
 });
-const auth = getAuth(app);
-
-const provider = new GoogleAuthProvider();
-onAuthStateChanged(auth, (user) => {
-
-    if (user) {
-
-        const hero = document.querySelector(".hero");
-
-        hero.insertAdjacentHTML(
-            "beforeend",
-            `
-            <div class="card" id="userCard" style="margin-top:30px;">
-                <h3>Welcome ${user.displayName}</h3>
-                <p>${user.email}</p>
-                <img
-                    src="${user.photoURL}"
-                    alt="Profile"
-                    style="width:90px;border-radius:50%;margin-top:15px;">
-            </div>
-            `
-        );
-
-    }
-
-});
-
-const loginButton = document.getElementById("googleLogin");
-
-if (loginButton) {
-
-    loginButton.addEventListener("click", async () => {
-
-        try {
-
-            const result = await signInWithPopup(auth, provider);
-
-          const hero = document.querySelector(".hero");
-
-hero.insertAdjacentHTML(
-    "beforeend",
-    `
-    <div class="card" style="margin-top:30px;">
-        <h3>Welcome ${result.user.displayName}</h3>
-        <p>${result.user.email}</p>
-        <img
-            src="${result.user.photoURL}"
-            alt="Profile"
-            style="
-                width:90px;
-                border-radius:50%;
-                margin-top:15px;
-            ">
-    </div>
-    `
-);
-
-            console.log(result.user);
-
-        } catch (error) {
-
-            console.error(error);
-
-            alert("Login failed");
-
-        }
-
-    });
-
-}
-
-/*----------------------------------------------------------
- Future Modules
-
-Student
-Parent
-Teacher
-Admin
-
-Firebase
-
-Authentication
-
-ATHENA
-
-MEMORIA
-
-LGI
-
-AIRA
-
-----------------------------------------------------------*/
