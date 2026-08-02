@@ -10,9 +10,9 @@ import app from "../config/firebase-init.js";
 import {
     getAuth,
     GoogleAuthProvider,
-    signInWithPopup
+    signInWithPopup,
+    onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-"use strict";
 
 /*----------------------------------------------------------
  Application Configuration
@@ -150,6 +150,29 @@ window.addEventListener("error", function(event){
 const auth = getAuth(app);
 
 const provider = new GoogleAuthProvider();
+onAuthStateChanged(auth, (user) => {
+
+    if (user) {
+
+        const hero = document.querySelector(".hero");
+
+        hero.insertAdjacentHTML(
+            "beforeend",
+            `
+            <div class="card" id="userCard" style="margin-top:30px;">
+                <h3>Welcome ${user.displayName}</h3>
+                <p>${user.email}</p>
+                <img
+                    src="${user.photoURL}"
+                    alt="Profile"
+                    style="width:90px;border-radius:50%;margin-top:15px;">
+            </div>
+            `
+        );
+
+    }
+
+});
 
 const loginButton = document.getElementById("googleLogin");
 
