@@ -38,3 +38,14 @@ if (missionTitle && missionDescription) {
         "Complete 10 adaptive questions and improve your problem-solving skills.";
 
 }
+const startMissionButton = document.getElementById("startMission");
+
+if (startMissionButton) {
+
+    startMissionButton.addEventListener("click", () => {
+
+        alert("Mission module coming next...");
+
+    });
+
+}
