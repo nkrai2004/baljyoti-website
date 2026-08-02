@@ -5,7 +5,13 @@ Version : v0.1 Genesis
 Author  : Project AARIKA
 ===========================================================
 */
+import app from "../config/firebase-init.js";
 
+import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 "use strict";
 
 /*----------------------------------------------------------
@@ -141,6 +147,37 @@ window.addEventListener("error", function(event){
     console.error(event.message);
 
 });
+const auth = getAuth(app);
+
+const provider = new GoogleAuthProvider();
+
+const loginButton = document.getElementById("googleLogin");
+
+if (loginButton) {
+
+    loginButton.addEventListener("click", async () => {
+
+        try {
+
+            const result = await signInWithPopup(auth, provider);
+
+            alert(
+                "Welcome " + result.user.displayName
+            );
+
+            console.log(result.user);
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("Login failed");
+
+        }
+
+    });
+
+}
 
 /*----------------------------------------------------------
  Future Modules
