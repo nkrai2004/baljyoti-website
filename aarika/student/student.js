@@ -44,7 +44,7 @@ if (startMissionButton) {
 
     startMissionButton.addEventListener("click", () => {
 
-        alert("Mission module coming next...");
+        window.location.href = "/aarika/student/mission.html";
 
     });
 
