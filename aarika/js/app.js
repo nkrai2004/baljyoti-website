@@ -119,7 +119,7 @@ function initializeAuthentication() {
 
         if (!user) return;
 
-//window.location.href = "student/";
+window.location.href = "student/";
 
         const hero = document.querySelector(".hero");
 
