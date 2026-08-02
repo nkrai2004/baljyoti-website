@@ -161,9 +161,25 @@ if (loginButton) {
 
             const result = await signInWithPopup(auth, provider);
 
-            alert(
-                "Welcome " + result.user.displayName
-            );
+          const hero = document.querySelector(".hero");
+
+hero.insertAdjacentHTML(
+    "beforeend",
+    `
+    <div class="card" style="margin-top:30px;">
+        <h3>Welcome ${result.user.displayName}</h3>
+        <p>${result.user.email}</p>
+        <img
+            src="${result.user.photoURL}"
+            alt="Profile"
+            style="
+                width:90px;
+                border-radius:50%;
+                margin-top:15px;
+            ">
+    </div>
+    `
+);
 
             console.log(result.user);
 
