@@ -1,0 +1,1121 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper:#F6F2E7;
+    --paper-line:#E1D6B8;
+    --margin-red:#A13A3F;
+    --ink:#21283B;
+    --ink-soft:#5B6178;
+    --gold:#B08D2B;
+    --green:#3F6D4E;
+    --amber:#B0752B;
+    --card:#FFFCF5;
+    --card-border:#E7DCC0;
+
+    --c-ATT:#2C6E9E;
+    --c-FEE:#B08D2B;
+    --c-ACA:#3F6D4E;
+    --c-ASM:#8C2F39;
+    --c-DIS:#7A4B24;
+    --c-HR:#7A3E8C;
+    --c-FAC:#3E7A7A;
+    --c-TRN:#405B8C;
+    --c-MKT:#C2540E;
+    --c-LDR:#2E3A59;
+    --c-PER:#948B76;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .daybook{
+    max-width:1180px;
+    margin:0 auto;
+    padding:28px 20px 80px;
+  }
+
+  /* ---------- Header ---------- */
+  .db-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:24px;
+    padding-bottom:20px;
+    border-bottom:2px solid var(--ink);
+    margin-bottom:22px;
+    flex-wrap:wrap;
+  }
+  .db-title-eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--margin-red);
+    margin:0 0 6px;
+    font-weight:600;
+  }
+  .db-title{
+    font-family:'Fraunces', serif;
+    font-size:38px;
+    font-weight:600;
+    margin:0;
+    line-height:1.05;
+    letter-spacing:-.01em;
+  }
+  .db-subtitle{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    margin:8px 0 0;
+    max-width:440px;
+  }
+  .db-clock-wrap{
+    display:flex;
+    align-items:center;
+    gap:18px;
+  }
+  .db-clock{
+    text-align:right;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .db-clock .date{ font-size:13px; color:var(--ink-soft); }
+  .db-clock .time{ font-size:20px; font-weight:600; color:var(--ink); }
+
+  .seal{
+    width:76px; height:76px; border-radius:50%;
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .seal-ring{
+    position:absolute; inset:0; border-radius:50%;
+  }
+  .seal-inner{
+    position:relative;
+    width:60px; height:60px; border-radius:50%;
+    background:var(--ink);
+    color:var(--paper);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .seal-inner .pct{ font-size:16px; font-weight:600; line-height:1; }
+  .seal-inner .lbl{ font-size:7px; letter-spacing:.1em; margin-top:2px; opacity:.75; }
+
+  /* ---------- Tabs ---------- */
+  .db-tabs{
+    display:flex; gap:6px; margin-bottom:22px;
+    border-bottom:1px solid var(--paper-line);
+  }
+  .db-tab{
+    font-family:'Fraunces', serif;
+    font-size:15px;
+    font-weight:600;
+    padding:10px 18px;
+    background:none;
+    border:none;
+    border-bottom:3px solid transparent;
+    color:var(--ink-soft);
+    cursor:pointer;
+    letter-spacing:.01em;
+  }
+  .db-tab[aria-selected="true"]{
+    color:var(--ink);
+    border-bottom-color:var(--margin-red);
+  }
+  .db-tab:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+  .db-panel{ display:none; }
+  .db-panel.active{ display:block; }
+
+  /* ---------- Shared: section label ---------- */
+  .section-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 10px;
+  }
+
+  /* ---------- Progress bar ---------- */
+  .progress-row{
+    display:flex; align-items:center; gap:14px; margin-bottom:18px;
+  }
+  .progress-track{
+    flex:1; height:8px; border-radius:5px; background:var(--paper-line);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%; background:var(--green); border-radius:5px;
+    transition:width .3s ease;
+  }
+  .progress-text{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px; color:var(--ink-soft); white-space:nowrap;
+  }
+
+  /* ---------- Filter chips ---------- */
+  .chip-row{
+    display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px;
+  }
+  .chip{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    padding:6px 11px;
+    border-radius:20px;
+    border:1.4px solid var(--chip-color, var(--ink-soft));
+    color:var(--chip-color, var(--ink-soft));
+    background:transparent;
+    cursor:pointer;
+    letter-spacing:.02em;
+    white-space:nowrap;
+  }
+  .chip.active{
+    background:var(--chip-color, var(--ink-soft));
+    color:#fff;
+  }
+  .chip:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+  /* ---------- Roster timeline ---------- */
+  .roster{
+    position:relative;
+    padding-left:26px;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent, transparent 43px,
+      var(--paper-line) 43px, var(--paper-line) 44px
+    );
+  }
+  .roster::before{
+    content:"";
+    position:absolute; left:8px; top:0; bottom:0;
+    width:2px; background:var(--margin-red); opacity:.55;
+  }
+  .roster-row{
+    position:relative;
+    display:flex;
+    align-items:flex-start;
+    gap:16px;
+    min-height:44px;
+    padding:7px 0 7px 20px;
+  }
+  .roster-row.row-hidden{ display:none; }
+  .roster-row::before{
+    content:"";
+    position:absolute; left:-3px; top:16px;
+    width:9px; height:9px; border-radius:50%;
+    background:var(--paper); border:2px solid var(--margin-red);
+  }
+  .roster-time{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    font-weight:600;
+    color:var(--ink);
+    width:70px;
+    flex-shrink:0;
+    padding-top:3px;
+  }
+  .roster-tasks{
+    display:flex; flex-wrap:wrap; gap:6px 8px; flex:1;
+  }
+  .task-pill{
+    --pc: var(--ink-soft);
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-left:3px solid var(--pc);
+    border-radius:4px;
+    padding:5px 9px 5px 8px;
+    font-size:12.5px;
+    line-height:1.25;
+    cursor:pointer;
+    max-width:340px;
+  }
+  .task-pill.hidden-cat{ display:none; }
+  .task-pill input{
+    accent-color: var(--pc);
+    width:13px; height:13px; flex-shrink:0; margin:0;
+    cursor:pointer;
+  }
+  .task-pill .t-name{ color:var(--ink); }
+  .task-pill.done .t-name{ text-decoration:line-through; color:var(--ink-soft); }
+  .task-pill.reserved{ border-style:dashed; font-style:italic; color:var(--ink-soft); }
+
+  /* ---------- Reports tab ---------- */
+  .stat-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:22px;
+  }
+  .stat-card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:8px;
+    padding:14px 16px;
+  }
+  .stat-card .num{
+    font-family:'Fraunces', serif; font-size:28px; font-weight:600; line-height:1;
+  }
+  .stat-card .lbl{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--ink-soft); margin-top:6px;
+  }
+  .stat-card.done .num{ color:var(--green); }
+  .stat-card.progress .num{ color:var(--amber); }
+  .stat-card.pending .num{ color:var(--margin-red); }
+
+  .cat-bars{
+    background:var(--card); border:1px solid var(--card-border); border-radius:8px;
+    padding:16px 18px; margin-bottom:22px;
+  }
+  .cat-bar-row{
+    display:flex; align-items:center; gap:10px; margin-bottom:8px; font-size:12px;
+  }
+  .cat-bar-row:last-child{ margin-bottom:0; }
+  .cat-bar-label{
+    width:170px; flex-shrink:0; color:var(--ink-soft);
+    font-family:'IBM Plex Mono', monospace; font-size:11px;
+  }
+  .cat-bar-track{ flex:1; height:7px; background:var(--paper-line); border-radius:4px; overflow:hidden; }
+  .cat-bar-fill{ height:100%; border-radius:4px; }
+  .cat-bar-count{ width:22px; text-align:right; font-family:'IBM Plex Mono', monospace; color:var(--ink-soft); }
+
+  .toolbar{
+    display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;
+  }
+  .search-input, .cat-select{
+    font-family:'Inter', sans-serif;
+    font-size:13px;
+    padding:8px 12px;
+    border:1px solid var(--card-border);
+    border-radius:6px;
+    background:var(--card);
+    color:var(--ink);
+  }
+  .search-input{ flex:1; min-width:180px; }
+  .search-input:focus-visible, .cat-select:focus-visible{ outline:2px solid var(--gold); outline-offset:1px; }
+
+  .reports-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+    gap:12px;
+  }
+  .report-card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:8px;
+    padding:14px 15px;
+    border-top:3px solid var(--rc, var(--ink-soft));
+  }
+  .report-card.hidden-card{ display:none; }
+  .report-card-top{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:8px;
+  }
+  .report-si{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft);
+  }
+  .report-name{
+    font-family:'Fraunces', serif; font-size:15px; font-weight:600; margin:2px 0 0; line-height:1.25;
+  }
+  .report-fields{
+    display:flex; flex-direction:column; gap:6px; margin-top:10px;
+  }
+  .report-fields label{
+    font-family:'IBM Plex Mono', monospace; font-size:9.5px; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--ink-soft); display:block; margin-bottom:2px;
+  }
+  .report-fields input, .report-fields select{
+    width:100%; font-family:'Inter', sans-serif; font-size:12.5px;
+    padding:6px 8px; border:1px solid var(--card-border); border-radius:5px;
+    background:#fff; color:var(--ink);
+  }
+  .status-toggle{
+    margin-top:10px;
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600;
+    padding:5px 10px; border-radius:20px; cursor:pointer; border:1.4px solid transparent;
+    letter-spacing:.03em;
+  }
+  .status-toggle.status-pending{ background:#F3E3E1; color:var(--margin-red); border-color:var(--margin-red); }
+  .status-toggle.status-progress{ background:#F3E7D3; color:var(--amber); border-color:var(--amber); }
+  .status-toggle.status-done{ background:#E1EBE3; color:var(--green); border-color:var(--green); }
+  .status-toggle:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+  .reset-link{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft);
+    background:none; border:none; text-decoration:underline; cursor:pointer; padding:0;
+  }
+  .foot-row{ display:flex; justify-content:space-between; align-items:center; margin-top:26px; flex-wrap:wrap; gap:8px;}
+  .foot-note{ font-size:11.5px; color:var(--ink-soft); max-width:520px; }
+
+  @media (max-width:640px){
+    .stat-grid{ grid-template-columns:repeat(2,1fr); }
+    .db-header{ flex-direction:column; }
+    .roster-row{ flex-direction:column; gap:4px; }
+    .roster-time{ width:auto; }
+    .cat-bar-label{ width:120px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; }
+  }
+</style>
+
+<div class="daybook">
+
+  <div class="db-header">
+    <div>
+      <p class="db-title-eyebrow">School Operations Daybook</p>
+      <h1 class="db-title">Today's Ledger</h1>
+      <p class="db-subtitle">Time-mapped duty roster and a live tracker for the school's recurring reports — reconstructed from the master schedule sheet.</p>
+    </div>
+    <div class="db-clock-wrap">
+      <div class="db-clock">
+        <div class="date" id="db-date">—</div>
+        <div class="time" id="db-time">—:—</div>
+      </div>
+      <div class="seal">
+        <svg class="seal-ring" viewBox="0 0 76 76">
+          <circle cx="38" cy="38" r="35" fill="none" stroke="#E1D6B8" stroke-width="5"/>
+          <circle id="seal-progress" cx="38" cy="38" r="35" fill="none" stroke="#3F6D4E" stroke-width="5"
+                  stroke-dasharray="220" stroke-dashoffset="220" stroke-linecap="round"
+                  transform="rotate(-90 38 38)"/>
+        </svg>
+        <div class="seal-inner">
+          <div class="pct" id="seal-pct">0%</div>
+          <div class="lbl">TODAY</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="db-tabs" role="tablist">
+    <button class="db-tab" id="tab-roster" role="tab" aria-selected="true">Duty Roster</button>
+    <button class="db-tab" id="tab-reports" role="tab" aria-selected="false">Reports Tracker</button>
+  </div>
+
+  <!-- ================= DUTY ROSTER ================= -->
+  <div class="db-panel active" id="panel-roster">
+
+    <p class="section-label">Filter by desk / category</p>
+    <div class="chip-row" id="chip-row"></div>
+
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" id="roster-progress-fill" style="width:0%"></div></div>
+      <div class="progress-text" id="roster-progress-text">0 / 0 marked done today</div>
+    </div>
+
+    <div class="roster" id="roster"></div>
+
+    <div class="foot-row">
+      <p class="foot-note">Checkmarks reset automatically each calendar day. Entries marked <em>Reserved</em> were personal/family blocks in the original sheet and are kept for reference, not tracked as tasks.</p>
+      <button class="reset-link" id="reset-today">Clear today's checkmarks</button>
+    </div>
+  </div>
+
+  <!-- ================= REPORTS TRACKER ================= -->
+  <div class="db-panel" id="panel-reports">
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="num" id="stat-total">0</div><div class="lbl">Total Reports</div></div>
+      <div class="stat-card done"><div class="num" id="stat-done">0</div><div class="lbl">Done</div></div>
+      <div class="stat-card progress"><div class="num" id="stat-progress">0</div><div class="lbl">In Progress</div></div>
+      <div class="stat-card pending"><div class="num" id="stat-pending">0</div><div class="lbl">Pending</div></div>
+    </div>
+
+    <div class="cat-bars" id="cat-bars">
+      <p class="section-label" style="margin-bottom:12px;">Reports by category</p>
+      <div id="cat-bars-body"></div>
+    </div>
+
+    <div class="toolbar">
+      <input class="search-input" id="report-search" type="text" placeholder="Search reports…" />
+      <select class="cat-select" id="report-cat-filter">
+        <option value="">All categories</option>
+      </select>
+    </div>
+
+    <div class="reports-grid" id="reports-grid"></div>
+
+    <div class="foot-row">
+      <p class="foot-note">Category and SPOC (single point of contact) were blank in the source sheet — set them here; changes are saved automatically and shared with anyone using this dashboard.</p>
+      <button class="reset-link" id="reset-reports">Reset all report fields</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+
+  // ---------------- Category config ----------------
+  var CATS = {
+    ATT:{label:'Attendance', color:'var(--c-ATT)'},
+    FEE:{label:'Fees & Admissions', color:'var(--c-FEE)'},
+    ACA:{label:'Academic', color:'var(--c-ACA)'},
+    ASM:{label:'Assembly & Activities', color:'var(--c-ASM)'},
+    DIS:{label:'Discipline & Safety', color:'var(--c-DIS)'},
+    HR:{label:'HR & Recruitment', color:'var(--c-HR)'},
+    FAC:{label:'Facilities & Maintenance', color:'var(--c-FAC)'},
+    TRN:{label:'Transport', color:'var(--c-TRN)'},
+    MKT:{label:'Marketing & Social', color:'var(--c-MKT)'},
+    LDR:{label:'Leadership & Reviews', color:'var(--c-LDR)'},
+    PER:{label:'Reserved', color:'var(--c-PER)'}
+  };
+  // resolved hex (for inline SVG / JS bar widths where CSS var won't work)
+  var CAT_HEX = {
+    ATT:'#2C6E9E', FEE:'#B08D2B', ACA:'#3F6D4E', ASM:'#8C2F39', DIS:'#7A4B24',
+    HR:'#7A3E8C', FAC:'#3E7A7A', TRN:'#405B8C', MKT:'#C2540E', LDR:'#2E3A59', PER:'#948B76'
+  };
+
+  // ---------------- Duty roster data (reconstructed from source sheet) ----------------
+  var ROSTER = [
+    {time:'6:30 AM', tasks:[
+      {n:'Bus / eco exit report with location', c:'TRN'},
+      {n:'Driver & guard attendance', c:'ATT'},
+      {n:'Cleaning staff attendance', c:'ATT'}
+    ]},
+    {time:'6:45 AM', tasks:[
+      {n:'Guard round of school — cleaning / morning issues', c:'DIS'},
+      {n:'Attendance / register / supervisor sheet (Sat: add new name)', c:'ATT'},
+      {n:'Early student projector on for videos', c:'ACA'}
+    ]},
+    {time:'7:00 AM', tasks:[
+      {n:'Cleaning staff to bring backup', c:'FAC'}
+    ]},
+    {time:'7:15 AM', tasks:[
+      {n:'Sound / water / bell / music / internet report', c:'FAC'},
+      {n:'Gate & assembly duty of staff / teacher', c:'DIS'},
+      {n:'Cleaning status — classwise / school location', c:'FAC'},
+      {n:'Staff attendance / absent report', c:'ATT'}
+    ]},
+    {time:'7:30 AM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Gate duty chart', c:'DIS'},
+      {n:'Accounts staff (interview report)', c:'HR'},
+      {n:'Blackboard cleaning report', c:'FAC'}
+    ]},
+    {time:'7:45 AM', tasks:[
+      {n:'Assembly report & assembly planner alert (Renu)', c:'ASM'},
+      {n:'Classroom round alert (Kavita)', c:'DIS'},
+      {n:'Activity alert', c:'ASM'},
+      {n:'Music play — changes every 4th Saturday', c:'ASM'}
+    ]},
+    {time:'8:00 AM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Monthly attendance (10th) · Transport (5th) · Vendor (5th)', c:'ATT'},
+      {n:'Time table of the day — duty chart / stage performance', c:'LDR'},
+      {n:'Workload google sheet', c:'ACA'},
+      {n:'Lesson plan of the day — classwise', c:'ACA'},
+      {n:'Arrangement report', c:'LDR'},
+      {n:'Eco driver & transport on-time report (final driver attendance)', c:'TRN'}
+    ]},
+    {time:'8:15 AM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Round — photo', c:'DIS'},
+      {n:'Lesson plan round', c:'ACA'}
+    ]},
+    {time:'8:30 AM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Late student report', c:'ATT'},
+      {n:'Bag checking report', c:'DIS'},
+      {n:'Dress / ID card report', c:'DIS'},
+      {n:'Daily tasks — pending', c:'LDR'}
+    ]},
+    {time:'8:45 AM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Daily tasks — ending / round', c:'LDR'},
+      {n:'Mali report', c:'FAC'},
+      {n:'Assembly photos — incharge', c:'ASM'},
+      {n:'Anuj ji round time', c:'DIS'}
+    ]},
+    {time:'9:00 AM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'},
+      {n:'Daily tasks — pending / round discussion', c:'LDR'},
+      {n:'Talk to Vice Principal', c:'LDR'}
+    ]},
+    {time:'9:15 AM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'},
+      {n:'Interview calling data (Sunita)', c:'HR'},
+      {n:'Absent teacher / student calling', c:'ATT'},
+      {n:'Fees calling (tuition / transport)', c:'FEE'},
+      {n:'Admission calling', c:'FEE'},
+      {n:'Transport pending', c:'TRN'}
+    ]},
+    {time:'9:30 AM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'},
+      {n:'Arts activity report (Renu)', c:'ASM'},
+      {n:'Assembly video', c:'ASM'},
+      {n:'Assembly photos', c:'ASM'},
+      {n:'Assembly activity report', c:'ASM'},
+      {n:'Sports activity report', c:'ASM'},
+      {n:'Music activity report', c:'ASM'}
+    ]},
+    {time:'9:45 AM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'}
+    ]},
+    {time:'10:00 AM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'},
+      {n:'Adhoc tasks discussion', c:'LDR'}
+    ]},
+    {time:'10:15 AM', tasks:[
+      {n:'Father / family', c:'PER', reserved:true},
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'},
+      {n:'Anil Sharma — pending tasks', c:'LDR'},
+      {n:'Anil Gupta — pending tasks', c:'LDR'},
+      {n:'Principal — pending tasks & discussion', c:'LDR'}
+    ]},
+    {time:'10:30 AM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'},
+      {n:'School round', c:'LDR'},
+      {n:'Cleaning report', c:'FAC'}
+    ]},
+    {time:'10:45 AM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'},
+      {n:'Lunch discipline duty / report', c:'DIS'},
+      {n:'Classwise lesson plan report', c:'ACA'}
+    ]},
+    {time:'11:00 AM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'},
+      {n:'Weekly rotation — student', c:'LDR'},
+      {n:'Eco (new) — interview', c:'HR'}
+    ]},
+    {time:'11:15 AM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'},
+      {n:'New joinee checklist (teachers / staff)', c:'HR'}
+    ]},
+    {time:'11:30 AM', tasks:[
+      {n:'Father', c:'PER', reserved:true},
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'}
+    ]},
+    {time:'11:45 AM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'}
+    ]},
+    {time:'12:00 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'},
+      {n:'Facebook post', c:'MKT'},
+      {n:'WhatsApp post', c:'MKT'},
+      {n:'Instagram post', c:'MKT'},
+      {n:'Transport pending report', c:'TRN'}
+    ]},
+    {time:'12:15 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'},
+      {n:'Parent complaints report / discussion', c:'LDR'},
+      {n:'Mali report', c:'FAC'}
+    ]},
+    {time:'12:30 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'}
+    ]},
+    {time:'12:45 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'},
+      {n:'Projector room report', c:'FAC'}
+    ]},
+    {time:'1:00 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'},
+      {n:'Interview', c:'HR'},
+      {n:'Monitor list / daily update report', c:'LDR'},
+      {n:'School maintenance (Nisha)', c:'FAC'}
+    ]},
+    {time:'1:15 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Lesson plan round — report', c:'ACA'},
+      {n:'Interview', c:'HR'}
+    ]},
+    {time:'1:30 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Interview', c:'HR'},
+      {n:'Classwise student copies — weekly check by Principal', c:'ACA'},
+      {n:'Student not bringing books', c:'ACA'}
+    ]},
+    {time:'1:45 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Interview', c:'HR'},
+      {n:'Final attendance report — student', c:'ATT'}
+    ]},
+    {time:'2:00 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Interview', c:'HR'},
+      {n:'Fees pending report', c:'FEE'},
+      {n:'Lesson plan report', c:'ACA'},
+      {n:'Fees calling report', c:'FEE'},
+      {n:'Cleaning report — photos', c:'FAC'}
+    ]},
+    {time:'2:15 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Interview', c:'HR'},
+      {n:'Return copies to Principal', c:'LDR'}
+    ]},
+    {time:'2:30 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Interview', c:'HR'},
+      {n:'Absent student calling report', c:'ATT'},
+      {n:'Admission calling report', c:'FEE'},
+      {n:'Interview calling report', c:'HR'},
+      {n:'Transport report', c:'TRN'}
+    ]},
+    {time:'2:45 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Interview', c:'HR'},
+      {n:'Memo / show-cause issued to teachers for complaints', c:'DIS'}
+    ]},
+    {time:'3:00 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Interview', c:'HR'},
+      {n:'Daily collection report', c:'FEE'},
+      {n:'Maintenance report — painting & other work', c:'FAC'}
+    ]},
+    {time:'3:15 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Anil Sharma — pending tasks', c:'LDR'},
+      {n:'Anil Gupta — pending tasks', c:'LDR'},
+      {n:'Principal — pending tasks', c:'LDR'},
+      {n:'Mali report', c:'FAC'}
+    ]},
+    {time:'3:30 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Mobile in / out report', c:'DIS'}
+    ]},
+    {time:'3:45 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Discipline report — student / teacher', c:'DIS'},
+      {n:'School admin problems', c:'LDR'}
+    ]},
+    {time:'4:00 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Visitor report', c:'LDR'},
+      {n:'Stock register — report', c:'FAC'}
+    ]},
+    {time:'4:15 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Interview / final selection discussion', c:'HR'}
+    ]},
+    {time:'4:30 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Cleaning report', c:'FAC'},
+      {n:'Supervisor sheet — photos (final)', c:'FAC'}
+    ]},
+    {time:'4:45 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'}
+    ]},
+    {time:'5:00 PM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Interview / final selection', c:'HR'}
+    ]},
+    {time:'5:15 PM', tasks:[ {n:'Fees status — admission', c:'FEE'} ]},
+    {time:'5:30 PM', tasks:[ {n:'Fees status — admission', c:'FEE'} ]},
+    {time:'5:45 PM', tasks:[ {n:'Fees status — admission', c:'FEE'} ]},
+    {time:'6:00 PM', tasks:[ {n:'Fees status — admission', c:'FEE'} ]}
+  ];
+
+  // ---------------- Reports list (from source sheet) ----------------
+  var REPORTS = [
+    {si:1, name:'Teacher Daily Report', cat:'ACA'},
+    {si:2, name:'Free Period Report', cat:'ACA'},
+    {si:3, name:'Daily Classwise Copy Check Report', cat:'ACA'},
+    {si:4, name:'Teachers Working Report', cat:'HR'},
+    {si:5, name:'Notice Records Folder', cat:'LDR'},
+    {si:6, name:'Memo Folder', cat:'LDR'},
+    {si:7, name:'Forecast Lesson Plan', cat:'ACA'},
+    {si:8, name:'Duty Chart', cat:'LDR'},
+    {si:9, name:'Reporting Schedule', cat:'LDR'},
+    {si:10, name:'Calling Report', cat:'FEE'},
+    {si:11, name:'Sports Activity Calendar', cat:'ASM'},
+    {si:12, name:'Recruitment Report / Joining', cat:'HR'},
+    {si:13, name:'Interview Calling', cat:'HR'},
+    {si:14, name:'Late Student Report', cat:'DIS'},
+    {si:15, name:'Complaint Report', cat:'DIS'},
+    {si:16, name:'Student Attendance Report', cat:'ATT'},
+    {si:17, name:'Teacher / Staff Attendance Report', cat:'ATT'},
+    {si:18, name:'Fee Collection and Pending Report', cat:'FEE'},
+    {si:19, name:'Homework Assignment Report', cat:'ACA'},
+    {si:20, name:'Daily Lesson Plan / Teaching Report', cat:'ACA'},
+    {si:21, name:'Transport / Vehicle Attendance Report', cat:'TRN'},
+    {si:22, name:'Library Usage Report', cat:'FAC'},
+    {si:23, name:'Incident / Discipline Report', cat:'DIS'},
+    {si:24, name:'Cafeteria / Health Check Report', cat:'FAC'}
+  ];
+
+  // ---------------- Utilities ----------------
+  function todayKey(){
+    var d = new Date();
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  async function storageGet(key, shared){
+    try{
+      var r = await window.storage.get(key, !!shared);
+      return r ? r.value : null;
+    }catch(e){ return null; }
+  }
+  async function storageSet(key, value, shared){
+    try{ await window.storage.set(key, value, !!shared); }catch(e){ /* ignore */ }
+  }
+
+  // ---------------- Clock ----------------
+  function tickClock(){
+    var d = new Date();
+    var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('db-date').textContent = days[d.getDay()]+', '+d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear();
+    var h = d.getHours(), m = d.getMinutes();
+    var ampm = h>=12 ? 'PM':'AM';
+    var h12 = h%12; if(h12===0) h12=12;
+    document.getElementById('db-time').textContent = h12+':'+pad(m)+' '+ampm;
+  }
+  tickClock();
+  setInterval(tickClock, 15000);
+
+  // ================= DUTY ROSTER =================
+  var dutyDone = {}; // {taskId: true}
+  var activeCats = new Set(Object.keys(CATS)); // all active by default
+
+  function taskId(ti, tj){ return ti+'-'+tj; }
+
+  function buildChips(){
+    var row = document.getElementById('chip-row');
+    row.innerHTML = '';
+    Object.keys(CATS).forEach(function(key){
+      var cat = CATS[key];
+      var chip = document.createElement('button');
+      chip.className = 'chip active';
+      chip.style.setProperty('--chip-color', CAT_HEX[key]);
+      chip.textContent = cat.label;
+      chip.setAttribute('data-cat', key);
+      chip.addEventListener('click', function(){
+        if(activeCats.has(key)){ activeCats.delete(key); chip.classList.remove('active'); }
+        else{ activeCats.add(key); chip.classList.add('active'); }
+        applyRosterFilter();
+      });
+      row.appendChild(chip);
+    });
+  }
+
+  function buildRoster(){
+    var wrap = document.getElementById('roster');
+    wrap.innerHTML = '';
+    ROSTER.forEach(function(block, ti){
+      var row = document.createElement('div');
+      row.className = 'roster-row';
+      row.setAttribute('data-time-idx', ti);
+
+      var timeEl = document.createElement('div');
+      timeEl.className = 'roster-time';
+      timeEl.textContent = block.time;
+      row.appendChild(timeEl);
+
+      var tasksEl = document.createElement('div');
+      tasksEl.className = 'roster-tasks';
+
+      block.tasks.forEach(function(task, tj){
+        var id = taskId(ti, tj);
+        var pill = document.createElement('label');
+        pill.className = 'task-pill' + (task.reserved ? ' reserved' : '');
+        pill.style.setProperty('--pc', CAT_HEX[task.c]);
+        pill.setAttribute('data-cat', task.c);
+
+        if(!task.reserved){
+          var cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.checked = !!dutyDone[id];
+          if(cb.checked) pill.classList.add('done');
+          cb.addEventListener('change', function(){
+            if(cb.checked){ dutyDone[id] = true; pill.classList.add('done'); }
+            else{ delete dutyDone[id]; pill.classList.remove('done'); }
+            saveDuty();
+            updateRosterProgress();
+          });
+          pill.appendChild(cb);
+        }
+
+        var span = document.createElement('span');
+        span.className = 't-name';
+        span.textContent = task.n;
+        pill.appendChild(span);
+
+        tasksEl.appendChild(pill);
+      });
+
+      row.appendChild(tasksEl);
+      wrap.appendChild(row);
+    });
+  }
+
+  function applyRosterFilter(){
+    document.querySelectorAll('.task-pill').forEach(function(pill){
+      var cat = pill.getAttribute('data-cat');
+      if(activeCats.has(cat)) pill.classList.remove('hidden-cat');
+      else pill.classList.add('hidden-cat');
+    });
+    document.querySelectorAll('.roster-row').forEach(function(row){
+      var visible = Array.prototype.some.call(row.querySelectorAll('.task-pill'), function(p){
+        return !p.classList.contains('hidden-cat');
+      });
+      row.classList.toggle('row-hidden', !visible);
+    });
+  }
+
+  function countableTasks(){
+    var total = 0;
+    ROSTER.forEach(function(b){ b.tasks.forEach(function(t){ if(!t.reserved) total++; }); });
+    return total;
+  }
+
+  function updateRosterProgress(){
+    var total = countableTasks();
+    var done = Object.keys(dutyDone).length;
+    var pct = total ? Math.round((done/total)*100) : 0;
+    document.getElementById('roster-progress-fill').style.width = pct + '%';
+    document.getElementById('roster-progress-text').textContent = done + ' / ' + total + ' marked done today';
+
+    var circumference = 220;
+    var offset = circumference - (circumference * pct / 100);
+    document.getElementById('seal-progress').style.strokeDashoffset = offset;
+    document.getElementById('seal-pct').textContent = pct + '%';
+  }
+
+  async function loadDuty(){
+    var raw = await storageGet('duty-log:' + todayKey(), true);
+    dutyDone = {};
+    if(raw){
+      try{
+        var arr = JSON.parse(raw);
+        arr.forEach(function(id){ dutyDone[id] = true; });
+      }catch(e){}
+    }
+  }
+  function saveDuty(){
+    storageSet('duty-log:' + todayKey(), JSON.stringify(Object.keys(dutyDone)), true);
+  }
+
+  document.getElementById('reset-today').addEventListener('click', function(){
+    if(!confirm('Clear all checkmarks for today?')) return;
+    dutyDone = {};
+    saveDuty();
+    buildRoster();
+    applyRosterFilter();
+    updateRosterProgress();
+  });
+
+  // ================= REPORTS TRACKER =================
+  var reportState = {}; // {si: {cat, spoc, status}}
+
+  function defaultReportState(){
+    var s = {};
+    REPORTS.forEach(function(r){
+      s[r.si] = { cat: r.cat, spoc: '', status: 'pending' };
+    });
+    return s;
+  }
+
+  async function loadReports(){
+    var raw = await storageGet('reports-tracker', true);
+    if(raw){
+      try{
+        var parsed = JSON.parse(raw);
+        reportState = Object.assign(defaultReportState(), parsed);
+      }catch(e){ reportState = defaultReportState(); }
+    } else {
+      reportState = defaultReportState();
+    }
+  }
+  function saveReports(){
+    storageSet('reports-tracker', JSON.stringify(reportState), true);
+  }
+
+  function buildCatFilterOptions(){
+    var sel = document.getElementById('report-cat-filter');
+    Object.keys(CATS).forEach(function(key){
+      var opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = CATS[key].label;
+      sel.appendChild(opt);
+    });
+  }
+
+  function statusLabel(s){
+    return s==='done' ? 'Done' : s==='progress' ? 'In progress' : 'Pending';
+  }
+  function nextStatus(s){
+    return s==='pending' ? 'progress' : s==='progress' ? 'done' : 'pending';
+  }
+
+  function buildReportsGrid(){
+    var grid = document.getElementById('reports-grid');
+    grid.innerHTML = '';
+    REPORTS.forEach(function(r){
+      var st = reportState[r.si];
+      var card = document.createElement('div');
+      card.className = 'report-card';
+      card.style.setProperty('--rc', CAT_HEX[st.cat]);
+      card.setAttribute('data-si', r.si);
+      card.setAttribute('data-name', r.name.toLowerCase());
+
+      var top = document.createElement('div');
+      top.className = 'report-card-top';
+      top.innerHTML = '<div><div class="report-si">#'+pad(r.si)+'</div><div class="report-name">'+r.name+'</div></div>';
+      card.appendChild(top);
+
+      var fields = document.createElement('div');
+      fields.className = 'report-fields';
+
+      var catLabel = document.createElement('label');
+      catLabel.textContent = 'Category';
+      var catSel = document.createElement('select');
+      Object.keys(CATS).forEach(function(key){
+        var opt = document.createElement('option');
+        opt.value = key; opt.textContent = CATS[key].label;
+        if(key === st.cat) opt.selected = true;
+        catSel.appendChild(opt);
+      });
+      catSel.addEventListener('change', function(){
+        reportState[r.si].cat = catSel.value;
+        card.style.setProperty('--rc', CAT_HEX[catSel.value]);
+        saveReports();
+        renderCatBars();
+      });
+
+      var spocLabel = document.createElement('label');
+      spocLabel.textContent = 'SPOC';
+      var spocInput = document.createElement('input');
+      spocInput.type = 'text';
+      spocInput.placeholder = 'Assign owner…';
+      spocInput.value = st.spoc || '';
+      spocInput.addEventListener('input', function(){
+        reportState[r.si].spoc = spocInput.value;
+        saveReports();
+      });
+
+      fields.appendChild(catLabel); fields.appendChild(catSel);
+      fields.appendChild(spocLabel); fields.appendChild(spocInput);
+      card.appendChild(fields);
+
+      var toggle = document.createElement('button');
+      toggle.className = 'status-toggle status-' + st.status;
+      toggle.textContent = statusLabel(st.status);
+      toggle.addEventListener('click', function(){
+        var ns = nextStatus(reportState[r.si].status);
+        reportState[r.si].status = ns;
+        toggle.className = 'status-toggle status-' + ns;
+        toggle.textContent = statusLabel(ns);
+        saveReports();
+        renderStats();
+      });
+      card.appendChild(toggle);
+
+      grid.appendChild(card);
+    });
+  }
+
+  function renderStats(){
+    var total = REPORTS.length, done=0, progress=0, pending=0;
+    REPORTS.forEach(function(r){
+      var s = reportState[r.si].status;
+      if(s==='done') done++; else if(s==='progress') progress++; else pending++;
+    });
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-done').textContent = done;
+    document.getElementById('stat-progress').textContent = progress;
+    document.getElementById('stat-pending').textContent = pending;
+  }
+
+  function renderCatBars(){
+    var counts = {};
+    Object.keys(CATS).forEach(function(k){ counts[k]=0; });
+    REPORTS.forEach(function(r){ counts[reportState[r.si].cat]++; });
+    var max = Math.max.apply(null, Object.values(counts)) || 1;
+    var body = document.getElementById('cat-bars-body');
+    body.innerHTML = '';
+    Object.keys(CATS).forEach(function(key){
+      if(counts[key] === 0) return;
+      var row = document.createElement('div');
+      row.className = 'cat-bar-row';
+      row.innerHTML =
+        '<div class="cat-bar-label">'+CATS[key].label+'</div>'+
+        '<div class="cat-bar-track"><div class="cat-bar-fill" style="width:'+(counts[key]/max*100)+'%; background:'+CAT_HEX[key]+'"></div></div>'+
+        '<div class="cat-bar-count">'+counts[key]+'</div>';
+      body.appendChild(row);
+    });
+  }
+
+  function applyReportsFilter(){
+    var q = document.getElementById('report-search').value.trim().toLowerCase();
+    var cat = document.getElementById('report-cat-filter').value;
+    document.querySelectorAll('.report-card').forEach(function(card){
+      var si = card.getAttribute('data-si');
+      var name = card.getAttribute('data-name');
+      var matchesQ = !q || name.indexOf(q) !== -1;
+      var matchesCat = !cat || reportState[si].cat === cat;
+      card.classList.toggle('hidden-card', !(matchesQ && matchesCat));
+    });
+  }
+
+  document.getElementById('report-search').addEventListener('input', applyReportsFilter);
+  document.getElementById('report-cat-filter').addEventListener('change', applyReportsFilter);
+
+  document.getElementById('reset-reports').addEventListener('click', function(){
+    if(!confirm('Reset category, SPOC and status for all reports?')) return;
+    reportState = defaultReportState();
+    saveReports();
+    buildReportsGrid();
+    renderStats();
+    renderCatBars();
+    applyReportsFilter();
+  });
+
+  // ---------------- Tabs ----------------
+  var tabRoster = document.getElementById('tab-roster');
+  var tabReports = document.getElementById('tab-reports');
+  var panelRoster = document.getElementById('panel-roster');
+  var panelReports = document.getElementById('panel-reports');
+
+  tabRoster.addEventListener('click', function(){
+    tabRoster.setAttribute('aria-selected','true');
+    tabReports.setAttribute('aria-selected','false');
+    panelRoster.classList.add('active');
+    panelReports.classList.remove('active');
+  });
+  tabReports.addEventListener('click', function(){
+    tabReports.setAttribute('aria-selected','true');
+    tabRoster.setAttribute('aria-selected','false');
+    panelReports.classList.add('active');
+    panelRoster.classList.remove('active');
+  });
+
+  // ---------------- Init ----------------
+  async function init(){
+    buildChips();
+    buildRoster();
+    await loadDuty();
+    buildRoster(); // rebuild with loaded state
+    applyRosterFilter();
+    updateRosterProgress();
+
+    buildCatFilterOptions();
+    await loadReports();
+    buildReportsGrid();
+    renderStats();
+    renderCatBars();
+  }
+  init();
+
+})();
+</script>
