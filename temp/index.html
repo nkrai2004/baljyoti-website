@@ -201,11 +201,11 @@
       justify-content: center;
     }
 
-    .download-link, .upload-btn {
+    .download-link, .upload-btn, .maps-btn {
       background: #2563eb;
       color: white;
       text-decoration: none;
-      padding: 10px 24px;
+      padding: 10px 20px;
       border-radius: 8px;
       font-weight: 600;
       font-size: 0.9rem;
@@ -213,7 +213,7 @@
       transition: background 0.2s;
     }
 
-    .download-link:hover, .upload-btn:hover:not(:disabled) {
+    .download-link:hover, .upload-btn:hover:not(:disabled), .maps-btn:hover {
       background: #1d4ed8;
     }
 
@@ -234,7 +234,7 @@
 
   <header>
     <h1>📷 GeoPano Cam</h1>
-    <p class="subtitle">Capture Panoramic Photos with Live GPS & Timestamp Stamps</p>
+    <p class="subtitle">Capture Panoramic Photos with Live GPS & Google Maps Integration</p>
   </header>
 
   <div class="app-container">
@@ -266,8 +266,9 @@
     <div class="output-section">
       <canvas id="photoCanvas"></canvas>
       <div class="action-links">
-        <a id="downloadLink" class="download-link" download="panorama_geotagged.jpg">⬇️ Download Local Photo</a>
-        <button id="uploadBtn" class="upload-btn" style="background:#8b5cf6;">☁️ Save to Google Sheet & Drive</button>
+        <a id="downloadLink" class="download-link" download="panorama_geotagged.jpg">⬇️ Download Photo</a>
+        <a id="mapsBtn" class="maps-btn" target="_blank" style="background:#ea4335;">📍 View in Google Maps</a>
+        <button id="uploadBtn" class="upload-btn" style="background:#8b5cf6;">☁️ Save to Sheet & Drive</button>
       </div>
       <div id="statusMessage"></div>
     </div>
@@ -280,7 +281,7 @@
   <script>
     // ----------------------------------------------------
     // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
-    const GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbww-2249vQYCB-GafsJeM8zE0JW4RyFKe8Y_C1PlxZPwRt1vvDnKeFQaq6fhEXahvN_Vg/exec";
     // ----------------------------------------------------
 
     const video = document.getElementById('webcam');
@@ -288,6 +289,7 @@
     const ctx = canvas.getContext('2d');
     const liveOverlay = document.getElementById('liveOverlay');
     const downloadLink = document.getElementById('downloadLink');
+    const mapsBtn = document.getElementById('mapsBtn');
     const uploadBtn = document.getElementById('uploadBtn');
     const statusMessage = document.getElementById('statusMessage');
 
@@ -450,13 +452,20 @@
       
       downloadLink.href = currentImageDataURL;
       downloadLink.style.display = 'inline-block';
+
+      // Set up Google Maps location URL
+      if (currentLat !== "N/A" && currentLat !== "Unavailable") {
+        const googleMapsUrl = `https://www.google.com/maps?q=${currentLat},${currentLon}`;
+        mapsBtn.href = googleMapsUrl;
+        mapsBtn.style.display = 'inline-block';
+      }
+
       uploadBtn.style.display = 'inline-block';
       statusMessage.textContent = '';
       
       downloadLink.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Send payload to Google Apps Script Endpoint
     uploadBtn.addEventListener('click', async () => {
       if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")) {
         alert("Please set up the Google Apps Script Web App URL inside the index.html code.");
@@ -465,13 +474,16 @@
 
       uploadBtn.disabled = true;
       statusMessage.style.color = "#38bdf8";
-      statusMessage.textContent = "⏳ Uploading photo to Google Drive & saving row to Google Sheet...";
+      statusMessage.textContent = "⏳ Uploading photo to Google Drive & saving location to Google Sheet...";
+
+      const mapsUrl = `https://www.google.com/maps?q=${currentLat},${currentLon}`;
 
       const payload = {
         timestamp: new Date().toISOString(),
         latitude: currentLat,
         longitude: currentLon,
         accuracy: currentAcc,
+        mapsUrl: mapsUrl,
         image: currentImageDataURL
       };
 
@@ -486,7 +498,7 @@
         const result = await response.json();
         if (result.result === "success") {
           statusMessage.style.color = "#10b981";
-          statusMessage.textContent = "✅ Successfully saved to Google Sheet & Drive!";
+          statusMessage.textContent = "✅ Saved to Google Sheet & Drive with Google Maps link!";
         } else {
           throw new Error(result.message || "Unknown error occurred.");
         }
