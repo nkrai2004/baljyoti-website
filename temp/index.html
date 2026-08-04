@@ -143,6 +143,14 @@
       transform: none;
     }
 
+    button.btn-secondary {
+      background: #3b82f6;
+    }
+
+    button.btn-secondary:hover:not(:disabled) {
+      background: #2563eb;
+    }
+
     button.btn-danger {
       background: #ef4444;
     }
@@ -250,7 +258,8 @@
       <div class="btn-group">
         <button id="snapSingleBtn">📷 1-Click Wide Panorama</button>
         <button id="stitchBtn">🧩 3-Shot Panorama Stitch</button>
-        <button id="resetBtn" class="btn-danger" disabled>🔄 Reset</button>
+        <button id="switchCamBtn" class="btn-secondary">🔄 Switch Camera</button>
+        <button id="resetBtn" class="btn-danger" disabled>❌ Clear Stitch</button>
       </div>
 
       <div class="stitch-status">
@@ -280,7 +289,7 @@
 
   <script>
     // ----------------------------------------------------
-    // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
+    // GOOGLE APPS SCRIPT WEB APP URL:
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbww-2249vQYCB-GafsJeM8zE0JW4RyFKe8Y_C1PlxZPwRt1vvDnKeFQaq6fhEXahvN_Vg/exec";
     // ----------------------------------------------------
 
@@ -295,6 +304,7 @@
 
     const snapSingleBtn = document.getElementById('snapSingleBtn');
     const stitchBtn = document.getElementById('stitchBtn');
+    const switchCamBtn = document.getElementById('switchCamBtn');
     const resetBtn = document.getElementById('resetBtn');
 
     let currentLat = "N/A";
@@ -302,22 +312,50 @@
     let currentAcc = "N/A";
     let capturedFrames = [];
     let currentImageDataURL = "";
+    
+    // Camera state: "environment" (rear) or "user" (front/selfie)
+    let currentFacingMode = "environment";
+    let currentStream = null;
 
     async function initCamera() {
+      // Stop existing camera track if active
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+      }
+
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
+        currentStream = await navigator.mediaDevices.getUserMedia({
           video: {
-            facingMode: { ideal: "environment" },
+            facingMode: { exact: currentFacingMode },
             width: { ideal: 1920 },
             height: { ideal: 1080 }
           },
           audio: false
         });
-        video.srcObject = stream;
+        video.srcObject = currentStream;
       } catch (err) {
-        alert("Camera error: " + err.message + "\nEnsure camera permissions are granted.");
+        // Fallback for devices without strict exact facingMode matching
+        try {
+          currentStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: currentFacingMode,
+              width: { ideal: 1920 },
+              height: { ideal: 1080 }
+            },
+            audio: false
+          });
+          video.srcObject = currentStream;
+        } catch (fallbackErr) {
+          alert("Camera error: " + fallbackErr.message + "\nEnsure camera permissions are granted.");
+        }
       }
     }
+
+    // Toggle between front and back camera
+    switchCamBtn.addEventListener('click', () => {
+      currentFacingMode = (currentFacingMode === "environment") ? "user" : "environment";
+      initCamera();
+    });
 
     function initGPS() {
       if ("geolocation" in navigator) {
@@ -396,7 +434,16 @@
       canvas.width = vWidth;
       canvas.height = targetHeight;
 
-      ctx.drawImage(video, 0, startY, vWidth, targetHeight, 0, 0, vWidth, targetHeight);
+      // If using front camera, mirror image on canvas so text isn't reversed
+      if (currentFacingMode === "user") {
+        ctx.save();
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, 0, startY, vWidth, targetHeight, -vWidth, 0, vWidth, targetHeight);
+        ctx.restore();
+      } else {
+        ctx.drawImage(video, 0, startY, vWidth, targetHeight, 0, 0, vWidth, targetHeight);
+      }
+
       drawOverlayOnCanvas(ctx, vWidth, targetHeight);
       finalizeCapture();
     });
@@ -408,7 +455,15 @@
         tempCanvas.width = video.videoWidth;
         tempCanvas.height = video.videoHeight;
         const tempCtx = tempCanvas.getContext('2d');
-        tempCtx.drawImage(video, 0, 0);
+
+        if (currentFacingMode === "user") {
+          tempCtx.save();
+          tempCtx.scale(-1, 1);
+          tempCtx.drawImage(video, -video.videoWidth, 0);
+          tempCtx.restore();
+        } else {
+          tempCtx.drawImage(video, 0, 0);
+        }
 
         capturedFrames.push(tempCanvas);
         document.getElementById(`dot${capturedFrames.length}`).classList.add('active');
@@ -453,7 +508,6 @@
       downloadLink.href = currentImageDataURL;
       downloadLink.style.display = 'inline-block';
 
-      // Set up Google Maps location URL
       if (currentLat !== "N/A" && currentLat !== "Unavailable") {
         const googleMapsUrl = `https://www.google.com/maps?q=${currentLat},${currentLon}`;
         mapsBtn.href = googleMapsUrl;
@@ -467,8 +521,8 @@
     }
 
     uploadBtn.addEventListener('click', async () => {
-      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("Yhttps://script.google.com/macros/s/AKfycbww-2249vQYCB-GafsJeM8zE0JW4RyFKe8Y_C1PlxZPwRt1vvDnKeFQaq6fhEXahvN_Vg/exec")) {
-        alert("Please set up the Google Apps Script Web App URL inside the index.html code.");
+      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === "") {
+        alert("Please set a valid Google Apps Script Web App URL.");
         return;
       }
 
