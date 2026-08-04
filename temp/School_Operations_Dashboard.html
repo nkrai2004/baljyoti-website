@@ -1,0 +1,1029 @@
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper:#F6F2E7;
+    --paper-line:#E1D6B8;
+    --margin-red:#A13A3F;
+    --ink:#21283B;
+    --ink-soft:#5B6178;
+    --gold:#B08D2B;
+    --green:#3F6D4E;
+    --amber:#B0752B;
+    --card:#FFFCF5;
+    --card-border:#E7DCC0;
+
+    --c-ATT:#2C6E9E;
+    --c-FEE:#B08D2B;
+    --c-ACA:#3F6D4E;
+    --c-ASM:#8C2F39;
+    --c-DIS:#7A4B24;
+    --c-HR:#7A3E8C;
+    --c-FAC:#3E7A7A;
+    --c-TRN:#405B8C;
+    --c-MKT:#C2540E;
+    --c-LDR:#2E3A59;
+    --c-PER:#948B76;
+    --c-OTH:#7D7461;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .daybook{
+    max-width:1180px;
+    margin:0 auto;
+    padding:28px 20px 80px;
+  }
+
+  /* ---------- Header ---------- */
+  .db-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:24px;
+    padding-bottom:20px;
+    border-bottom:2px solid var(--ink);
+    margin-bottom:22px;
+    flex-wrap:wrap;
+  }
+  .db-title-eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--margin-red);
+    margin:0 0 6px;
+    font-weight:600;
+  }
+  .db-title{
+    font-family:'Fraunces', serif;
+    font-size:38px;
+    font-weight:600;
+    margin:0;
+    line-height:1.05;
+    letter-spacing:-.01em;
+  }
+  .db-subtitle{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    margin:8px 0 0;
+    max-width:460px;
+  }
+  .db-clock-wrap{
+    display:flex;
+    align-items:center;
+    gap:18px;
+  }
+  .db-clock{
+    text-align:right;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .db-clock .date{ font-size:13px; color:var(--ink-soft); }
+  .db-clock .time{ font-size:20px; font-weight:600; color:var(--ink); }
+
+  .seal{
+    width:76px; height:76px; border-radius:50%;
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .seal-ring{ position:absolute; inset:0; border-radius:50%; }
+  .seal-inner{
+    position:relative;
+    width:60px; height:60px; border-radius:50%;
+    background:var(--ink);
+    color:var(--paper);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .seal-inner .pct{ font-size:16px; font-weight:600; line-height:1; }
+  .seal-inner .lbl{ font-size:6.5px; letter-spacing:.08em; margin-top:2px; opacity:.75; text-align:center; }
+
+  /* ---------- Tabs ---------- */
+  .db-tabs{ display:flex; gap:6px; margin-bottom:22px; border-bottom:1px solid var(--paper-line); }
+  .db-tab{
+    font-family:'Fraunces', serif; font-size:15px; font-weight:600;
+    padding:10px 18px; background:none; border:none; border-bottom:3px solid transparent;
+    color:var(--ink-soft); cursor:pointer; letter-spacing:.01em;
+  }
+  .db-tab[aria-selected="true"]{ color:var(--ink); border-bottom-color:var(--margin-red); }
+  .db-tab:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+  .db-panel{ display:none; }
+  .db-panel.active{ display:block; }
+
+  .section-label{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--ink-soft); margin:0 0 10px;
+  }
+
+  /* ---------- Sheet connection bar ---------- */
+  .source-card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:8px;
+    padding:16px 18px; margin-bottom:20px;
+  }
+  .source-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
+  .source-title{ font-family:'Fraunces', serif; font-weight:600; font-size:15px; }
+  .source-status{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; padding:4px 10px; border-radius:20px;
+    border:1.4px solid var(--ink-soft); color:var(--ink-soft);
+  }
+  .source-status.connected{ border-color:var(--green); color:var(--green); }
+  .source-status.error{ border-color:var(--margin-red); color:var(--margin-red); }
+  .source-row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .source-row input[type="text"]{
+    font-family:'Inter', sans-serif; font-size:13px; padding:8px 11px;
+    border:1px solid var(--card-border); border-radius:6px; background:#fff; color:var(--ink);
+  }
+  .source-row input#sheet-url{ flex:1; min-width:220px; }
+  .source-row input#sheet-tab{ width:110px; }
+  .btn{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:600;
+    padding:8px 14px; border-radius:6px; border:1.4px solid var(--ink); background:var(--ink); color:#fff;
+    cursor:pointer; letter-spacing:.02em;
+  }
+  .btn.secondary{ background:transparent; color:var(--ink); }
+  .btn:focus-visible, .source-row input:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+  .source-help{ font-size:11.5px; color:var(--ink-soft); margin-top:10px; line-height:1.5; }
+  .source-help code{
+    background:var(--paper); border:1px solid var(--card-border); border-radius:3px;
+    padding:1px 5px; font-family:'IBM Plex Mono', monospace; font-size:10.5px;
+  }
+  .date-row{ display:flex; align-items:center; gap:10px; margin-top:12px; flex-wrap:wrap; }
+  .date-row label{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft); }
+  .date-row input[type="date"]{
+    font-family:'Inter', sans-serif; font-size:13px; padding:6px 9px;
+    border:1px solid var(--card-border); border-radius:6px; background:#fff; color:var(--ink);
+  }
+  .date-avail{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft); }
+
+  .sample-banner{
+    display:flex; align-items:center; gap:8px;
+    background:#F3E7D3; border:1px solid var(--amber); color:#7A5620;
+    border-radius:6px; padding:8px 12px; font-size:12px; margin-bottom:16px;
+  }
+  .sample-banner strong{ font-weight:600; }
+
+  /* ---------- Progress bar ---------- */
+  .progress-row{ display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+  .progress-track{ flex:1; height:8px; border-radius:5px; background:var(--paper-line); overflow:hidden; }
+  .progress-fill{ height:100%; background:var(--green); border-radius:5px; transition:width .3s ease; }
+  .progress-text{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--ink-soft); white-space:nowrap; }
+
+  /* ---------- Filter chips ---------- */
+  .chip-row{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px; }
+  .chip{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; padding:6px 11px; border-radius:20px;
+    border:1.4px solid var(--chip-color, var(--ink-soft)); color:var(--chip-color, var(--ink-soft));
+    background:transparent; cursor:pointer; letter-spacing:.02em; white-space:nowrap;
+  }
+  .chip.active{ background:var(--chip-color, var(--ink-soft)); color:#fff; }
+  .chip:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+  /* ---------- Roster timeline ---------- */
+  .roster{
+    position:relative; padding-left:26px; min-height:60px;
+    background-image: repeating-linear-gradient(to bottom, transparent, transparent 43px, var(--paper-line) 43px, var(--paper-line) 44px);
+  }
+  .roster::before{ content:""; position:absolute; left:8px; top:0; bottom:0; width:2px; background:var(--margin-red); opacity:.55; }
+  .roster-row{ position:relative; display:flex; align-items:flex-start; gap:16px; min-height:44px; padding:7px 0 7px 20px; }
+  .roster-row.row-hidden{ display:none; }
+  .roster-row::before{
+    content:""; position:absolute; left:-3px; top:16px; width:9px; height:9px; border-radius:50%;
+    background:var(--paper); border:2px solid var(--margin-red);
+  }
+  .roster-time{ font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:600; color:var(--ink); width:78px; flex-shrink:0; padding-top:3px; }
+  .roster-tasks{ display:flex; flex-wrap:wrap; gap:6px 8px; flex:1; }
+  .task-pill{
+    --pc: var(--ink-soft);
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--card); border:1px solid var(--card-border); border-left:3px solid var(--pc);
+    border-radius:4px; padding:5px 9px 5px 8px; font-size:12.5px; line-height:1.25; cursor:pointer; max-width:340px;
+  }
+  .task-pill.hidden-cat{ display:none; }
+  .task-pill input{ accent-color: var(--pc); width:13px; height:13px; flex-shrink:0; margin:0; cursor:pointer; }
+  .task-pill .t-name{ color:var(--ink); }
+  .task-pill.done .t-name{ text-decoration:line-through; color:var(--ink-soft); }
+  .task-pill.reserved{ border-style:dashed; font-style:italic; color:var(--ink-soft); }
+  .empty-state{
+    padding:30px 10px; text-align:center; color:var(--ink-soft); font-size:13px;
+  }
+
+  /* ---------- Reports tab ---------- */
+  .stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:22px; }
+  .stat-card{ background:var(--card); border:1px solid var(--card-border); border-radius:8px; padding:14px 16px; }
+  .stat-card .num{ font-family:'Fraunces', serif; font-size:28px; font-weight:600; line-height:1; }
+  .stat-card .lbl{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); margin-top:6px; }
+  .stat-card.done .num{ color:var(--green); }
+  .stat-card.progress .num{ color:var(--amber); }
+  .stat-card.pending .num{ color:var(--margin-red); }
+
+  .cat-bars{ background:var(--card); border:1px solid var(--card-border); border-radius:8px; padding:16px 18px; margin-bottom:22px; }
+  .cat-bar-row{ display:flex; align-items:center; gap:10px; margin-bottom:8px; font-size:12px; }
+  .cat-bar-row:last-child{ margin-bottom:0; }
+  .cat-bar-label{ width:170px; flex-shrink:0; color:var(--ink-soft); font-family:'IBM Plex Mono', monospace; font-size:11px; }
+  .cat-bar-track{ flex:1; height:7px; background:var(--paper-line); border-radius:4px; overflow:hidden; }
+  .cat-bar-fill{ height:100%; border-radius:4px; }
+  .cat-bar-count{ width:22px; text-align:right; font-family:'IBM Plex Mono', monospace; color:var(--ink-soft); }
+
+  .toolbar{ display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+  .search-input, .cat-select{
+    font-family:'Inter', sans-serif; font-size:13px; padding:8px 12px;
+    border:1px solid var(--card-border); border-radius:6px; background:var(--card); color:var(--ink);
+  }
+  .search-input{ flex:1; min-width:180px; }
+  .search-input:focus-visible, .cat-select:focus-visible{ outline:2px solid var(--gold); outline-offset:1px; }
+
+  .reports-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:12px; }
+  .report-card{ background:var(--card); border:1px solid var(--card-border); border-radius:8px; padding:14px 15px; border-top:3px solid var(--rc, var(--ink-soft)); }
+  .report-card.hidden-card{ display:none; }
+  .report-card-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:8px; }
+  .report-si{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft); }
+  .report-name{ font-family:'Fraunces', serif; font-size:15px; font-weight:600; margin:2px 0 0; line-height:1.25; }
+  .report-fields{ display:flex; flex-direction:column; gap:6px; margin-top:10px; }
+  .report-fields label{ font-family:'IBM Plex Mono', monospace; font-size:9.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft); display:block; margin-bottom:2px; }
+  .report-fields input, .report-fields select{
+    width:100%; font-family:'Inter', sans-serif; font-size:12.5px; padding:6px 8px;
+    border:1px solid var(--card-border); border-radius:5px; background:#fff; color:var(--ink);
+  }
+  .status-toggle{
+    margin-top:10px; display:inline-flex; align-items:center; gap:6px;
+    font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600;
+    padding:5px 10px; border-radius:20px; cursor:pointer; border:1.4px solid transparent; letter-spacing:.03em;
+  }
+  .status-toggle.status-pending{ background:#F3E3E1; color:var(--margin-red); border-color:var(--margin-red); }
+  .status-toggle.status-progress{ background:#F3E7D3; color:var(--amber); border-color:var(--amber); }
+  .status-toggle.status-done{ background:#E1EBE3; color:var(--green); border-color:var(--green); }
+  .status-toggle:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+  .reset-link{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft); background:none; border:none; text-decoration:underline; cursor:pointer; padding:0; }
+  .foot-row{ display:flex; justify-content:space-between; align-items:center; margin-top:26px; flex-wrap:wrap; gap:8px; }
+  .foot-note{ font-size:11.5px; color:var(--ink-soft); max-width:520px; }
+
+  @media (max-width:640px){
+    .stat-grid{ grid-template-columns:repeat(2,1fr); }
+    .db-header{ flex-direction:column; }
+    .roster-row{ flex-direction:column; gap:4px; }
+    .roster-time{ width:auto; }
+    .cat-bar-label{ width:120px; }
+  }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+</style>
+
+<div class="daybook">
+
+  <div class="db-header">
+    <div>
+      <p class="db-title-eyebrow">School Operations Daybook</p>
+      <h1 class="db-title">Today's Ledger</h1>
+      <p class="db-subtitle">Time-mapped duty roster and a live tracker for the school's recurring reports — now day-wise, pulled straight from your Google Sheet.</p>
+    </div>
+    <div class="db-clock-wrap">
+      <div class="db-clock">
+        <div class="date" id="db-date">—</div>
+        <div class="time" id="db-time">—:—</div>
+      </div>
+      <div class="seal">
+        <svg class="seal-ring" viewBox="0 0 76 76">
+          <circle cx="38" cy="38" r="35" fill="none" stroke="#E1D6B8" stroke-width="5"/>
+          <circle id="seal-progress" cx="38" cy="38" r="35" fill="none" stroke="#3F6D4E" stroke-width="5"
+                  stroke-dasharray="220" stroke-dashoffset="220" stroke-linecap="round"
+                  transform="rotate(-90 38 38)"/>
+        </svg>
+        <div class="seal-inner">
+          <div class="pct" id="seal-pct">0%</div>
+          <div class="lbl" id="seal-lbl">TODAY</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="db-tabs" role="tablist">
+    <button class="db-tab" id="tab-roster" role="tab" aria-selected="true">Duty Roster</button>
+    <button class="db-tab" id="tab-reports" role="tab" aria-selected="false">Reports Tracker</button>
+  </div>
+
+  <!-- ================= DUTY ROSTER ================= -->
+  <div class="db-panel active" id="panel-roster">
+
+    <div class="source-card">
+      <div class="source-top">
+        <span class="source-title">Google Sheet source</span>
+        <span class="source-status" id="source-status">Not connected</span>
+      </div>
+      <div class="source-row">
+        <input type="text" id="sheet-url" placeholder="Paste the Google Sheet share link…" />
+        <input type="text" id="sheet-tab" placeholder="Tab name" value="Sheet1" />
+        <button class="btn" id="sheet-connect">Connect</button>
+        <button class="btn secondary" id="sheet-refresh">Refresh</button>
+      </div>
+      <div class="date-row">
+        <label for="view-date">Viewing date</label>
+        <input type="date" id="view-date" disabled />
+        <span class="date-avail" id="date-avail"></span>
+      </div>
+      <p class="source-help">
+        Expected columns (any order, header names flexible): <code>Date</code>, <code>Time</code>, <code>Task</code>, and optionally <code>Category</code> and <code>SPOC</code> — one row per task.
+        Share the sheet as <strong>"Anyone with the link → Viewer"</strong>, then paste the link above. This reads the sheet only; it does not write back to it.
+      </p>
+    </div>
+
+    <div class="sample-banner" id="sample-banner">
+      <span>●</span>
+      <span><strong>Showing sample roster.</strong> Connect a Google Sheet above to load your own day-wise tasks.</span>
+    </div>
+
+    <p class="section-label">Filter by desk / category</p>
+    <div class="chip-row" id="chip-row"></div>
+
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" id="roster-progress-fill" style="width:0%"></div></div>
+      <div class="progress-text" id="roster-progress-text">0 / 0 marked done</div>
+    </div>
+
+    <div class="roster" id="roster"></div>
+
+    <div class="foot-row">
+      <p class="foot-note">Checkmarks are saved per date and reset automatically for a new day. Entries marked <em>Reserved</em> are personal/non-task blocks, kept for reference only.</p>
+      <button class="reset-link" id="reset-today">Clear checkmarks for this date</button>
+    </div>
+  </div>
+
+  <!-- ================= REPORTS TRACKER ================= -->
+  <div class="db-panel" id="panel-reports">
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="num" id="stat-total">0</div><div class="lbl">Total Reports</div></div>
+      <div class="stat-card done"><div class="num" id="stat-done">0</div><div class="lbl">Done</div></div>
+      <div class="stat-card progress"><div class="num" id="stat-progress">0</div><div class="lbl">In Progress</div></div>
+      <div class="stat-card pending"><div class="num" id="stat-pending">0</div><div class="lbl">Pending</div></div>
+    </div>
+
+    <div class="cat-bars" id="cat-bars">
+      <p class="section-label" style="margin-bottom:12px;">Reports by category</p>
+      <div id="cat-bars-body"></div>
+    </div>
+
+    <div class="toolbar">
+      <input class="search-input" id="report-search" type="text" placeholder="Search reports…" />
+      <select class="cat-select" id="report-cat-filter">
+        <option value="">All categories</option>
+      </select>
+    </div>
+
+    <div class="reports-grid" id="reports-grid"></div>
+
+    <div class="foot-row">
+      <p class="foot-note">Category and SPOC (single point of contact) were blank in the source sheet — set them here; changes are saved automatically and shared with anyone using this dashboard.</p>
+      <button class="reset-link" id="reset-reports">Reset all report fields</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+
+  // ---------------- Category config ----------------
+  var CATS = {
+    ATT:{label:'Attendance', color:'var(--c-ATT)'},
+    FEE:{label:'Fees & Admissions', color:'var(--c-FEE)'},
+    ACA:{label:'Academic', color:'var(--c-ACA)'},
+    ASM:{label:'Assembly & Activities', color:'var(--c-ASM)'},
+    DIS:{label:'Discipline & Safety', color:'var(--c-DIS)'},
+    HR:{label:'HR & Recruitment', color:'var(--c-HR)'},
+    FAC:{label:'Facilities & Maintenance', color:'var(--c-FAC)'},
+    TRN:{label:'Transport', color:'var(--c-TRN)'},
+    MKT:{label:'Marketing & Social', color:'var(--c-MKT)'},
+    LDR:{label:'Leadership & Reviews', color:'var(--c-LDR)'},
+    PER:{label:'Reserved', color:'var(--c-PER)'},
+    OTH:{label:'Other (from sheet)', color:'var(--c-OTH)'}
+  };
+  var CAT_HEX = {
+    ATT:'#2C6E9E', FEE:'#B08D2B', ACA:'#3F6D4E', ASM:'#8C2F39', DIS:'#7A4B24',
+    HR:'#7A3E8C', FAC:'#3E7A7A', TRN:'#405B8C', MKT:'#C2540E', LDR:'#2E3A59', PER:'#948B76', OTH:'#7D7461'
+  };
+
+  function matchCategory(raw){
+    if(!raw) return 'OTH';
+    var s = raw.toLowerCase();
+    if(/fee|admission/.test(s)) return 'FEE';
+    if(/trans|bus|eco/.test(s)) return 'TRN';
+    if(/hr|interview|recruit|joinee/.test(s)) return 'HR';
+    if(/clean|maint|facil|mali|stock|projector/.test(s)) return 'FAC';
+    if(/assembl|activit|sport|music|art/.test(s)) return 'ASM';
+    if(/discipl|gate|dress|mobile|memo|bag/.test(s)) return 'DIS';
+    if(/attend|late|absent/.test(s)) return 'ATT';
+    if(/academ|lesson|homework|copy|book/.test(s)) return 'ACA';
+    if(/market|social|facebook|instagram|whatsapp/.test(s)) return 'MKT';
+    if(/leader|principal|round|pending|visitor|complaint/.test(s)) return 'LDR';
+    if(/reserv|personal|family/.test(s)) return 'PER';
+    return 'OTH';
+  }
+
+  // ---------------- Sample duty roster (used until a sheet is connected) ----------------
+  var SAMPLE_ROSTER = [
+    {time:'6:30 AM', tasks:[
+      {n:'Bus / eco exit report with location', c:'TRN'},
+      {n:'Driver & guard attendance', c:'ATT'},
+      {n:'Cleaning staff attendance', c:'ATT'}
+    ]},
+    {time:'7:15 AM', tasks:[
+      {n:'Sound / water / bell / music / internet report', c:'FAC'},
+      {n:'Gate & assembly duty of staff / teacher', c:'DIS'},
+      {n:'Staff attendance / absent report', c:'ATT'}
+    ]},
+    {time:'7:45 AM', tasks:[
+      {n:'Assembly report & assembly planner alert (Renu)', c:'ASM'},
+      {n:'Classroom round alert (Kavita)', c:'DIS'}
+    ]},
+    {time:'8:00 AM', tasks:[
+      {n:'Fees status — admission', c:'FEE'},
+      {n:'Time table of the day — duty chart / stage performance', c:'LDR'},
+      {n:'Lesson plan of the day — classwise', c:'ACA'},
+      {n:'Eco driver & transport on-time report', c:'TRN'}
+    ]},
+    {time:'9:15 AM', tasks:[
+      {n:'Interview calling data (Sunita)', c:'HR'},
+      {n:'Absent teacher / student calling', c:'ATT'},
+      {n:'Fees calling (tuition / transport)', c:'FEE'}
+    ]},
+    {time:'10:15 AM', tasks:[
+      {n:'Father / family', c:'PER', reserved:true},
+      {n:'Anil Sharma — pending tasks', c:'LDR'},
+      {n:'Principal — pending tasks & discussion', c:'LDR'}
+    ]},
+    {time:'12:00 PM', tasks:[
+      {n:'Facebook post', c:'MKT'},
+      {n:'WhatsApp post', c:'MKT'},
+      {n:'Instagram post', c:'MKT'}
+    ]},
+    {time:'2:00 PM', tasks:[
+      {n:'Fees pending report', c:'FEE'},
+      {n:'Lesson plan report', c:'ACA'},
+      {n:'Cleaning report — photos', c:'FAC'}
+    ]},
+    {time:'4:00 PM', tasks:[
+      {n:'Visitor report', c:'LDR'},
+      {n:'Stock register — report', c:'FAC'}
+    ]}
+  ];
+
+  // ---------------- Reports list (from source sheet) ----------------
+  var REPORTS = [
+    {si:1, name:'Teacher Daily Report', cat:'ACA'},
+    {si:2, name:'Free Period Report', cat:'ACA'},
+    {si:3, name:'Daily Classwise Copy Check Report', cat:'ACA'},
+    {si:4, name:'Teachers Working Report', cat:'HR'},
+    {si:5, name:'Notice Records Folder', cat:'LDR'},
+    {si:6, name:'Memo Folder', cat:'LDR'},
+    {si:7, name:'Forecast Lesson Plan', cat:'ACA'},
+    {si:8, name:'Duty Chart', cat:'LDR'},
+    {si:9, name:'Reporting Schedule', cat:'LDR'},
+    {si:10, name:'Calling Report', cat:'FEE'},
+    {si:11, name:'Sports Activity Calendar', cat:'ASM'},
+    {si:12, name:'Recruitment Report / Joining', cat:'HR'},
+    {si:13, name:'Interview Calling', cat:'HR'},
+    {si:14, name:'Late Student Report', cat:'DIS'},
+    {si:15, name:'Complaint Report', cat:'DIS'},
+    {si:16, name:'Student Attendance Report', cat:'ATT'},
+    {si:17, name:'Teacher / Staff Attendance Report', cat:'ATT'},
+    {si:18, name:'Fee Collection and Pending Report', cat:'FEE'},
+    {si:19, name:'Homework Assignment Report', cat:'ACA'},
+    {si:20, name:'Daily Lesson Plan / Teaching Report', cat:'ACA'},
+    {si:21, name:'Transport / Vehicle Attendance Report', cat:'TRN'},
+    {si:22, name:'Library Usage Report', cat:'FAC'},
+    {si:23, name:'Incident / Discipline Report', cat:'DIS'},
+    {si:24, name:'Cafeteria / Health Check Report', cat:'FAC'}
+  ];
+
+  // ---------------- Utilities ----------------
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function todayKey(){
+    var d = new Date();
+    return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+  }
+
+  async function storageGet(key, shared){
+    try{ var r = await window.storage.get(key, !!shared); return r ? r.value : null; }
+    catch(e){ return null; }
+  }
+  async function storageSet(key, value, shared){
+    try{ await window.storage.set(key, value, !!shared); }catch(e){ /* ignore */ }
+  }
+
+  // ---------------- Clock ----------------
+  function tickClock(){
+    var d = new Date();
+    var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('db-date').textContent = days[d.getDay()]+', '+d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear();
+    var h = d.getHours(), m = d.getMinutes();
+    var ampm = h>=12 ? 'PM':'AM';
+    var h12 = h%12; if(h12===0) h12=12;
+    document.getElementById('db-time').textContent = h12+':'+pad(m)+' '+ampm;
+  }
+  tickClock();
+  setInterval(tickClock, 15000);
+
+  // ================= GOOGLE SHEET INTEGRATION =================
+  var sheetConnected = false;
+  var sheetRowsByDate = {};   // { 'YYYY-MM-DD': [ {time, minutes, name, cat} ] }
+  var availableDates = [];
+  var currentViewDate = todayKey();
+
+  function extractSheetId(url){
+    var m = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    return m ? m[1] : null;
+  }
+  function buildGvizUrl(id, tab){
+    var u = 'https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:csv';
+    if(tab) u += '&sheet='+encodeURIComponent(tab);
+    return u;
+  }
+  function parseCSV(text){
+    var rows = [], row = [], field = '', inQuotes = false;
+    for(var i=0;i<text.length;i++){
+      var ch = text[i];
+      if(inQuotes){
+        if(ch === '"'){
+          if(text[i+1] === '"'){ field += '"'; i++; }
+          else{ inQuotes = false; }
+        } else field += ch;
+      } else {
+        if(ch === '"'){ inQuotes = true; }
+        else if(ch === ','){ row.push(field); field = ''; }
+        else if(ch === '\n'){ row.push(field); rows.push(row); row = []; field = ''; }
+        else if(ch === '\r'){ /* skip */ }
+        else field += ch;
+      }
+    }
+    if(field.length || row.length){ row.push(field); rows.push(row); }
+    return rows;
+  }
+  function normalizeDate(raw){
+    if(!raw) return null;
+    raw = raw.trim();
+    var m = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if(m) return m[1]+'-'+pad(m[2])+'-'+pad(m[3]);
+    m = raw.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+    if(m) return m[3]+'-'+pad(m[1])+'-'+pad(m[2]); // assume DD-MM-YYYY
+    var d = new Date(raw);
+    if(!isNaN(d.getTime())) return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+    return null;
+  }
+  function timeToMinutes(raw){
+    if(!raw) return 99999;
+    var m = raw.trim().match(/^(\d{1,2}):(\d{2})\s*([AP]M)?/i);
+    if(!m) return 99999;
+    var h = parseInt(m[1],10), min = parseInt(m[2],10);
+    var ap = m[3] ? m[3].toUpperCase() : null;
+    if(ap === 'PM' && h !== 12) h += 12;
+    if(ap === 'AM' && h === 12) h = 0;
+    return h*60+min;
+  }
+
+  function setSourceStatus(text, cls){
+    var el = document.getElementById('source-status');
+    el.textContent = text;
+    el.className = 'source-status' + (cls ? ' '+cls : '');
+  }
+
+  async function loadSheetConfig(){
+    var raw = await storageGet('sheet-config', true);
+    if(raw){
+      try{
+        var cfg = JSON.parse(raw);
+        document.getElementById('sheet-url').value = cfg.url || '';
+        document.getElementById('sheet-tab').value = cfg.tab || 'Sheet1';
+        if(cfg.url) await connectSheet(false);
+      }catch(e){}
+    }
+  }
+  function saveSheetConfig(){
+    var cfg = { url: document.getElementById('sheet-url').value.trim(), tab: document.getElementById('sheet-tab').value.trim() || 'Sheet1' };
+    storageSet('sheet-config', JSON.stringify(cfg), true);
+  }
+
+  async function connectSheet(showAlerts){
+    var url = document.getElementById('sheet-url').value.trim();
+    var tab = document.getElementById('sheet-tab').value.trim() || 'Sheet1';
+    if(!url){ setSourceStatus('Not connected'); return; }
+    var id = extractSheetId(url);
+    if(!id){
+      setSourceStatus('Invalid link', 'error');
+      return;
+    }
+    setSourceStatus('Connecting…');
+    try{
+      var resp = await fetch(buildGvizUrl(id, tab));
+      if(!resp.ok) throw new Error('HTTP '+resp.status);
+      var text = await resp.text();
+      if(text.trim().startsWith('<')) throw new Error('Sheet/tab not readable — check sharing & tab name');
+
+      var rows = parseCSV(text);
+      if(rows.length < 2) throw new Error('No data rows found');
+
+      var headers = rows[0].map(function(h){ return h.trim().toLowerCase(); });
+      var idxDate = headers.findIndex(function(h){ return /date|day/.test(h); });
+      var idxTime = headers.findIndex(function(h){ return /time|slot/.test(h); });
+      var idxTask = headers.findIndex(function(h){ return /task|activity|duty|item|report/.test(h); });
+      var idxCat  = headers.findIndex(function(h){ return /cat|desk|department/.test(h); });
+
+      if(idxDate === -1 || idxTime === -1 || idxTask === -1){
+        throw new Error('Could not find Date / Time / Task columns');
+      }
+
+      var byDate = {};
+      for(var r=1; r<rows.length; r++){
+        var row = rows[r];
+        if(!row || row.every(function(c){return !c || !c.trim();})) continue;
+        var dKey = normalizeDate(row[idxDate]);
+        var tRaw = (row[idxTime]||'').trim();
+        var taskName = (row[idxTask]||'').trim();
+        if(!dKey || !taskName) continue;
+        var catCode = idxCat !== -1 ? matchCategory(row[idxCat]) : 'OTH';
+        if(!byDate[dKey]) byDate[dKey] = [];
+        byDate[dKey].push({ time:tRaw || '—', minutes:timeToMinutes(tRaw), name:taskName, cat:catCode });
+      }
+
+      sheetRowsByDate = byDate;
+      availableDates = Object.keys(byDate).sort();
+      sheetConnected = availableDates.length > 0;
+
+      if(!sheetConnected) throw new Error('No valid rows parsed');
+
+      setSourceStatus('Connected · '+availableDates.length+' date(s)', 'connected');
+      saveSheetConfig();
+
+      var dateInput = document.getElementById('view-date');
+      dateInput.disabled = false;
+      var preferred = availableDates.indexOf(todayKey()) !== -1 ? todayKey() : availableDates[availableDates.length-1];
+      currentViewDate = preferred;
+      dateInput.value = preferred;
+      document.getElementById('date-avail').textContent = availableDates.length+' date(s) in sheet: '+availableDates[0]+' → '+availableDates[availableDates.length-1];
+
+      document.getElementById('sample-banner').style.display = 'none';
+      buildChips();
+      buildRoster();
+      applyRosterFilter();
+      updateRosterProgress();
+
+    }catch(err){
+      sheetConnected = false;
+      setSourceStatus('Error: '+err.message, 'error');
+      if(showAlerts) console.warn('Sheet connect failed:', err);
+    }
+  }
+
+  document.getElementById('sheet-connect').addEventListener('click', function(){ connectSheet(true); });
+  document.getElementById('sheet-refresh').addEventListener('click', function(){ connectSheet(true); });
+  document.getElementById('view-date').addEventListener('change', async function(){
+    currentViewDate = this.value;
+    buildRoster();
+    applyRosterFilter();
+    await loadDuty();
+    buildRoster();
+    applyRosterFilter();
+    updateRosterProgress();
+  });
+
+  // ================= DUTY ROSTER (render layer) =================
+  var dutyDone = {};
+  var activeCats = new Set(Object.keys(CATS));
+
+  function currentRosterBlocks(){
+    if(sheetConnected){
+      var rows = sheetRowsByDate[currentViewDate] || [];
+      rows = rows.slice().sort(function(a,b){ return a.minutes - b.minutes; });
+      var byTime = [];
+      var idxMap = {};
+      rows.forEach(function(r){
+        if(!(r.time in idxMap)){
+          idxMap[r.time] = byTime.length;
+          byTime.push({ time:r.time, tasks:[] });
+        }
+        byTime[idxMap[r.time]].tasks.push({ n:r.name, c:r.cat });
+      });
+      return byTime;
+    }
+    return SAMPLE_ROSTER;
+  }
+
+  function taskId(ti, tj){ return ti+'-'+tj; }
+
+  function buildChips(){
+    var row = document.getElementById('chip-row');
+    row.innerHTML = '';
+    Object.keys(CATS).forEach(function(key){
+      var cat = CATS[key];
+      var chip = document.createElement('button');
+      chip.className = 'chip active';
+      chip.style.setProperty('--chip-color', CAT_HEX[key]);
+      chip.textContent = cat.label;
+      chip.setAttribute('data-cat', key);
+      chip.addEventListener('click', function(){
+        if(activeCats.has(key)){ activeCats.delete(key); chip.classList.remove('active'); }
+        else{ activeCats.add(key); chip.classList.add('active'); }
+        applyRosterFilter();
+      });
+      row.appendChild(chip);
+    });
+  }
+
+  function buildRoster(){
+    var wrap = document.getElementById('roster');
+    wrap.innerHTML = '';
+    var blocks = currentRosterBlocks();
+
+    document.getElementById('sample-banner').style.display = sheetConnected ? 'none' : 'flex';
+    document.getElementById('seal-lbl').textContent = sheetConnected
+      ? (currentViewDate === todayKey() ? 'TODAY' : currentViewDate.slice(5))
+      : 'SAMPLE';
+
+    if(blocks.length === 0){
+      wrap.innerHTML = '<div class="empty-state">No tasks found in the sheet for '+currentViewDate+'. Pick another date, or check the sheet data.</div>';
+      return;
+    }
+
+    blocks.forEach(function(block, ti){
+      var row = document.createElement('div');
+      row.className = 'roster-row';
+
+      var timeEl = document.createElement('div');
+      timeEl.className = 'roster-time';
+      timeEl.textContent = block.time;
+      row.appendChild(timeEl);
+
+      var tasksEl = document.createElement('div');
+      tasksEl.className = 'roster-tasks';
+
+      block.tasks.forEach(function(task, tj){
+        var id = taskId(ti, tj);
+        var pill = document.createElement('label');
+        pill.className = 'task-pill' + (task.reserved ? ' reserved' : '');
+        pill.style.setProperty('--pc', CAT_HEX[task.c] || CAT_HEX.OTH);
+        pill.setAttribute('data-cat', task.c);
+
+        if(!task.reserved){
+          var cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.checked = !!dutyDone[id];
+          if(cb.checked) pill.classList.add('done');
+          cb.addEventListener('change', function(){
+            if(cb.checked){ dutyDone[id] = true; pill.classList.add('done'); }
+            else{ delete dutyDone[id]; pill.classList.remove('done'); }
+            saveDuty();
+            updateRosterProgress();
+          });
+          pill.appendChild(cb);
+        }
+
+        var span = document.createElement('span');
+        span.className = 't-name';
+        span.textContent = task.n;
+        pill.appendChild(span);
+
+        tasksEl.appendChild(pill);
+      });
+
+      row.appendChild(tasksEl);
+      wrap.appendChild(row);
+    });
+  }
+
+  function applyRosterFilter(){
+    document.querySelectorAll('.task-pill').forEach(function(pill){
+      var cat = pill.getAttribute('data-cat');
+      if(activeCats.has(cat)) pill.classList.remove('hidden-cat');
+      else pill.classList.add('hidden-cat');
+    });
+    document.querySelectorAll('.roster-row').forEach(function(row){
+      var pills = row.querySelectorAll('.task-pill');
+      if(pills.length === 0) return;
+      var visible = Array.prototype.some.call(pills, function(p){ return !p.classList.contains('hidden-cat'); });
+      row.classList.toggle('row-hidden', !visible);
+    });
+  }
+
+  function countableTasks(){
+    var total = 0;
+    currentRosterBlocks().forEach(function(b){ b.tasks.forEach(function(t){ if(!t.reserved) total++; }); });
+    return total;
+  }
+
+  function updateRosterProgress(){
+    var total = countableTasks();
+    var done = Object.keys(dutyDone).length;
+    var pct = total ? Math.round((done/total)*100) : 0;
+    document.getElementById('roster-progress-fill').style.width = pct + '%';
+    document.getElementById('roster-progress-text').textContent = done + ' / ' + total + ' marked done';
+    var circumference = 220;
+    document.getElementById('seal-progress').style.strokeDashoffset = circumference - (circumference * pct / 100);
+    document.getElementById('seal-pct').textContent = pct + '%';
+  }
+
+  async function loadDuty(){
+    var raw = await storageGet('duty-log:' + currentViewDate, true);
+    dutyDone = {};
+    if(raw){
+      try{ JSON.parse(raw).forEach(function(id){ dutyDone[id] = true; }); }catch(e){}
+    }
+  }
+  function saveDuty(){
+    storageSet('duty-log:' + currentViewDate, JSON.stringify(Object.keys(dutyDone)), true);
+  }
+
+  document.getElementById('reset-today').addEventListener('click', function(){
+    if(!confirm('Clear all checkmarks for '+currentViewDate+'?')) return;
+    dutyDone = {};
+    saveDuty();
+    buildRoster();
+    applyRosterFilter();
+    updateRosterProgress();
+  });
+
+  // ================= REPORTS TRACKER =================
+  var reportState = {};
+
+  function defaultReportState(){
+    var s = {};
+    REPORTS.forEach(function(r){ s[r.si] = { cat:r.cat, spoc:'', status:'pending' }; });
+    return s;
+  }
+  async function loadReports(){
+    var raw = await storageGet('reports-tracker', true);
+    if(raw){
+      try{ reportState = Object.assign(defaultReportState(), JSON.parse(raw)); }
+      catch(e){ reportState = defaultReportState(); }
+    } else reportState = defaultReportState();
+  }
+  function saveReports(){ storageSet('reports-tracker', JSON.stringify(reportState), true); }
+
+  function buildCatFilterOptions(){
+    var sel = document.getElementById('report-cat-filter');
+    Object.keys(CATS).forEach(function(key){
+      var opt = document.createElement('option');
+      opt.value = key; opt.textContent = CATS[key].label;
+      sel.appendChild(opt);
+    });
+  }
+  function statusLabel(s){ return s==='done' ? 'Done' : s==='progress' ? 'In progress' : 'Pending'; }
+  function nextStatus(s){ return s==='pending' ? 'progress' : s==='progress' ? 'done' : 'pending'; }
+
+  function buildReportsGrid(){
+    var grid = document.getElementById('reports-grid');
+    grid.innerHTML = '';
+    REPORTS.forEach(function(r){
+      var st = reportState[r.si];
+      var card = document.createElement('div');
+      card.className = 'report-card';
+      card.style.setProperty('--rc', CAT_HEX[st.cat]);
+      card.setAttribute('data-si', r.si);
+      card.setAttribute('data-name', r.name.toLowerCase());
+
+      var top = document.createElement('div');
+      top.className = 'report-card-top';
+      top.innerHTML = '<div><div class="report-si">#'+pad(r.si)+'</div><div class="report-name">'+r.name+'</div></div>';
+      card.appendChild(top);
+
+      var fields = document.createElement('div');
+      fields.className = 'report-fields';
+
+      var catLabel = document.createElement('label'); catLabel.textContent = 'Category';
+      var catSel = document.createElement('select');
+      Object.keys(CATS).forEach(function(key){
+        var opt = document.createElement('option');
+        opt.value = key; opt.textContent = CATS[key].label;
+        if(key === st.cat) opt.selected = true;
+        catSel.appendChild(opt);
+      });
+      catSel.addEventListener('change', function(){
+        reportState[r.si].cat = catSel.value;
+        card.style.setProperty('--rc', CAT_HEX[catSel.value]);
+        saveReports(); renderCatBars();
+      });
+
+      var spocLabel = document.createElement('label'); spocLabel.textContent = 'SPOC';
+      var spocInput = document.createElement('input');
+      spocInput.type = 'text'; spocInput.placeholder = 'Assign owner…'; spocInput.value = st.spoc || '';
+      spocInput.addEventListener('input', function(){ reportState[r.si].spoc = spocInput.value; saveReports(); });
+
+      fields.appendChild(catLabel); fields.appendChild(catSel);
+      fields.appendChild(spocLabel); fields.appendChild(spocInput);
+      card.appendChild(fields);
+
+      var toggle = document.createElement('button');
+      toggle.className = 'status-toggle status-' + st.status;
+      toggle.textContent = statusLabel(st.status);
+      toggle.addEventListener('click', function(){
+        var ns = nextStatus(reportState[r.si].status);
+        reportState[r.si].status = ns;
+        toggle.className = 'status-toggle status-' + ns;
+        toggle.textContent = statusLabel(ns);
+        saveReports(); renderStats();
+      });
+      card.appendChild(toggle);
+
+      grid.appendChild(card);
+    });
+  }
+
+  function renderStats(){
+    var total = REPORTS.length, done=0, progress=0, pending=0;
+    REPORTS.forEach(function(r){
+      var s = reportState[r.si].status;
+      if(s==='done') done++; else if(s==='progress') progress++; else pending++;
+    });
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-done').textContent = done;
+    document.getElementById('stat-progress').textContent = progress;
+    document.getElementById('stat-pending').textContent = pending;
+  }
+
+  function renderCatBars(){
+    var counts = {};
+    Object.keys(CATS).forEach(function(k){ counts[k]=0; });
+    REPORTS.forEach(function(r){ counts[reportState[r.si].cat]++; });
+    var max = Math.max.apply(null, Object.values(counts)) || 1;
+    var body = document.getElementById('cat-bars-body');
+    body.innerHTML = '';
+    Object.keys(CATS).forEach(function(key){
+      if(counts[key] === 0) return;
+      var row = document.createElement('div');
+      row.className = 'cat-bar-row';
+      row.innerHTML =
+        '<div class="cat-bar-label">'+CATS[key].label+'</div>'+
+        '<div class="cat-bar-track"><div class="cat-bar-fill" style="width:'+(counts[key]/max*100)+'%; background:'+CAT_HEX[key]+'"></div></div>'+
+        '<div class="cat-bar-count">'+counts[key]+'</div>';
+      body.appendChild(row);
+    });
+  }
+
+  function applyReportsFilter(){
+    var q = document.getElementById('report-search').value.trim().toLowerCase();
+    var cat = document.getElementById('report-cat-filter').value;
+    document.querySelectorAll('.report-card').forEach(function(card){
+      var si = card.getAttribute('data-si');
+      var name = card.getAttribute('data-name');
+      var matchesQ = !q || name.indexOf(q) !== -1;
+      var matchesCat = !cat || reportState[si].cat === cat;
+      card.classList.toggle('hidden-card', !(matchesQ && matchesCat));
+    });
+  }
+  document.getElementById('report-search').addEventListener('input', applyReportsFilter);
+  document.getElementById('report-cat-filter').addEventListener('change', applyReportsFilter);
+
+  document.getElementById('reset-reports').addEventListener('click', function(){
+    if(!confirm('Reset category, SPOC and status for all reports?')) return;
+    reportState = defaultReportState();
+    saveReports();
+    buildReportsGrid(); renderStats(); renderCatBars(); applyReportsFilter();
+  });
+
+  // ---------------- Tabs ----------------
+  var tabRoster = document.getElementById('tab-roster');
+  var tabReports = document.getElementById('tab-reports');
+  var panelRoster = document.getElementById('panel-roster');
+  var panelReports = document.getElementById('panel-reports');
+  tabRoster.addEventListener('click', function(){
+    tabRoster.setAttribute('aria-selected','true'); tabReports.setAttribute('aria-selected','false');
+    panelRoster.classList.add('active'); panelReports.classList.remove('active');
+  });
+  tabReports.addEventListener('click', function(){
+    tabReports.setAttribute('aria-selected','true'); tabRoster.setAttribute('aria-selected','false');
+    panelReports.classList.add('active'); panelRoster.classList.remove('active');
+  });
+
+  // ---------------- Init ----------------
+  async function init(){
+    document.getElementById('view-date').value = todayKey();
+
+    buildChips();
+    buildRoster();
+    await loadDuty();
+    buildRoster();
+    applyRosterFilter();
+    updateRosterProgress();
+
+    buildCatFilterOptions();
+    await loadReports();
+    buildReportsGrid();
+    renderStats();
+    renderCatBars();
+
+    await loadSheetConfig();
+  }
+  init();
+
+})();
+</script>
