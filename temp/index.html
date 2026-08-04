@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panoramic GPS & Timestamp Camera</title>
+  <title>Panoramic GPS Camera (@baljyoti.com Portal)</title>
+  
+  <!-- Google Sign-In SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
   <style>
     :root {
       --bg-color: #0f172a;
@@ -53,10 +57,64 @@
       margin-top: 4px;
     }
 
+    /* Auth Screen Overlay Styling */
+    .login-modal {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 32px 24px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .login-modal h2 {
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+    }
+
+    .login-modal p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .auth-error {
+      color: #ef4444;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+
+    .user-profile-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+
+    .user-profile-bar .logout-btn {
+      background: #ef4444;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+    }
+
+    /* Main App Interface (Hidden until logged in) */
     .app-container {
+      display: none;
       width: 100%;
       max-width: 800px;
-      display: flex;
       flex-direction: column;
       gap: 16px;
       align-items: center;
@@ -242,10 +300,33 @@
 
   <header>
     <h1>📷 GeoPano Cam</h1>
-    <p class="subtitle">Capture Panoramic Photos with Live GPS & Google Maps Integration</p>
+    <p class="subtitle">Exclusive Portal for @baljyoti.com Users</p>
   </header>
 
-  <div class="app-container">
+  <!-- Login Card (Shown by Default) -->
+  <div class="login-modal" id="loginModal">
+    <h2>Domain Sign-In Required</h2>
+    <p>Please log in using your <strong>@baljyoti.com</strong> Google account to access the app.</p>
+    
+    <!-- Google Sign-In Button Container -->
+    <div id="g_id_onload"
+         data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin" data-type="standard" data-size="large" data-theme="dark"></div>
+
+    <div id="authError" class="auth-error"></div>
+  </div>
+
+  <!-- Main App Container (Hidden until Auth succeeds) -->
+  <div class="app-container" id="appContainer">
+    
+    <div class="user-profile-bar" id="userBar">
+      <span>Logged in as: <strong id="userEmailSpan"></strong></span>
+      <button class="logout-btn" onclick="logout()">Sign Out</button>
+    </div>
+
     <div class="viewfinder-wrapper">
       <video id="webcam" autoplay playsinline muted></video>
       <div class="live-overlay" id="liveOverlay">
@@ -291,7 +372,50 @@
     // ----------------------------------------------------
     // GOOGLE APPS SCRIPT WEB APP URL:
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbww-2249vQYCB-GafsJeM8zE0JW4RyFKe8Y_C1PlxZPwRt1vvDnKeFQaq6fhEXahvN_Vg/exec";
+    const ALLOWED_DOMAIN = "@baljyoti.com";
     // ----------------------------------------------------
+
+    let loggedInUserEmail = "";
+
+    // Parse JWT token from Google Identity Services
+    function parseJwt(token) {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    }
+
+    // Google Sign-In Callback
+    function handleCredentialResponse(response) {
+      const authData = parseJwt(response.credential);
+      const email = authData.email || "";
+
+      // Validate Domain
+      if (email.toLowerCase().endsWith(ALLOWED_DOMAIN.toLowerCase())) {
+        loggedInUserEmail = email;
+        document.getElementById('userEmailSpan').textContent = email;
+        document.getElementById('loginModal').style.display = 'none';
+        document.getElementById('appContainer').style.display = 'flex';
+        document.getElementById('userBar').style.display = 'flex';
+        document.getElementById('authError').textContent = '';
+
+        initCamera();
+        initGPS();
+      } else {
+        document.getElementById('authError').textContent = `Access Denied: ${email} is not authorized. Only ${ALLOWED_DOMAIN} accounts can access this app.`;
+      }
+    }
+
+    function logout() {
+      loggedInUserEmail = "";
+      document.getElementById('appContainer').style.display = 'none';
+      document.getElementById('loginModal').style.display = 'flex';
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+      }
+    }
 
     const video = document.getElementById('webcam');
     const canvas = document.getElementById('photoCanvas');
@@ -313,12 +437,10 @@
     let capturedFrames = [];
     let currentImageDataURL = "";
     
-    // Camera state: "environment" (rear) or "user" (front/selfie)
     let currentFacingMode = "environment";
     let currentStream = null;
 
     async function initCamera() {
-      // Stop existing camera track if active
       if (currentStream) {
         currentStream.getTracks().forEach(track => track.stop());
       }
@@ -334,7 +456,6 @@
         });
         video.srcObject = currentStream;
       } catch (err) {
-        // Fallback for devices without strict exact facingMode matching
         try {
           currentStream = await navigator.mediaDevices.getUserMedia({
             video: {
@@ -351,7 +472,6 @@
       }
     }
 
-    // Toggle between front and back camera
     switchCamBtn.addEventListener('click', () => {
       currentFacingMode = (currentFacingMode === "environment") ? "user" : "environment";
       initCamera();
@@ -434,7 +554,6 @@
       canvas.width = vWidth;
       canvas.height = targetHeight;
 
-      // If using front camera, mirror image on canvas so text isn't reversed
       if (currentFacingMode === "user") {
         ctx.save();
         ctx.scale(-1, 1);
@@ -521,8 +640,8 @@
     }
 
     uploadBtn.addEventListener('click', async () => {
-      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === "") {
-        alert("Please set a valid Google Apps Script Web App URL.");
+      if (!loggedInUserEmail) {
+        alert("Please log in with a @baljyoti.com account.");
         return;
       }
 
@@ -533,6 +652,7 @@
       const mapsUrl = `https://www.google.com/maps?q=${currentLat},${currentLon}`;
 
       const payload = {
+        userEmail: loggedInUserEmail,
         timestamp: new Date().toISOString(),
         latitude: currentLat,
         longitude: currentLon,
@@ -563,9 +683,6 @@
         uploadBtn.disabled = false;
       }
     });
-
-    initCamera();
-    initGPS();
   </script>
 </body>
 </html>
