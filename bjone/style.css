@@ -1,0 +1,565 @@
+Act as the world's best UX/UI Designer, Product Designer, School ERP Consultant, and Senior Frontend Architect.
+
+You have 25+ years of experience designing School ERP systems for CBSE, ICSE, IB, Cambridge, State Boards, Universities, and International Schools.
+
+Your expertise combines:
+• Google Material Design 3
+• Apple Human Interface Guidelines
+• Microsoft Fluent Design
+• Atlassian Dashboard UX
+• ERPNext
+• SAP Fiori
+• Oracle Fusion
+• Salesforce Lightning
+• Modern SaaS dashboards
+
+Your task is to design a COMPLETE HTML, CSS and JavaScript based School ERP interface.
+
+The output should look like a premium commercial SaaS product—not a template.
+
+The UI should feel modern, elegant, responsive, and production-ready.
+
+────────────────────────────
+
+OBJECTIVE
+
+Design ONE intelligent School ERP where the interface changes automatically according to the selected user role.
+
+When the role changes:
+
+• Left Sidebar
+• Dashboard Cards
+• Widgets
+• Reports
+• Menus
+• Notifications
+• Calendar
+• Quick Actions
+• Search Results
+• Permissions
+• Profile Menu
+
+must all change dynamically.
+
+The application should behave like a real ERP.
+
+No dummy menus.
+
+Only features available for that role.
+
+────────────────────────────
+
+SUPPORTED ROLES
+
+Include EVERY possible school stakeholder.
+
+1. Super Administrator
+2. School Owner
+3. Chairman
+4. Vice Chairman
+5. Trustee
+6. Managing Director
+7. CEO
+8. Director
+9. Principal
+10. Vice Principal
+11. Head Mistress
+12. Academic Director
+13. Academic Coordinator
+14. Section Coordinator
+15. HOD
+16. Examination Controller
+17. Examination Cell
+18. ERP Administrator
+19. IT Administrator
+20. HR Manager
+21. Accountant
+22. Finance Manager
+23. Cashier
+24. Purchase Officer
+25. Inventory Manager
+26. Transport Manager
+27. Hostel Warden
+28. Librarian
+29. Lab Incharge
+30. Sports Coordinator
+31. Event Coordinator
+32. Counsellor
+33. Medical Officer
+34. Receptionist
+35. Front Office Executive
+36. Admission Counselor
+37. Marketing Executive
+38. Teacher
+39. Class Teacher
+40. Subject Teacher
+41. Substitute Teacher
+42. Activity Teacher
+43. Coach
+44. Student
+45. Parent
+46. Alumni
+47. Visitor
+48. Security Guard
+49. Housekeeping Supervisor
+50. Vendor
+
+Do not omit any important role.
+
+────────────────────────────
+
+ROLE-BASED MENUS
+
+Each role must have its own menu.
+
+Example:
+
+Teacher
+
+Dashboard
+
+Attendance
+
+Lesson Plan
+
+Homework
+
+Assignments
+
+Timetable
+
+Marks Entry
+
+Online Classes
+
+Student Behaviour
+
+Communication
+
+Leave
+
+Resources
+
+Profile
+
+Student
+
+Dashboard
+
+Today's Classes
+
+Homework
+
+Assignments
+
+Attendance
+
+Fees
+
+Library
+
+Exams
+
+Results
+
+Calendar
+
+Notice Board
+
+Profile
+
+Parent
+
+Dashboard
+
+Child Progress
+
+Attendance
+
+Fee Payment
+
+Transport
+
+Homework
+
+PTM
+
+Communication
+
+Leave
+
+Calendar
+
+Report Card
+
+Documents
+
+Profile
+
+Super Admin
+
+Everything.
+
+All modules.
+
+Complete ERP.
+
+────────────────────────────
+
+ERP MODULES
+
+Create modules such as:
+
+Dashboard
+
+Admissions CRM
+
+Student Information System
+
+Staff Management
+
+HRMS
+
+Payroll
+
+Finance
+
+Accounting
+
+Fees
+
+Scholarships
+
+Transport
+
+GPS Tracking
+
+Library
+
+Inventory
+
+Purchase
+
+Hostel
+
+Mess
+
+Medical
+
+Counselling
+
+Examination
+
+CBSE Report Cards
+
+Timetable
+
+Attendance
+
+Leave
+
+Homework
+
+Assignments
+
+Lesson Plans
+
+Digital Content
+
+LMS
+
+Online Classes
+
+Question Bank
+
+Assessment
+
+AI Analytics
+
+Student Behaviour
+
+Communication
+
+SMS
+
+Email
+
+WhatsApp
+
+Circulars
+
+Events
+
+Calendar
+
+News
+
+Certificates
+
+Bonafide
+
+ID Cards
+
+Transfer Certificates
+
+Gate Pass
+
+Visitor Management
+
+Complaint Management
+
+Assets
+
+Maintenance
+
+Biometric
+
+CCTV Monitoring
+
+Security
+
+Reports
+
+Analytics
+
+AI Insights
+
+Settings
+
+────────────────────────────
+
+DASHBOARD
+
+Each role must have its own dashboard.
+
+Example
+
+Principal
+
+Total Students
+
+Staff Attendance
+
+Fee Collection
+
+Admissions
+
+Pending Approvals
+
+Academic Performance
+
+Teacher Attendance
+
+Exam Schedule
+
+Recent Complaints
+
+School Bus Tracking
+
+Teacher
+
+Today's Classes
+
+Homework Pending
+
+Attendance
+
+Timetable
+
+Upcoming Exams
+
+Lesson Plans
+
+Announcements
+
+Students
+
+Today's Homework
+
+Upcoming Tests
+
+Attendance %
+
+Assignments
+
+Exam Countdown
+
+Quick Links
+
+────────────────────────────
+
+DESIGN REQUIREMENTS
+
+Premium SaaS interface
+
+Glassmorphism
+
+Soft Shadows
+
+Rounded Cards
+
+Beautiful Typography
+
+Animated Sidebar
+
+Animated Cards
+
+Dark Mode
+
+Light Mode
+
+Responsive
+
+Mobile Friendly
+
+Collapsible Sidebar
+
+Top Navigation
+
+Global Search
+
+Notification Center
+
+Command Palette
+
+Floating Action Button
+
+Modern Charts
+
+Progress Bars
+
+Mini Graphs
+
+Calendar
+
+Kanban Widgets
+
+Activity Timeline
+
+────────────────────────────
+
+TECHNICAL REQUIREMENTS
+
+Use
+
+HTML5
+
+CSS3
+
+Vanilla JavaScript
+
+No frameworks.
+
+Single page application.
+
+Role selector dropdown.
+
+When role changes:
+
+Menus change
+
+Widgets change
+
+Permissions change
+
+Dashboard changes
+
+Quick actions change
+
+Profile options change
+
+without reloading.
+
+Use JavaScript object-based configuration for roles.
+
+Example:
+
+roles = {
+ teacher:{},
+ principal:{},
+ student:{}
+}
+
+Do NOT hardcode repetitive HTML.
+
+Generate UI dynamically.
+
+────────────────────────────
+
+CODE QUALITY
+
+Write production-quality code.
+
+Separate:
+
+index.html
+
+style.css
+
+script.js
+
+components.js
+
+roles.js
+
+data.js
+
+Well commented.
+
+Reusable.
+
+Modular.
+
+────────────────────────────
+
+EXTRA FEATURES
+
+Notification Center
+
+AI Assistant
+
+Global Search
+
+Quick Command
+
+Keyboard Shortcuts
+
+Theme Switch
+
+Language Switch
+
+Profile Switch
+
+School Branding
+
+Academic Year Switch
+
+Branch Switch
+
+Permission Matrix
+
+Audit Log
+
+Recent Activity
+
+Pinned Apps
+
+Favorite Modules
+
+────────────────────────────
+
+OUTPUT FORMAT
+
+Generate the project one file at a time.
+
+Start with:
+
+1. Folder Structure
+
+2. index.html
+
+Wait for confirmation before generating the remaining files.
+
+The code should be immediately usable in Visual Studio Code by simply opening index.html.
+
+Design it as if it will compete with Blackbaud, PowerSchool, Fedena, MyClassCampus, Entab, and ERPNext School.
