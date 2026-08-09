@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trigonometry Quest — NCERT Class 10</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="hud">
+      <div class="brand">🎮 TRIGO QUEST</div>
+      <div class="hud-item">🧑 <span id="playerName">Explorer</span></div>
+      <div class="hud-item">⭐ <span id="score">0</span> XP</div>
+      <div class="hud-item">🪙 <span id="coins">0</span></div>
+      <div class="hud-item">❤️ <span id="lives">3</span></div>
+      <div class="hud-item timer">⏱️ <span id="timer">60</span></div>
+    </header>
+
+    <main>
+      <section id="lobby" class="screen active">
+        <div class="hero-card">
+          <div class="hero-icon">🧭</div>
+          <p class="eyebrow">NCERT • CLASS 10 • CHAPTER 8</p>
+          <h1>Trigonometry Quest</h1>
+          <p class="subtitle">Solve the maths. Cross the roadblocks. Defeat the Trigo Boss.</p>
+          <div class="player-entry">
+            <input id="nameInput" maxlength="18" placeholder="Enter explorer name" />
+            <button id="startBtn" class="primary">START ADVENTURE 🚀</button>
+          </div>
+          <div class="rule-row">
+            <span>❤️ 3 Lives</span><span>⏱️ 60 sec/question</span><span>⭐ XP + 🪙 Coins</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="game" class="screen">
+        <div class="world-top">
+          <div>
+            <span class="world-label">WORLD</span>
+            <h2 id="worldTitle">Triangle Village</h2>
+          </div>
+          <div class="progress-box">
+            <div class="progress-text"><span id="questionNumber">1</span>/5</div>
+            <div class="progress-track"><div id="progressBar"></div></div>
+          </div>
+        </div>
+
+        <div class="game-layout">
+          <aside class="side-card">
+            <div class="avatar">🧑‍🚀</div>
+            <h3 id="sideName">Explorer</h3>
+            <p class="rank" id="rank">Triangle Rookie</p>
+            <div class="stat"><span>🔥 Streak</span><strong id="streak">0</strong></div>
+            <div class="stat"><span>💡 Hints</span><strong id="hints">3</strong></div>
+            <div class="stat"><span>🏁 Checkpoint</span><strong id="checkpoint">0</strong></div>
+          </aside>
+
+          <section class="challenge-card">
+            <div id="roadblock" class="roadblock">
+              <span>🚧 ROADBLOCK</span>
+              <small>Solve to cross!</small>
+            </div>
+
+            <div class="question-area">
+              <div class="topic-tag" id="topicTag">Right Triangles</div>
+              <h2 id="question">Question</h2>
+              <div id="formulaBox" class="formula-box hidden"></div>
+              <div id="options" class="options"></div>
+            </div>
+
+            <div class="actions">
+              <button id="hintBtn" class="secondary">💡 HINT <span id="hintCost">(10🪙)</span></button>
+              <button id="skipBtn" class="secondary">⏭️ SKIP</button>
+            </div>
+
+            <div id="feedback" class="feedback"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="checkpointScreen" class="screen">
+        <div class="result-card">
+          <div class="big-icon">🏁</div>
+          <h1>CHECKPOINT REACHED!</h1>
+          <p id="checkpointMessage">Great work!</p>
+          <div class="reward-row"><span>⭐ +100 XP</span><span>🪙 +25 Coins</span></div>
+          <button id="continueBtn" class="primary">CONTINUE ➜</button>
+        </div>
+      </section>
+
+      <section id="gameOver" class="screen">
+        <div class="result-card danger">
+          <div class="big-icon">💥</div>
+          <h1>GAME OVER</h1>
+          <p>You ran out of lives. Your last checkpoint is still saved.</p>
+          <div class="final-score">⭐ <span id="gameOverScore">0</span> XP</div>
+          <button id="restartBtn" class="primary">TRY AGAIN 🔄</button>
+        </div>
+      </section>
+
+      <section id="boss" class="screen">
+        <div class="boss-card">
+          <div class="boss-title">👹 TRIGO BOSS</div>
+          <div class="boss-hp">BOSS HP: <span id="bossHp">❤️❤️❤️❤️❤️</span></div>
+          <p>Defeat the boss with 5 correct answers!</p>
+          <div class="question-area">
+            <div class="topic-tag">FINAL CHALLENGE</div>
+            <h2 id="bossQuestion"></h2>
+            <div id="bossOptions" class="options"></div>
+          </div>
+          <div id="bossFeedback" class="feedback"></div>
+        </div>
+      </section>
+
+      <section id="victory" class="screen">
+        <div class="result-card victory">
+          <div class="big-icon">👑</div>
+          <h1>TRIGONOMETRY CHAMPION!</h1>
+          <p>You defeated the Trigo Boss and completed the adventure.</p>
+          <div class="final-stats">
+            <span>⭐ <b id="finalXP">0</b> XP</span>
+            <span>🪙 <b id="finalCoins">0</b> Coins</span>
+          </div>
+          <button id="playAgainBtn" class="primary">PLAY AGAIN 🚀</button>
+        </div>
+      </section>
+    </main>
+
+    <footer>Trigonometry Quest • NCERT Class 10 • Chapter 8 • Educational prototype</footer>
+  </div>
+  <script src="questions.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
