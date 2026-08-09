@@ -2,118 +2,124 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Trigo Quest — CBSE Class 10</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trigo Quest — Animated Arcade</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div id="app">
-<header class="hud">
-  <div class="brand">🎮 TRIGO QUEST</div>
-  <div class="hud-item">🧑 <span id="playerName">Explorer</span></div>
-  <div class="hud-item">⭐ <span id="score">0</span></div>
-  <div class="hud-item">🪙 <span id="coins">0</span></div>
-  <div class="hud-item">❤️ <span id="lives">3</span></div>
-  <div class="hud-item timer">⏱️ <span id="timer">60</span></div>
+<header class="topbar">
+  <div class="logo">⚡ TRIGO <span>QUEST</span></div>
+  <div class="hud">
+    <span>⭐ <b id="score">0</b></span><span>🪙 <b id="coins">0</b></span><span>❤️ <b id="lives">3</b></span><span>🔥 <b id="streak">0</b></span><span>⏱ <b id="timer">60</b></span>
+  </div>
 </header>
 
-<main>
-<section id="lobby" class="screen active">
-<div class="hero-card">
-<div class="hero-icon">🧭</div>
-<div class="eyebrow">NCERT CLASS 10 • CHAPTER 8 • CBSE LEVEL</div>
-<h1>Trigonometry Quest</h1>
-<p class="subtitle">100-question learning adventure. Wrong answers unlock a fun concept repair challenge.</p>
-<div class="badges"><span>📚 100 Questions</span><span>🎯 CBSE Level</span><span>🧠 Learn From Mistakes</span></div>
-<div class="player-entry">
-<input id="nameInput" maxlength="18" placeholder="Enter explorer name">
-<button id="startBtn" class="primary">START ADVENTURE 🚀</button>
-</div>
-<button id="leaderboardBtn" class="secondary">🏆 LEADERBOARD</button>
-<div class="rules">
-<b>Game Rules</b>
-<span>❤️ 3 Lives</span><span>⏱️ 60 sec</span><span>⭐ XP</span><span>🪙 Coins</span><span>🚧 Roadblocks</span><span>🏁 Checkpoints</span>
-</div>
-</div>
+<section id="home" class="page active">
+  <div class="home-scene">
+    <div class="cloud c1">☁️</div><div class="cloud c2">☁️</div>
+    <div class="mountain m1"></div><div class="mountain m2"></div>
+    <div class="hero-character player-idle">🧙‍♂️</div>
+    <div class="speech">Ready for the Trigo Quest? 🎯</div>
+  </div>
+  <div class="panel home-panel">
+    <div class="eyebrow">NCERT • CBSE CLASS 10 • CHAPTER 8</div>
+    <h1>TRIGO QUEST</h1>
+    <p>Turn trigonometry into an arcade adventure.</p>
+    <input id="playerName" maxlength="18" placeholder="Enter explorer name">
+    <div class="home-buttons">
+      <button class="btn primary" id="playBtn">🚀 START QUEST</button>
+      <button class="btn" id="mapBtn">🗺️ WORLD MAP</button>
+      <button class="btn" id="leaderBtn">🏆 LEADERBOARD</button>
+    </div>
+    <div class="rule-strip"><span>🎯 100 Questions</span><span>⏱️ 60 Sec</span><span>❤️ 3 Lives</span><span>🧠 Concept Repair</span></div>
+  </div>
 </section>
 
-<section id="game" class="screen">
-<div class="world-top">
-<div><span class="world-label">WORLD</span><h2 id="worldTitle">Triangle Village</h2></div>
-<div class="progress-box"><div class="progress-text"><span id="questionNumber">1</span>/20</div><div class="progress-track"><div id="progressBar"></div></div></div>
-</div>
-<div class="game-layout">
-<aside class="side-card">
-<div class="avatar">🧑‍🚀</div><div><h3 id="sideName">Explorer</h3><p class="rank" id="rank">Triangle Rookie</p></div>
-<div class="stat"><span>🔥 Streak</span><strong id="streak">0</strong></div>
-<div class="stat"><span>💡 Hints</span><strong id="hints">3</strong></div>
-<div class="stat"><span>🏁 Checkpoint</span><strong id="checkpoint">0</strong></div>
-</aside>
-<section class="challenge-card">
-<div class="roadblock"><span id="roadblockText">🚧 ROADBLOCK</span><small id="roadblockSmall">Solve to cross!</small></div>
-<div class="question-area">
-<div class="topic-tag" id="topicTag">Topic</div>
-<div class="difficulty" id="difficulty">CBSE</div>
-<h2 id="question">Question</h2>
-<div id="options" class="options"></div>
-</div>
-<div class="actions"><button id="hintBtn" class="secondary">💡 HINT <span>(10🪙)</span></button><button id="skipBtn" class="secondary">⏭️ SKIP</button></div>
-<div id="feedback" class="feedback"></div>
-</section>
-</div>
+<section id="map" class="page">
+  <div class="panel map-panel">
+    <h1>🗺️ TRIGO WORLD</h1><p>Unlock each zone by mastering the previous one.</p>
+    <div class="world-map">
+      <button class="zone unlocked" data-zone="0">🏠<b>Trigo Village</b><small>Ratios</small></button>
+      <button class="zone" data-zone="1">🔺<b>Triangle Forest</b><small>Right triangles</small></button>
+      <button class="zone" data-zone="2">🎯<b>Ratio Range</b><small>Target challenge</small></button>
+      <button class="zone" data-zone="3">⚡<b>Angle City</b><small>30° 45° 60°</small></button>
+      <button class="zone" data-zone="4">🔐<b>Identity Castle</b><small>Identities</small></button>
+      <button class="zone" data-zone="5">👹<b>Trigo Boss</b><small>Final battle</small></button>
+    </div>
+    <button class="btn" id="mapBack">← BACK</button>
+  </div>
 </section>
 
-<section id="repair" class="screen">
-<div class="repair-card">
-<div class="big-icon">🧠</div>
-<div class="repair-tag">CONCEPT REPAIR ZONE</div>
-<h1>Oops! The Trigo Goblin caught you!</h1>
-<p id="repairMistake"></p>
-<div class="reference-box"><b>📖 Where to revise</b><span id="repairReference"></span></div>
-<div class="fun-explain"><b>🎮 Quick Concept Fix</b><p id="repairExplain"></p></div>
-<h2 id="repairQuestion"></h2>
-<div id="repairOptions" class="options"></div>
-<div id="repairFeedback" class="feedback"></div>
-</div>
+<section id="game" class="page">
+  <div class="zone-header"><div><small id="zoneName">TRIGO VILLAGE</small><h2 id="topic">Target Challenge</h2></div><div class="progress"><span id="qNo">1/20</span><div><i id="bar"></i></div></div></div>
+  <div class="arcade">
+    <aside class="character-card">
+      <div id="playerAvatar" class="avatar">🧙‍♂️</div>
+      <h3 id="nameLabel">Explorer</h3>
+      <p id="levelLabel">Triangle Rookie</p>
+      <div class="mini-stat">🎯 <b id="correct">0</b> correct</div>
+      <div class="mini-stat">🏁 <b id="checkpoint">0</b> checkpoints</div>
+    </aside>
+
+    <main class="arena">
+      <div class="enemy-row"><div class="npc">🤖<span>ANGLE BOT</span></div><div id="enemy" class="npc enemy-idle">👹<span>TRIGO GOBLIN</span></div></div>
+      <div class="question-panel">
+        <div class="tag" id="tag">Six ratios</div>
+        <div class="question" id="question">Question</div>
+        <div id="targets" class="targets"></div>
+      </div>
+      <div id="actionText" class="action-text">🎯 Choose the correct target!</div>
+      <button class="btn hint" id="hintBtn">💡 HINT — 10 🪙</button>
+    </main>
+  </div>
 </section>
 
-<section id="checkpointScreen" class="screen">
-<div class="result-card"><div class="big-icon">🏁</div><h1>CHECKPOINT REACHED!</h1>
-<p id="checkpointMessage"></p><div class="reward-row"><span>⭐ +100 XP</span><span>🪙 +25 Coins</span></div>
-<button id="continueBtn" class="primary">CONTINUE ➜</button></div>
+<section id="repair" class="page">
+  <div class="panel repair">
+    <div class="repair-character">🤖</div>
+    <h1>🧠 CONCEPT LAB</h1>
+    <p id="mistake"></p>
+    <div class="reference" id="reference"></div>
+    <div class="concept" id="concept"></div>
+    <h2 id="repairQ"></h2>
+    <div id="repairTargets" class="targets"></div>
+  </div>
 </section>
 
-<section id="boss" class="screen">
-<div class="boss-card"><div class="boss-title">👹 TRIGO BOSS</div><div class="boss-hp">BOSS HP: <span id="bossHp">❤️❤️❤️❤️❤️</span></div>
-<p>Defeat the final challenge!</p><h2 id="bossQuestion"></h2><div id="bossOptions" class="options"></div><div id="bossFeedback" class="feedback"></div></div>
+<section id="leaderboard" class="page">
+  <div class="panel leaderboard">
+    <h1>🏆 LOCAL LEADERBOARD</h1>
+    <p>Saved on this browser with localStorage.</p>
+    <div id="myRank" class="my-rank"></div>
+    <div class="table-wrap"><table><thead><tr><th>Rank</th><th>Player</th><th>XP</th><th>Correct</th><th>Streak</th><th>Level</th></tr></thead><tbody id="leaders"></tbody></table></div>
+    <div class="button-row"><button class="btn" id="leaderBack">← HOME</button><button class="btn danger" id="clearData">🗑 CLEAR</button></div>
+  </div>
 </section>
 
-<section id="gameOver" class="screen"><div class="result-card danger"><div class="big-icon">💥</div><h1>GAME OVER</h1><p>Your last checkpoint is saved. Recharge and try again.</p><div class="final-score">⭐ <span id="gameOverScore">0</span> XP</div><button id="restartBtn" class="primary">TRY AGAIN 🔄</button></div></section>
-
-<section id="victory" class="screen"><div class="result-card victory"><div class="big-icon">👑</div><h1>TRIGONOMETRY CHAMPION!</h1><p>You defeated the Trigo Boss.</p><div class="final-stats"><span>⭐ <b id="finalXP">0</b> XP</span><span>🪙 <b id="finalCoins">0</b> Coins</span></div><p id="finalRank"></p><button id="playAgainBtn" class="primary">PLAY AGAIN 🚀</button> <button id="victoryLeaderboardBtn" class="secondary">🏆 LEADERBOARD</button></div></section>
-
-<section id="leaderboard" class="screen">
-<div class="leaderboard-card">
-<div class="big-icon">🏆</div>
-<div class="eyebrow">LOCAL PLAYER RECORDS</div>
-<h1>TRIGO QUEST LEADERBOARD</h1>
-<p class="leader-subtitle">Scores are saved on this browser using localStorage.</p>
-<div class="leader-actions">
-<button id="leaderboardBackBtn" class="secondary">← BACK</button>
-<button id="clearLeaderboardBtn" class="secondary danger-btn">🗑️ CLEAR DATA</button>
-</div>
-<div id="myRank" class="my-rank"></div>
-<div class="table-wrap">
-<table>
-<thead><tr><th>Rank</th><th>Player</th><th>⭐ XP</th><th>🎯 Correct</th><th>🔥 Streak</th><th>🏆 Level</th></tr></thead>
-<tbody id="leaderboardBody"></tbody>
-</table>
-</div>
-<p class="local-note">⚠️ Local leaderboard: other devices/browsers will have separate records.</p>
-</div>
+<section id="boss" class="page">
+  <div class="panel boss">
+    <div class="boss-character">👹</div>
+    <h1>TRIGO BOSS</h1><p>Hit the correct energy target five times!</p>
+    <div class="boss-health" id="bossHealth">❤️❤️❤️❤️❤️</div>
+    <h2 id="bossQ"></h2>
+    <div id="bossTargets" class="targets"></div>
+    <div id="bossFeedback" class="action-text"></div>
+  </div>
 </section>
-</main>
-<footer>Trigo Quest • Based on NCERT Class 10 Mathematics Chapter 8 • 100-question master bank</footer>
+
+<section id="result" class="page">
+  <div class="panel result">
+    <div class="result-character" id="resultCharacter">🏆</div>
+    <h1 id="resultTitle">QUEST COMPLETE!</h1>
+    <p id="resultText"></p>
+    <div class="result-stats"><span>⭐ <b id="finalScore">0</b></span><span>🪙 <b id="finalCoins">0</b></span><span>🏆 #<b id="finalRank">-</b></span></div>
+    <button class="btn primary" id="again">🚀 PLAY AGAIN</button>
+    <button class="btn" id="resultLeader">🏆 LEADERBOARD</button>
+  </div>
+</section>
 </div>
-<script src="questions.js"></script><script src="game.js"></script>
-</body></html>
+<script src="questions.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
