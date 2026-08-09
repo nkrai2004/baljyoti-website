@@ -1,15 +1,18 @@
 // AARIKA Firebase configuration
-// Replace the placeholder values with your Firebase Web App configuration.
-// Firebase Console -> Project settings -> Your apps -> Web app
+// Firebase Project: AARIKA School ERP
+
 const AARIKA_FIREBASE_CONFIG = {
-  apiKey: "REPLACE_ME",
-  authDomain: "REPLACE_ME.firebaseapp.com",
-  projectId: "REPLACE_ME",
-  storageBucket: "REPLACE_ME.firebasestorage.app",
-  messagingSenderId: "REPLACE_ME",
-  appId: "REPLACE_ME"
+  apiKey: "AIzaSyDxtqt-TQZ0kkbo5l5qQ9aBmV36NxqPCtk",
+  authDomain: "aarika-school-erp.firebaseapp.com",
+  projectId: "aarika-school-erp",
+  storageBucket: "aarika-school-erp.firebasestorage.app",
+  messagingSenderId: "927822693870",
+  appId: "1:927822693870:web:2fd0a143d9ef196d6c7aff"
 };
 
-const AARIKA_FIREBASE_ENABLED =
-  AARIKA_FIREBASE_CONFIG.apiKey !== "REPLACE_ME" &&
-  AARIKA_FIREBASE_CONFIG.projectId !== "REPLACE_ME";
+const AARIKA_FIREBASE_ENABLED = true;
+
+export {
+  AARIKA_FIREBASE_CONFIG,
+  AARIKA_FIREBASE_ENABLED
+};
