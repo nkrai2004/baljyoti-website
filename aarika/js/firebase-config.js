@@ -1,8 +1,7 @@
-
 // AARIKA School ERP
 // Firebase configuration
 
-const firebaseConfig = {
+const AARIKA_FIREBASE_CONFIG = {
   apiKey: "AIzaSyDxtqt-TQZ0kkbo5l5qO9aBmV36NxqPctk",
   authDomain: "aarika-school-erp.firebaseapp.com",
   projectId: "aarika-school-erp",
@@ -11,5 +10,8 @@ const firebaseConfig = {
   appId: "1:927822693870:web:2fd0a143d9ef196d6c7aff"
 };
 
-// Make configuration available globally
-window.firebaseConfig = firebaseConfig;
+// Named export required by auth.js and other modules
+export { AARIKA_FIREBASE_CONFIG };
+
+// Also expose globally for legacy/non-module scripts
+window.AARIKA_FIREBASE_CONFIG = AARIKA_FIREBASE_CONFIG;
