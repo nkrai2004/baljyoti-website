@@ -1,14 +1,20 @@
-# AARIKA Adventure Hub v6
-## 100+ questions for every Class X NCERT Mathematics and Science chapter
+# AARIKA Adventure Hub v10
 
-- 14 Mathematics chapter banks × 100 questions minimum.
-- 13 Science chapter banks × 100 questions minimum.
-- Each chapter loads only its own question bank.
-- The existing 100-question Trigonometry bank is used only for Mathematics Chapter 8 and is not reused in other chapters.
-- Wrong answers show concept repair and an optional NCERT reference.
-- NCERT PDF is never forced open.
-- Questions are original CBSE-level practice questions based on chapter concepts; they are not copied verbatim from NCERT.
+Fully client-side chapter game for Class X CBSE/NCERT Mathematics and Science.
 
-Sources supplied:
-Mathematics: https://ncert.nic.in/textbook.php?jemh1=0-14
-Science: https://ncert.nic.in/textbook.php?jesc1=0-13
+## Included
+- 14 Mathematics chapter games
+- 13 Science chapter games
+- 100+ questions per chapter in `questions.js`
+- No repeated question inside an active 20-question round
+- 60-second timer per question
+- 3 lives
+- score, coins and streak
+- surprise bonus after every 3 consecutive correct answers
+- wrong-answer Concept Repair mini-question
+- local leaderboard via browser localStorage
+- no NCERT direct links or PDF dependencies
+- works as a static site on GitHub Pages
+
+## Hosting
+Upload `index.html`, `style.css`, `game.js`, and `questions.js` to the same folder/repository. No server or API is required.
