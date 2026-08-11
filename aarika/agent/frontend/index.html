@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AARIKA Agent v0.1</title>
+<style>
+body{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif;background:#f6f8fb;color:#172033}
+header{background:#fff;border-bottom:1px solid #e5e8ef;padding:18px 28px;display:flex;justify-content:space-between}
+.logo{font-weight:800;font-size:22px}.badge{font-size:12px;background:#eef3ff;padding:6px 10px;border-radius:20px}
+main{max-width:1050px;margin:35px auto;padding:0 18px}.hero{margin-bottom:24px}
+.hero h1{font-size:34px;margin:0 0 8px}.hero p{color:#657087;margin:0}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:25px 0}
+.card{background:white;border:1px solid #e5e8ef;border-radius:14px;padding:15px}.card b{display:block;margin-bottom:5px}.card span{font-size:12px;color:#6b7485}
+.chat{background:#fff;border:1px solid #e5e8ef;border-radius:16px;overflow:hidden}
+.messages{min-height:360px;padding:22px}.msg{max-width:82%;padding:13px 15px;border-radius:14px;margin:10px 0;white-space:pre-wrap;line-height:1.5}
+.user{margin-left:auto;background:#e9efff}.agent{background:#f2f4f7}
+.composer{display:flex;border-top:1px solid #e5e8ef;padding:14px;gap:10px}
+textarea{flex:1;resize:none;border:1px solid #dfe3ea;border-radius:10px;padding:12px;font:inherit}
+button{border:0;border-radius:10px;padding:0 18px;background:#1f5eff;color:white;font-weight:700}
+button:disabled{opacity:.5}.meta{font-size:11px;color:#7a8495;margin-top:8px}
+@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}.hero h1{font-size:28px}}
+</style>
+</head>
+<body>
+<header><div class="logo">AARIKA</div><div class="badge">Agentic AI · v0.1</div></header>
+<main>
+<section class="hero"><h1>What should AARIKA do?</h1>
+<p>Ask AARIKA to analyse school data, retrieve policy and recommend or execute approved actions.</p></section>
+<div class="grid">
+<div class="card"><b>New Admission</b><span>Admission workflows</span></div>
+<div class="card"><b>Learning</b><span>Attendance & academics</span></div>
+<div class="card"><b>Activities</b><span>School activities</span></div>
+<div class="card"><b>School Support</b><span>Tasks & operations</span></div>
+</div>
+<section class="chat">
+<div id="messages" class="messages">
+<div class="msg agent">Hello. I am the AARIKA Master Agent.
+
+Try: “Analyse Class 10 attendance and identify students who need intervention.”</div>
+</div>
+<div class="composer"><textarea id="input" rows="2" placeholder="Ask AARIKA..."></textarea><button id="send">Send</button></div>
+</section>
+</main>
+<script>
+const input=document.getElementById('input'),send=document.getElementById('send'),messages=document.getElementById('messages');
+function add(text,cls,meta=''){const x=document.createElement('div');x.className='msg '+cls;x.textContent=text;messages.appendChild(x);if(meta){const m=document.createElement('div');m.className='meta';m.textContent=meta;messages.appendChild(m)}messages.scrollTop=messages.scrollHeight}
+async function run(){const message=input.value.trim();if(!message)return;input.value='';add(message,'user');send.disabled=true;add('Thinking…','agent');const thinking=messages.lastElementChild;try{const r=await fetch('/api/agent',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message})});const d=await r.json();thinking.remove();if(!d.ok)add(d.error,'agent');else add(d.answer,'agent',`${d.agent} · ${d.usage.total_tokens} tokens`)}catch(e){thinking.remove();add('Unable to reach AARIKA Agent: '+e.message,'agent')}finally{send.disabled=false;input.focus()}}
+send.onclick=run;input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();run()}});
+</script>
+</body>
+</html>
