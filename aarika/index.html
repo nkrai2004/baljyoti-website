@@ -1,25 +1,23 @@
 <!doctype html>
 <html lang="en">
 <head>
-<head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1">
+
   <meta name="theme-color" content="#a91515">
 
-  <meta
-    http-equiv="Cross-Origin-Opener-Policy"
-    content="same-origin-allow-popups">
-
-  <title>AARIKA@school-erp | Sign In</title>
+  <title>AARIKA@School-ERP | Sign In</title>
 
   <link rel="stylesheet" href="css/aarika.css">
 
+  <!-- Google Identity Services -->
   <script
     src="https://accounts.google.com/gsi/client"
     async
     defer>
   </script>
-</head>
 </head>
 
 <body class="login-body">
@@ -28,25 +26,37 @@
 
     <section class="login-card">
 
+      <!-- AARIKA Logo -->
       <div class="login-logo">A</div>
 
+      <!-- School -->
       <div class="eyebrow">
         BAL JYOTI PUBLIC SCHOOL
       </div>
 
-      <h1>Welcome to AARIKA@School-erp</h1>
+      <!-- Welcome -->
+      <h1>
+        Welcome to AARIKA@School-ERP
+      </h1>
 
       <p>
-        School Management & Learning Platform
+        School Management &amp; Learning Platform
       </p>
 
-      <!-- Google Sign-In -->
+
+      <!-- =====================================================
+           GOOGLE SIGN-IN CONFIGURATION
+           ===================================================== -->
+
       <div
         id="g_id_onload"
-        data-client_id="594079296208-rrfpja5335vp8cv9vt8fnofub0au20pb.apps.googleusercontent.com"
+        data-client_id="1037130860983-mqd9p79069n5r395ejru19tn5ld9dq49.apps.googleusercontent.com"
         data-callback="handleGoogleCredential"
         data-auto_prompt="false">
       </div>
+
+
+      <!-- Google Sign-In Button -->
 
       <div
         class="g_id_signin"
@@ -58,11 +68,17 @@
         data-logo_alignment="left">
       </div>
 
+
+      <!-- Login Error -->
+
       <div
         id="loginError"
         class="error"
         hidden>
       </div>
+
+
+      <!-- Access Notice -->
 
       <div class="note">
         Only authorised
@@ -72,13 +88,20 @@
 
     </section>
 
+
+    <!-- Footer -->
+
     <footer>
       AARIKA • Bal Jyoti Public School • Demo
     </footer>
 
   </main>
 
-  <!-- IMPORTANT: auth.js uses ES modules -->
+
+  <!-- =====================================================
+       AARIKA AUTHENTICATION
+       ===================================================== -->
+
   <script
     type="module"
     src="js/auth.js">
