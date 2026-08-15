@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
+
 <head>
+
   <meta charset="utf-8">
 
   <meta
@@ -13,47 +15,72 @@
 
   <title>AARIKA@School-ERP | Sign In</title>
 
+  <!-- AARIKA CSS -->
   <link
     rel="stylesheet"
     href="css/aarika.css">
 
-  <!-- Google Identity Services -->
+  <!-- =====================================================
+       GOOGLE IDENTITY SERVICES
+       ===================================================== -->
+
   <script
     src="https://accounts.google.com/gsi/client"
     async
     defer>
   </script>
+
 </head>
+
 
 <body class="login-body">
 
+
+  <!-- =====================================================
+       LOGIN CONTAINER
+       ===================================================== -->
+
   <main class="login-shell">
+
+
+    <!-- ===================================================
+         LOGIN CARD
+         =================================================== -->
 
     <section class="login-card">
 
-      <!-- AARIKA Logo -->
+
+      <!-- AARIKA LOGO -->
+
       <div class="login-logo">
         A
       </div>
 
-      <!-- School Name -->
+
+      <!-- SCHOOL -->
+
       <div class="eyebrow">
         BAL JYOTI PUBLIC SCHOOL
       </div>
 
-      <!-- Welcome -->
+
+      <!-- TITLE -->
+
       <h1>
         Welcome to AARIKA@School-ERP
       </h1>
+
+
+      <!-- DESCRIPTION -->
 
       <p>
         School Management &amp; Learning Platform
       </p>
 
 
-      <!-- =====================================================
-           GOOGLE IDENTITY SERVICES
-           ===================================================== -->
+      <!-- =================================================
+           GOOGLE LOGIN INITIALIZATION
+           ================================================= -->
 
       <div
         id="g_id_onload"
@@ -66,7 +93,9 @@
       </div>
 
 
-      <!-- Google Sign-In Button -->
+      <!-- =================================================
+           GOOGLE SIGN-IN BUTTON
+           ================================================= -->
 
       <div
         class="g_id_signin"
@@ -85,7 +114,9 @@
       </div>
 
 
-      <!-- Login Error -->
+      <!-- =================================================
+           LOGIN ERROR MESSAGE
+           ================================================= -->
 
       <div
         id="loginError"
@@ -94,7 +125,9 @@
       </div>
 
 
-      <!-- Authorised Access Notice -->
+      <!-- =================================================
+           ACCESS NOTICE
+           ================================================= -->
 
       <div class="note">
 
@@ -104,20 +137,26 @@
 
       </div>
 
+
     </section>
 
 
-    <!-- Footer -->
+    <!-- ===================================================
+         FOOTER
+         =================================================== -->
 
     <footer>
+
       AARIKA • Bal Jyoti Public School • Demo
+
     </footer>
+
 
   </main>
 
 
   <!-- =====================================================
-       AARIKA AUTHENTICATION
+       AARIKA AUTHENTICATION MODULE
        ===================================================== -->
 
   <script
@@ -125,5 +164,7 @@
     src="js/auth.js">
   </script>
 
+
 </body>
+
 </html>
