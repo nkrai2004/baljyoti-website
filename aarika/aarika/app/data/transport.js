@@ -1,0 +1,4 @@
+// AARIKA Transport domain foundation
+export const VEHICLE_STATUS = Object.freeze({ ACTIVE:"ACTIVE", INACTIVE:"INACTIVE", MAINTENANCE:"MAINTENANCE" });
+export function createVehicle(data={}) { return { id:data.id||null, schoolId:data.schoolId||null, registrationNumber:data.registrationNumber||"", vehicleType:data.vehicleType||"BUS", capacity:data.capacity||0, driverId:data.driverId||null, attendantIds:data.attendantIds||[], routeIds:data.routeIds||[], status:data.status||VEHICLE_STATUS.ACTIVE, documents:data.documents||[], createdAt:data.createdAt||null, updatedAt:data.updatedAt||null }; }
+export function createRoute(data={}) { return { id:data.id||null, schoolId:data.schoolId||null, name:data.name||"", stops:data.stops||[], vehicleId:data.vehicleId||null, pickupTime:data.pickupTime||null, dropTime:data.dropTime||null, active:data.active!==false, createdAt:data.createdAt||null, updatedAt:data.updatedAt||null }; }

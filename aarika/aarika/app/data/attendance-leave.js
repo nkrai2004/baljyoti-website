@@ -1,0 +1,5 @@
+// AARIKA Attendance + Leave domain foundation
+export const ATTENDANCE_STATUS = Object.freeze({ PRESENT:"PRESENT", ABSENT:"ABSENT", LATE:"LATE", HALF_DAY:"HALF_DAY", ON_LEAVE:"ON_LEAVE" });
+export const LEAVE_STATUS = Object.freeze({ PENDING:"PENDING", APPROVED:"APPROVED", REJECTED:"REJECTED", CANCELLED:"CANCELLED" });
+export function createAttendance(data={}) { return { id:data.id||null, schoolId:data.schoolId||null, sessionId:data.sessionId||null, personId:data.personId||null, date:data.date||null, status:data.status||ATTENDANCE_STATUS.PRESENT, checkIn:data.checkIn||null, checkOut:data.checkOut||null, remarks:data.remarks||"", createdAt:data.createdAt||null, updatedAt:data.updatedAt||null }; }
+export function createLeave(data={}) { return { id:data.id||null, schoolId:data.schoolId||null, applicantId:data.applicantId||null, leaveType:data.leaveType||"OTHER", fromDate:data.fromDate||null, toDate:data.toDate||null, reason:data.reason||"", status:data.status||LEAVE_STATUS.PENDING, approvedBy:data.approvedBy||null, createdAt:data.createdAt||null, updatedAt:data.updatedAt||null }; }

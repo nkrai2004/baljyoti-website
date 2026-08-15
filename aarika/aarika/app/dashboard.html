@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="theme-color" content="#b31318">
+  <title>AARIKA | Director Dashboard</title>
+</head>
+<body>
+  <div class="app">
+    <aside id="sidebar" class="side">
+      <div class="brand"><b>AARIKA</b><small>SCHOOL MANAGEMENT & LEARNING PLATFORM</small></div>
+      <div class="school"><b>Bal Jyoti Public School</b>Director workspace</div>
+      <div class="label">Core Workspace</div>
+      <nav class="nav">
+        <button data-section="dashboard">Overview</button>
+        <button data-section="academic">Academic</button>
+        <button data-section="admissions">Admissions</button>
+        <button data-section="attendance">Attendance</button>
+        <button data-section="duties">Activity</button>
+        <button data-section="school">Administration</button>
+        <button data-section="transport">Transport</button>
+        <button data-section="maintenance">Maintenance</button>
+      </nav>
+      <div class="label">Leadership</div>
+      <nav class="nav">
+        <button data-section="reports">Reports & Audit</button>
+        <button data-section="ai">AI Intelligence</button>
+      </nav>
+      <div class="side-bottom">
+        <strong id="userName">Director</strong><br><span id="userEmail"></span>
+        <button id="signOut" class="signout" type="button">Sign out</button>
+      </div>
+    </aside>
+    <main>
+      <header class="top">
+        <div class="top-left">
+          <button id="mobileMenu" class="menu" type="button">☰</button>
+          <div><div id="pageTitle" class="title">Director Dashboard</div><div id="pageSubtitle" class="subtitle">School-wide overview and daily operations</div></div>
+        </div>
+        <div class="profile"><div class="profile-text"><div id="schoolName" class="profile-name">Bal Jyoti Public School</div><div id="role" class="profile-role">SUPER ADMIN</div></div><div id="avatar" class="avatar">D</div></div>
+      </header>
+      <section id="contentArea" class="content"></section>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status"></div>
+  <script type="module" src="./dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+// AARIKA Reports + Audit foundation
+export const AUDIT_ACTIONS = Object.freeze({ CREATE:"CREATE", UPDATE:"UPDATE", DELETE:"DELETE", LOGIN:"LOGIN", LOGOUT:"LOGOUT", APPROVE:"APPROVE", REJECT:"REJECT", EXPORT:"EXPORT" });
+export function createAuditEvent(data={}) { return { id:data.id||null, schoolId:data.schoolId||null, actorId:data.actorId||null, action:data.action||AUDIT_ACTIONS.UPDATE, entity:data.entity||"", entityId:data.entityId||null, before:data.before||null, after:data.after||null, metadata:data.metadata||{}, ipAddress:data.ipAddress||null, userAgent:data.userAgent||null, timestamp:data.timestamp||null }; }
+export function createReportDefinition(data={}) { return { id:data.id||null, schoolId:data.schoolId||null, name:data.name||"", module:data.module||"", columns:data.columns||[], filters:data.filters||{}, format:data.format||"PDF", createdBy:data.createdBy||null, createdAt:data.createdAt||null }; }

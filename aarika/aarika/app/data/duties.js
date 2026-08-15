@@ -1,0 +1,3 @@
+// AARIKA Duties + Arrangements domain foundation
+export const DUTY_STATUS = Object.freeze({ PLANNED:"PLANNED", ASSIGNED:"ASSIGNED", COMPLETED:"COMPLETED", CANCELLED:"CANCELLED" });
+export function createDuty(data={}) { return { id:data.id||null, schoolId:data.schoolId||null, date:data.date||null, title:data.title||"", dutyType:data.dutyType||"GENERAL", location:data.location||"", assignedTo:data.assignedTo||[], backupFor:data.backupFor||null, startTime:data.startTime||null, endTime:data.endTime||null, status:data.status||DUTY_STATUS.PLANNED, notes:data.notes||"", createdAt:data.createdAt||null, updatedAt:data.updatedAt||null }; }

@@ -1,0 +1,4 @@
+// AARIKA Cleaning + Maintenance domain foundation
+export const WORK_ORDER_STATUS = Object.freeze({ OPEN:"OPEN", ASSIGNED:"ASSIGNED", IN_PROGRESS:"IN_PROGRESS", RESOLVED:"RESOLVED", CLOSED:"CLOSED", CANCELLED:"CANCELLED" });
+export const MAINTENANCE_PRIORITY = Object.freeze({ LOW:"LOW", MEDIUM:"MEDIUM", HIGH:"HIGH", CRITICAL:"CRITICAL" });
+export function createWorkOrder(data={}) { return { id:data.id||null, schoolId:data.schoolId||null, reportedBy:data.reportedBy||null, category:data.category||"GENERAL", location:data.location||"", title:data.title||"", description:data.description||"", priority:data.priority||MAINTENANCE_PRIORITY.MEDIUM, assignedTo:data.assignedTo||null, status:data.status||WORK_ORDER_STATUS.OPEN, attachments:data.attachments||[], resolution:data.resolution||"", reportedAt:data.reportedAt||null, resolvedAt:data.resolvedAt||null, createdAt:data.createdAt||null, updatedAt:data.updatedAt||null }; }
