@@ -15,10 +15,12 @@
 
   <title>AARIKA@School-ERP | Sign In</title>
 
+
   <!-- AARIKA CSS -->
   <link
     rel="stylesheet"
     href="css/aarika.css">
+
 
   <!-- =====================================================
        GOOGLE IDENTITY SERVICES
@@ -30,6 +32,48 @@
     defer>
   </script>
 
+
+  <!-- =====================================================
+       GOOGLE CALLBACK BRIDGE
+
+       IMPORTANT:
+       This MUST exist before Google Identity Services
+       tries to initialise.
+       ===================================================== -->
+
+  <script>
+
+    window.handleGoogleCredential = function (response) {
+
+      console.log(
+        "AARIKA: Google callback received."
+      );
+
+      /*
+       * auth.js may not have finished loading yet.
+       *
+       * Store the credential temporarily.
+       */
+
+      window.__AARIKA_GOOGLE_RESPONSE__ = response;
+
+      /*
+       * Tell auth.js that Google login is ready.
+       */
+
+      window.dispatchEvent(
+        new CustomEvent(
+          "aarika-google-credential",
+          {
+            detail: response
+          }
+        )
+      );
+
+    };
+
+  </script>
+
 </head>
 
 
@@ -37,20 +81,16 @@
 
 
   <!-- =====================================================
-       LOGIN CONTAINER
+       LOGIN
        ===================================================== -->
 
   <main class="login-shell">
 
 
-    <!-- ===================================================
-         LOGIN CARD
-         =================================================== -->
-
     <section class="login-card">
 
 
-      <!-- AARIKA LOGO -->
+      <!-- LOGO -->
 
       <div class="login-logo">
         A
@@ -79,7 +119,7 @@
 
 
       <!-- =================================================
-           GOOGLE LOGIN INITIALIZATION
+           GOOGLE IDENTITY SERVICES
            ================================================= -->
 
       <div
@@ -93,9 +133,7 @@
       </div>
 
 
-      <!-- =================================================
-           GOOGLE SIGN-IN BUTTON
-           ================================================= -->
+      <!-- GOOGLE BUTTON -->
 
       <div
         class="g_id_signin"
@@ -114,9 +152,7 @@
       </div>
 
 
-      <!-- =================================================
-           LOGIN ERROR MESSAGE
-           ================================================= -->
+      <!-- LOGIN ERROR -->
 
       <div
         id="loginError"
@@ -125,15 +161,13 @@
       </div>
 
 
-      <!-- =================================================
-           ACCESS NOTICE
-           ================================================= -->
+      <!-- ACCESS NOTICE -->
 
       <div class="note">
 
         Only authorised
         <b>@baljyoti.com</b>
-        accounts can access this demo.
+        accounts can access AARIKA.
 
       </div>
 
@@ -141,9 +175,7 @@
     </section>
 
 
-    <!-- ===================================================
-         FOOTER
-         =================================================== -->
+    <!-- FOOTER -->
 
     <footer>
 
@@ -156,7 +188,7 @@
 
 
   <!-- =====================================================
-       AARIKA AUTHENTICATION MODULE
+       AARIKA AUTHENTICATION
        ===================================================== -->
 
   <script
