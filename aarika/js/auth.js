@@ -1,6 +1,9 @@
-// AARIKA Authentication
+// ============================================================
+// AARIKA AUTHENTICATION
 // Google Identity Services + Firebase Authentication
 // Only @baljyoti.com accounts are allowed.
+// ============================================================
+
 
 import {
   getAuth,
@@ -10,31 +13,41 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
+
 import {
   initializeApp
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
 
 import {
   AARIKA_FIREBASE_CONFIG
 } from "./firebase-config.js";
 
 
-/* =========================
-   FIREBASE INITIALIZATION
-   ========================= */
+// ============================================================
+// FIREBASE INITIALIZATION
+// ============================================================
 
-const app = initializeApp(AARIKA_FIREBASE_CONFIG);
+const app =
+  initializeApp(
+    AARIKA_FIREBASE_CONFIG
+  );
 
-const firebaseAuth = getAuth(app);
+
+const firebaseAuth =
+  getAuth(app);
 
 
-/* =========================
-   AARIKA SETTINGS
-   ========================= */
+// ============================================================
+// AARIKA SETTINGS
+// ============================================================
 
-const ALLOWED_DOMAIN = "baljyoti.com";
+const ALLOWED_DOMAIN =
+  "baljyoti.com";
+
 
 const DEMO_USERS = {
+
   "info@baljyoti.com": {
     role: "SUPER_ADMIN",
     schoolId: "PLATFORM"
@@ -48,59 +61,107 @@ const DEMO_USERS = {
   "teacher@baljyoti.com": {
     role: "TEACHER",
     schoolId: "BJPS"
+  },
+
+  "director@baljyoti.com": {
+    role: "DIRECTOR",
+    schoolId: "BJPS"
   }
+
 };
 
 
-/* =========================
-   LOGIN ERROR
-   ========================= */
+// ============================================================
+// LOGIN ERROR
+// ============================================================
 
 function error(message) {
 
-  const e = document.getElementById("loginError");
+  const e =
+    document.getElementById(
+      "loginError"
+    );
+
 
   if (e) {
+
     e.hidden = false;
-    e.textContent = message;
+
+    e.textContent =
+      message;
+
   }
 
-  console.error("AARIKA Login:", message);
+
+  console.error(
+    "AARIKA Login:",
+    message
+  );
+
 }
 
 
-/* =========================
-   DECODE GOOGLE JWT
-   ========================= */
+// ============================================================
+// DECODE GOOGLE JWT
+// ============================================================
 
 function jwt(token) {
 
-  const base64 = token
-    .split(".")[1]
-    .replace(/-/g, "+")
-    .replace(/_/g, "/");
+  try {
 
-  return JSON.parse(
-    decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map(
-          c =>
-            "%" +
-            ("00" + c.charCodeAt(0).toString(16))
+    const base64 =
+      token
+        .split(".")[1]
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
+
+
+    return JSON.parse(
+
+      decodeURIComponent(
+
+        atob(base64)
+          .split("")
+          .map(
+            c =>
+              "%" +
+              (
+                "00" +
+                c
+                  .charCodeAt(0)
+                  .toString(16)
+              )
               .slice(-2)
-        )
-        .join("")
-    )
-  );
+          )
+          .join("")
+
+      )
+
+    );
+
+  } catch (e) {
+
+    console.error(
+      "AARIKA: Unable to decode Google token.",
+      e
+    );
+
+    throw new Error(
+      "Invalid Google authentication response."
+    );
+
+  }
+
 }
 
 
-/* =========================
-   GOOGLE LOGIN
-   ========================= */
+// ============================================================
+// GOOGLE LOGIN
+// ============================================================
 
-async function handleGoogleCredential(response) {
+async function handleGoogleCredential(
+  response
+) {
 
   try {
 
@@ -109,14 +170,35 @@ async function handleGoogleCredential(response) {
     );
 
 
-    /* -------------------------
-       READ GOOGLE USER
-       ------------------------- */
+    if (
+      !response ||
+      !response.credential
+    ) {
 
-    const profile = jwt(response.credential);
+      error(
+        "Google did not return a valid login credential."
+      );
+
+      return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // READ GOOGLE USER
+    // --------------------------------------------------------
+
+    const profile =
+      jwt(
+        response.credential
+      );
+
 
     const email =
-      (profile.email || "").toLowerCase();
+      (
+        profile.email ||
+        ""
+      ).toLowerCase();
 
 
     console.log(
@@ -125,27 +207,31 @@ async function handleGoogleCredential(response) {
     );
 
 
-    /* -------------------------
-       VERIFY EMAIL
-       ------------------------- */
+    // --------------------------------------------------------
+    // VERIFY EMAIL
+    // --------------------------------------------------------
 
-    if (!profile.email_verified) {
+    if (
+      !profile.email_verified
+    ) {
 
       error(
         "Your Google email could not be verified."
       );
 
       return;
+
     }
 
 
-    /* -------------------------
-       VERIFY DOMAIN
-       ------------------------- */
+    // --------------------------------------------------------
+    // VERIFY DOMAIN
+    // --------------------------------------------------------
 
     if (
       !email.endsWith(
-        "@" + ALLOWED_DOMAIN
+        "@" +
+        ALLOWED_DOMAIN
       )
     ) {
 
@@ -154,12 +240,13 @@ async function handleGoogleCredential(response) {
       );
 
       return;
+
     }
 
 
-    /* -------------------------
-       FIREBASE AUTHENTICATION
-       ------------------------- */
+    // --------------------------------------------------------
+    // FIREBASE AUTHENTICATION
+    // --------------------------------------------------------
 
     console.log(
       "AARIKA: Signing in to Firebase Authentication..."
@@ -189,110 +276,150 @@ async function handleGoogleCredential(response) {
     );
 
 
-    /* -------------------------
-       DOUBLE CHECK FIREBASE EMAIL
-       ------------------------- */
+    // --------------------------------------------------------
+    // FIREBASE EMAIL CHECK
+    // --------------------------------------------------------
 
     const firebaseEmail =
       (
-        firebaseUser.email || ""
+        firebaseUser.email ||
+        ""
       ).toLowerCase();
 
 
     if (
       !firebaseEmail.endsWith(
-        "@" + ALLOWED_DOMAIN
+        "@" +
+        ALLOWED_DOMAIN
       )
     ) {
 
-      await signOut(firebaseAuth);
+      await signOut(
+        firebaseAuth
+      );
+
 
       error(
         "Only authorised @baljyoti.com accounts can access AARIKA."
       );
 
       return;
+
     }
 
 
-    /* -------------------------
-       DETERMINE AARIKA ROLE
-       ------------------------- */
+    // --------------------------------------------------------
+    // DETERMINE ROLE
+    // --------------------------------------------------------
 
     const user =
-      DEMO_USERS[firebaseEmail] || {
-        role: "SCHOOL_ADMIN",
-        schoolId: "BJPS"
+      DEMO_USERS[
+        firebaseEmail
+      ] || {
+
+        role:
+          "SCHOOL_ADMIN",
+
+        schoolId:
+          "BJPS"
+
       };
 
 
-    /* -------------------------
-       SAVE APPLICATION SESSION
-       ------------------------- */
+    // --------------------------------------------------------
+    // CREATE APPLICATION SESSION
+    // --------------------------------------------------------
+
+    const session = {
+
+      authenticated:
+        true,
+
+      uid:
+        firebaseUser.uid,
+
+      email:
+        firebaseEmail,
+
+      name:
+        firebaseUser.displayName ||
+        profile.name ||
+        firebaseEmail,
+
+      picture:
+        firebaseUser.photoURL ||
+        profile.picture ||
+        "",
+
+      role:
+        user.role,
+
+      schoolId:
+        user.schoolId,
+
+      loginAt:
+        new Date().toISOString()
+
+    };
+
 
     sessionStorage.setItem(
       "aarikaSession",
-      JSON.stringify({
-
-        authenticated: true,
-
-        uid:
-          firebaseUser.uid,
-
-        email:
-          firebaseEmail,
-
-        name:
-          firebaseUser.displayName ||
-          profile.name ||
-          firebaseEmail,
-
-        picture:
-          firebaseUser.photoURL ||
-          profile.picture ||
-          "",
-
-        role:
-          user.role,
-
-        schoolId:
-          user.schoolId,
-
-        loginAt:
-          new Date().toISOString()
-      })
+      JSON.stringify(session)
     );
 
 
     console.log(
       "AARIKA: Session created.",
-      user.role
+      session
     );
 
 
-    /* -------------------------
-       REDIRECT
-       ------------------------- */
+    // --------------------------------------------------------
+    // REDIRECT
+    // --------------------------------------------------------
 
     if (
-      user.role === "SUPER_ADMIN"
+      user.role ===
+      "SUPER_ADMIN"
     ) {
 
       location.href =
         "pages/super-admin.html";
 
-    } else if (
-      user.role === "TEACHER"
+      return;
+
+    }
+
+
+    if (
+      user.role ===
+      "TEACHER"
     ) {
 
       location.href =
         "pages/teacher-dashboard.html";
 
-    } else {
+      return;
+
+    }
+
+
+    if (
+      user.role ===
+      "DIRECTOR"
+    ) {
 
       location.href =
         "pages/dashboard.html";
+
+      return;
+
     }
+
+
+    location.href =
+      "pages/dashboard.html";
 
 
   } catch (e) {
@@ -305,30 +432,89 @@ async function handleGoogleCredential(response) {
 
     error(
       "Unable to complete Google sign-in. " +
-      (e.message || "Please try again.")
+      (
+        e.message ||
+        "Please try again."
+      )
     );
+
   }
+
 }
 
 
-/* =========================
-   CHECK FIREBASE AUTH
-   ========================= */
+// ============================================================
+// GOOGLE CALLBACK BRIDGE
+// ============================================================
 
-function watchFirebaseAuth(callback) {
+window.addEventListener(
+  "aarika-google-credential",
+  event => {
+
+    console.log(
+      "AARIKA: Processing Google credential..."
+    );
+
+
+    handleGoogleCredential(
+      event.detail
+    );
+
+  }
+);
+
+
+// ============================================================
+// HANDLE CASE WHERE GOOGLE CALLBACK ARRIVED
+// BEFORE auth.js FINISHED LOADING
+// ============================================================
+
+if (
+  window.__AARIKA_GOOGLE_RESPONSE__
+) {
+
+  console.log(
+    "AARIKA: Processing queued Google credential..."
+  );
+
+
+  const response =
+    window.__AARIKA_GOOGLE_RESPONSE__;
+
+
+  delete window.__AARIKA_GOOGLE_RESPONSE__;
+
+
+  handleGoogleCredential(
+    response
+  );
+
+}
+
+
+// ============================================================
+// FIREBASE AUTH STATE
+// ============================================================
+
+function watchFirebaseAuth(
+  callback
+) {
 
   return onAuthStateChanged(
     firebaseAuth,
     callback
   );
+
 }
 
 
-/* =========================
-   REQUIRE AARIKA SESSION
-   ========================= */
+// ============================================================
+// REQUIRE AARIKA SESSION
+// ============================================================
 
-function requireSession(role) {
+function requireSession(
+  role
+) {
 
   const x =
     sessionStorage.getItem(
@@ -342,10 +528,12 @@ function requireSession(role) {
       "../index.html";
 
     return null;
+
   }
 
 
   let session;
+
 
   try {
 
@@ -358,10 +546,12 @@ function requireSession(role) {
       "aarikaSession"
     );
 
+
     location.href =
       "../index.html";
 
     return null;
+
   }
 
 
@@ -373,6 +563,7 @@ function requireSession(role) {
       "../index.html";
 
     return null;
+
   }
 
 
@@ -385,16 +576,18 @@ function requireSession(role) {
       "access-denied.html";
 
     return null;
+
   }
 
 
   return session;
+
 }
 
 
-/* =========================
-   LOGOUT
-   ========================= */
+// ============================================================
+// LOGOUT
+// ============================================================
 
 async function logout() {
 
@@ -410,6 +603,7 @@ async function logout() {
       "Firebase logout failed:",
       e
     );
+
   }
 
 
@@ -420,21 +614,25 @@ async function logout() {
 
   location.href =
     "../index.html";
+
 }
 
 
-/* =========================
-   GLOBAL FUNCTIONS
-   ========================= */
+// ============================================================
+// GLOBAL FUNCTIONS
+// ============================================================
 
 window.handleGoogleCredential =
   handleGoogleCredential;
 
+
 window.requireSession =
   requireSession;
 
+
 window.logout =
   logout;
+
 
 window.watchFirebaseAuth =
   watchFirebaseAuth;
