@@ -23,7 +23,6 @@
 
     .section-title { font-size: 15px; font-weight: 800; color: #dc2626; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
     
-    /* Mobile-First Single Column Grid */
     .grid { display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%; margin-bottom: 24px; }
     @media (min-width: 640px) {
       .grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
@@ -31,8 +30,8 @@
     
     .card { background: #ffffff; border-radius: 12px; padding: 16px; border: 1.5px solid #e5e7eb; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: space-between; transition: border-color 0.2s; }
     .card:active { border-color: #dc2626; }
-    .card-title { font-size: 16px; font-weight: 700; color: #111827; margin-bottom: 4px; }
-    .card-desc { font-size: 13px; color: #4b5563; line-height: 1.4; margin-bottom: 12px; }
+    .card-title { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 4px; }
+    .card-desc { font-size: 12px; color: #4b5563; line-height: 1.4; margin-bottom: 12px; }
     
     .status { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; align-self: flex-start; text-transform: uppercase; }
     .st-active { background: #dc2626; color: #ffffff; }
@@ -53,7 +52,7 @@
   </div>
 
   <!-- Dashboard View -->
-  <div id="dashboard" style="display: none; width: 100%; max-width: 800px;">
+  <div id="dashboard" style="display: none; width: 100%; max-width: 900px;">
     <header>
       <h1>BALJYOTI ERP PORTAL</h1>
       <div class="user-bar">
@@ -67,22 +66,43 @@
       <div class="grid" style="margin-bottom:0;">
         <a href="./attendance/" class="card" style="border-color:#dc2626;">
           <div>
-            <div class="card-title">Staff Attendance</div>
-            <div class="card-desc">Location-verified selfie check-ins for teachers and staff.</div>
+            <div class="card-title">Staff Attendance & GPS</div>
+            <div class="card-desc">Geofenced selfie check-ins for teachers and staff members.</div>
           </div>
           <span class="status st-active">Active</span>
         </a>
         <div class="card disabled">
           <div>
-            <div class="card-title">Leave Approvals</div>
-            <div class="card-desc">Process staff leave requests and quota balances.</div>
+            <div class="card-title">HR & Payroll</div>
+            <div class="card-desc">Salary structures, payslips, attendance deductions, and EPF.</div>
           </div>
           <span class="status st-soon">Coming Soon</span>
         </div>
         <div class="card disabled">
           <div>
-            <div class="card-title">User Roles</div>
-            <div class="card-desc">Manage system permissions for Admin and Teachers.</div>
+            <div class="card-title">Employee Leave Approvals</div>
+            <div class="card-desc">Process staff leave applications and substitute mappings.</div>
+          </div>
+          <span class="status st-soon">Coming Soon</span>
+        </div>
+        <div class="card disabled">
+          <div>
+            <div class="card-title">Finance & Fee Control</div>
+            <div class="card-desc">Fee ledgers, payment receipts, discounts, and fine setup.</div>
+          </div>
+          <span class="status st-soon">Coming Soon</span>
+        </div>
+        <div class="card disabled">
+          <div>
+            <div class="card-title">Transport & Fleet</div>
+            <div class="card-desc">Bus routes, stops, vehicle tracking links, and driver logs.</div>
+          </div>
+          <span class="status st-soon">Coming Soon</span>
+        </div>
+        <div class="card disabled">
+          <div>
+            <div class="card-title">Inventory & Assets</div>
+            <div class="card-desc">Uniform/textbook stock, stationery, and device allocation.</div>
           </div>
           <span class="status st-soon">Coming Soon</span>
         </div>
@@ -94,15 +114,22 @@
     <div class="grid">
       <div class="card disabled">
         <div>
-          <div class="card-title">Inquiry & Registration</div>
-          <div class="card-desc">Log applicant inquiries and prospectus distribution.</div>
+          <div class="card-title">Applicant CRM & Leads</div>
+          <div class="card-desc">Inquiry forms, prospectus tracking, and lead follow-ups.</div>
         </div>
         <span class="status st-soon">Coming Soon</span>
       </div>
       <div class="card disabled">
         <div>
-          <div class="card-title">Student Onboarding</div>
-          <div class="card-desc">Generate Admission numbers and manage student KYC records.</div>
+          <div class="card-title">Entrance Test & Screening</div>
+          <div class="card-desc">Entrance exam scheduling, evaluation, and merit lists.</div>
+        </div>
+        <span class="status st-soon">Coming Soon</span>
+      </div>
+      <div class="card disabled">
+        <div>
+          <div class="card-title">Student Onboarding & KYC</div>
+          <div class="card-desc">Admission Number issuing, KYC vault, and roll allocation.</div>
         </div>
         <span class="status st-soon">Coming Soon</span>
       </div>
@@ -113,15 +140,36 @@
     <div class="grid">
       <div class="card disabled">
         <div>
-          <div class="card-title">Class Roster & Roll Call</div>
-          <div class="card-desc">Mark daily student attendance by class section.</div>
+          <div class="card-title">Student Info System (SIS)</div>
+          <div class="card-desc">Central student roster, section mappings, and profiles.</div>
         </div>
         <span class="status st-soon">Coming Soon</span>
       </div>
       <div class="card disabled">
         <div>
-          <div class="card-title">Marks & Report Cards</div>
-          <div class="card-desc">Input exam scores and generate digital report cards.</div>
+          <div class="card-title">Classroom Student Attendance</div>
+          <div class="card-desc">Daily roll call per period and parent SMS notifications.</div>
+        </div>
+        <span class="status st-soon">Coming Soon</span>
+      </div>
+      <div class="card disabled">
+        <div>
+          <div class="card-title">Timetable Engine</div>
+          <div class="card-desc">Automated schedule creation and substitute allocations.</div>
+        </div>
+        <span class="status st-soon">Coming Soon</span>
+      </div>
+      <div class="card disabled">
+        <div>
+          <div class="card-title">Exams & Digital Gradebook</div>
+          <div class="card-desc">Mark entries, GPA calculation, and report card PDFs.</div>
+        </div>
+        <span class="status st-soon">Coming Soon</span>
+      </div>
+      <div class="card disabled">
+        <div>
+          <div class="card-title">LMS & Homework</div>
+          <div class="card-desc">Digital assignment distributions and study materials.</div>
         </div>
         <span class="status st-soon">Coming Soon</span>
       </div>
@@ -132,15 +180,29 @@
     <div class="grid">
       <div class="card disabled">
         <div>
-          <div class="card-title">Clubs & Sports</div>
-          <div class="card-desc">House assignments and co-curricular enrollment logs.</div>
+          <div class="card-title">House Allocation</div>
+          <div class="card-desc">Inter-house points tracking, rosters, and competitions.</div>
+        </div>
+        <span class="status st-soon">Coming Soon</span>
+      </div>
+      <div class="card disabled">
+        <div>
+          <div class="card-title">Clubs & Sports Registry</div>
+          <div class="card-desc">Co-curricular enrollments, teams, and equipment logs.</div>
         </div>
         <span class="status st-soon">Coming Soon</span>
       </div>
       <div class="card disabled">
         <div>
           <div class="card-title">Events & Field Trips</div>
-          <div class="card-desc">Manage trip permissions and activity participation.</div>
+          <div class="card-desc">Permission slips, trip manifests, and event calendars.</div>
+        </div>
+        <span class="status st-soon">Coming Soon</span>
+      </div>
+      <div class="card disabled">
+        <div>
+          <div class="card-title">Library Management</div>
+          <div class="card-desc">Book cataloging, issue/returns, and overdue fines.</div>
         </div>
         <span class="status st-soon">Coming Soon</span>
       </div>
