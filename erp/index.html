@@ -3,36 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baljyoti School - ERP Portal</title>
+  <title>Baljyoti School - ERP Matrix</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #f8fafc; color: #0f172a; min-height: 100vh; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    body { background-color: #f8fafc; color: #0f172a; min-height: 100vh; padding: 24px; display: flex; flex-direction: column; align-items: center; }
     
-    .login-card { background: white; padding: 32px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 100%; max-width: 400px; text-align: center; }
-    .btn { background: #2563eb; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%; font-size: 16px; margin-top: 16px; transition: background 0.2s ease; }
-    .btn:hover { background: #1d4ed8; }
+    .login-card { background: white; padding: 32px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 100%; max-width: 400px; text-align: center; margin-top: 40px; }
+    .btn { background: #2563eb; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%; font-size: 16px; margin-top: 16px; }
     
-    header { text-align: center; margin-bottom: 32px; margin-top: 10px; width: 100%; }
+    header { text-align: center; margin-bottom: 24px; width: 100%; }
     header h1 { font-size: 26px; font-weight: 700; color: #1e293b; }
-    header p { font-size: 14px; color: #64748b; margin-top: 4px; }
-
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 100%; max-width: 900px; }
     
-    .card { background: white; border-radius: 14px; padding: 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; justify-content: space-between; text-decoration: none; color: inherit; }
-    .card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); border-color: #cbd5e1; }
-    
-    .card-icon { font-size: 32px; margin-bottom: 12px; }
-    .card-title { font-size: 18px; font-weight: 600; color: #0f172a; margin-bottom: 6px; }
-    .card-desc { font-size: 13px; color: #64748b; line-height: 1.4; margin-bottom: 20px; }
-    
-    .card-status { font-size: 12px; font-weight: 600; display: inline-block; padding: 4px 10px; border-radius: 20px; align-self: flex-start; }
-    .status-active { background: #dcfce7; color: #15803d; }
-    .status-soon { background: #f1f5f9; color: #94a3b8; }
-    
-    .disabled-card { opacity: 0.6; pointer-events: none; }
-    .user-bar { margin-bottom: 20px; font-size: 14px; font-weight: 600; color: #475569; }
+    .user-bar { margin-top: 8px; font-size: 14px; font-weight: 600; color: #475569; }
     .logout-link { color: #dc2626; text-decoration: none; margin-left: 10px; cursor: pointer; }
-    .status-err { background: #fee2e2; color: #b91c1c; padding: 10px; border-radius: 8px; margin-top: 12px; font-size: 13px; display: none; }
+
+    .horizontal-sec { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px 20px; margin-bottom: 28px; width: 100%; }
+    .horizontal-title { font-size: 14px; font-weight: 700; color: #1e40af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+
+    .section-title { font-size: 16px; font-weight: 700; color: #334155; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; width: 100%; margin-bottom: 28px; }
+    
+    .card { background: white; border-radius: 12px; padding: 18px; border: 1px solid #e2e8f0; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.15s; }
+    .card:hover { transform: translateY(-2px); border-color: #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .card-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .card-desc { font-size: 12px; color: #64748b; line-height: 1.4; margin-bottom: 12px; }
+    
+    .status { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 12px; align-self: flex-start; }
+    .st-active { background: #dcfce7; color: #15803d; }
+    .st-soon { background: #f1f5f9; color: #94a3b8; }
+    .disabled { opacity: 0.6; pointer-events: none; }
   </style>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -40,63 +39,107 @@
 </head>
 <body>
 
-  <!-- 1. Authentication Screen -->
+  <!-- Auth View -->
   <div class="login-card" id="login-card">
     <h1 style="font-size:22px; color:#0f172a;">Baljyoti ERP Portal</h1>
-    <p style="font-size:14px; color:#64748b; margin-top:6px;">Staff Authentication Required</p>
+    <p style="font-size:14px; color:#64748b; margin-top:6px;">Staff Sign-In Required</p>
     <button class="btn" onclick="googleLogin()">Sign in with @baljyoti.com</button>
-    <div id="status-err" class="status-err"></div>
   </div>
 
-  <!-- 2. ERP Dashboard Screen (Hidden until authenticated) -->
-  <div id="dashboard" style="display: none; width: 100%; max-width: 900px;">
+  <!-- Dashboard View -->
+  <div id="dashboard" style="display: none; width: 100%; max-width: 950px;">
     <header>
-      <h1>Baljyoti School ERP</h1>
+      <h1>Baljyoti ERP System</h1>
       <div class="user-bar">
-        Logged in as <span id="user-display"></span> | <a class="logout-link" onclick="logout()">Sign Out</a>
+        User: <span id="user-display"></span> | <a class="logout-link" onclick="logout()">Sign Out</a>
       </div>
-      <p>Select an ERP module to proceed</p>
     </header>
 
-    <div class="grid">
-      <!-- Active Attendance Module -->
-      <a href="./attendance/" class="card">
-        <div>
-          <div class="card-icon">📍</div>
-          <div class="card-title">Staff Attendance</div>
-          <div class="card-desc">Mark daily attendance using location verification and selfie log.</div>
+    <!-- HORIZONTAL LAYER: ADMINISTRATION -->
+    <div class="horizontal-sec">
+      <div class="horizontal-title">⚙️ Administration Layer (Cross-Functional)</div>
+      <div class="grid" style="margin-bottom:0;">
+        <a href="./attendance/" class="card">
+          <div>
+            <div class="card-title">Staff Attendance</div>
+            <div class="card-desc">Location-verified selfie check-ins for teachers.</div>
+          </div>
+          <span class="status st-active">Active</span>
+        </a>
+        <div class="card disabled">
+          <div>
+            <div class="card-title">Leave Approvals</div>
+            <div class="card-desc">Process staff leave applications and manage quotas.</div>
+          </div>
+          <span class="status st-soon">Coming Soon</span>
         </div>
-        <span class="card-status status-active">Active</span>
-      </a>
-
-      <!-- Future Modules -->
-      <div class="card disabled-card">
-        <div>
-          <div class="card-icon">📝</div>
-          <div class="card-title">Leave Management</div>
-          <div class="card-desc">Apply for leaves, view leave balance, and check approval status.</div>
+        <div class="card disabled">
+          <div>
+            <div class="card-title">User Roles</div>
+            <div class="card-desc">Control permissions for Admin, Teacher, and Staff.</div>
+          </div>
+          <span class="status st-soon">Coming Soon</span>
         </div>
-        <span class="card-status status-soon">Coming Soon</span>
-      </div>
-
-      <div class="card disabled-card">
-        <div>
-          <div class="card-icon">💳</div>
-          <div class="card-title">Fee Portal</div>
-          <div class="card-desc">Manage student fee collections, receipts, and dues records.</div>
-        </div>
-        <span class="card-status status-soon">Coming Soon</span>
-      </div>
-
-      <div class="card disabled-card">
-        <div>
-          <div class="card-icon">📊</div>
-          <div class="card-title">Student Marks</div>
-          <div class="card-desc">Enter examination scores and generate student report cards.</div>
-        </div>
-        <span class="card-status status-soon">Coming Soon</span>
       </div>
     </div>
+
+    <!-- VERTICAL 1: ADMISSION -->
+    <div class="section-title">📂 Admission Vertical</div>
+    <div class="grid">
+      <div class="card disabled">
+        <div>
+          <div class="card-title">Inquiry & Registration</div>
+          <div class="card-desc">Log applicant leads and issue prospectus tokens.</div>
+        </div>
+        <span class="status st-soon">Coming Soon</span>
+      </div>
+      <div class="card disabled">
+        <div>
+          <div class="card-title">Student Onboarding</div>
+          <div class="card-desc">Generate Admission numbers & upload KYC files.</div>
+        </div>
+        <span class="status st-soon">Coming Soon</span>
+      </div>
+    </div>
+
+    <!-- VERTICAL 2: ACADEMIC -->
+    <div class="section-title">🎓 Academic Vertical</div>
+    <div class="grid">
+      <div class="card disabled">
+        <div>
+          <div class="card-title">Class Roster & Attendance</div>
+          <div class="card-desc">Mark and view daily student section attendance.</div>
+        </div>
+        <span class="status st-soon">Coming Soon</span>
+      </div>
+      <div class="card disabled">
+        <div>
+          <div class="card-title">Marks & Report Cards</div>
+          <div class="card-desc">Input exam scores and generate PDF report cards.</div>
+        </div>
+        <span class="status st-soon">Coming Soon</span>
+      </div>
+    </div>
+
+    <!-- VERTICAL 3: ACTIVITY -->
+    <div class="section-title">🏆 Activity Vertical</div>
+    <div class="grid">
+      <div class="card disabled">
+        <div>
+          <div class="card-title">Clubs & Sports</div>
+          <div class="card-desc">House allocations and extra-curricular rosters.</div>
+        </div>
+        <span class="status st-soon">Coming Soon</span>
+      </div>
+      <div class="card disabled">
+        <div>
+          <div class="card-title">Events & Trips</div>
+          <div class="card-desc">Manage field trip permission logs and event passes.</div>
+        </div>
+        <span class="status st-soon">Coming Soon</span>
+      </div>
+    </div>
+
   </div>
 
 <script>
@@ -110,15 +153,11 @@
   };
   firebase.initializeApp(firebaseConfig);
 
-  // Monitor Auth State
   firebase.auth().onAuthStateChanged((user) => {
     if (user && user.email.endsWith("@baljyoti.com")) {
       document.getElementById("login-card").style.display = "none";
       document.getElementById("dashboard").style.display = "block";
-      document.getElementById("user-display").innerText = user.displayName + " (" + user.email + ")";
-    } else if (user) {
-      showError("Access restricted! Please sign in with an official @baljyoti.com account.");
-      firebase.auth().signOut();
+      document.getElementById("user-display").innerText = user.displayName;
     } else {
       document.getElementById("login-card").style.display = "block";
       document.getElementById("dashboard").style.display = "none";
@@ -127,23 +166,11 @@
 
   function googleLogin() {
     const provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider).catch((error) => {
-      if (error.code === 'auth/popup-blocked') {
-        firebase.auth().signInWithRedirect(provider);
-      } else {
-        showError("Auth Error: " + error.message);
-      }
-    });
+    firebase.auth().signInWithPopup(provider);
   }
 
   function logout() {
     firebase.auth().signOut();
-  }
-
-  function showError(msg) {
-    const box = document.getElementById("status-err");
-    box.style.display = "block";
-    box.innerText = msg;
   }
 </script>
 </body>
