@@ -10,7 +10,7 @@
     .card { background: white; padding: 28px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 100%; max-width: 400px; text-align: center; }
     h2 { color: #0f172a; margin-bottom: 6px; font-size: 22px; }
     p { color: #64748b; font-size: 14px; margin-bottom: 24px; }
-    .btn { background: #2563eb; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%; font-size: 16px; transition: background 0.2s ease; }
+    .btn { background: #2563eb; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%; font-size: 16px; transition: background 0.2s ease; margin-top: 10px; }
     .btn:hover { background: #1d4ed8; }
     .btn:disabled { background: #cbd5e1; cursor: not-allowed; }
     #video, #canvas { width: 100%; border-radius: 12px; margin-top: 15px; background: #000; display: none; }
@@ -66,7 +66,7 @@
   let currentUser = null;
   let photoBase64 = "";
 
-  // Check state on load
+  // Check auth state on load
   firebase.auth().onAuthStateChanged((user) => {
     if (user && user.email.endsWith("@baljyoti.com")) {
       currentUser = user;
@@ -81,7 +81,6 @@
   function googleLogin() {
     const provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithPopup(provider).catch((error) => {
-      // Fallback to Redirect if popup is blocked on mobile
       if (error.code === 'auth/popup-blocked') {
         firebase.auth().signInWithRedirect(provider);
       } else {
@@ -90,16 +89,32 @@
     });
   }
 
-  // Camera Access
+  // Camera Access with Flexible Fallback
   function startCamera() {
     const video = document.getElementById("video");
     video.style.display = "block";
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
-      .then((stream) => { 
-        video.srcObject = stream; 
-        document.getElementById("snap-btn").style.display = "block"; 
-      })
-      .catch(() => showStatus("Camera access permission required.", false));
+    
+    // Try user camera first, fallback to default video device
+    navigator.mediaDevices.getUserMedia({ 
+      video: { facingMode: { ideal: "user" } } 
+    })
+    .then((stream) => { 
+      video.srcObject = stream; 
+      document.getElementById("snap-btn").style.display = "block"; 
+      hideStatus();
+    })
+    .catch((err) => {
+      // Fallback for devices without designated facingMode
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then((stream) => {
+          video.srcObject = stream;
+          document.getElementById("snap-btn").style.display = "block";
+          hideStatus();
+        })
+        .catch(() => {
+          showStatus("Camera access permission required. Please allow camera access in your browser site settings.", false);
+        });
+    });
   }
 
   function takePhoto() {
@@ -130,7 +145,7 @@
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   }
 
-  // GPS Verification & Post Data
+  // GPS Verification & Submit
   function submitAttendance() {
     const submitBtn = document.getElementById("submit-btn");
     submitBtn.disabled = true;
@@ -182,6 +197,10 @@
     box.style.display = "block";
     box.className = "status " + (isSuccess ? "success" : "error");
     box.innerText = msg;
+  }
+
+  function hideStatus() {
+    document.getElementById("status-box").style.display = "none";
   }
 </script>
 </body>
