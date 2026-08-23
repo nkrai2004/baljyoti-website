@@ -1,5 +1,0 @@
-AARIKA BUILD MANIFEST
-Version: v40
-Last Code Update: 09 Aug 2026, 01:16 AM IST
-Purpose: Super Admin school ERP demo
-Deployment path: /aarika/
