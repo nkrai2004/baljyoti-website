@@ -12,6 +12,13 @@
     .btn { background: #dc2626; color: #ffffff; border: none; padding: 16px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; font-size: 16px; margin-top: 20px; transition: background 0.2s; }
     .btn:active { background: #991b1b; }
     
+    /* ASSISTANT BANNER */
+    .assistant-card { background: #dc2626; color: #ffffff; border-radius: 14px; padding: 16px; width: 100%; margin-bottom: 20px; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.2); }
+    .assistant-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9; }
+    .assistant-time { background: #ffffff; color: #dc2626; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 800; }
+    .assistant-msg { font-size: 15px; font-weight: 700; line-height: 1.4; }
+    .assistant-action { display: inline-block; margin-top: 10px; background: #ffffff; color: #dc2626; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 800; text-decoration: none; text-transform: uppercase; }
+
     header { text-align: center; margin-bottom: 20px; width: 100%; padding-bottom: 12px; border-bottom: 2px solid #dc2626; }
     header h1 { font-size: 22px; font-weight: 800; color: #dc2626; text-transform: uppercase; letter-spacing: 0.5px; }
     
@@ -53,6 +60,17 @@
 
   <!-- Dashboard View -->
   <div id="dashboard" style="display: none; width: 100%; max-width: 900px;">
+    
+    <!-- DYNAMIC ASSISTANT BAR -->
+    <div class="assistant-card">
+      <div class="assistant-header">
+        <span>🤖 ERP Smart Assistant</span>
+        <span class="assistant-time" id="live-clock">00:00 AM</span>
+      </div>
+      <div class="assistant-msg" id="assistant-text">Analyzing scheduled tasks...</div>
+      <a id="assistant-btn" href="#" class="assistant-action" style="display:none;">Action Required</a>
+    </div>
+
     <header>
       <h1>BALJYOTI ERP PORTAL</h1>
       <div class="user-bar">
@@ -226,11 +244,50 @@
       document.getElementById("login-card").style.display = "none";
       document.getElementById("dashboard").style.display = "block";
       document.getElementById("user-display").innerText = user.displayName;
+      updateAssistant();
+      setInterval(updateAssistant, 30000); // Refresh time & assistant every 30s
     } else {
       document.getElementById("login-card").style.display = "block";
       document.getElementById("dashboard").style.display = "none";
     }
   });
+
+  function updateAssistant() {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    document.getElementById("live-clock").innerText = timeStr;
+    
+    const txt = document.getElementById("assistant-text");
+    const btn = document.getElementById("assistant-btn");
+
+    if (hours >= 7 && hours < 10) {
+      txt.innerText = "Good morning! Please mark your morning Staff Attendance before 9:30 AM.";
+      btn.innerText = "Mark Staff Attendance";
+      btn.href = "./attendance/";
+      btn.style.display = "inline-block";
+    } else if (hours >= 10 && hours < 12) {
+      txt.innerText = "Morning classes under way. Remember to verify period attendance logs.";
+      btn.innerText = "Class Roster";
+      btn.href = "#";
+      btn.style.display = "inline-block";
+    } else if (hours >= 12 && hours < 14) {
+      txt.innerText = "Mid-day break. Good time to update admission lead inquiries or student logs.";
+      btn.innerText = "Admission CRM";
+      btn.href = "#";
+      btn.style.display = "inline-block";
+    } else if (hours >= 14 && hours < 17) {
+      txt.innerText = "Afternoon session. Verify extra-curricular activities and departure logs.";
+      btn.innerText = "Activities Registry";
+      btn.href = "#";
+      btn.style.display = "inline-block";
+    } else {
+      txt.innerText = "School hours closed. Portal ready for administrative updates & records.";
+      btn.style.display = "none";
+    }
+  }
 
   function googleLogin() {
     const provider = new firebase.auth.GoogleAuthProvider();
