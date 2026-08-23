@@ -3,35 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baljyoti School - ERP Matrix</title>
+  <title>Baljyoti School - ERP Portal</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #f8fafc; color: #0f172a; min-height: 100vh; padding: 24px; display: flex; flex-direction: column; align-items: center; }
+    body { background-color: #ffffff; color: #111827; min-height: 100vh; padding: 16px; display: flex; flex-direction: column; align-items: center; }
     
-    .login-card { background: white; padding: 32px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 100%; max-width: 400px; text-align: center; margin-top: 40px; }
-    .btn { background: #2563eb; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%; font-size: 16px; margin-top: 16px; }
+    .login-card { background: #ffffff; padding: 32px 20px; border-radius: 16px; border: 2px solid #dc2626; width: 100%; max-width: 380px; text-align: center; margin-top: 40px; box-shadow: 0 4px 20px rgba(220, 38, 38, 0.08); }
+    .btn { background: #dc2626; color: #ffffff; border: none; padding: 16px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; font-size: 16px; margin-top: 20px; transition: background 0.2s; }
+    .btn:active { background: #991b1b; }
     
-    header { text-align: center; margin-bottom: 24px; width: 100%; }
-    header h1 { font-size: 26px; font-weight: 700; color: #1e293b; }
+    header { text-align: center; margin-bottom: 20px; width: 100%; padding-bottom: 12px; border-bottom: 2px solid #dc2626; }
+    header h1 { font-size: 22px; font-weight: 800; color: #dc2626; text-transform: uppercase; letter-spacing: 0.5px; }
     
-    .user-bar { margin-top: 8px; font-size: 14px; font-weight: 600; color: #475569; }
-    .logout-link { color: #dc2626; text-decoration: none; margin-left: 10px; cursor: pointer; }
+    .user-bar { margin-top: 6px; font-size: 13px; font-weight: 600; color: #4b5563; }
+    .logout-btn { color: #dc2626; font-weight: 700; text-decoration: underline; margin-left: 8px; cursor: pointer; }
 
-    .horizontal-sec { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px 20px; margin-bottom: 28px; width: 100%; }
-    .horizontal-title { font-size: 14px; font-weight: 700; color: #1e40af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+    .horizontal-sec { background: #ffffff; border: 2px solid #dc2626; border-radius: 14px; padding: 16px; margin-bottom: 24px; width: 100%; }
+    .horizontal-title { font-size: 13px; font-weight: 800; color: #ffffff; background: #dc2626; padding: 6px 12px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; display: inline-block; }
 
-    .section-title { font-size: 16px; font-weight: 700; color: #334155; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; width: 100%; margin-bottom: 28px; }
+    .section-title { font-size: 15px; font-weight: 800; color: #dc2626; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
     
-    .card { background: white; border-radius: 12px; padding: 18px; border: 1px solid #e2e8f0; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.15s; }
-    .card:hover { transform: translateY(-2px); border-color: #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    .card-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-    .card-desc { font-size: 12px; color: #64748b; line-height: 1.4; margin-bottom: 12px; }
+    /* Mobile-First Single Column Grid */
+    .grid { display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%; margin-bottom: 24px; }
+    @media (min-width: 640px) {
+      .grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    }
     
-    .status { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 12px; align-self: flex-start; }
-    .st-active { background: #dcfce7; color: #15803d; }
-    .st-soon { background: #f1f5f9; color: #94a3b8; }
-    .disabled { opacity: 0.6; pointer-events: none; }
+    .card { background: #ffffff; border-radius: 12px; padding: 16px; border: 1.5px solid #e5e7eb; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: space-between; transition: border-color 0.2s; }
+    .card:active { border-color: #dc2626; }
+    .card-title { font-size: 16px; font-weight: 700; color: #111827; margin-bottom: 4px; }
+    .card-desc { font-size: 13px; color: #4b5563; line-height: 1.4; margin-bottom: 12px; }
+    
+    .status { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; align-self: flex-start; text-transform: uppercase; }
+    .st-active { background: #dc2626; color: #ffffff; }
+    .st-soon { background: #ffffff; color: #dc2626; border: 1px solid #dc2626; }
+    .disabled { opacity: 0.5; pointer-events: none; }
   </style>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -41,42 +47,42 @@
 
   <!-- Auth View -->
   <div class="login-card" id="login-card">
-    <h1 style="font-size:22px; color:#0f172a;">Baljyoti ERP Portal</h1>
-    <p style="font-size:14px; color:#64748b; margin-top:6px;">Staff Sign-In Required</p>
-    <button class="btn" onclick="googleLogin()">Sign in with @baljyoti.com</button>
+    <h1 style="font-size:22px; color:#dc2626; font-weight:800;">BALJYOTI ERP</h1>
+    <p style="font-size:14px; color:#4b5563; margin-top:6px;">Staff Portal Authentication</p>
+    <button class="btn" onclick="googleLogin()">SIGN IN WITH @BALJYOTI.COM</button>
   </div>
 
   <!-- Dashboard View -->
-  <div id="dashboard" style="display: none; width: 100%; max-width: 950px;">
+  <div id="dashboard" style="display: none; width: 100%; max-width: 800px;">
     <header>
-      <h1>Baljyoti ERP System</h1>
+      <h1>BALJYOTI ERP PORTAL</h1>
       <div class="user-bar">
-        User: <span id="user-display"></span> | <a class="logout-link" onclick="logout()">Sign Out</a>
+        <span id="user-display"></span> | <span class="logout-btn" onclick="logout()">Sign Out</span>
       </div>
     </header>
 
     <!-- HORIZONTAL LAYER: ADMINISTRATION -->
     <div class="horizontal-sec">
-      <div class="horizontal-title">⚙️ Administration Layer (Cross-Functional)</div>
+      <div class="horizontal-title">ADMINISTRATION LAYER</div>
       <div class="grid" style="margin-bottom:0;">
-        <a href="./attendance/" class="card">
+        <a href="./attendance/" class="card" style="border-color:#dc2626;">
           <div>
             <div class="card-title">Staff Attendance</div>
-            <div class="card-desc">Location-verified selfie check-ins for teachers.</div>
+            <div class="card-desc">Location-verified selfie check-ins for teachers and staff.</div>
           </div>
           <span class="status st-active">Active</span>
         </a>
         <div class="card disabled">
           <div>
             <div class="card-title">Leave Approvals</div>
-            <div class="card-desc">Process staff leave applications and manage quotas.</div>
+            <div class="card-desc">Process staff leave requests and quota balances.</div>
           </div>
           <span class="status st-soon">Coming Soon</span>
         </div>
         <div class="card disabled">
           <div>
             <div class="card-title">User Roles</div>
-            <div class="card-desc">Control permissions for Admin, Teacher, and Staff.</div>
+            <div class="card-desc">Manage system permissions for Admin and Teachers.</div>
           </div>
           <span class="status st-soon">Coming Soon</span>
         </div>
@@ -84,57 +90,57 @@
     </div>
 
     <!-- VERTICAL 1: ADMISSION -->
-    <div class="section-title">📂 Admission Vertical</div>
+    <div class="section-title">ADMISSION VERTICAL</div>
     <div class="grid">
       <div class="card disabled">
         <div>
           <div class="card-title">Inquiry & Registration</div>
-          <div class="card-desc">Log applicant leads and issue prospectus tokens.</div>
+          <div class="card-desc">Log applicant inquiries and prospectus distribution.</div>
         </div>
         <span class="status st-soon">Coming Soon</span>
       </div>
       <div class="card disabled">
         <div>
           <div class="card-title">Student Onboarding</div>
-          <div class="card-desc">Generate Admission numbers & upload KYC files.</div>
+          <div class="card-desc">Generate Admission numbers and manage student KYC records.</div>
         </div>
         <span class="status st-soon">Coming Soon</span>
       </div>
     </div>
 
     <!-- VERTICAL 2: ACADEMIC -->
-    <div class="section-title">🎓 Academic Vertical</div>
+    <div class="section-title">ACADEMIC VERTICAL</div>
     <div class="grid">
       <div class="card disabled">
         <div>
-          <div class="card-title">Class Roster & Attendance</div>
-          <div class="card-desc">Mark and view daily student section attendance.</div>
+          <div class="card-title">Class Roster & Roll Call</div>
+          <div class="card-desc">Mark daily student attendance by class section.</div>
         </div>
         <span class="status st-soon">Coming Soon</span>
       </div>
       <div class="card disabled">
         <div>
           <div class="card-title">Marks & Report Cards</div>
-          <div class="card-desc">Input exam scores and generate PDF report cards.</div>
+          <div class="card-desc">Input exam scores and generate digital report cards.</div>
         </div>
         <span class="status st-soon">Coming Soon</span>
       </div>
     </div>
 
     <!-- VERTICAL 3: ACTIVITY -->
-    <div class="section-title">🏆 Activity Vertical</div>
+    <div class="section-title">ACTIVITY VERTICAL</div>
     <div class="grid">
       <div class="card disabled">
         <div>
           <div class="card-title">Clubs & Sports</div>
-          <div class="card-desc">House allocations and extra-curricular rosters.</div>
+          <div class="card-desc">House assignments and co-curricular enrollment logs.</div>
         </div>
         <span class="status st-soon">Coming Soon</span>
       </div>
       <div class="card disabled">
         <div>
-          <div class="card-title">Events & Trips</div>
-          <div class="card-desc">Manage field trip permission logs and event passes.</div>
+          <div class="card-title">Events & Field Trips</div>
+          <div class="card-desc">Manage trip permissions and activity participation.</div>
         </div>
         <span class="status st-soon">Coming Soon</span>
       </div>
@@ -166,7 +172,11 @@
 
   function googleLogin() {
     const provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider);
+    firebase.auth().signInWithPopup(provider).catch((error) => {
+      if (error.code === 'auth/popup-blocked') {
+        firebase.auth().signInWithRedirect(provider);
+      }
+    });
   }
 
   function logout() {
