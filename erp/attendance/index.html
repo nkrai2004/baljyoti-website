@@ -20,7 +20,6 @@
     .user-info { font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 16px; }
   </style>
 
-  <!-- Firebase Legacy Compatibility SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 </head>
@@ -47,7 +46,6 @@
 </div>
 
 <script>
-  // Firebase Configuration
   const firebaseConfig = {
     apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
     authDomain: "baljyoti-portal.firebaseapp.com",
@@ -66,7 +64,6 @@
   let currentUser = null;
   let photoBase64 = "";
 
-  // Check auth state on load
   firebase.auth().onAuthStateChanged((user) => {
     if (user && user.email.endsWith("@baljyoti.com")) {
       currentUser = user;
@@ -77,7 +74,6 @@
     }
   });
 
-  // Google Login Flow
   function googleLogin() {
     const provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithPopup(provider).catch((error) => {
@@ -89,22 +85,17 @@
     });
   }
 
-  // Camera Access with Flexible Fallback
   function startCamera() {
     const video = document.getElementById("video");
     video.style.display = "block";
     
-    // Try user camera first, fallback to default video device
-    navigator.mediaDevices.getUserMedia({ 
-      video: { facingMode: { ideal: "user" } } 
-    })
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "user" } } })
     .then((stream) => { 
       video.srcObject = stream; 
       document.getElementById("snap-btn").style.display = "block"; 
       hideStatus();
     })
-    .catch((err) => {
-      // Fallback for devices without designated facingMode
+    .catch(() => {
       navigator.mediaDevices.getUserMedia({ video: true })
         .then((stream) => {
           video.srcObject = stream;
@@ -112,7 +103,7 @@
           hideStatus();
         })
         .catch(() => {
-          showStatus("Camera access permission required. Please allow camera access in your browser site settings.", false);
+          showStatus("Camera access permission required. Please allow camera access.", false);
         });
     });
   }
@@ -136,7 +127,6 @@
     }
   }
 
-  // Distance Calculation via Haversine Formula
   function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371e3;
     const φ1 = lat1 * Math.PI/180, φ2 = lat2 * Math.PI/180;
@@ -145,50 +135,42 @@
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   }
 
-  // GPS Verification & Submit
+  function logToSheet(distance, status, message, isSuccess) {
+    fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        name: currentUser.displayName,
+        email: currentUser.email,
+        distance: distance,
+        photoBase64: photoBase64,
+        status: status
+      })
+    })
+    .then(() => showStatus(message, isSuccess))
+    .catch(() => showStatus("Network error recording log.", false));
+  }
+
   function submitAttendance() {
     const submitBtn = document.getElementById("submit-btn");
     submitBtn.disabled = true;
     showStatus("Checking GPS location...", true);
 
     navigator.geolocation.getCurrentPosition((pos) => {
-      const distance = calculateDistance(pos.coords.latitude, pos.coords.longitude, SCHOOL_LAT, SCHOOL_LNG);
+      const distance = Math.round(calculateDistance(pos.coords.latitude, pos.coords.longitude, SCHOOL_LAT, SCHOOL_LNG));
       
       if (distance > MAX_DISTANCE_METERS) {
-        showStatus(`Location error: You are ${Math.round(distance)}m away. Must be within 100m.`, false);
-        submitBtn.disabled = false;
+        showStatus(`Failed: You are ${distance}m away (Limit 100m). Recording failed attempt...`, false);
+        logToSheet(distance, "FAILED (OUT OF BOUNDS)", `Attempt logged! Outside school bounds (${distance}m away).`, false);
         return;
       }
 
       showStatus("Logging attendance to Google Sheets...", true);
+      logToSheet(distance, "PRESENT", "Attendance Marked Successfully!", true);
+      submitBtn.style.display = "none";
 
-      fetch(APPS_SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          name: currentUser.displayName,
-          email: currentUser.email,
-          distance: Math.round(distance),
-          photoBase64: photoBase64
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === "SUCCESS") {
-          showStatus("Attendance Marked Successfully!", true);
-          submitBtn.style.display = "none";
-        } else {
-          showStatus("Error logging attendance to sheet.", false);
-          submitBtn.disabled = false;
-        }
-      })
-      .catch(() => {
-        showStatus("Network error submitting attendance.", false);
-        submitBtn.disabled = false;
-      });
-
-    }, (err) => {
-      showStatus("Please enable GPS location permissions.", false);
-      submitBtn.disabled = false;
+    }, () => {
+      showStatus("GPS permissions denied. Logging failed attempt...", false);
+      logToSheet(0, "FAILED (NO GPS)", "Recorded failed attempt: GPS access was denied.", false);
     }, { enableHighAccuracy: true });
   }
 
