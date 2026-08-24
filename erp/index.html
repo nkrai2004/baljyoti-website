@@ -89,6 +89,13 @@
           </div>
           <span class="status st-active">Active</span>
         </a>
+        <a href="./duty-report/" class="card" style="border-color:#dc2626;">
+          <div>
+            <div class="card-title">Staff Duty Report</div>
+            <div class="card-desc">Log Cleaning, Morning, Lunch, and Departure inspections with geotagged back-camera proof.</div>
+          </div>
+          <span class="status st-active">Active</span>
+        </a>
         <div class="card disabled">
           <div>
             <div class="card-title">HR & Payroll</div>
@@ -114,13 +121,6 @@
           <div>
             <div class="card-title">Transport & Fleet</div>
             <div class="card-desc">Bus routes, stops, vehicle tracking links, and driver logs.</div>
-          </div>
-          <span class="status st-soon">Coming Soon</span>
-        </div>
-        <div class="card disabled">
-          <div>
-            <div class="card-title">Inventory & Assets</div>
-            <div class="card-desc">Uniform/textbook stock, stationery, and device allocation.</div>
           </div>
           <span class="status st-soon">Coming Soon</span>
         </div>
@@ -245,7 +245,7 @@
       document.getElementById("dashboard").style.display = "block";
       document.getElementById("user-display").innerText = user.displayName;
       updateAssistant();
-      setInterval(updateAssistant, 30000); // Refresh time & assistant every 30s
+      setInterval(updateAssistant, 30000);
     } else {
       document.getElementById("login-card").style.display = "block";
       document.getElementById("dashboard").style.display = "none";
@@ -255,7 +255,6 @@
   function updateAssistant() {
     const now = new Date();
     const hours = now.getHours();
-    const minutes = now.getMinutes();
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
     document.getElementById("live-clock").innerText = timeStr;
@@ -263,28 +262,28 @@
     const txt = document.getElementById("assistant-text");
     const btn = document.getElementById("assistant-btn");
 
-    if (hours >= 7 && hours < 10) {
-      txt.innerText = "Good morning! Please mark your morning Staff Attendance before 9:30 AM.";
-      btn.innerText = "Mark Staff Attendance";
-      btn.href = "./attendance/";
+    if (hours >= 7 && hours < 9) {
+      txt.innerText = "Good morning! Time for Morning Duty inspection and staff check-in.";
+      btn.innerText = "Submit Duty Report";
+      btn.href = "./duty-report/";
       btn.style.display = "inline-block";
-    } else if (hours >= 10 && hours < 12) {
-      txt.innerText = "Morning classes under way. Remember to verify period attendance logs.";
-      btn.innerText = "Class Roster";
-      btn.href = "#";
+    } else if (hours >= 9 && hours < 12) {
+      txt.innerText = "Morning classes active. Submit any pending Cleaning or Class Duty reports.";
+      btn.innerText = "Duty Reports";
+      btn.href = "./duty-report/";
       btn.style.display = "inline-block";
     } else if (hours >= 12 && hours < 14) {
-      txt.innerText = "Mid-day break. Good time to update admission lead inquiries or student logs.";
-      btn.innerText = "Admission CRM";
-      btn.href = "#";
+      txt.innerText = "Lunch break active! Complete Lunch Duty verification and photo upload.";
+      btn.innerText = "Submit Lunch Duty";
+      btn.href = "./duty-report/";
       btn.style.display = "inline-block";
     } else if (hours >= 14 && hours < 17) {
-      txt.innerText = "Afternoon session. Verify extra-curricular activities and departure logs.";
-      btn.innerText = "Activities Registry";
-      btn.href = "#";
+      txt.innerText = "Afternoon/Departure hours. Complete Departure Duty inspection before leaving.";
+      btn.innerText = "Submit Departure Duty";
+      btn.href = "./duty-report/";
       btn.style.display = "inline-block";
     } else {
-      txt.innerText = "School hours closed. Portal ready for administrative updates & records.";
+      txt.innerText = "School hours completed. All duty portals remain open for evening logs.";
       btn.style.display = "none";
     }
   }
