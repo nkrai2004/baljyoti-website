@@ -76,13 +76,27 @@
 
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
-      currentUser = user;
-      const domain = user.email.split("@")[1];
-      document.getElementById("userBadge").innerText = user.email;
-      document.getElementById("welcomeUser").innerText = "Welcome, " + (user.displayName || user.email.split("@")[0]);
-      document.getElementById("tenantDomain").innerText = "Tenant Workspace: @" + domain;
-      loadPermissionsJSONP(user.email);
+      // Allowed multi-tenant domain list
+      const allowedDomains = ["baljyoti.com", "ssquare.org.in"];
+      const userDomain = user.email.split("@")[1] ? user.email.split("@")[1].toLowerCase() : "";
+
+      // Check if user is Super Admin OR belongs to an authorized tenant domain
+      if (user.email.toLowerCase() === "info@baljyoti.com" || allowedDomains.includes(userDomain)) {
+        currentUser = user;
+        document.getElementById("userBadge").innerText = user.email;
+        document.getElementById("welcomeUser").innerText = "Welcome, " + (user.displayName || user.email.split("@")[0]);
+        document.getElementById("tenantDomain").innerText = "Tenant Workspace: @" + userDomain;
+        
+        // Fetch RBAC permissions for this user
+        loadPermissionsJSONP(user.email);
+      } else {
+        alert("Unauthorized domain access: " + userDomain);
+        firebase.auth().signOut().then(() => {
+          window.location.href = "/";
+        });
+      }
     } else {
+      // User is not logged in, redirect to login page
       window.location.href = "/";
     }
   });
@@ -91,9 +105,9 @@
     document.getElementById("loadingStatus").classList.add("hidden");
     document.getElementById("mainContent").classList.remove("hidden");
 
-    let allowedModules = ["Attendance", "DutyReports"]; // Default minimum permissions
+    let allowedModules = ["Attendance", "DutyReports"];
     
-    if (currentUser.email === "info@baljyoti.com") {
+    if (currentUser && currentUser.email.toLowerCase() === "info@baljyoti.com") {
       allowedModules = ["Attendance", "DutyReports", "Roles", "SIS", "Finance"];
     } else if (res && res.status === "success" && res.data) {
       const userRecord = res.data.find(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
@@ -117,7 +131,6 @@
     script.id = "jsonp-perm";
     script.src = SCRIPT_URL + "?action=get_roles&email=" + encodeURIComponent(email) + "&callback=handlePermissions";
     script.onerror = function() {
-      // Fallback display on network error
       handlePermissions(null);
     };
     document.body.appendChild(script);
@@ -136,8 +149,7 @@
     ];
 
     modules.forEach(mod => {
-      // Show module if explicitly permitted or user is Super Admin
-      if (permissions.includes(mod.id) || currentUser.email === "info@baljyoti.com") {
+      if (permissions.includes(mod.id) || (currentUser && currentUser.email.toLowerCase() === "info@baljyoti.com")) {
         const a = document.createElement("a");
         a.className = "module-card";
         a.href = mod.link;
