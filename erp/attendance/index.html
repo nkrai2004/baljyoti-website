@@ -3,21 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baljyoti School - Staff Attendance</title>
+  <title>Staff Attendance - Baljyoti ERP</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #f4f6f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-    .card { background: white; padding: 28px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 100%; max-width: 400px; text-align: center; }
-    h2 { color: #0f172a; margin-bottom: 6px; font-size: 22px; }
-    p { color: #64748b; font-size: 14px; margin-bottom: 24px; }
-    .btn { background: #2563eb; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%; font-size: 16px; transition: background 0.2s ease; margin-top: 10px; }
-    .btn:hover { background: #1d4ed8; }
-    .btn:disabled { background: #cbd5e1; cursor: not-allowed; }
-    #video, #canvas { width: 100%; border-radius: 12px; margin-top: 15px; background: #000; display: none; }
-    .status { margin-top: 18px; font-weight: 600; font-size: 14px; padding: 12px; border-radius: 8px; display: none; line-height: 1.4; }
-    .success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-    .error { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
-    .user-info { font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 16px; }
+    body { background-color: #ffffff; color: #111827; min-height: 100vh; padding: 16px; display: flex; flex-direction: column; align-items: center; }
+
+    .header-bar { width: 100%; max-width: 480px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #dc2626; padding-bottom: 12px; margin-bottom: 20px; }
+    .back-btn { color: #dc2626; text-decoration: none; font-weight: 800; font-size: 14px; text-transform: uppercase; }
+    .title { font-size: 18px; font-weight: 800; color: #dc2626; text-transform: uppercase; }
+
+    .form-card { background: #ffffff; border: 2px solid #dc2626; border-radius: 16px; padding: 20px; width: 100%; max-width: 480px; box-shadow: 0 4px 16px rgba(220, 38, 38, 0.08); }
+
+    .form-group { margin-bottom: 16px; text-align: left; }
+    label { font-size: 12px; font-weight: 800; color: #dc2626; text-transform: uppercase; display: block; margin-bottom: 6px; letter-spacing: 0.5px; }
+
+    .file-input { display: none; }
+    .cam-btn { background: #ffffff; border: 2px dashed #dc2626; color: #dc2626; padding: 16px; border-radius: 12px; font-weight: 800; font-size: 14px; text-align: center; cursor: pointer; width: 100%; display: block; text-transform: uppercase; margin-top: 6px; }
+    
+    .preview-img { width: 100%; border-radius: 8px; border: 2px solid #dc2626; margin-top: 10px; display: none; }
+
+    .gps-box { background: #fff5f5; border: 1px solid #dc2626; border-radius: 8px; padding: 10px; font-size: 12px; color: #dc2626; font-weight: 700; margin-bottom: 16px; word-break: break-all; }
+
+    .btn-submit { background: #dc2626; color: #ffffff; border: none; padding: 16px; border-radius: 12px; font-weight: 800; font-size: 16px; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
   </style>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -25,27 +33,37 @@
 </head>
 <body>
 
-<div class="card">
-  <h2>Baljyoti School</h2>
-  <p>Staff Attendance Portal</p>
-
-  <div id="login-section">
-    <button class="btn" onclick="googleLogin()">Sign in with @baljyoti.com</button>
+  <div class="header-bar">
+    <a href="../" class="back-btn">← Back</a>
+    <div class="title">Staff Attendance</div>
+    <div></div>
   </div>
 
-  <div id="attendance-section" style="display:none;">
-    <div class="user-info" id="user-name"></div>
-    <video id="video" autoplay playsinline></video>
-    <canvas id="canvas"></canvas>
-    
-    <button class="btn" id="snap-btn" onclick="takePhoto()" style="display:none;">Take Selfie</button>
-    <button class="btn" id="submit-btn" onclick="submitAttendance()" style="display:none; background:#16a34a;">Mark Attendance</button>
-  </div>
+  <div class="form-card" id="main-card">
+    <form id="attendanceForm" onsubmit="submitAttendance(event)">
+      
+      <!-- Selfie Photo Upload -->
+      <div class="form-group">
+        <label>Photo Verification (Front Camera Selfie)</label>
+        <label for="cameraInput" class="cam-btn">📷 Take Selfie</label>
+        <input type="file" id="cameraInput" class="file-input" accept="image/*" capture="user" onchange="handlePhoto(event)" required>
+        <img id="preview" class="preview-img" alt="Selfie preview">
+      </div>
 
-  <div id="status-box" class="status"></div>
-</div>
+      <!-- GPS Status -->
+      <div class="gps-box" id="gpsStatus">Fetching GPS Coordinates...</div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">Submit Attendance</button>
+    </form>
+  </div>
 
 <script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxKECB6wrAXTeC6uDO8xmXwJD1ou8oYJe_QGS1lg6jg_ry6tVdQW4Y21vPMMuwZnnDYiQ/exec";
+
+  let currentUser = null;
+  let gpsCoords = "";
+  let photoBase64 = "";
+
   const firebaseConfig = {
     apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
     authDomain: "baljyoti-portal.firebaseapp.com",
@@ -56,133 +74,78 @@
   };
   firebase.initializeApp(firebaseConfig);
 
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxOUJ6rLiLhbQ_hWBYqFS8Q7NTc_x0gN3lfmBmUu7N-trA4MLqDIYVnWRttb3jBCvvk8A/exec";
-  const SCHOOL_LAT = 28.636540;
-  const SCHOOL_LNG = 77.468507;
-  const MAX_DISTANCE_METERS = 100;
-
-  let currentUser = null;
-  let photoBase64 = "";
-
   firebase.auth().onAuthStateChanged((user) => {
     if (user && user.email.endsWith("@baljyoti.com")) {
       currentUser = user;
-      document.getElementById("login-section").style.display = "none";
-      document.getElementById("attendance-section").style.display = "block";
-      document.getElementById("user-name").innerText = "Welcome, " + currentUser.displayName;
-      startCamera();
+      fetchGPS();
+    } else {
+      window.location.href = "../";
     }
   });
 
-  function googleLogin() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider).catch((error) => {
-      if (error.code === 'auth/popup-blocked') {
-        firebase.auth().signInWithRedirect(provider);
-      } else {
-        showStatus("Auth Error: " + error.message, false);
-      }
-    });
-  }
-
-  function startCamera() {
-    const video = document.getElementById("video");
-    video.style.display = "block";
-    
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "user" } } })
-    .then((stream) => { 
-      video.srcObject = stream; 
-      document.getElementById("snap-btn").style.display = "block"; 
-      hideStatus();
-    })
-    .catch(() => {
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then((stream) => {
-          video.srcObject = stream;
-          document.getElementById("snap-btn").style.display = "block";
-          hideStatus();
-        })
-        .catch(() => {
-          showStatus("Camera access permission required. Please allow camera access.", false);
-        });
-    });
-  }
-
-  function takePhoto() {
-    const video = document.getElementById("video");
-    const canvas = document.getElementById("canvas");
-    canvas.width = 300; 
-    canvas.height = 300;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0, 300, 300);
-    
-    photoBase64 = canvas.toDataURL("image/jpeg", 0.7);
-    video.style.display = "none";
-    canvas.style.display = "block";
-    document.getElementById("snap-btn").style.display = "none";
-    document.getElementById("submit-btn").style.display = "block";
-    
-    if (video.srcObject) {
-      video.srcObject.getTracks().forEach(track => track.stop());
+  function fetchGPS() {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        gpsCoords = pos.coords.latitude + ", " + pos.coords.longitude;
+        document.getElementById("gpsStatus").innerText = "📍 GPS Locked: " + gpsCoords;
+      }, (err) => {
+        document.getElementById("gpsStatus").innerText = "⚠️ GPS Error: Enable Location Services";
+      }, { enableHighAccuracy: true });
+    } else {
+      document.getElementById("gpsStatus").innerText = "⚠️ GPS Not Supported";
     }
   }
 
-  function calculateDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371e3;
-    const φ1 = lat1 * Math.PI/180, φ2 = lat2 * Math.PI/180;
-    const Δφ = (lat2-lat1) * Math.PI/180, Δλ = (lon2-lon1) * Math.PI/180;
-    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2);
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  function handlePhoto(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        photoBase64 = e.target.result;
+        const img = document.getElementById("preview");
+        img.src = photoBase64;
+        img.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
-  function logToSheet(distance, status, message, isSuccess) {
-    fetch(APPS_SCRIPT_URL, {
+  function submitAttendance(e) {
+    e.preventDefault();
+    if (!gpsCoords) {
+      alert("GPS Location is required. Please enable location services.");
+      return;
+    }
+    if (!photoBase64) {
+      alert("Please capture a selfie photo for verification.");
+      return;
+    }
+
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = true;
+    btn.innerText = "Submitting...";
+
+    const payload = {
+      action: "attendance",
+      email: currentUser.email,
+      name: currentUser.displayName,
+      gps: gpsCoords,
+      photo: photoBase64
+    };
+
+    fetch(SCRIPT_URL, {
       method: "POST",
-      body: JSON.stringify({
-        name: currentUser.displayName,
-        email: currentUser.email,
-        distance: distance,
-        photoBase64: photoBase64,
-        status: status
-      })
-    })
-    .then(() => showStatus(message, isSuccess))
-    .catch(() => showStatus("Network error recording log.", false));
-  }
-
-  function submitAttendance() {
-    const submitBtn = document.getElementById("submit-btn");
-    submitBtn.disabled = true;
-    showStatus("Checking GPS location...", true);
-
-    navigator.geolocation.getCurrentPosition((pos) => {
-      const distance = Math.round(calculateDistance(pos.coords.latitude, pos.coords.longitude, SCHOOL_LAT, SCHOOL_LNG));
-      
-      if (distance > MAX_DISTANCE_METERS) {
-        showStatus(`Failed: You are ${distance}m away (Limit 100m). Recording failed attempt...`, false);
-        logToSheet(distance, "FAILED (OUT OF BOUNDS)", `Attempt logged! Outside school bounds (${distance}m away).`, false);
-        return;
-      }
-
-      showStatus("Logging attendance to Google Sheets...", true);
-      logToSheet(distance, "PRESENT", "Attendance Marked Successfully!", true);
-      submitBtn.style.display = "none";
-
-    }, () => {
-      showStatus("GPS permissions denied. Logging failed attempt...", false);
-      logToSheet(0, "FAILED (NO GPS)", "Recorded failed attempt: GPS access was denied.", false);
-    }, { enableHighAccuracy: true });
-  }
-
-  function showStatus(msg, isSuccess) {
-    const box = document.getElementById("status-box");
-    box.style.display = "block";
-    box.className = "status " + (isSuccess ? "success" : "error");
-    box.innerText = msg;
-  }
-
-  function hideStatus() {
-    document.getElementById("status-box").style.display = "none";
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    }).then(() => {
+      alert("Attendance Submitted Successfully!");
+      window.location.href = "../";
+    }).catch((err) => {
+      alert("Submission Error: " + err.message);
+      btn.disabled = false;
+      btn.innerText = "Submit Attendance";
+    });
   }
 </script>
 </body>
