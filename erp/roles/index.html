@@ -8,31 +8,35 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: #ffffff; color: #111827; min-height: 100vh; padding: 16px; display: flex; flex-direction: column; align-items: center; }
 
-    .header-bar { width: 100%; max-width: 900px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #dc2626; padding-bottom: 12px; margin-bottom: 20px; }
+    .header-bar { width: 100%; max-width: 768px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #dc2626; padding-bottom: 12px; margin-bottom: 20px; }
     .back-btn { color: #dc2626; text-decoration: none; font-weight: 800; font-size: 14px; text-transform: uppercase; }
     .title { font-size: 18px; font-weight: 800; color: #dc2626; text-transform: uppercase; }
 
-    .container { width: 100%; max-width: 900px; }
+    .container { width: 100%; max-width: 768px; display: flex; flex-direction: column; gap: 20px; }
 
-    .loading-box { text-align: center; padding: 40px; font-weight: 700; color: #dc2626; }
+    .card { background: #ffffff; border: 2px solid #dc2626; border-radius: 16px; padding: 20px; box-shadow: 0 4px 16px rgba(220, 38, 38, 0.08); }
+    .card-title { font-size: 14px; font-weight: 800; color: #dc2626; text-transform: uppercase; margin-bottom: 14px; letter-spacing: 0.5px; }
 
-    .user-card { background: #ffffff; border: 1.5px solid #dc2626; border-radius: 12px; padding: 16px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.05); }
-    .user-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
-    .user-name { font-size: 16px; font-weight: 800; color: #111827; }
-    .user-email { font-size: 13px; color: #4b5563; font-weight: 600; }
+    .form-group { margin-bottom: 14px; }
+    label { font-size: 12px; font-weight: 800; color: #dc2626; text-transform: uppercase; display: block; margin-bottom: 6px; }
+    
+    input[type="email"], input[type="text"], select { width: 100%; padding: 12px; border: 1.5px solid #dc2626; border-radius: 8px; font-size: 14px; color: #111827; background: #ffffff; outline: none; }
 
-    .role-select { padding: 6px 12px; border: 1.5px solid #dc2626; border-radius: 6px; font-weight: 700; color: #dc2626; background: #ffffff; outline: none; }
+    .permissions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 10px; }
+    .checkbox-item { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #111827; }
+    .checkbox-item input { accent-color: #dc2626; width: 16px; height: 16px; }
 
-    .modules-title { font-size: 11px; font-weight: 800; color: #dc2626; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-    .modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin-bottom: 12px; }
+    .btn-submit { background: #dc2626; color: #ffffff; border: none; padding: 14px; border-radius: 10px; font-weight: 800; font-size: 15px; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 14px; }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; background: #fff5f5; padding: 8px 10px; border-radius: 6px; border: 1px solid #fee2e2; cursor: pointer; }
-    .checkbox-label input { accent-color: #dc2626; width: 16px; height: 16px; }
+    /* Table Styling */
+    .table-container { overflow-x: auto; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+    th { background: #fff5f5; color: #dc2626; font-weight: 800; padding: 10px; border-bottom: 2px solid #dc2626; text-transform: uppercase; }
+    td { padding: 10px; border-bottom: 1px solid #e5e7eb; color: #111827; }
 
-    .btn-save { background: #dc2626; color: #ffffff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 800; font-size: 12px; cursor: pointer; text-transform: uppercase; }
-    .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .access-denied { text-align: center; color: #dc2626; font-weight: 800; padding: 40px; background: #fff5f5; border: 2px solid #dc2626; border-radius: 12px; }
+    .status-msg { text-align: center; font-weight: 700; color: #dc2626; padding: 20px; font-size: 14px; }
+    .hidden { display: none; }
   </style>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -46,13 +50,81 @@
     <div></div>
   </div>
 
-  <div class="container" id="mainContainer">
-    <div class="loading-box" id="loadingBox">⌛ Fetching user directory from Google Workspace...</div>
-    <div id="usersList"></div>
+  <div class="container">
+    
+    <!-- Status / Loading Message -->
+    <div id="loadingStatus" class="status-msg">Connecting to backend server...</div>
+
+    <!-- Main Content Container -->
+    <div id="contentArea" class="hidden">
+      
+      <!-- Assign Role Card -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="card-title">Assign New User Role</div>
+        <form id="roleForm" onsubmit="submitRole(event)">
+          
+          <div class="form-group">
+            <label for="userEmail">Staff Email</label>
+            <input type="email" id="userEmail" placeholder="teacher@baljyoti.com" required>
+          </div>
+
+          <div class="form-group">
+            <label for="userName">Staff Name</label>
+            <input type="text" id="userName" placeholder="Full Name" required>
+          </div>
+
+          <div class="form-group">
+            <label for="userRole">Assigned Role</label>
+            <select id="userRole" required>
+              <option value="" disabled selected>-- Select Designated Role --</option>
+              <option value="Admin">Administrator</option>
+              <option value="Teacher">Teacher / Faculty</option>
+              <option value="Inspection Officer">Inspection Officer</option>
+              <option value="Accountant">Accountant</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Module Permissions Access</label>
+            <div class="permissions-grid">
+              <label class="checkbox-item"><input type="checkbox" name="perm" value="Attendance"> Staff Attendance</label>
+              <label class="checkbox-item"><input type="checkbox" name="perm" value="DutyReports"> Duty Reports</label>
+              <label class="checkbox-item"><input type="checkbox" name="perm" value="SIS"> SIS / Students</label>
+              <label class="checkbox-item"><input type="checkbox" name="perm" value="Finance"> Finance & Fees</label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit" id="submitBtn">Save Permissions</button>
+        </form>
+      </div>
+
+      <!-- Current Assigned Roles Table -->
+      <div class="card">
+        <div class="card-title">Current Assigned Roles</div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Permissions</th>
+              </tr>
+            </thead>
+            <tbody id="rolesTableBody">
+              <!-- Loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
   </div>
 
 <script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxssOtDC3K9nvqGTtuiBrpGwjhRCT3ap1Z9DbqJW5B7ff9bAXnN3XDX4_OmUfzWfKQlZw/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSnRWGUsKQhkXjYbnSj-udkO4IBH6EsjxxgiFwnQZ8zsmGdot8hmlkkuLxKHiLFwJQWQ/exec";
+
+  let currentUser = null;
 
   const firebaseConfig = {
     apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
@@ -64,108 +136,86 @@
   };
   firebase.initializeApp(firebaseConfig);
 
-  let currentUser = null;
-
   firebase.auth().onAuthStateChanged((user) => {
     if (user && user.email.endsWith("@baljyoti.com")) {
       currentUser = user;
-      
-      // Super Admin Safeguard Check
-      if (user.email.toLowerCase() === "info@baljyoti.com") {
-        fetchDirectoryUsers();
-      } else {
-        document.getElementById("mainContainer").innerHTML = `
-          <div class="access-denied">
-            🔒 ACCESS RESTRICTED<br><br>
-            Only Super Admin (info@baljyoti.com) can access User Roles Management.
-          </div>
-        `;
-      }
+      loadRoles();
     } else {
       window.location.href = "../";
     }
   });
 
-  function fetchDirectoryUsers() {
-    fetch(SCRIPT_URL + "?action=get_users")
+  // Fetch Roles via doGet
+  function loadRoles() {
+    fetch(SCRIPT_URL + "?action=get_roles")
       .then(res => res.json())
-      .then(data => {
-        document.getElementById("loadingBox").style.display = "none";
-        if (data.status === "success") {
-          renderUserList(data.users);
+      .then(res => {
+        if (res.status === "success") {
+          document.getElementById("loadingStatus").classList.add("hidden");
+          document.getElementById("contentArea").classList.remove("hidden");
+          renderRolesTable(res.data);
         } else {
-          document.getElementById("usersList").innerHTML = `<div class="loading-box">Error loading users: ${data.message}</div>`;
+          document.getElementById("loadingStatus").innerText = "Failed to connect to backend server: " + res.message;
         }
       })
       .catch(err => {
-        document.getElementById("loadingBox").style.display = "none";
-        document.getElementById("usersList").innerHTML = `<div class="loading-box">Failed to connect to backend server.</div>`;
+        document.getElementById("loadingStatus").innerText = "Failed to connect to backend server.";
       });
   }
 
-  function renderUserList(users) {
-    const listEl = document.getElementById("usersList");
-    listEl.innerHTML = "";
+  function renderRolesTable(roles) {
+    const tbody = document.getElementById("rolesTableBody");
+    tbody.innerHTML = "";
 
-    users.forEach((u, idx) => {
-      const card = document.createElement("div");
-      card.className = "user-card";
+    if (!roles || roles.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#6b7280;">No permissions assigned yet.</td></tr>';
+      return;
+    }
 
-      const hasAttendance = u.modules.includes("attendance");
-      const hasDutyReport = u.modules.includes("duty_report");
+    roles.forEach(item => {
+      let perms = [];
+      try {
+        perms = typeof item.permissions === 'string' ? JSON.parse(item.permissions) : item.permissions;
+      } catch(e) {
+        perms = [item.permissions];
+      }
 
-      card.innerHTML = `
-        <div class="user-header">
-          <div>
-            <div class="user-name">${u.name}</div>
-            <div class="user-email">${u.email}</div>
-          </div>
-          <div>
-            <select class="role-select" id="role-${idx}">
-              <option value="Staff" ${u.role === 'Staff' ? 'selected' : ''}>Staff</option>
-              <option value="Teacher" ${u.role === 'Teacher' ? 'selected' : ''}>Teacher</option>
-              <option value="Admin" ${u.role === 'Admin' ? 'selected' : ''}>Admin</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="modules-title">Module Access Permissions</div>
-        <div class="modules-grid">
-          <label class="checkbox-label">
-            <input type="checkbox" id="mod-att-${idx}" ${hasAttendance ? 'checked' : ''}>
-            Staff Attendance
-          </label>
-          <label class="checkbox-label">
-            <input type="checkbox" id="mod-duty-${idx}" ${hasDutyReport ? 'checked' : ''}>
-            Staff Duty Report
-          </label>
-        </div>
-
-        <div style="text-align: right;">
-          <button class="btn-save" id="btn-save-${idx}" onclick="saveUserPermissions('${u.email}', ${idx})">Save Permissions</button>
-        </div>
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><strong>${item.email}</strong></td>
+        <td>${item.name}</td>
+        <td>${item.role}</td>
+        <td>${Array.isArray(perms) ? perms.join(", ") : perms}</td>
       `;
-
-      listEl.appendChild(card);
+      tbody.appendChild(tr);
     });
   }
 
-  function saveUserPermissions(targetEmail, idx) {
-    const btn = document.getElementById(`btn-save-${idx}`);
-    const selectedRole = document.getElementById(`role-${idx}`).value;
-    
-    const modules = [];
-    if (document.getElementById(`mod-att-${idx}`).checked) modules.push("attendance");
-    if (document.getElementById(`mod-duty-${idx}`).checked) modules.push("duty_report");
+  // Save Role via doPost
+  function submitRole(e) {
+    e.preventDefault();
 
+    const email = document.getElementById("userEmail").value.trim();
+    const name = document.getElementById("userName").value.trim();
+    const role = document.getElementById("userRole").value;
+
+    const checkedPerms = Array.from(document.querySelectorAll('input[name="perm"]:checked')).map(cb => cb.value);
+
+    if (checkedPerms.length === 0) {
+      alert("Please select at least one module permission.");
+      return;
+    }
+
+    const btn = document.getElementById("submitBtn");
     btn.disabled = true;
-    btn.innerText = "Saving...";
+    btn.innerText = "Saving Role...";
 
     const payload = {
-      action: "save_permissions",
-      targetEmail: targetEmail,
-      role: selectedRole,
-      modules: modules
+      action: "save_role",
+      email: email,
+      name: name,
+      role: role,
+      permissions: checkedPerms
     };
 
     fetch(SCRIPT_URL, {
@@ -174,11 +224,13 @@
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     }).then(() => {
-      alert(`Permissions updated for ${targetEmail}`);
+      alert("User Role Assigned Successfully!");
+      document.getElementById("roleForm").reset();
       btn.disabled = false;
       btn.innerText = "Save Permissions";
+      loadRoles();
     }).catch(err => {
-      alert("Error saving permissions: " + err.message);
+      alert("Error saving role: " + err.message);
       btn.disabled = false;
       btn.innerText = "Save Permissions";
     });
