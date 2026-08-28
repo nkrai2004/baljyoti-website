@@ -172,9 +172,21 @@
     const existingScript = document.getElementById("jsonp-students");
     if (existingScript) existingScript.remove();
 
+    // Fallback timer if Apps Script fails to respond in 8 seconds
+    const timeout = setTimeout(() => {
+      document.getElementById("loadingStatus").classList.add("hidden");
+      document.getElementById("mainContent").classList.remove("hidden");
+      populateClassFilter();
+      renderDirectory();
+    }, 8000);
+
     const script = document.createElement("script");
     script.id = "jsonp-students";
     script.src = SCRIPT_URL + "?action=get_students&email=" + encodeURIComponent(currentUser.email) + "&callback=handleStudents";
+    script.onerror = function() {
+      clearTimeout(timeout);
+      document.getElementById("loadingStatus").innerText = "Failed to connect to backend server.";
+    };
     document.body.appendChild(script);
   }
 
@@ -184,9 +196,9 @@
 
     if (res && res.status === "success" && res.data) {
       allStudents = res.data;
-      populateClassFilter();
-      renderDirectory();
     }
+    populateClassFilter();
+    renderDirectory();
   };
 
   function populateClassFilter() {
@@ -195,10 +207,12 @@
     
     const classes = [...new Set(allStudents.map(s => s.classSection))];
     classes.forEach(cls => {
-      const opt = document.createElement("option");
-      opt.value = cls;
-      opt.innerText = cls;
-      select.appendChild(opt);
+      if(cls) {
+        const opt = document.createElement("option");
+        opt.value = cls;
+        opt.innerText = cls;
+        select.appendChild(opt);
+      }
     });
   }
 
@@ -308,6 +322,10 @@
   function renderDirectory() {
     const tbody = document.getElementById("directoryTbody");
     tbody.innerHTML = "";
+    if (allStudents.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#6b7280;">No student records found. Use the "Register Student" tab to add students.</td></tr>';
+      return;
+    }
     allStudents.forEach(s => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
