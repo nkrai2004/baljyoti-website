@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Information System - Baljyoti ERP</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #f9fafb; color: #111827; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+
+    .navbar { width: 100%; background: #ffffff; border-bottom: 2px solid #dc2626; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .brand { font-size: 18px; font-weight: 900; color: #dc2626; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; }
+    .user-badge { font-size: 12px; background: #fff5f5; color: #dc2626; border: 1px solid #dc2626; padding: 6px 12px; border-radius: 20px; font-weight: 700; }
+
+    .container { width: 100%; max-width: 900px; padding: 24px 16px; display: flex; flex-direction: column; gap: 20px; }
+
+    .tab-bar { display: flex; gap: 10px; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
+    .tab-btn { background: #f3f4f6; color: #4b5563; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; }
+    .tab-btn.active { background: #dc2626; color: #ffffff; }
+
+    .card { background: #ffffff; border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+    .card-title { font-size: 16px; font-weight: 800; color: #dc2626; margin-bottom: 14px; text-transform: uppercase; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .form-group label { font-size: 12px; font-weight: 700; color: #374151; }
+    .form-control { padding: 10px 12px; border: 1.5px solid #d1d5db; border-radius: 6px; font-size: 14px; outline: none; }
+    .form-control:focus { border-color: #dc2626; }
+
+    .btn { background: #dc2626; color: #ffffff; border: none; padding: 12px; border-radius: 6px; font-weight: 700; font-size: 14px; cursor: pointer; text-align: center; }
+    .btn:disabled { background: #9ca3af; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #e5e7eb; padding: 10px; text-align: left; font-size: 13px; }
+    th { background: #f9fafb; font-weight: 700; color: #374151; }
+
+    .toggle-btn { padding: 6px 12px; border-radius: 4px; border: none; font-weight: 700; cursor: pointer; font-size: 12px; }
+    .status-present { background: #dcfce7; color: #15803d; }
+    .status-absent { background: #fee2e2; color: #b91c1c; }
+
+    .hidden { display: none !important; }
+    .status-msg { text-align: center; font-weight: 700; color: #dc2626; padding: 30px; }
+  </style>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+
+  <div class="navbar">
+    <a href="../" class="brand">BALJYOTI ERP / SIS</a>
+    <span id="userBadge" class="user-badge">Authenticating...</span>
+  </div>
+
+  <div class="container">
+    <div id="loadingStatus" class="status-msg">Loading Student Information System...</div>
+
+    <div id="mainContent" class="hidden">
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('rollCallTab', this)">Daily Roll Call</button>
+        <button class="tab-btn" onclick="switchTab('registerTab', this)">Register Student</button>
+        <button class="tab-btn" onclick="switchTab('directoryTab', this)">Student Directory</button>
+      </div>
+
+      <!-- Tab 1: Daily Roll Call -->
+      <div id="rollCallTab" class="card">
+        <div class="card-title">Mark Student Attendance</div>
+        <div class="form-group">
+          <label>Select Class & Section</label>
+          <select id="classFilter" class="form-control" onchange="filterStudentsForAttendance()">
+            <option value="">-- Select Class --</option>
+          </select>
+        </div>
+
+        <table id="attendanceTable" class="hidden">
+          <thead>
+            <tr>
+              <th>Roll No</th>
+              <th>Student Name</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTbody"></tbody>
+        </table>
+
+        <button id="submitAttendanceBtn" class="btn hidden" style="margin-top: 16px; width: 100%;" onclick="submitAttendance()">Submit Attendance</button>
+      </div>
+
+      <!-- Tab 2: Register Student -->
+      <div id="registerTab" class="card hidden">
+        <div class="card-title">Enroll New Student</div>
+        <form onsubmit="saveStudent(event)">
+          <div class="form-group">
+            <label>Student ID / Admission No</label>
+            <input type="text" id="regId" class="form-control" required placeholder="e.g. STU-2026-001">
+          </div>
+          <div class="form-group">
+            <label>Roll Number</label>
+            <input type="text" id="regRoll" class="form-control" required placeholder="e.g. 101">
+          </div>
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="regName" class="form-control" required placeholder="Student Full Name">
+          </div>
+          <div class="form-group">
+            <label>Class & Section</label>
+            <input type="text" id="regClass" class="form-control" required placeholder="e.g. Class 10-A">
+          </div>
+          <div class="form-group">
+            <label>Parent / Guardian Name</label>
+            <input type="text" id="regParent" class="form-control" required placeholder="Parent Full Name">
+          </div>
+          <div class="form-group">
+            <label>Contact Phone</label>
+            <input type="text" id="regPhone" class="form-control" required placeholder="+91 9876543210">
+          </div>
+          <button type="submit" id="regSubmitBtn" class="btn" style="width: 100%;">Register Student</button>
+        </form>
+      </div>
+
+      <!-- Tab 3: Directory -->
+      <div id="directoryTab" class="card hidden">
+        <div class="card-title">Master Student Directory</div>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Roll</th>
+              <th>Name</th>
+              <th>Class</th>
+              <th>Parent Contact</th>
+            </tr>
+          </thead>
+          <tbody id="directoryTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSnRWGUsKQhkXjYbnSj-udkO4IBH6EsjxxgiFwnQZ8zsmGdot8hmlkkuLxKHiLFwJQWQ/exec";
+  let currentUser = null;
+  let allStudents = [];
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
+    authDomain: "baljyoti-portal.firebaseapp.com",
+    projectId: "baljyoti-portal",
+    storageBucket: "baljyoti-portal.firebasestorage.app",
+    messagingSenderId: "420727507952",
+    appId: "1:420727507952:web:de5bdbb73521b9fae4eb35"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      currentUser = user;
+      document.getElementById("userBadge").innerText = user.email;
+      loadStudentsJSONP();
+    } else {
+      window.location.href = "/";
+    }
+  });
+
+  function switchTab(tabId, btn) {
+    document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).classList.remove('hidden');
+    btn.classList.add('active');
+  }
+
+  function loadStudentsJSONP() {
+    const existingScript = document.getElementById("jsonp-students");
+    if (existingScript) existingScript.remove();
+
+    const script = document.createElement("script");
+    script.id = "jsonp-students";
+    script.src = SCRIPT_URL + "?action=get_students&email=" + encodeURIComponent(currentUser.email) + "&callback=handleStudents";
+    document.body.appendChild(script);
+  }
+
+  window.handleStudents = function(res) {
+    document.getElementById("loadingStatus").classList.add("hidden");
+    document.getElementById("mainContent").classList.remove("hidden");
+
+    if (res && res.status === "success" && res.data) {
+      allStudents = res.data;
+      populateClassFilter();
+      renderDirectory();
+    }
+  };
+
+  function populateClassFilter() {
+    const select = document.getElementById("classFilter");
+    select.innerHTML = '<option value="">-- Select Class --</option>';
+    
+    const classes = [...new Set(allStudents.map(s => s.classSection))];
+    classes.forEach(cls => {
+      const opt = document.createElement("option");
+      opt.value = cls;
+      opt.innerText = cls;
+      select.appendChild(opt);
+    });
+  }
+
+  function filterStudentsForAttendance() {
+    const selectedClass = document.getElementById("classFilter").value;
+    const tbody = document.getElementById("attendanceTbody");
+    const table = document.getElementById("attendanceTable");
+    const submitBtn = document.getElementById("submitAttendanceBtn");
+
+    tbody.innerHTML = "";
+    if (!selectedClass) {
+      table.classList.add("hidden");
+      submitBtn.classList.add("hidden");
+      return;
+    }
+
+    const filtered = allStudents.filter(s => s.classSection === selectedClass);
+    filtered.forEach(s => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${s.rollNo}</td>
+        <td><strong>${s.fullName}</strong></td>
+        <td>
+          <button class="toggle-btn status-present" data-id="${s.studentId}" data-name="${s.fullName}" onclick="toggleStatus(this)">PRESENT</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    table.classList.remove("hidden");
+    submitBtn.classList.remove("hidden");
+  }
+
+  function toggleStatus(btn) {
+    if (btn.classList.contains("status-present")) {
+      btn.classList.remove("status-present");
+      btn.classList.add("status-absent");
+      btn.innerText = "ABSENT";
+    } else {
+      btn.classList.remove("status-absent");
+      btn.classList.add("status-present");
+      btn.innerText = "PRESENT";
+    }
+  }
+
+  function submitAttendance() {
+    const selectedClass = document.getElementById("classFilter").value;
+    const buttons = document.querySelectorAll("#attendanceTbody .toggle-btn");
+    const today = new Date().toISOString().split("T")[0];
+
+    const records = Array.from(buttons).map(btn => ({
+      date: today,
+      classSection: selectedClass,
+      studentId: btn.getAttribute("data-id"),
+      fullName: btn.getAttribute("data-name"),
+      status: btn.innerText
+    }));
+
+    const btn = document.getElementById("submitAttendanceBtn");
+    btn.disabled = true;
+    btn.innerText = "Submitting...";
+
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "mark_student_attendance",
+        email: currentUser.email,
+        records: records
+      })
+    }).then(() => {
+      alert("Daily Attendance marked successfully!");
+      btn.disabled = false;
+      btn.innerText = "Submit Attendance";
+    });
+  }
+
+  function saveStudent(e) {
+    e.preventDefault();
+    const btn = document.getElementById("regSubmitBtn");
+    btn.disabled = true;
+    btn.innerText = "Saving...";
+
+    const payload = {
+      action: "save_student",
+      email: currentUser.email,
+      studentId: document.getElementById("regId").value,
+      rollNo: document.getElementById("regRoll").value,
+      fullName: document.getElementById("regName").value,
+      classSection: document.getElementById("regClass").value,
+      parentName: document.getElementById("regParent").value,
+      contactPhone: document.getElementById("regPhone").value
+    };
+
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    }).then(() => {
+      alert("Student enrolled successfully!");
+      location.reload();
+    });
+  }
+
+  function renderDirectory() {
+    const tbody = document.getElementById("directoryTbody");
+    tbody.innerHTML = "";
+    allStudents.forEach(s => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${s.studentId}</td>
+        <td>${s.rollNo}</td>
+        <td><strong>${s.fullName}</strong></td>
+        <td>${s.classSection}</td>
+        <td>${s.parentName} (${s.contactPhone})</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+</script>
+</body>
+</html>
