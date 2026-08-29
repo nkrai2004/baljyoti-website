@@ -37,4 +37,262 @@
 
     <div class="flex items-center space-x-3">
       <a href="dashboard.html" class="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 px-3 py-1.5 rounded-lg transition">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        <span>Back to Dashboard</span>
+      </a>
+
+      <div class="flex items-center space-x-2 bg-red-50 border border-red-200 px-3 py-1.5 rounded-lg">
+        <span id="superAdminBadge" class="text-xs font-mono font-bold text-red-700">info@baljyoti.com</span>
+        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-200 text-red-800">SUPER ADMIN</span>
+      </div>
+
+      <button onclick="logout()" class="text-xs font-bold text-slate-500 hover:text-red-600 px-2 py-1.5 transition">
+        Sign Out
+      </button>
+    </div>
+  </header>
+
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden max-w-sm bg-slate-900 text-white text-xs font-medium px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 transition-all">
+    <span id="toastIcon" class="text-emerald-400">✓</span>
+    <span id="toastMsg">Action completed successfully.</span>
+  </div>
+
+  <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+
+    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="relative w-full md:w-96">
+        <input type="text" id="searchInput" oninput="filterUsers()" placeholder="Search by name or email..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-slate-900">
+        <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+      </div>
+
+      <div class="flex items-center space-x-3 w-full md:w-auto justify-end">
+        <button onclick="loadUserDirectory()" class="inline-flex items-center space-x-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition shadow">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          <span>Sync Workspace Directory</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+              <th class="py-3.5 px-6">User Details</th>
+              <th class="py-3.5 px-4">Assigned Role</th>
+              <th class="py-3.5 px-4 text-center">SIS</th>
+              <th class="py-3.5 px-4 text-center">Finance</th>
+              <th class="py-3.5 px-4 text-center">Academics</th>
+              <th class="py-3.5 px-4 text-center">Admin Ops</th>
+              <th class="py-3.5 px-6 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody" class="divide-y divide-slate-100 text-xs">
+            <tr id="loadingRow">
+              <td colspan="7" class="py-12 text-center text-slate-400 font-medium">
+                <div class="flex flex-col items-center justify-center space-y-2">
+                  <svg class="w-6 h-6 animate-spin text-slate-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                  <span>Loading Google Workspace directory and permission records...</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const SUPER_ADMIN = "info@baljyoti.com";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhSwScGcBlRSqrkyT-bfog22RL3z_YGMY8vwriNRNP5q4P7DqWhh-TKnz40L_BwCVp8w/exec";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
+      authDomain: "baljyoti-portal.firebaseapp.com",
+      projectId: "baljyoti-portal",
+      storageBucket: "baljyoti-portal.firebasestorage.app",
+      messagingSenderId: "420727507952",
+      appId: "1:420727507952:web:de5bdbb73521b9fae4eb35"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    let allUsers = [];
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user || user.email !== SUPER_ADMIN) {
+        alert("Unauthorized Access: RBAC Administration is restricted strictly to info@baljyoti.com.");
+        window.location.href = "dashboard.html";
+        return;
+      }
+      loadUserDirectory();
+    });
+
+    function loadUserDirectory() {
+      const tbody = document.getElementById("userTableBody");
+      tbody.innerHTML = `
+        <tr id="loadingRow">
+          <td colspan="7" class="py-12 text-center text-slate-400 font-medium">
+            <div class="flex flex-col items-center justify-center space-y-2">
+              <svg class="w-6 h-6 animate-spin text-slate-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+              <span>Fetching Workspace Users & Sheet Database...</span>
+            </div>
+          </td>
+        </tr>`;
+
+      fetch(`${SCRIPT_URL}?action=get_workspace_users&caller=${encodeURIComponent(SUPER_ADMIN)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "SUCCESS") {
+            allUsers = data.users;
+            renderUserTable(allUsers);
+          } else {
+            showToast("Error", data.message || "Failed to load directory.", true);
+          }
+        })
+        .catch(err => {
+          console.error("Directory Load Error:", err);
+          showToast("Error", "Network or server connection failed.", true);
+        });
+    }
+
+    function renderUserTable(users) {
+      const tbody = document.getElementById("userTableBody");
+      tbody.innerHTML = "";
+
+      if (users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400">No users found.</td></tr>`;
+        return;
+      }
+
+      users.forEach((usr, idx) => {
+        const isSuperAdmin = usr.email === SUPER_ADMIN;
+        const safeEmailId = `user_${idx}`;
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-slate-50/80 transition";
+
+        tr.innerHTML = `
+          <td class="py-3.5 px-6">
+            <div class="font-bold text-slate-900">${usr.name || 'Workspace User'}</div>
+            <div class="text-[11px] font-mono text-slate-500">${usr.email}</div>
+          </td>
+
+          <td class="py-3.5 px-4">
+            ${isSuperAdmin ? `
+              <span class="text-[10px] font-extrabold px-2 py-0.5 rounded bg-red-100 text-red-800 border border-red-200">SUPER_ADMIN</span>
+            ` : `
+              <select id="${safeEmailId}_role" class="bg-white border border-slate-200 rounded-lg text-xs font-semibold px-2 py-1 focus:outline-none focus:ring-1 focus:ring-slate-900">
+                <option value="TEACHER" ${usr.role === 'TEACHER' ? 'selected' : ''}>TEACHER</option>
+                <option value="ADMIN" ${usr.role === 'ADMIN' ? 'selected' : ''}>ADMIN</option>
+                <option value="STAFF" ${usr.role === 'STAFF' ? 'selected' : ''}>STAFF</option>
+                <option value="FINANCE_OFFICER" ${usr.role === 'FINANCE_OFFICER' ? 'selected' : ''}>FINANCE_OFFICER</option>
+                <option value="NO_ACCESS" ${usr.role === 'NO_ACCESS' || !usr.role ? 'selected' : ''}>NO_ACCESS</option>
+              </select>
+            `}
+          </td>
+
+          <td class="py-3.5 px-4 text-center">
+            <input type="checkbox" id="${safeEmailId}_sis" ${usr.modules?.sis ? 'checked' : ''} ${isSuperAdmin ? 'disabled checked' : ''} class="w-4 h-4 text-slate-900 rounded border-slate-300 focus:ring-slate-900">
+          </td>
+          <td class="py-3.5 px-4 text-center">
+            <input type="checkbox" id="${safeEmailId}_finance" ${usr.modules?.finance ? 'checked' : ''} ${isSuperAdmin ? 'disabled checked' : ''} class="w-4 h-4 text-slate-900 rounded border-slate-300 focus:ring-slate-900">
+          </td>
+          <td class="py-3.5 px-4 text-center">
+            <input type="checkbox" id="${safeEmailId}_academics" ${usr.modules?.academics ? 'checked' : ''} ${isSuperAdmin ? 'disabled checked' : ''} class="w-4 h-4 text-slate-900 rounded border-slate-300 focus:ring-slate-900">
+          </td>
+          <td class="py-3.5 px-4 text-center">
+            <input type="checkbox" id="${safeEmailId}_adminOps" ${usr.modules?.adminOps ? 'checked' : ''} ${isSuperAdmin ? 'disabled checked' : ''} class="w-4 h-4 text-slate-900 rounded border-slate-300 focus:ring-slate-900">
+          </td>
+
+          <td class="py-3.5 px-6 text-right">
+            ${isSuperAdmin ? `
+              <span class="text-[11px] text-slate-400 italic">Locked</span>
+            ` : `
+              <button onclick="saveUserPermissions('${usr.email}', '${safeEmailId}', this)" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition shadow-sm">
+                Save
+              </button>
+            `}
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function saveUserPermissions(targetEmail, safeEmailId, btnElement) {
+      const originalText = btnElement.innerText;
+      btnElement.innerText = "Saving...";
+      btnElement.disabled = true;
+
+      const role = document.getElementById(`${safeEmailId}_role`).value;
+      const modules = {
+        sis: document.getElementById(`${safeEmailId}_sis`).checked,
+        finance: document.getElementById(`${safeEmailId}_finance`).checked,
+        academics: document.getElementById(`${safeEmailId}_academics`).checked,
+        adminOps: document.getElementById(`${safeEmailId}_adminOps`).checked
+      };
+
+      const payload = {
+        action: "update_user_rbac",
+        caller: SUPER_ADMIN,
+        targetEmail: targetEmail,
+        role: role,
+        modules: modules
+      };
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(data => {
+        btnElement.innerText = originalText;
+        btnElement.disabled = false;
+
+        if (data.status === "SUCCESS") {
+          showToast("Success", `Permissions updated for ${targetEmail}`);
+        } else {
+          showToast("Error", data.message || "Failed to update permissions", true);
+        }
+      })
+      .catch(err => {
+        console.error("Save Error:", err);
+        btnElement.innerText = originalText;
+        btnElement.disabled = false;
+        showToast("Error", "Network error. Failed to execute POST request.", true);
+      });
+    }
+
+    function filterUsers() {
+      const query = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = allUsers.filter(u => 
+        (u.name && u.name.toLowerCase().includes(query)) || 
+        (u.email && u.email.toLowerCase().includes(query))
+      );
+      renderUserTable(filtered);
+    }
+
+    function showToast(title, msg, isError = false) {
+      const toast = document.getElementById("toast");
+      const icon = document.getElementById("toastIcon");
+      const text = document.getElementById("toastMsg");
+
+      icon.innerText = isError ? "✕" : "✓";
+      icon.className = isError ? "text-red-400 font-bold" : "text-emerald-400 font-bold";
+      text.innerText = `${title}: ${msg}`;
+
+      toast.classList.remove("hidden");
+      setTimeout(() => toast.classList.add("hidden"), 3500);
+    }
+
+    function logout() {
+      sessionStorage.clear();
+      firebase.auth().signOut().then(() => {
+        window.location.href = "index.html";
+      });
+    }
+  </script>
+</body>
+</html>
