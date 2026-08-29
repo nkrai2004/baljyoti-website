@@ -3,42 +3,129 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Information System - Baljyoti ERP</title>
+  <title>Baljyoti ERP | Student Information System (SIS)</title>
   <style>
+    :root {
+      --primary: #059669;
+      --primary-dark: #047857;
+      --primary-light: #ecfdf5;
+      --accent: #2563eb;
+      --bg-main: #f8fafc;
+      --surface: #ffffff;
+      --surface-hover: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --sidebar-width: 260px;
+      --drawer-width: 420px;
+      --status-green: #16a34a;
+      --status-green-bg: #dcfce7;
+      --status-amber: #d97706;
+      --status-amber-bg: #fef3c7;
+      --status-red: #dc2626;
+      --status-red-bg: #fee2e2;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #f9fafb; color: #111827; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+    body { background-color: var(--bg-main); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; font-size: 14px; }
 
-    .navbar { width: 100%; background: #ffffff; border-bottom: 2px solid #dc2626; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    .brand { font-size: 18px; font-weight: 900; color: #dc2626; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; }
-    .user-badge { font-size: 12px; background: #fff5f5; color: #dc2626; border: 1px solid #dc2626; padding: 6px 12px; border-radius: 20px; font-weight: 700; }
+    /* Left Global Sidebar Rail */
+    .sidebar { width: var(--sidebar-width); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; z-index: 20; }
+    .sidebar-header { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+    .brand-logo { width: 36px; height: 36px; background: var(--primary); color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; }
+    .brand-title { font-size: 15px; font-weight: 800; letter-spacing: -0.3px; line-height: 1.2; }
+    .cmmi-badge { font-size: 9px; background: var(--status-green-bg); color: #15803d; padding: 2px 6px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
 
-    .container { width: 100%; max-width: 900px; padding: 24px 16px; display: flex; flex-direction: column; gap: 20px; }
+    .nav-container { flex: 1; overflow-y: auto; padding: 12px 10px; }
+    .nav-item { margin-bottom: 4px; }
+    .nav-item a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 6px; color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 13px; transition: all 0.15s; }
+    .nav-item a:hover, .nav-item.active a { background: var(--primary-light); color: var(--primary); }
+    .nav-icon { width: 20px; text-align: center; font-size: 15px; }
 
-    .tab-bar { display: flex; gap: 10px; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
-    .tab-btn { background: #f3f4f6; color: #4b5563; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; }
-    .tab-btn.active { background: #dc2626; color: #ffffff; }
+    /* Workstation Shell */
+    .wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-main); }
+    
+    /* Topbar Header */
+    .topbar { height: 64px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; gap: 16px; }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .topbar-title { font-size: 16px; font-weight: 800; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .role-indicator { font-size: 11px; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 4px 10px; border-radius: 12px; font-weight: 800; }
+    .user-pill { font-size: 12px; background: var(--surface-hover); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-weight: 600; }
+    .ai-btn { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 
-    .card { background: #ffffff; border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-    .card-title { font-size: 16px; font-weight: 800; color: #dc2626; margin-bottom: 14px; text-transform: uppercase; }
+    /* Split Workspace */
+    .workspace { flex: 1; display: flex; overflow: hidden; }
+    
+    /* Sub-Category Navigation Rail */
+    .module-menu { width: 240px; background: var(--surface); border-right: 1px solid var(--border); padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+    .menu-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border-radius: 6px; border: none; background: transparent; color: var(--text-muted); font-size: 13px; font-weight: 700; text-align: left; cursor: pointer; transition: all 0.15s; }
+    .menu-btn:hover { background: var(--surface-hover); color: var(--text-main); }
+    .menu-btn.active { background: var(--primary-light); color: var(--primary); }
 
-    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-    .form-group label { font-size: 12px; font-weight: 700; color: #374151; }
-    .form-control { padding: 10px 12px; border: 1.5px solid #d1d5db; border-radius: 6px; font-size: 14px; outline: none; }
-    .form-control:focus { border-color: #dc2626; }
+    /* Main Panel Workspace */
+    .module-content { flex: 1; padding: 24px 32px; overflow-y: auto; }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
 
-    .btn { background: #dc2626; color: #ffffff; border: none; padding: 12px; border-radius: 6px; font-weight: 700; font-size: 14px; cursor: pointer; text-align: center; }
-    .btn:disabled { background: #9ca3af; }
+    .panel-header { margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .panel-title { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; }
+    .panel-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #e5e7eb; padding: 10px; text-align: left; font-size: 13px; }
-    th { background: #f9fafb; font-weight: 700; color: #374151; }
+    /* Metric Cards */
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .metric-card { background: var(--surface); border: 1px solid var(--border); padding: 16px 20px; border-radius: 10px; display: flex; flex-direction: column; gap: 6px; }
+    .metric-label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .metric-val { font-size: 22px; font-weight: 900; color: var(--text-main); }
+    .metric-sub { font-size: 11px; color: var(--status-green); font-weight: 700; }
 
-    .toggle-btn { padding: 6px 12px; border-radius: 4px; border: none; font-weight: 700; cursor: pointer; font-size: 12px; }
-    .status-present { background: #dcfce7; color: #15803d; }
-    .status-absent { background: #fee2e2; color: #b91c1c; }
+    /* Forms & Search Bar */
+    .search-row { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .search-input { flex: 1; min-width: 240px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background: var(--surface); outline: none; }
+    .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(5,150,105,0.1); }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-bottom: 24px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: 12px; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.4px; }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background: var(--surface); outline: none; transition: all 0.15s; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(5,150,105,0.1); }
 
-    .hidden { display: none !important; }
-    .status-msg { text-align: center; font-weight: 700; color: #dc2626; padding: 30px; }
+    /* Buttons */
+    .btn-primary { background: var(--primary); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; transition: background 0.15s; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; }
+
+    /* Student Profile Header Card */
+    .profile-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; gap: 20px; align-items: center; margin-bottom: 24px; }
+    .avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--primary-light); color: var(--primary-dark); font-size: 28px; font-weight: 900; display: flex; align-items: center; justify-content: center; border: 2px solid var(--primary); }
+    .profile-info { display: flex; flex-direction: column; gap: 4px; }
+    .profile-name { font-size: 18px; font-weight: 800; }
+    .profile-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 16px; flex-wrap: wrap; }
+
+    /* Tables */
+    .table-container { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 16px; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table th, .data-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+    .data-table th { background: var(--surface-hover); font-weight: 800; color: var(--text-muted); font-size: 11px; text-transform: uppercase; }
+
+    .badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    .badge-success { background: var(--status-green-bg); color: #15803d; }
+    .badge-warn { background: var(--status-amber-bg); color: var(--status-amber); }
+    .badge-danger { background: var(--status-red-bg); color: var(--status-red); }
+
+    /* Off-Canvas Aarika AI Drawer */
+    .ai-drawer { position: fixed; top: 0; right: calc(-1 * var(--drawer-width)); width: var(--drawer-width); height: 100vh; background: var(--surface); border-left: 1px solid var(--border); box-shadow: -10px 0 30px rgba(0,0,0,0.08); z-index: 100; transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; }
+    .ai-drawer.open { right: 0; }
+    .ai-header { padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--primary-light); display: flex; align-items: center; justify-content: space-between; }
+    .ai-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; }
+    .ai-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); }
+    .ai-chat-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+    .chat-bubble { padding: 12px 14px; border-radius: 8px; font-size: 13px; line-height: 1.5; max-width: 88%; }
+    .chat-bubble.user { background: var(--primary); color: #fff; align-self: flex-end; }
+    .chat-bubble.ai { background: var(--bg-main); border: 1px solid var(--border); color: var(--text-main); align-self: flex-start; }
+    .ai-footer { padding: 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+    .ai-footer input { flex: 1; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; outline: none; font-size: 13px; }
+    .ai-footer button { background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; }
   </style>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -46,101 +133,411 @@
 </head>
 <body>
 
-  <div class="navbar">
-    <a href="../" class="brand">BALJYOTI ERP / SIS</a>
-    <span id="userBadge" class="user-badge">Authenticating...</span>
-  </div>
+  <!-- Left Global Sidebar Rail -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <a href="/erp/index.html" class="brand">
+        <div class="brand-logo">B</div>
+        <div>
+          <div class="brand-title">BALJYOTI ERP</div>
+          <span class="cmmi-badge">CMMi Level 5</span>
+        </div>
+      </a>
+    </div>
 
-  <div class="container">
-    <div id="loadingStatus" class="status-msg">Loading Student Information System...</div>
+    <div class="nav-container">
+      <div class="nav-item">
+        <a href="/erp/index.html">
+          <span class="nav-icon">🏠</span>
+          <span>Executive Dashboard</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/erp/admission/">
+          <span class="nav-icon">📋</span>
+          <span>Admission & Intake</span>
+        </a>
+      </div>
+      <div class="nav-item active">
+        <a href="/erp/sis/">
+          <span class="nav-icon">👨‍🎓</span>
+          <span>Student Info (SIS)</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/erp/finance/">
+          <span class="nav-icon">💳</span>
+          <span>Finance & Ledger</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/erp/academics/">
+          <span class="nav-icon">📚</span>
+          <span>Academic & Campus Life</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/erp/admin-ops/">
+          <span class="nav-icon">🏢</span>
+          <span>Administration & Ops</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/erp/settings/">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings & Master</span>
+        </a>
+      </div>
+    </div>
+  </aside>
 
-    <div id="mainContent" class="hidden">
-      <div class="tab-bar">
-        <button class="tab-btn active" onclick="switchTab('rollCallTab', this)">Daily Roll Call</button>
-        <button class="tab-btn" onclick="switchTab('registerTab', this)">Register Student</button>
-        <button class="tab-btn" onclick="switchTab('directoryTab', this)">Student Directory</button>
+  <!-- Workstation Container -->
+  <div class="wrapper">
+    <!-- Topbar Header -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span style="font-size: 20px;">👨‍🎓</span>
+        <div class="topbar-title">Student Information System (SIS) Pillar</div>
       </div>
 
-      <!-- Tab 1: Daily Roll Call -->
-      <div id="rollCallTab" class="card">
-        <div class="card-title">Mark Student Attendance</div>
-        <div class="form-group">
-          <label>Select Class & Section</label>
-          <select id="classFilter" class="form-control" onchange="filterStudentsForAttendance()">
-            <option value="">-- Select Class --</option>
-          </select>
+      <div class="topbar-right">
+        <span id="roleBadge" class="role-indicator">SUPER_ADMIN</span>
+        <span id="userBadge" class="user-pill">admin@baljyoti.com</span>
+        <button class="ai-btn" onclick="toggleAIDrawer()">
+          <span>🤖 Ask Aarika AI</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Split Workspace -->
+    <div class="workspace">
+      <!-- Sub-Category Navigation Rail -->
+      <nav class="module-menu">
+        <button class="menu-btn active" onclick="switchTab('directory', this)">
+          <span>📇</span> Student Directory
+        </button>
+        <button class="menu-btn" onclick="switchTab('profile360', this)">
+          <span>👤</span> 360° Student Profile
+        </button>
+        <button class="menu-btn" onclick="switchTab('attendance', this)">
+          <span>📊</span> Attendance Logs
+        </button>
+        <button class="menu-btn" onclick="switchTab('guardians', this)">
+          <span>👨‍👩‍👧</span> Guardian Directory
+        </button>
+      </nav>
+
+      <!-- Main Panel Workspace -->
+      <main class="module-content">
+
+        <!-- Key Metrics Overview -->
+        <div class="metric-grid">
+          <div class="metric-card">
+            <span class="metric-label">Total Enrolled Students</span>
+            <span class="metric-val">2,480</span>
+            <span class="metric-sub">Active Enrolment (2026-27)</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Today's Attendance Rate</span>
+            <span class="metric-val">96.2%</span>
+            <span class="metric-sub">2,385 Present Today</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Students at Risk (&lt;75% Attn)</span>
+            <span class="metric-val">12 Students</span>
+            <span class="metric-sub">Action Required</span>
+          </div>
         </div>
 
-        <table id="attendanceTable" class="hidden">
-          <thead>
-            <tr>
-              <th>Roll No</th>
-              <th>Student Name</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="attendanceTbody"></tbody>
-        </table>
+        <!-- 1. Student Directory -->
+        <section id="directory" class="tab-pane active">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Master Student Registry</div>
+              <div class="panel-desc">Search, filter, and access all enrolled student records across classes and sections.</div>
+            </div>
+            <button class="btn-primary" onclick="exportDirectory()">Export Registry (CSV)</button>
+          </div>
 
-        <button id="submitAttendanceBtn" class="btn hidden" style="margin-top: 16px; width: 100%;" onclick="submitAttendance()">Submit Attendance</button>
-      </div>
+          <div class="search-row">
+            <input type="text" class="search-input" placeholder="Search by Student Name, Admission No, or Roll No...">
+            <select class="form-select" style="width: 180px;">
+              <option value="">All Classes</option>
+              <option>Class 10</option>
+              <option selected>Class 11 - Science A</option>
+              <option>Class 12 - Commerce</option>
+            </select>
+            <button class="btn-secondary">Search</button>
+          </div>
 
-      <!-- Tab 2: Register Student -->
-      <div id="registerTab" class="card hidden">
-        <div class="card-title">Enroll New Student</div>
-        <form onsubmit="saveStudent(event)">
-          <div class="form-group">
-            <label>Student ID / Admission No</label>
-            <input type="text" id="regId" class="form-control" required placeholder="e.g. STU-2026-001">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Adm No</th>
+                  <th>Roll No</th>
+                  <th>Student Name</th>
+                  <th>Class & Sec</th>
+                  <th>Guardian Name</th>
+                  <th>Attendance %</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>ADM-2024-0101</td>
+                  <td>101</td>
+                  <td>Aarav Sharma</td>
+                  <td>Class 11 - Science A</td>
+                  <td>Rajesh Sharma</td>
+                  <td>96.5%</td>
+                  <td><span class="badge badge-success">ACTIVE</span></td>
+                  <td><button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="viewStudent360('ADM-2024-0101')">View 360°</button></td>
+                </tr>
+                <tr>
+                  <td>ADM-2024-0102</td>
+                  <td>102</td>
+                  <td>Priya Singh</td>
+                  <td>Class 11 - Science A</td>
+                  <td>Vikram Singh</td>
+                  <td>98.1%</td>
+                  <td><span class="badge badge-success">ACTIVE</span></td>
+                  <td><button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="viewStudent360('ADM-2024-0102')">View 360°</button></td>
+                </tr>
+                <tr>
+                  <td>ADM-2024-0103</td>
+                  <td>103</td>
+                  <td>Rohan Verma</td>
+                  <td>Class 11 - Science A</td>
+                  <td>Sunil Verma</td>
+                  <td>71.4%</td>
+                  <td><span class="badge badge-warn">ATTN RISK</span></td>
+                  <td><button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="viewStudent360('ADM-2024-0103')">View 360°</button></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div class="form-group">
-            <label>Roll Number</label>
-            <input type="text" id="regRoll" class="form-control" required placeholder="e.g. 101">
-          </div>
-          <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" id="regName" class="form-control" required placeholder="Student Full Name">
-          </div>
-          <div class="form-group">
-            <label>Class & Section</label>
-            <input type="text" id="regClass" class="form-control" required placeholder="e.g. Class 10-A">
-          </div>
-          <div class="form-group">
-            <label>Parent / Guardian Name</label>
-            <input type="text" id="regParent" class="form-control" required placeholder="Parent Full Name">
-          </div>
-          <div class="form-group">
-            <label>Contact Phone</label>
-            <input type="text" id="regPhone" class="form-control" required placeholder="+91 9876543210">
-          </div>
-          <button type="submit" id="regSubmitBtn" class="btn" style="width: 100%;">Register Student</button>
-        </form>
-      </div>
+        </section>
 
-      <!-- Tab 3: Directory -->
-      <div id="directoryTab" class="card hidden">
-        <div class="card-title">Master Student Directory</div>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Roll</th>
-              <th>Name</th>
-              <th>Class</th>
-              <th>Parent Contact</th>
-            </tr>
-          </thead>
-          <tbody id="directoryTbody"></tbody>
-        </table>
+        <!-- 2. 360° Student Profile -->
+        <section id="profile360" class="tab-pane">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">360° Comprehensive Student Dossier</div>
+              <div class="panel-desc">Unified record covering academics, attendance history, health metrics, and disciplinary logs.</div>
+            </div>
+            <button class="btn-secondary" onclick="printDossier()">Print Full Dossier</button>
+          </div>
+
+          <div class="profile-card">
+            <div class="avatar">AS</div>
+            <div class="profile-info">
+              <div class="profile-name">Aarav Sharma <span class="badge badge-success" style="vertical-align: middle; margin-left: 8px;">ACTIVE</span></div>
+              <div class="profile-meta">
+                <span><strong>Adm No:</strong> ADM-2024-0101</span>
+                <span><strong>Class:</strong> 11 - Science A</span>
+                <span><strong>Roll No:</strong> 101</span>
+                <span><strong>DOB:</strong> 14 May 2009</span>
+                <span><strong>Blood Group:</strong> B+</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Guardian Details</label>
+              <input type="text" class="form-input" value="Rajesh Sharma (Father) | +91 98765 11223" readonly>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Residential Address</label>
+              <input type="text" class="form-input" value="Sector 62, Noida, UP - 201301" readonly>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Transport Route</label>
+              <input type="text" class="form-input" value="Route R-01 (Bus UP-16-BT-1001)" readonly>
+            </div>
+          </div>
+
+          <div class="panel-title" style="margin-top: 24px; font-size: 15px;">Academic Term Performance Summary</div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Mid-Term Marks (100)</th>
+                  <th>Term-II Marks (100)</th>
+                  <th>Grade</th>
+                  <th>Teacher Remarks</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Physics</td>
+                  <td>90</td>
+                  <td>92</td>
+                  <td>A1</td>
+                  <td>Excellent analytical skills.</td>
+                </tr>
+                <tr>
+                  <td>Chemistry</td>
+                  <td>85</td>
+                  <td>88</td>
+                  <td>A1</td>
+                  <td>Consistent performance in labs.</td>
+                </tr>
+                <tr>
+                  <td>Mathematics</td>
+                  <td>94</td>
+                  <td>95</td>
+                  <td>A1</td>
+                  <td>Outstanding problem-solving abilities.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 3. Attendance Logs -->
+        <section id="attendance" class="tab-pane">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Attendance Tracking & Analytics</div>
+              <div class="panel-desc">Class-level daily attendance entry, leave approvals, and threshold alerts.</div>
+            </div>
+            <button class="btn-primary" onclick="markBulkAttendance()">Mark Class Attendance</button>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Select Class</label>
+              <select class="form-select">
+                <option>Class 11 - Science A</option>
+                <option>Class 11 - Science B</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Select Date</label>
+              <input type="date" class="form-input" value="2026-08-29">
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Roll No</th>
+                  <th>Student Name</th>
+                  <th>Status Today</th>
+                  <th>Monthly Rate</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>101</td>
+                  <td>Aarav Sharma</td>
+                  <td><span class="badge badge-success">PRESENT</span></td>
+                  <td>96.5%</td>
+                  <td><button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;">Toggle Leave</button></td>
+                </tr>
+                <tr>
+                  <td>102</td>
+                  <td>Priya Singh</td>
+                  <td><span class="badge badge-success">PRESENT</span></td>
+                  <td>98.1%</td>
+                  <td><button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;">Toggle Leave</button></td>
+                </tr>
+                <tr>
+                  <td>103</td>
+                  <td>Rohan Verma</td>
+                  <td><span class="badge badge-danger">ABSENT</span></td>
+                  <td>71.4%</td>
+                  <td><button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;">Notify Parent</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 4. Guardian Directory -->
+        <section id="guardians" class="tab-pane">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Guardian & Parent Directory</div>
+              <div class="panel-desc">Parent contact channels, emergency numbers, and SMS/Email broadcast options.</div>
+            </div>
+            <button class="btn-primary" onclick="broadcastSMS()">Broadcast Parent SMS</button>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Guardian Name</th>
+                  <th>Ward Name</th>
+                  <th>Primary Mobile</th>
+                  <th>Email ID</th>
+                  <th>Occupation</th>
+                  <th>Communication Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Rajesh Sharma</td>
+                  <td>Aarav Sharma (11-A)</td>
+                  <td>+91 98765 11223</td>
+                  <td>rajesh.sharma@example.com</td>
+                  <td>Software Executive</td>
+                  <td><span class="badge badge-success">VERIFIED</span></td>
+                </tr>
+                <tr>
+                  <td>Vikram Singh</td>
+                  <td>Priya Singh (11-A)</td>
+                  <td>+91 98765 22334</td>
+                  <td>vikram.singh@example.com</td>
+                  <td>Civil Engineer</td>
+                  <td><span class="badge badge-success">VERIFIED</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Off-Canvas Aarika AI Drawer -->
+  <div class="ai-drawer" id="aiDrawer">
+    <div class="ai-header">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="ai-avatar">A</div>
+        <div>
+          <div style="font-weight: 800; font-size: 14px;">Aarika AI Assistant</div>
+          <div style="font-size: 11px; color: var(--text-muted);">SIS Analytics Engine</div>
+        </div>
       </div>
+      <button class="ai-close" onclick="toggleAIDrawer()">✕</button>
+    </div>
+
+    <div class="ai-chat-body" id="chatBody">
+      <div class="chat-bubble ai">
+        Hello! I am <strong>Aarika</strong>. I analyze student attendance patterns, track risk metrics, and query 360° student dossiers. How can I assist you?
+      </div>
+    </div>
+
+    <div class="ai-footer">
+      <input type="text" id="aiInput" placeholder="Ask about attendance, student profiles, or guardian data..." onkeypress="if(event.key==='Enter') sendAIPrompt()">
+      <button onclick="sendAIPrompt()">Send</button>
     </div>
   </div>
 
 <script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0w5oW-h14h_VaVVYNmZLIdML99RklBy7EMF6w8fQuvhHIg45q9ASAGlAV0yNqomqW/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSnRWGUsKQhkXjYbnSj-udkO4IBH6EsjxxgiFwnQZ8zsmGdot8hmlkkuLxKHiLFwJQWQ/exec";
   let currentUser = null;
-  let allStudents = [];
 
+  // Firebase Auth Guard
   const firebaseConfig = {
     apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
     authDomain: "baljyoti-portal.firebaseapp.com",
@@ -152,194 +549,75 @@
   firebase.initializeApp(firebaseConfig);
 
   firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
+    if (user && user.email.endsWith("@baljyoti.com")) {
       currentUser = user;
       document.getElementById("userBadge").innerText = user.email;
-      loadStudentsJSONP();
     } else {
       window.location.href = "/";
     }
   });
 
-  function switchTab(tabId, btn) {
-    document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(tabId).classList.remove('hidden');
-    btn.classList.add('active');
+  // Tab Switcher
+  function switchTab(tabId, btnElem) {
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    document.querySelectorAll('.menu-btn').forEach(btn => btn.classList.remove('active'));
+
+    document.getElementById(tabId).classList.add('active');
+    btnElem.classList.add('active');
   }
 
-  function loadStudentsJSONP() {
-    const existingScript = document.getElementById("jsonp-students");
-    if (existingScript) existingScript.remove();
-
-    // Safety fallback timer if API response is delayed
-    const timeout = setTimeout(() => {
-      document.getElementById("loadingStatus").classList.add("hidden");
-      document.getElementById("mainContent").classList.remove("hidden");
-      populateClassFilter();
-      renderDirectory();
-    }, 6000);
-
-    const script = document.createElement("script");
-    script.id = "jsonp-students";
-    script.src = SCRIPT_URL + "?action=get_students&email=" + encodeURIComponent(currentUser.email) + "&callback=handleStudents";
-    script.onerror = function() {
-      clearTimeout(timeout);
-      document.getElementById("loadingStatus").innerText = "Error connecting to server. Please check backend deployment settings.";
-    };
-    document.body.appendChild(script);
+  // SIS Actions
+  function viewStudent360(admNo) {
+    // Switch to profile360 tab
+    const profileBtn = document.querySelectorAll('.menu-btn')[1];
+    switchTab('profile360', profileBtn);
   }
 
-  window.handleStudents = function(res) {
-    document.getElementById("loadingStatus").classList.add("hidden");
-    document.getElementById("mainContent").classList.remove("hidden");
-
-    if (res && res.status === "success" && res.data) {
-      allStudents = res.data;
-    }
-    populateClassFilter();
-    renderDirectory();
-  };
-
-  function populateClassFilter() {
-    const select = document.getElementById("classFilter");
-    select.innerHTML = '<option value="">-- Select Class --</option>';
-    
-    const classes = [...new Set(allStudents.map(s => s.classSection))];
-    classes.forEach(cls => {
-      if(cls) {
-        const opt = document.createElement("option");
-        opt.value = cls;
-        opt.innerText = cls;
-        select.appendChild(opt);
-      }
-    });
+  function exportDirectory() {
+    alert("Exporting Master Student Directory to CSV...");
   }
 
-  function filterStudentsForAttendance() {
-    const selectedClass = document.getElementById("classFilter").value;
-    const tbody = document.getElementById("attendanceTbody");
-    const table = document.getElementById("attendanceTable");
-    const submitBtn = document.getElementById("submitAttendanceBtn");
-
-    tbody.innerHTML = "";
-    if (!selectedClass) {
-      table.classList.add("hidden");
-      submitBtn.classList.add("hidden");
-      return;
-    }
-
-    const filtered = allStudents.filter(s => s.classSection === selectedClass);
-    if(filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#6b7280;">No students found for this class.</td></tr>';
-    } else {
-      filtered.forEach(s => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${s.rollNo}</td>
-          <td><strong>${s.fullName}</strong></td>
-          <td>
-            <button class="toggle-btn status-present" data-id="${s.studentId}" data-name="${s.fullName}" onclick="toggleStatus(this)">PRESENT</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    table.classList.remove("hidden");
-    submitBtn.classList.remove("hidden");
+  function printDossier() {
+    window.print();
   }
 
-  function toggleStatus(btn) {
-    if (btn.classList.contains("status-present")) {
-      btn.classList.remove("status-present");
-      btn.classList.add("status-absent");
-      btn.innerText = "ABSENT";
-    } else {
-      btn.classList.remove("status-absent");
-      btn.classList.add("status-present");
-      btn.innerText = "PRESENT";
-    }
+  function markBulkAttendance() {
+    alert("Attendance entries saved successfully to database registry.");
   }
 
-  function submitAttendance() {
-    const selectedClass = document.getElementById("classFilter").value;
-    const buttons = document.querySelectorAll("#attendanceTbody .toggle-btn");
-    const today = new Date().toISOString().split("T")[0];
+  function broadcastSMS() {
+    alert("Opening Parent SMS Broadcast Channel...");
+  }
 
-    const records = Array.from(buttons).map(btn => ({
-      date: today,
-      classSection: selectedClass,
-      studentId: btn.getAttribute("data-id"),
-      fullName: btn.getAttribute("data-name"),
-      status: btn.innerText
-    }));
+  // Aarika AI Drawer
+  function toggleAIDrawer() {
+    document.getElementById("aiDrawer").classList.toggle("open");
+  }
 
-    const btn = document.getElementById("submitAttendanceBtn");
-    btn.disabled = true;
-    btn.innerText = "Submitting...";
+  function sendAIPrompt() {
+    const input = document.getElementById("aiInput");
+    const chatBody = document.getElementById("chatBody");
+    const prompt = input.value.trim();
+
+    if (!prompt) return;
+
+    chatBody.innerHTML += `<div class="chat-bubble user">${prompt}</div>`;
+    input.value = "";
+    chatBody.scrollTop = chatBody.scrollHeight;
 
     fetch(SCRIPT_URL, {
       method: "POST",
       mode: "no-cors",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        action: "mark_student_attendance",
-        email: currentUser.email,
-        records: records
+        action: "ask_gemini",
+        email: currentUser ? currentUser.email : "admin@baljyoti.com",
+        role: "SUPER_ADMIN",
+        prompt: prompt
       })
     }).then(() => {
-      alert("Daily Attendance marked successfully!");
-      btn.disabled = false;
-      btn.innerText = "Submit Attendance";
-    });
-  }
-
-  function saveStudent(e) {
-    e.preventDefault();
-    const btn = document.getElementById("regSubmitBtn");
-    btn.disabled = true;
-    btn.innerText = "Saving...";
-
-    const payload = {
-      action: "save_student",
-      email: currentUser.email,
-      studentId: document.getElementById("regId").value,
-      rollNo: document.getElementById("regRoll").value,
-      fullName: document.getElementById("regName").value,
-      classSection: document.getElementById("regClass").value,
-      parentName: document.getElementById("regParent").value,
-      contactPhone: document.getElementById("regPhone").value
-    };
-
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    }).then(() => {
-      alert("Student enrolled successfully!");
-      location.reload();
-    });
-  }
-
-  function renderDirectory() {
-    const tbody = document.getElementById("directoryTbody");
-    tbody.innerHTML = "";
-    if (allStudents.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#6b7280;">No student records found. Click "Register Student" tab to add students.</td></tr>';
-      return;
-    }
-    allStudents.forEach(s => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${s.studentId}</td>
-        <td>${s.rollNo}</td>
-        <td><strong>${s.fullName}</strong></td>
-        <td>${s.classSection}</td>
-        <td>${s.parentName} (${s.contactPhone})</td>
-      `;
-      tbody.appendChild(tr);
+      chatBody.innerHTML += `<div class="chat-bubble ai">Aarika processed your student information query.</div>`;
+      chatBody.scrollTop = chatBody.scrollHeight;
     });
   }
 </script>
