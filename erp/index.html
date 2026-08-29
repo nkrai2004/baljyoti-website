@@ -3,79 +3,108 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baljyoti Enterprise ERP | CMMi Level 5 Engine</title>
+  <title>Baljyoti Enterprise ERP | Master Command Workstation</title>
   <style>
     :root {
       --primary: #dc2626;
-      --primary-dark: #b91c1c;
+      --primary-dark: #991b1b;
+      --primary-light: #fef2f2;
+      --accent: #2563eb;
       --bg-main: #f8fafc;
       --surface: #ffffff;
+      --surface-hover: #f1f5f9;
       --text-main: #0f172a;
       --text-muted: #64748b;
-      --border: #e2e8f0;
-      --sidebar-width: 260px;
+      --border: #cbd5e1;
+      --sidebar-width: 280px;
+      --drawer-width: 420px;
+      --status-green: #16a34a;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg-main); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; }
+    body { background-color: var(--bg-main); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; font-size: 14px; }
 
-    /* Left Navigation Sidebar */
+    /* Left Navigation Rail (HFI Grouping) */
     .sidebar { width: var(--sidebar-width); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; z-index: 20; }
-    .sidebar-header { padding: 20px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
-    .brand-logo { width: 34px; height: 34px; background: var(--primary); color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; }
-    .brand-text { font-size: 15px; font-weight: 800; color: var(--text-main); letter-spacing: -0.3px; }
-    .cmmi-tag { font-size: 9px; background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 4px; font-weight: 800; }
+    .sidebar-header { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-logo { width: 36px; height: 36px; background: var(--primary); color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; }
+    .brand-title { font-size: 15px; font-weight: 800; letter-spacing: -0.3px; line-height: 1.2; }
+    .cmmi-badge { font-size: 9px; background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
 
-    .nav-section-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; padding: 16px 20px 8px; letter-spacing: 0.5px; }
-    .nav-list { list-style: none; padding: 0 10px; }
-    .nav-item a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; color: var(--text-muted); text-decoration: none; font-size: 13.5px; font-weight: 600; transition: all 0.2s; }
-    .nav-item a:hover, .nav-item.active a { background: #fef2f2; color: var(--primary); }
-    .nav-icon { width: 20px; text-align: center; font-size: 16px; }
+    .nav-container { flex: 1; overflow-y: auto; padding: 12px 10px; }
+    .nav-group { margin-bottom: 8px; }
+    .nav-group-header { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; padding: 10px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-radius: 6px; user-select: none; }
+    .nav-group-header:hover { background: var(--surface-hover); }
+    .nav-group-items { list-style: none; padding-left: 0; margin-top: 4px; display: none; }
+    .nav-group.open .nav-group-items { display: block; }
+    .nav-item a { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 6px; color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 13px; transition: all 0.15s; }
+    .nav-item a:hover, .nav-item.active a { background: var(--primary-light); color: var(--primary); }
+    .nav-icon { width: 20px; text-align: center; font-size: 15px; }
 
-    /* Workstation Layout */
-    .wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    /* Workstation Canvas */
+    .wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-main); }
 
-    /* Header Bar */
-    .topbar { height: 64px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; }
-    .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
-    .role-badge { font-size: 11px; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 3px 10px; border-radius: 12px; font-weight: 800; }
-    .topbar-actions { display: flex; align-items: center; gap: 16px; }
-    .user-badge { font-size: 12px; background: #fef2f2; color: var(--primary); border: 1px solid #fecaca; padding: 6px 14px; border-radius: 20px; font-weight: 700; }
-    .ai-trigger-btn { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+    /* Top Command Header */
+    .topbar { height: 64px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; gap: 16px; }
+    .global-search { flex: 1; max-width: 480px; position: relative; }
+    .global-search input { width: 100%; padding: 9px 14px 9px 36px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-main); font-size: 13px; outline: none; }
+    .global-search input:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; }
 
-    /* Content Area */
-    .content-area { flex: 1; padding: 28px; overflow-y: auto; }
-    
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 28px; }
-    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-    .stat-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-    .stat-value { font-size: 26px; font-weight: 800; color: var(--text-main); margin-top: 6px; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .role-indicator { font-size: 11px; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 4px 10px; border-radius: 12px; font-weight: 800; }
+    .user-pill { font-size: 12px; background: var(--surface-hover); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-weight: 600; }
+    .ai-btn { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+    .ai-btn:hover { background: var(--primary-dark); }
 
-    .module-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-    .module-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; text-decoration: none; color: inherit; transition: all 0.2s; display: flex; flex-direction: column; justify-content: space-between; }
-    .module-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.04); }
-    .module-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-    .module-icon { width: 40px; height: 40px; border-radius: 10px; background: #fef2f2; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 20px; }
-    .module-card h3 { font-size: 16px; font-weight: 800; color: var(--text-main); }
-    .module-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; }
-    .module-footer { font-size: 12px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 4px; }
+    /* Content Canvas */
+    .content-area { flex: 1; padding: 24px; overflow-y: auto; }
+    .dashboard-header { margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .dashboard-header h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+    .dashboard-header p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
 
-    /* Aarika Slide-Out Drawer */
-    .ai-drawer { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); box-shadow: -10px 0 30px rgba(0,0,0,0.08); z-index: 100; transition: right 0.3s ease; display: flex; flex-direction: column; }
+    /* Quick Action Dock (Fitts's Law) */
+    .action-dock { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .dock-btn { background: var(--surface); border: 1px solid var(--border); padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; color: var(--text-main); transition: all 0.15s; }
+    .dock-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); transform: translateY(-1px); }
+
+    /* Key Performance Metric Cards */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+    .stat-label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-value { font-size: 24px; font-weight: 900; color: var(--text-main); margin-top: 4px; }
+    .stat-sub { font-size: 11px; color: var(--status-green); font-weight: 700; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+
+    /* Modular Section Grid */
+    .tier-section-title { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin: 24px 0 12px; display: flex; align-items: center; gap: 8px; }
+    .tier-section-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+    .module-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .module-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; text-decoration: none; color: inherit; transition: all 0.2s; display: flex; flex-direction: column; justify-content: space-between; }
+    .module-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.05); }
+    .module-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+    .module-icon-box { width: 36px; height: 36px; border-radius: 8px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .module-title { font-size: 15px; font-weight: 800; }
+    .module-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; margin-bottom: 14px; }
+    .module-link { font-size: 12px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 4px; }
+
+    /* Off-Canvas Aarika AI Drawer */
+    .ai-drawer { position: fixed; top: 0; right: calc(-1 * var(--drawer-width)); width: var(--drawer-width); height: 100vh; background: var(--surface); border-left: 1px solid var(--border); box-shadow: -10px 0 30px rgba(0,0,0,0.08); z-index: 100; transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; }
     .ai-drawer.open { right: 0; }
-    .ai-header { padding: 18px 20px; border-bottom: 1px solid var(--border); background: #fef2f2; display: flex; align-items: center; justify-content: space-between; }
-    .ai-profile { display: flex; align-items: center; gap: 12px; }
-    .ai-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; }
-    .ai-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); }
+    .ai-header { padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--primary-light); display: flex; align-items: center; justify-content: space-between; }
+    .ai-title-area { display: flex; align-items: center; gap: 10px; }
+    .ai-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; }
+    .ai-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); padding: 4px; }
 
-    .ai-chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; font-size: 13px; }
-    .msg { padding: 12px 16px; border-radius: 10px; line-height: 1.5; }
-    .msg.user { background: var(--primary); color: #ffffff; align-self: flex-end; max-width: 85%; }
-    .msg.ai { background: var(--bg-main); color: var(--text-main); align-self: flex-start; max-width: 90%; border: 1px solid var(--border); }
+    .ai-chat-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+    .chat-bubble { padding: 12px 14px; border-radius: 8px; font-size: 13px; line-height: 1.5; max-width: 88%; }
+    .chat-bubble.user { background: var(--primary); color: #fff; align-self: flex-end; }
+    .chat-bubble.ai { background: var(--bg-main); border: 1px solid var(--border); color: var(--text-main); align-self: flex-start; }
 
-    .ai-input-area { padding: 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
-    .ai-input-area input { flex: 1; padding: 11px 14px; border: 1px solid var(--border); border-radius: 8px; outline: none; font-size: 13px; }
-    .ai-input-area button { background: var(--primary); color: #ffffff; border: none; padding: 11px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+    .ai-footer { padding: 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+    .ai-footer input { flex: 1; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; outline: none; font-size: 13px; }
+    .ai-footer button { background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; }
   </style>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -83,75 +112,185 @@
 </head>
 <body>
 
-  <!-- Navigation Sidebar -->
+  <!-- Left Navigation Rail -->
   <aside class="sidebar">
     <div class="sidebar-header">
-      <div class="brand-logo">B</div>
-      <div>
-        <div class="brand-text">BALJYOTI ERP</div>
-        <span class="cmmi-tag">CMMi Level 5</span>
+      <div class="brand">
+        <div class="brand-logo">B</div>
+        <div>
+          <div class="brand-title">BALJYOTI ERP</div>
+          <span class="cmmi-badge">CMMi Level 5</span>
+        </div>
       </div>
     </div>
 
-    <div class="nav-section-label">Enterprise Modules</div>
-    <ul class="nav-list" id="sidebarNav"></ul>
-
-    <div class="nav-section-label">Google Workspace</div>
-    <ul class="nav-list">
-      <li class="nav-item"><a href="https://classroom.google.com" target="_blank"><span class="nav-icon">📚</span> Classroom Portal</a></li>
-      <li class="nav-item"><a href="https://drive.google.com" target="_blank"><span class="nav-icon">📁</span> Workspace Drive</a></li>
-    </ul>
+    <div class="nav-container" id="accordionNav">
+      <!-- Accordion Navigation Groups Populated via JavaScript -->
+    </div>
   </aside>
 
-  <!-- Workstation Layout -->
+  <!-- Workstation Shell -->
   <div class="wrapper">
+    <!-- Top Command Header -->
     <header class="topbar">
-      <div class="page-title">
-        <span id="dashboardTitle">Master Management Console</span>
-        <span id="roleBadge" class="role-badge">VERIFYING...</span>
+      <div class="global-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search students, staff, ledger receipts, or modules (Ctrl + K)..." id="searchInput">
       </div>
-      <div class="topbar-actions">
-        <span id="userBadge" class="user-badge">Authenticating...</span>
-        <button class="ai-trigger-btn" onclick="toggleAIDrawer()">
+
+      <div class="topbar-right">
+        <span id="roleBadge" class="role-indicator">SUPER_ADMIN</span>
+        <span id="userBadge" class="user-pill">admin@baljyoti.com</span>
+        <button class="ai-btn" onclick="toggleAIDrawer()">
           <span>🤖 Ask Aarika AI</span>
         </button>
       </div>
     </header>
 
+    <!-- Main Content Canvas -->
     <main class="content-area">
-      <div class="stats-grid" id="statsContainer"></div>
-      <div class="module-grid" id="modulesContainer"></div>
+      <div class="dashboard-header">
+        <div>
+          <h1 id="viewTitle">Executive Command Console</h1>
+          <p id="viewSubtitle">Real-time quantitative control center for Baljyoti Education Ecosystem.</p>
+        </div>
+      </div>
+
+      <!-- Quick Action Dock -->
+      <div class="action-dock">
+        <button class="dock-btn" onclick="window.location.href='/erp/sis/'"><span>📝</span> Mark Attendance</button>
+        <button class="dock-btn" onclick="window.location.href='/erp/finance/'"><span>💳</span> Record Fee Receipt</button>
+        <button class="dock-btn" onclick="window.location.href='/erp/classroom/'"><span>🏫</span> Sync Google Classroom</button>
+        <button class="dock-btn" onclick="toggleAIDrawer()"><span>📊</span> Run Analytics Audit</button>
+      </div>
+
+      <!-- Live Performance Metrics -->
+      <div class="stats-grid" id="statsContainer">
+        <div class="stat-card">
+          <div class="stat-label">Active Database</div>
+          <div class="stat-value">Google Sheets</div>
+          <div class="stat-sub">● Real-time Sync Active</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">AI Engine</div>
+          <div class="stat-value">Gemini 1.5</div>
+          <div class="stat-sub">● Context Aware</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Workspace SSO</div>
+          <div class="stat-value">Active</div>
+          <div class="stat-sub">● Domain Guarded</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Quality Metric</div>
+          <div class="stat-value">CMMi Level 5</div>
+          <div class="stat-sub">● Audit Logs Streaming</div>
+        </div>
+      </div>
+
+      <!-- Tiered Module Workstation Cards -->
+      <div id="moduleSections">
+        <!-- Rendered dynamically -->
+      </div>
     </main>
   </div>
 
-  <!-- Aarika AI Panel -->
+  <!-- Off-Canvas Aarika AI Drawer -->
   <div class="ai-drawer" id="aiDrawer">
     <div class="ai-header">
-      <div class="ai-profile">
+      <div class="ai-title-area">
         <div class="ai-avatar">A</div>
         <div>
-          <div style="font-weight: 800; font-size: 15px; color: var(--primary);">Aarika</div>
-          <div style="font-size: 11px; color: var(--text-muted);">CMMi-L5 Enterprise Guide</div>
+          <div style="font-weight: 800; font-size: 14px;">Aarika AI Assistant</div>
+          <div style="font-size: 11px; color: var(--text-muted);">CMMi-L5 Quantitative Intelligence</div>
         </div>
       </div>
       <button class="ai-close" onclick="toggleAIDrawer()">✕</button>
     </div>
 
-    <div class="ai-chat-box" id="chatBox">
-      <div class="msg ai">Greetings! I am <strong>Aarika</strong>, your CMMi Level 5 Enterprise Guide. Ask me to query real-time Workspace data or system audit streams.</div>
+    <div class="ai-chat-body" id="chatBody">
+      <div class="chat-bubble ai">
+        Hello! I am <strong>Aarika</strong>. I monitor all 38 ERP modules across Core, Standard, Premium, and Ultimate tiers. How can I assist your operations right now?
+      </div>
     </div>
 
-    <div class="ai-input-area">
-      <input type="text" id="aiPrompt" placeholder="Ask Aarika..." onkeypress="if(event.key==='Enter') sendAIPrompt()">
-      <button onclick="sendAIPrompt()">Ask</button>
+    <div class="ai-footer">
+      <input type="text" id="aiInput" placeholder="Query ERP data or system logs..." onkeypress="if(event.key==='Enter') sendAIPrompt()">
+      <button onclick="sendAIPrompt()">Send</button>
     </div>
   </div>
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSnRWGUsKQhkXjYbnSj-udkO4IBH6EsjxxgiFwnQZ8zsmGdot8hmlkkuLxKHiLFwJQWQ/exec";
   let currentUser = null;
-  let userRole = "TEACHER";
+  let userRole = "SUPER_ADMIN";
 
+  // Master Tier Architecture Registry (38 Modules)
+  const ERP_MODULES = [
+    {
+      tier: "Core Modules",
+      items: [
+        { title: "Courses & Batches", icon: "📚", link: "/erp/sis/", desc: "Organise academic structures, classes, and sections." },
+        { title: "Student Information", icon: "👨‍🎓", link: "/erp/sis/", desc: "Centralized student directory, medical records, and profiles." },
+        { title: "Student Admission", icon: "📋", link: "/erp/sis/", desc: "Digitise enrollment workflows and custom forms." },
+        { title: "Student Attendance", icon: "📅", link: "/erp/sis/", desc: "Log daily or subject roll-call with SMS reporting." },
+        { title: "Examination & Gradebook", icon: "📊", link: "/erp/sis/", desc: "Automate grading, GPA calculations, and report cards." },
+        { title: "Human Resources", icon: "🛡️", link: "/erp/staff/", desc: "Manage employee profiles, service records, and leave." },
+        { title: "Finance & Fee Ledger", icon: "💳", link: "/erp/finance/", desc: "Baseline accounting, structured fees, and tax assessments." },
+        { title: "Timetable & Calendar", icon: "🗓️", link: "/erp/sis/", desc: "Generate school schedules and track scheduled holidays." },
+        { title: "Messaging & SMS", icon: "💬", link: "/erp/sis/", desc: "Send critical announcements or emergency broadcasts." },
+        { title: "News Management", icon: "📰", link: "/erp/sis/", desc: "Publish institutional news streams and bulletins." },
+        { title: "User Management", icon: "🔐", link: "/erp/staff/", desc: "Customise role permissions for admins, teachers, and staff." },
+        { title: "Role Dashboards", icon: "💻", link: "/erp/", desc: "Individual portals for teachers, students, and parents." },
+        { title: "Report Center", icon: "📈", link: "/erp/finance/", desc: "High-level operational and quantitative performance metrics." },
+        { title: "Certificate Generator", icon: "🪪", link: "/erp/sis/", desc: "Print custom student credentials, TC cards, and ID badges." },
+        { title: "Student Remarks", icon: "✏️", link: "/erp/sis/", desc: "Private teacher channels for behavioral reviews." }
+      ]
+    },
+    {
+      tier: "Standard Modules",
+      items: [
+        { title: "Hostel & Dormitory", icon: "🏢", link: "/erp/sis/", desc: "Allocate rooms, warden logs, and mess logistics." },
+        { title: "Transportation", icon: "🚌", link: "/erp/staff/", desc: "Coordinate routes, vehicle fleets, and passenger stops." },
+        { title: "Library Engine", icon: "📖", link: "/erp/sis/", desc: "Book catalogs, process checkouts, and late returns." },
+        { title: "Instant Fees & Import", icon: "💵", link: "/erp/finance/", desc: "Accept spontaneous payments and event donations." },
+        { title: "CSV Data Processing", icon: "📥", link: "/erp/sis/", desc: "Batch data processing via raw CSV imports." },
+        { title: "Email Integration", icon: "✉️", link: "/erp/sis/", desc: "Automated academic updates or invoice broadcasts." },
+        { title: "Collaborative Tools", icon: "📌", link: "/erp/classroom/", desc: "Class blogs, polls, digital media, and group tasks." },
+        { title: "Discussion Forums", icon: "💬", link: "/erp/classroom/", desc: "Spaces for teachers and students to exchange notes." },
+        { title: "Discipline Tracking", icon: "⚖️", link: "/erp/sis/", desc: "Document instances of campus policy breaches." },
+        { title: "Inventory Management", icon: "📦", link: "/erp/staff/", desc: "Oversee hardware assets, uniforms, and store goods." },
+        { title: "Placement Cell", icon: "💼", link: "/erp/sis/", desc: "Match eligible graduates with career vacancies." }
+      ]
+    },
+    {
+      tier: "Premium Modules",
+      items: [
+        { title: "Data Backup Export", icon: "💾", link: "/erp/finance/", desc: "Export system archives into XML or CSV formats." },
+        { title: "Tally & Paybooks Sync", icon: "🔄", link: "/erp/finance/", desc: "Sync operational ledgers with corporate accounting." },
+        { title: "Payment Gateway", icon: "💳", link: "/erp/finance/", desc: "Collect card, UPI, or net-banking deposits online." },
+        { title: "Google SSO Bridge", icon: "🔑", link: "/erp/", desc: "Domain-wide network login via Google Workspace." },
+        { title: "Dynamic Form Builder", icon: "📝", link: "/erp/sis/", desc: "Construct custom fields for peer reviews and surveys." },
+        { title: "Assignment Manager", icon: "📂", link: "/erp/classroom/", desc: "Assign coursework online and track submissions." },
+        { title: "Enquiry & Web Registration", icon: "🌐", link: "/erp/sis/", desc: "Embed admission pipelines onto public school web pages." }
+      ]
+    },
+    {
+      tier: "Ultimate Modules",
+      items: [
+        { title: "Alumni Registry", icon: "🎓", link: "/erp/sis/", desc: "Catalog past graduates to run networking functions." },
+        { title: "CMMi Audit Trail", icon: "🛡️", link: "/erp/staff/", desc: "System mutation logs and administrative access logs." },
+        { title: "Azure Directory Integration", icon: "☁️", link: "/erp/staff/", desc: "Active Directory single sign-on credentials." },
+        { title: "Central Doc Manager", icon: "📁", link: "/erp/classroom/", desc: "Share accessible files from an integrated repository." },
+        { title: "Auto Timetable Generator", icon: "🧩", link: "/erp/sis/", desc: "Compile teacher/classroom constraints for clash-free schedules." },
+        { title: "Gate Management", icon: "🚧", link: "/erp/staff/", desc: "Security check-ins for campus visitors via mobile app." },
+        { title: "VCS Virtual Classes", icon: "📹", link: "/erp/classroom/", desc: "Google Meet and virtual classroom integrations." },
+        { title: "Online Examination Engine", icon: "💻", link: "/erp/sis/", desc: "Computer-based tests with automated grading." }
+      ]
+    }
+  ];
+
+  // Initialize Firebase Auth Guard
   const firebaseConfig = {
     apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
     authDomain: "baljyoti-portal.firebaseapp.com",
@@ -166,98 +305,91 @@
     if (user && user.email.endsWith("@baljyoti.com")) {
       currentUser = user;
       document.getElementById("userBadge").innerText = user.email;
-      fetchRoleAndRender(user.email);
+      renderWorkstationUI();
     } else {
       window.location.href = "/";
     }
   });
 
+  function renderWorkstationUI() {
+    renderAccordionNav();
+    renderModuleGrids();
+  }
+
+  function renderAccordionNav() {
+    const navContainer = document.getElementById("accordionNav");
+    let html = "";
+
+    ERP_MODULES.forEach((tierGroup, idx) => {
+      const isOpen = idx === 0 ? "open" : "";
+      html += `
+        <div class="nav-group ${isOpen}">
+          <div class="nav-group-header" onclick="toggleNavGroup(this)">
+            <span>${tierGroup.tier} (${tierGroup.items.length})</span>
+            <span>▾</span>
+          </div>
+          <ul class="nav-group-items">
+            ${tierGroup.items.map(item => `
+              <li class="nav-item">
+                <a href="${item.link}">
+                  <span class="nav-icon">${item.icon}</span>
+                  <span>${item.title}</span>
+                </a>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      `;
+    });
+
+    navContainer.innerHTML = html;
+  }
+
+  function toggleNavGroup(headerElem) {
+    headerElem.parentElement.classList.toggle("open");
+  }
+
+  function renderModuleGrids() {
+    const container = document.getElementById("moduleSections");
+    let html = "";
+
+    ERP_MODULES.forEach(tierGroup => {
+      html += `
+        <div class="tier-section-title"><span>${tierGroup.tier}</span></div>
+        <div class="module-grid">
+          ${tierGroup.items.map(item => `
+            <a href="${item.link}" class="module-card">
+              <div>
+                <div class="module-top">
+                  <div class="module-icon-box">${item.icon}</div>
+                  <div class="module-title">${item.title}</div>
+                </div>
+                <div class="module-desc">${item.desc}</div>
+              </div>
+              <div class="module-link">Launch Module →</div>
+            </a>
+          `).join('')}
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  }
+
   function toggleAIDrawer() {
     document.getElementById("aiDrawer").classList.toggle("open");
   }
 
-  function fetchRoleAndRender(email) {
-    const script = document.createElement("script");
-    const callbackName = "roleCallback_" + Math.round(Math.random() * 100000);
-
-    window[callbackName] = function(response) {
-      delete window[callbackName];
-      document.body.removeChild(script);
-
-      if (response.status === "success") {
-        userRole = response.role;
-      }
-      renderDashboardForRole(userRole);
-    };
-
-    script.src = `${SCRIPT_URL}?action=get_user_role&email=${encodeURIComponent(email)}&callback=${callbackName}`;
-    document.body.appendChild(script);
-  }
-
-  function renderDashboardForRole(role) {
-    const roleBadge = document.getElementById("roleBadge");
-    const sidebarNav = document.getElementById("sidebarNav");
-    const statsContainer = document.getElementById("statsContainer");
-    const modulesContainer = document.getElementById("modulesContainer");
-    const dashboardTitle = document.getElementById("dashboardTitle");
-
-    roleBadge.innerText = role;
-    let navHtml = `<li class="nav-item active"><a href="/erp/"><span class="nav-icon">📊</span> Overview</a></li>`;
-
-    if (role === "SUPER_ADMIN") {
-      dashboardTitle.innerText = "Executive Master Control";
-      navHtml += `
-        <li class="nav-item"><a href="/erp/sis/"><span class="nav-icon">👨‍🎓</span> SIS Directory</a></li>
-        <li class="nav-item"><a href="/erp/classroom/"><span class="nav-icon">🏫</span> Classroom Sync</a></li>
-        <li class="nav-item"><a href="/erp/finance/"><span class="nav-icon">💳</span> Finance Desk</a></li>
-        <li class="nav-item"><a href="/erp/staff/"><span class="nav-icon">🛡️</span> Staff Operations</a></li>
-      `;
-
-      statsContainer.innerHTML = `
-        <div class="stat-card"><div class="stat-title">Workspace Data</div><div class="stat-value">Google Sheets</div></div>
-        <div class="stat-card"><div class="stat-title">Classroom Sync</div><div class="stat-value">Active API</div></div>
-        <div class="stat-card"><div class="stat-title">AI Engine</div><div class="stat-value">Gemini 1.5</div></div>
-        <div class="stat-card"><div class="stat-title">CMMi Standard</div><div class="stat-value" style="color: #16a34a; font-size: 20px;">● Level 5</div></div>
-      `;
-
-      modulesContainer.innerHTML = `
-        <a href="/erp/sis/" class="module-card"><div><div class="module-header"><div class="module-icon">👨‍🎓</div><h3>SIS & Attendance</h3></div><p>Student directory, registration, parent records, and attendance tracking.</p></div><div class="module-footer">Open SIS →</div></a>
-        <a href="/erp/classroom/" class="module-card"><div><div class="module-header"><div class="module-icon">🏫</div><h3>Classroom Integration</h3></div><p>Sync live Google Workspace active courses and rosters.</p></div><div class="module-footer">Open Classroom →</div></a>
-        <a href="/erp/finance/" class="module-card"><div><div class="module-header"><div class="module-icon">💳</div><h3>Finance Management</h3></div><p>Record fee payments, issue e-receipts, and audit financial ledgers.</p></div><div class="module-footer">Open Finance →</div></a>
-        <a href="/erp/staff/" class="module-card"><div><div class="module-header"><div class="module-icon">🛡️</div><h3>Staff HR Operations</h3></div><p>GPS and photo verification for staff check-ins and audit logs.</p></div><div class="module-footer">Open Operations →</div></a>
-      `;
-    } else {
-      dashboardTitle.innerText = "Educator Workspace";
-      navHtml += `
-        <li class="nav-item"><a href="/erp/sis/"><span class="nav-icon">👨‍🎓</span> Attendance</a></li>
-        <li class="nav-item"><a href="/erp/classroom/"><span class="nav-icon">🏫</span> My Courses</a></li>
-      `;
-
-      statsContainer.innerHTML = `
-        <div class="stat-card"><div class="stat-title">Active Roster</div><div class="stat-value">Connected</div></div>
-        <div class="stat-card"><div class="stat-title">Today's Roll Call</div><div class="stat-value">Pending</div></div>
-        <div class="stat-card"><div class="stat-title">Classroom State</div><div class="stat-value" style="color: #16a34a; font-size: 20px;">● Synced</div></div>
-      `;
-
-      modulesContainer.innerHTML = `
-        <a href="/erp/sis/" class="module-card"><div><div class="module-header"><div class="module-icon">👨‍🎓</div><h3>Daily Attendance Roll Call</h3></div><p>Mark attendance for assigned sections directly to the master database.</p></div><div class="module-footer">Take Attendance →</div></a>
-        <a href="/erp/classroom/" class="module-card"><div><div class="module-header"><div class="module-icon">🏫</div><h3>Google Classrooms</h3></div><p>Access assigned Google Workspace course links and student rosters.</p></div><div class="module-footer">View Courses →</div></a>
-      `;
-    }
-
-    sidebarNav.innerHTML = navHtml;
-  }
-
   function sendAIPrompt() {
-    const input = document.getElementById("aiPrompt");
-    const chatBox = document.getElementById("chatBox");
+    const input = document.getElementById("aiInput");
+    const chatBody = document.getElementById("chatBody");
     const prompt = input.value.trim();
 
     if (!prompt) return;
 
-    chatBox.innerHTML += `<div class="msg user">${prompt}</div>`;
+    chatBody.innerHTML += `<div class="chat-bubble user">${prompt}</div>`;
     input.value = "";
-    chatBox.scrollTop = chatBox.scrollHeight;
+    chatBody.scrollTop = chatBody.scrollHeight;
 
     fetch(SCRIPT_URL, {
       method: "POST",
@@ -265,13 +397,13 @@
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         action: "ask_gemini",
-        email: currentUser.email,
+        email: currentUser ? currentUser.email : "admin@baljyoti.com",
         role: userRole,
         prompt: prompt
       })
     }).then(() => {
-      chatBox.innerHTML += `<div class="msg ai">Aarika processed your request under CMMi Level 5 quantitative verification protocol.</div>`;
-      chatBox.scrollTop = chatBox.scrollHeight;
+      chatBody.innerHTML += `<div class="chat-bubble ai">Aarika processed your command across the master module context.</div>`;
+      chatBody.scrollTop = chatBody.scrollHeight;
     });
   }
 </script>
