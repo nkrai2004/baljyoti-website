@@ -3,41 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baljyoti School ERP Master Portal | Aarika AI</title>
+  <title>Baljyoti School Enterprise ERP | Aarika AI</title>
   <style>
+    :root {
+      --primary: #dc2626;
+      --primary-hover: #b91c1c;
+      --bg-main: #f8fafc;
+      --surface: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --sidebar-width: 260px;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #f3f4f6; color: #111827; min-height: 100vh; display: flex; flex-direction: column; }
+    body { background-color: var(--bg-main); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; }
 
-    .navbar { background: #ffffff; border-bottom: 2px solid #dc2626; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    .brand { font-size: 20px; font-weight: 900; color: #dc2626; text-transform: uppercase; text-decoration: none; letter-spacing: 0.5px; display: flex; align-items: center; gap: 10px; }
-    .user-badge { font-size: 13px; background: #fff5f5; color: #dc2626; border: 1px solid #dc2626; padding: 6px 14px; border-radius: 20px; font-weight: 700; }
+    /* Left Navigation Sidebar */
+    .sidebar { width: var(--sidebar-width); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; z-index: 20; transition: width 0.3s ease; }
+    .sidebar-header { padding: 20px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+    .brand-logo { width: 32px; height: 32px; background: var(--primary); color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; }
+    .brand-text { font-size: 15px; font-weight: 800; color: var(--text-main); letter-spacing: -0.3px; }
+    
+    .nav-section-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; padding: 16px 20px 8px; letter-spacing: 0.5px; }
+    .nav-list { list-style: none; padding: 0 10px; }
+    .nav-item a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; color: var(--text-muted); text-decoration: none; font-size: 13.5px; font-weight: 600; transition: all 0.2s; }
+    .nav-item a:hover, .nav-item.active a { background: #fef2f2; color: var(--primary); }
+    .nav-item.active a { font-weight: 700; }
+    .nav-icon { width: 20px; text-align: center; font-size: 16px; }
 
-    .layout { display: flex; flex: 1; gap: 20px; padding: 24px; max-width: 1400px; margin: 0 auto; width: 100%; }
+    /* Main Container Area */
+    .wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
-    .main-panel { flex: 2; display: flex; flex-direction: column; gap: 20px; }
-    .ai-panel { flex: 1; background: #ffffff; border-radius: 12px; border: 1.5px solid #e5e7eb; display: flex; flex-direction: column; height: fit-content; max-height: 780px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+    /* Header Bar */
+    .topbar { height: 64px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; }
+    .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); }
+    .topbar-actions { display: flex; align-items: center; gap: 16px; }
+    .user-badge { font-size: 12px; background: #fef2f2; color: var(--primary); border: 1px solid #fecaca; padding: 6px 14px; border-radius: 20px; font-weight: 700; }
+    .ai-trigger-btn { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+    .ai-trigger-btn:hover { background: var(--primary-hover); }
 
-    .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-    .module-card { background: #ffffff; border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 20px; text-decoration: none; color: inherit; transition: border-color 0.2s, transform 0.2s; }
-    .module-card:hover { border-color: #dc2626; transform: translateY(-2px); }
-    .module-card h3 { font-size: 16px; font-weight: 800; color: #dc2626; margin-bottom: 8px; }
-    .module-card p { font-size: 13px; color: #4b5563; line-height: 1.4; }
+    /* Main Dashboard View */
+    .content-area { flex: 1; padding: 28px; overflow-y: auto; }
+    
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+    .stat-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .stat-value { font-size: 26px; font-weight: 800; color: var(--text-main); margin-top: 6px; }
 
-    .ai-header { padding: 16px; border-bottom: 1px solid #e5e7eb; background: #fff5f5; border-radius: 12px 12px 0 0; display: flex; align-items: center; gap: 12px; }
-    .ai-avatar { width: 36px; height: 36px; border-radius: 50%; background: #dc2626; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; }
-    .ai-title { font-size: 15px; font-weight: 800; color: #dc2626; }
-    .ai-subtitle { font-size: 11px; color: #6b7280; font-weight: 600; }
+    .module-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .module-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; text-decoration: none; color: inherit; transition: all 0.2s; display: flex; flex-direction: column; justify-content: space-between; }
+    .module-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.04); }
+    .module-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .module-icon { width: 40px; height: 40px; border-radius: 10px; background: #fef2f2; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .module-card h3 { font-size: 16px; font-weight: 800; color: var(--text-main); }
+    .module-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; }
+    .module-footer { font-size: 12px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 4px; }
 
-    .ai-chat-box { padding: 16px; height: 420px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; font-size: 13px; }
-    .msg { padding: 10px 14px; border-radius: 8px; line-height: 1.4; }
-    .msg.user { background: #dc2626; color: #ffffff; align-self: flex-end; max-width: 85%; }
-    .msg.ai { background: #f3f4f6; color: #111827; align-self: flex-start; max-width: 90%; border: 1px solid #e5e7eb; }
+    /* Slide-out Aarika AI Panel */
+    .ai-drawer { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); box-shadow: -10px 0 30px rgba(0,0,0,0.08); z-index: 100; transition: right 0.3s ease; display: flex; flex-direction: column; }
+    .ai-drawer.open { right: 0; }
+    .ai-header { padding: 18px 20px; border-bottom: 1px solid var(--border); background: #fef2f2; display: flex; align-items: center; justify-content: space-between; }
+    .ai-profile { display: flex; align-items: center; gap: 12px; }
+    .ai-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; }
+    .ai-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); }
 
-    .ai-input-area { padding: 12px; border-top: 1px solid #e5e7eb; display: flex; gap: 8px; }
-    .ai-input-area input { flex: 1; padding: 10px; border: 1.5px solid #d1d5db; border-radius: 6px; outline: none; font-size: 13px; }
-    .ai-input-area input:focus { border-color: #dc2626; }
-    .ai-input-area button { background: #dc2626; color: #ffffff; border: none; padding: 10px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; }
-    .ai-input-area button:hover { background: #b91c1c; }
+    .ai-chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; font-size: 13px; }
+    .msg { padding: 12px 16px; border-radius: 10px; line-height: 1.5; }
+    .msg.user { background: var(--primary); color: #ffffff; align-self: flex-end; max-width: 85%; }
+    .msg.ai { background: var(--bg-main); color: var(--text-main); align-self: flex-start; max-width: 90%; border: 1px solid var(--border); }
+
+    .ai-input-area { padding: 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+    .ai-input-area input { flex: 1; padding: 11px 14px; border: 1px solid var(--border); border-radius: 8px; outline: none; font-size: 13px; }
+    .ai-input-area button { background: var(--primary); color: #ffffff; border: none; padding: 11px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; }
   </style>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -45,53 +83,131 @@
 </head>
 <body>
 
-  <div class="navbar">
-    <a href="#" class="brand">BALJYOTI SCHOOL ERP</a>
-    <span id="userBadge" class="user-badge">Authenticating...</span>
-  </div>
+  <!-- Left Navigation Bar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-logo">B</div>
+      <div class="brand-text">BALJYOTI ERP</div>
+    </div>
 
-  <div class="layout">
-    <div class="main-panel">
-      <h2 style="font-size: 20px; font-weight: 800; color: #111827;">System Dashboard</h2>
-      
-      <div class="grid-container">
+    <div class="nav-section-label">Core Modules</div>
+    <ul class="nav-list">
+      <li class="nav-item active"><a href="/erp/"><span class="nav-icon">📊</span> Dashboard</a></li>
+      <li class="nav-item"><a href="/erp/sis/"><span class="nav-icon">👨‍🎓</span> SIS & Attendance</a></li>
+      <li class="nav-item"><a href="/erp/classroom/"><span class="nav-icon">🏫</span> Google Classroom</a></li>
+      <li class="nav-item"><a href="/erp/finance/"><span class="nav-icon">💳</span> Finance & Fees</a></li>
+      <li class="nav-item"><a href="/erp/staff/"><span class="nav-icon">🛡️</span> Staff HR & Operations</a></li>
+    </ul>
+
+    <div class="nav-section-label">Google Workspace</div>
+    <ul class="nav-list">
+      <li class="nav-item"><a href="https://classroom.google.com" target="_blank"><span class="nav-icon">📚</span> Classroom Portal</a></li>
+      <li class="nav-item"><a href="https://drive.google.com" target="_blank"><span class="nav-icon">📁</span> Workspace Drive</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main Workstation Layout -->
+  <div class="wrapper">
+    <header class="topbar">
+      <div class="page-title">Enterprise Management Console</div>
+      <div class="topbar-actions">
+        <span id="userBadge" class="user-badge">Authenticating...</span>
+        <button class="ai-trigger-btn" onclick="toggleAIDrawer()">
+          <span>🤖 Ask Aarika AI</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="content-area">
+      <!-- High-Level System Metrics -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-title">Active Students</div>
+          <div class="stat-value" id="statStudents">--</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Classroom Courses</div>
+          <div class="stat-value" id="statCourses">Active</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Fees Collected Today</div>
+          <div class="stat-value" id="statFees">₹0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">System Status</div>
+          <div class="stat-value" style="color: #16a34a; font-size: 20px;">● Online</div>
+        </div>
+      </div>
+
+      <!-- Module Navigation Grid -->
+      <div class="module-grid">
         <a href="/erp/sis/" class="module-card">
-          <h3>SIS & Attendance</h3>
-          <p>Student Directory, Class Rosters, and Daily Roll Call Attendance Tracking.</p>
+          <div>
+            <div class="module-header">
+              <div class="module-icon">👨‍🎓</div>
+              <h3>Student Information System</h3>
+            </div>
+            <p>Manage student master files, enrollment status, parent contacts, and daily roll-call logs.</p>
+          </div>
+          <div class="module-footer">Open SIS Directory →</div>
         </a>
 
         <a href="/erp/classroom/" class="module-card">
-          <h3>Google Classroom Sync</h3>
-          <p>Sync active Workspace Google Classroom courses and rosters automatically.</p>
+          <div>
+            <div class="module-header">
+              <div class="module-icon">🏫</div>
+              <h3>Google Classroom Sync</h3>
+            </div>
+            <p>Connect your Google Workspace domain to automatically import active classes and course rosters.</p>
+          </div>
+          <div class="module-footer">Sync Classroom Data →</div>
         </a>
 
         <a href="/erp/finance/" class="module-card">
-          <h3>Finance & Fees</h3>
-          <p>Collect fee payments, issue electronic receipts, and view financial ledgers.</p>
+          <div>
+            <div class="module-header">
+              <div class="module-icon">💳</div>
+              <h3>Finance & Fee Management</h3>
+            </div>
+            <p>Record fee payments, issue digital receipts, and view payment ledgers in real-time.</p>
+          </div>
+          <div class="module-footer">Manage Ledger →</div>
         </a>
 
         <a href="/erp/staff/" class="module-card">
-          <h3>Staff HR & Operations</h3>
-          <p>Staff check-ins with GPS/photo verification and daily campus inspection logs.</p>
+          <div>
+            <div class="module-header">
+              <div class="module-icon">🛡️</div>
+              <h3>Staff HR & Verification</h3>
+            </div>
+            <p>Track staff check-ins with GPS and photo verification, and handle operational security logs.</p>
+          </div>
+          <div class="module-footer">View Staff Logs →</div>
         </a>
       </div>
-    </div>
+    </main>
+  </div>
 
-    <div class="ai-panel">
-      <div class="ai-header">
+  <!-- Aarika Slide-Out Drawer -->
+  <div class="ai-drawer" id="aiDrawer">
+    <div class="ai-header">
+      <div class="ai-profile">
         <div class="ai-avatar">A</div>
         <div>
-          <div class="ai-title">Aarika</div>
-          <div class="ai-subtitle">Your AI Guide & Administrative Assistant</div>
+          <div style="font-weight: 800; font-size: 15px; color: var(--primary);">Aarika</div>
+          <div style="font-size: 11px; color: var(--text-muted);">Your AI ERP Guide</div>
         </div>
       </div>
-      <div class="ai-chat-box" id="chatBox">
-        <div class="msg ai">Hello! I am <strong>Aarika, your AI Guide</strong>. I am here to help you navigate Baljyoti ERP, manage modules, and query database insights in real time. How can I assist you right now?</div>
-      </div>
-      <div class="ai-input-area">
-        <input type="text" id="aiPrompt" placeholder="Ask Aarika..." onkeypress="if(event.key==='Enter') sendAIPrompt()">
-        <button onclick="sendAIPrompt()">Ask</button>
-      </div>
+      <button class="ai-close" onclick="toggleAIDrawer()">✕</button>
+    </div>
+
+    <div class="ai-chat-box" id="chatBox">
+      <div class="msg ai">Hello! I am <strong>Aarika</strong>, your enterprise AI guide. Ask me to query student records, fee collection balances, or operational logs.</div>
+    </div>
+
+    <div class="ai-input-area">
+      <input type="text" id="aiPrompt" placeholder="Ask Aarika..." onkeypress="if(event.key==='Enter') sendAIPrompt()">
+      <button onclick="sendAIPrompt()">Ask</button>
     </div>
   </div>
 
@@ -113,10 +229,31 @@
     if (user && user.email.endsWith("@baljyoti.com")) {
       currentUser = user;
       document.getElementById("userBadge").innerText = user.email;
+      loadLiveMetrics();
     } else {
       window.location.href = "/";
     }
   });
+
+  function toggleAIDrawer() {
+    document.getElementById("aiDrawer").classList.toggle("open");
+  }
+
+  function loadLiveMetrics() {
+    const script = document.createElement("script");
+    const callbackName = "metricsCallback_" + Math.round(Math.random() * 100000);
+
+    window[callbackName] = function(response) {
+      delete window[callbackName];
+      document.body.removeChild(script);
+      if (response.status === "success") {
+        document.getElementById("statStudents").innerText = response.data.length || "0";
+      }
+    };
+
+    script.src = `${SCRIPT_URL}?action=get_students&email=${encodeURIComponent(currentUser.email)}&callback=${callbackName}`;
+    document.body.appendChild(script);
+  }
 
   function sendAIPrompt() {
     const input = document.getElementById("aiPrompt");
@@ -139,7 +276,7 @@
         prompt: prompt
       })
     }).then(() => {
-      chatBox.innerHTML += `<div class="msg ai">I have logged your prompt into our system logs. Once processed, updates will reflect across your ERP modules.</div>`;
+      chatBox.innerHTML += `<div class="msg ai">Aarika has processed your query and updated administrative logs.</div>`;
       chatBox.scrollTop = chatBox.scrollHeight;
     });
   }
