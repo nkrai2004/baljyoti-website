@@ -119,28 +119,6 @@
       cursor: not-allowed;
     }
 
-    .divider {
-      display: flex;
-      align-items: center;
-      margin: 20px 0;
-      color: #94a3b8;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .divider::before,
-    .divider::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background-color: #e2e8f0;
-    }
-
-    .divider span {
-      padding: 0 10px;
-    }
-
     .alert {
       padding: 10px 14px;
       border-radius: 6px;
@@ -211,7 +189,7 @@
   </div>
 
   <script>
-    const REDIRECT_TARGET = "erp/dashboard.html";
+    const REDIRECT_TARGET = "dashboard.html";
 
     function checkActiveSession() {
       const session = localStorage.getItem("erp_active_session");
@@ -250,7 +228,6 @@
       submitBtn.disabled = true;
       submitBtn.textContent = "Authenticating...";
 
-      // Check user role overrides from User Permissions directory if set
       const assignedRoles = JSON.parse(localStorage.getItem("user_role_assignments") || "{}");
       const activeRole = assignedRoles[email] || role;
 
