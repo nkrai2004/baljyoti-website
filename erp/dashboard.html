@@ -59,7 +59,7 @@
     </div>
   </header>
 
-  <!-- Main Content -->
+  <!-- Main Content Area -->
   <main class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full">
     <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
@@ -78,7 +78,7 @@
   </main>
 
   <script>
-    // System Modules Registry (6 Default Modules)
+    // System Modules Registry
     const MODULE_REGISTRY = {
       "User Directory": {
         description: "Manage system user accounts, directory synchronization, and user privileges.",
@@ -112,28 +112,58 @@
       }
     };
 
-    let currentUserEmail = "info@baljyoti.com";
+    let currentUserEmail = "";
 
-    // Initialize Default Seed Data in LocalStorage if Empty
+    function clean(str) {
+      return (str || "").toLowerCase().trim();
+    }
+
+    // Safely resolve assigned role for the authenticated user
+    function getResolvedUserRole(email) {
+      const targetEmail = clean(email);
+      if (!targetEmail) return "Teacher";
+
+      // Super Admin primary account check
+      if (targetEmail === "info@baljyoti.com") {
+        return "Super Admin";
+      }
+
+      // Check across storage keys used by User Directory and Permission modules
+      const storageKeys = ["user_role_assignments", "user_roles", "rbac_user_roles"];
+      for (const key of storageKeys) {
+        const data = JSON.parse(localStorage.getItem(key) || "{}");
+        for (const [storedEmail, role] of Object.entries(data)) {
+          if (clean(storedEmail) === targetEmail && role) {
+            return role;
+          }
+        }
+      }
+
+      // Default fallback for regular users is Teacher (NOT Super Admin)
+      return "Teacher";
+    }
+
+    // Seed initial defaults if missing
     function initializeDefaultData() {
       const allModulesList = Object.keys(MODULE_REGISTRY);
 
-      // Seed portal mappings if not present or empty
       const existingMappings = JSON.parse(localStorage.getItem("portal_mappings") || "{}");
       if (!existingMappings["Super Admin"] || existingMappings["Super Admin"].length === 0) {
         existingMappings["Super Admin"] = allModulesList;
-        localStorage.setItem("portal_mappings", JSON.stringify(existingMappings));
       }
+      if (!existingMappings["Teacher"]) {
+        existingMappings["Teacher"] = ["Inbox", "Student Attendance", "Exam & Marks"];
+      }
+      localStorage.setItem("portal_mappings", JSON.stringify(existingMappings));
 
-      // Seed user assignments if missing info@baljyoti.com
       const existingAssignments = JSON.parse(localStorage.getItem("user_role_assignments") || "{}");
-      if (!existingAssignments[currentUserEmail]) {
-        existingAssignments[currentUserEmail] = "Super Admin";
+      if (!existingAssignments["info@baljyoti.com"]) {
+        existingAssignments["info@baljyoti.com"] = "Super Admin";
         localStorage.setItem("user_role_assignments", JSON.stringify(existingAssignments));
       }
     }
 
-    // Firebase Auth Setup
+    // Firebase Auth Integration
     const firebaseConfig = {
       apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
       authDomain: "baljyoti-portal.firebaseapp.com",
@@ -150,12 +180,14 @@
           currentUserEmail = user.email;
           document.getElementById("userBadge").innerText = user.email;
         } else {
+          currentUserEmail = "backup@baljyoti.com"; // Fallback for local testing
           document.getElementById("userBadge").innerText = currentUserEmail;
         }
         initializeDefaultData();
         populateDashboardModules();
       });
     } else {
+      currentUserEmail = "backup@baljyoti.com";
       initializeDefaultData();
       populateDashboardModules();
     }
@@ -169,33 +201,28 @@
       }
     }
 
-    // Dynamic Module Population Logic
+    // Dynamic Module Renderer
     function populateDashboardModules() {
       const grid = document.getElementById("modulesGrid");
       const roleBadge = document.getElementById("roleBadge");
       const assignedRoleText = document.getElementById("assignedRoleText");
 
-      // Read live assignments & mappings
-      const userAssignments = JSON.parse(localStorage.getItem("user_role_assignments") || "{}");
-      const portalMappings = JSON.parse(localStorage.getItem("portal_mappings") || "{}");
+      // Resolve role dynamically for logged in email
+      const assignedRole = getResolvedUserRole(currentUserEmail);
 
-      // Get user's role (Defaults to Super Admin)
-      const assignedRole = userAssignments[currentUserEmail] || "Super Admin";
-      
       if (roleBadge) roleBadge.innerText = assignedRole.toUpperCase();
       if (assignedRoleText) assignedRoleText.innerText = assignedRole;
 
-      // Get modules allowed for assignedRole (Fallback to all 6 modules for Super Admin)
-      let allowedModules = portalMappings[assignedRole];
-      if (!allowedModules || allowedModules.length === 0) {
-        if (assignedRole === "Super Admin") {
-          allowedModules = Object.keys(MODULE_REGISTRY);
-        } else {
-          allowedModules = [];
-        }
+      // Fetch module mappings for assigned role
+      const portalMappings = JSON.parse(localStorage.getItem("portal_mappings") || "{}");
+      let allowedModules = portalMappings[assignedRole] || [];
+
+      // Fallback for Super Admin if mappings key is empty
+      if (allowedModules.length === 0 && assignedRole === "Super Admin") {
+        allowedModules = Object.keys(MODULE_REGISTRY);
       }
 
-      // Empty state handler
+      // Render empty state if role has zero module access
       if (allowedModules.length === 0) {
         grid.innerHTML = `
           <div class="col-span-full bg-white border border-slate-200 rounded-xl p-8 text-center shadow-sm">
@@ -203,12 +230,12 @@
               <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             </div>
             <h3 class="text-base font-bold text-slate-900">No Authorized Modules Found</h3>
-            <p class="text-slate-500 text-xs mt-1">Your account is authenticated, but no module permissions have been assigned to your profile by the administrator (<strong>${escapeHtml(currentUserEmail)}</strong>).</p>
+            <p class="text-slate-500 text-xs mt-1">Your account (<strong>${escapeHtml(currentUserEmail)}</strong>) is assigned the role <strong>${escapeHtml(assignedRole)}</strong>, but no modules are configured for this role.</p>
           </div>`;
         return;
       }
 
-      // Render cards for all authorized modules
+      // Populate Grid
       grid.innerHTML = allowedModules.map(moduleName => {
         const slug = moduleName.toLowerCase().replace(/[^a-z0-9]/g, '-');
         const meta = MODULE_REGISTRY[moduleName] || {
@@ -242,9 +269,9 @@
       return String(str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
-    // Cross-Tab Listener for updates from role-modules.html
+    // Storage Sync Event Listener
     window.addEventListener("storage", (event) => {
-      if (event.key === "portal_mappings" || event.key === "portal_modules" || event.key === "user_role_assignments") {
+      if (["portal_mappings", "portal_modules", "user_role_assignments", "user_roles", "rbac_user_roles"].includes(event.key)) {
         populateDashboardModules();
       }
     });
