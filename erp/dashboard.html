@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard</title>
+  <title>Admin Dashboard - ERP Portal</title>
   <style>
     * {
       box-sizing: border-box;
@@ -147,9 +147,10 @@
   <div class="container">
     <nav>
       <a href="dashboard.html" class="active">Dashboard</a>
-      <a href="user-permissions.html">User Permissions</a>
-      <a href="modules/role-modules.html">Role-Module Mapping</a>
-      <a href="modules/inbox.html">Inbox</a>
+      <a href="index.html">ERP Modules</a>
+      <a href="../user-permissions.html">User Permissions</a>
+      <a href="../modules/role-modules.html">Role-Module Mapping</a>
+      <a href="../modules/inbox.html">Inbox</a>
     </nav>
 
     <header>
@@ -229,9 +230,11 @@
 
     function renderModulesList(modules) {
       const container = document.getElementById("modulesList");
+      
+      // Relative paths from erp/ folder to root resources
       const pathMap = {
-        "mod_inbox": "modules/inbox.html",
-        "mod_users": "user-permissions.html"
+        "mod_inbox": "../modules/inbox.html",
+        "mod_users": "../user-permissions.html"
       };
 
       container.innerHTML = modules.map(m => `
@@ -242,7 +245,7 @@
           </div>
           ${pathMap[m.id] 
             ? `<a href="${pathMap[m.id]}" class="btn-action">Open Module</a>` 
-            : `<a href="modules/role-modules.html" class="btn-action">Configure Access</a>`}
+            : `<a href="../modules/role-modules.html" class="btn-action">Configure Access</a>`}
         </div>
       `).join('');
     }
