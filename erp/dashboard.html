@@ -1,210 +1,257 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-50">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - Bal Jyoti ERP</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: { 50: '#fef2f2', 100: '#ffe1e1', 500: '#ef4444', 600: '#dc2626', 700: '#b91c1c', 800: '#991b1b' }
-          }
-        }
-      }
-    }
-  </script>
+  <title>Admin Dashboard</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-    body { font-family: 'Inter', sans-serif; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    nav {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 12px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #64748b;
+      font-weight: 500;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    nav a.active {
+      background-color: #2563eb;
+      color: white;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #64748b;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .section-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 16px;
+    }
+
+    .modules-list {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+
+    .module-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .module-item:last-child {
+      border-bottom: none;
+    }
+
+    .module-info-name {
+      font-weight: 600;
+      color: #1e293b;
+      font-size: 0.95rem;
+    }
+
+    .module-info-category {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .btn-action {
+      background-color: #f1f5f9;
+      color: #2563eb;
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .btn-action:hover {
+      background-color: #2563eb;
+      color: white;
+    }
   </style>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 </head>
-<body class="h-full flex flex-col text-slate-800">
+<body>
 
-  <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-30">
-    <div class="flex items-center space-x-3">
-      <img src="logo.png" alt="Bal Jyoti Logo" class="h-9 object-contain">
-      <span class="text-slate-300">|</span>
-      <h1 class="text-base font-bold text-slate-900">Bal Jyoti Educational Portal</h1>
-    </div>
+  <div class="container">
+    <nav>
+      <a href="dashboard.html" class="active">Dashboard</a>
+      <a href="user-permissions.html">User Permissions</a>
+      <a href="modules/role-modules.html">Role-Module Mapping</a>
+      <a href="modules/inbox.html">Inbox</a>
+    </nav>
 
-    <div class="flex items-center space-x-3">
-      <a id="rbacAdminBtn" href="user-permissions.html" class="hidden inline-flex items-center space-x-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition shadow-sm">
-        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
-        </svg>
-        <span>Manage Permissions</span>
-      </a>
+    <header>
+      <h1>System Overview Dashboard</h1>
+    </header>
 
-      <div class="flex items-center space-x-2 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg">
-        <span id="userBadge" class="text-xs font-mono font-bold text-slate-700">Loading...</span>
-        <span id="roleBadge" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-slate-200 text-slate-700">...</span>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Workspace Users</div>
+        <div class="stat-value" id="userCount">--</div>
       </div>
-
-      <button onclick="logout()" class="text-xs font-bold text-slate-500 hover:text-red-600 px-2 py-1.5 transition">
-        Sign Out
-      </button>
-    </div>
-  </header>
-
-  <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
-
-    <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div>
-        <h2 class="text-xl font-bold">Welcome back, <span id="welcomeUserName" class="text-brand-500">User</span></h2>
-        <p class="text-xs text-slate-400 mt-1">Access to ERP modules is dynamically governed based on your assigned Workspace permissions.</p>
+      <div class="stat-card">
+        <div class="stat-label">Inbox Threads Loaded</div>
+        <div class="stat-value" id="inboxCount">--</div>
       </div>
-      <div class="text-xs font-mono bg-slate-800/80 px-4 py-2 rounded-xl border border-slate-700/60 self-start md:self-auto">
-        <span class="text-slate-400">Security Guard:</span> <span class="text-emerald-400 font-bold">RBAC Enforced</span>
+      <div class="stat-card">
+        <div class="stat-label">Active System Modules</div>
+        <div class="stat-value" id="moduleCount">--</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">System Status</div>
+        <div class="stat-value" style="color: #166534; font-size: 1.25rem;">Online</div>
       </div>
     </div>
 
-    <div>
-      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Authorized System Modules</h3>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-        <div data-module="sis" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
-          <div class="space-y-3">
-            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl font-bold">👨‍🎓</div>
-            <h4 class="text-base font-bold text-slate-900">Student Info System</h4>
-            <p class="text-xs text-slate-500 leading-relaxed">Manage student profiles, enrollments, attendance registers, and academic history records.</p>
-          </div>
-          <button class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition">Launch SIS</button>
-        </div>
-
-        <div data-module="finance" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
-          <div class="space-y-3">
-            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl font-bold">💳</div>
-            <h4 class="text-base font-bold text-slate-900">Finance & Fee Ledger</h4>
-            <p class="text-xs text-slate-500 leading-relaxed">Fee collection management, payment gateways, expense tracking, and ledger generation.</p>
-          </div>
-          <button class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition">Launch Finance</button>
-        </div>
-
-        <div data-module="academics" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
-          <div class="space-y-3">
-            <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-xl font-bold">📚</div>
-            <h4 class="text-base font-bold text-slate-900">Academics & Exams</h4>
-            <p class="text-xs text-slate-500 leading-relaxed">Curriculum management, lesson planning, marks entry, and report card generation.</p>
-          </div>
-          <button class="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-lg transition">Launch Academics</button>
-        </div>
-
-        <div data-module="adminOps" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
-          <div class="space-y-3">
-            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl font-bold">🏢</div>
-            <h4 class="text-base font-bold text-slate-900">Admin Operations</h4>
-            <p class="text-xs text-slate-500 leading-relaxed">Fleet tracking, inventory management, staff duty rosters, and facility operations.</p>
-          </div>
-          <button class="w-full py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg transition">Launch Admin Ops</button>
-        </div>
-
-      </div>
-
-      <div id="noModulesFallback" class="hidden p-8 bg-white border border-slate-200 rounded-2xl text-center space-y-3 shadow-sm">
-        <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-        </div>
-        <h4 class="text-base font-bold text-slate-900">No System Access Assigned</h4>
-        <p class="text-xs text-slate-500 max-w-md mx-auto">Your Google Workspace account is authenticated, but no module permissions have been granted by the Super Admin (<span class="font-mono font-bold text-slate-700">info@baljyoti.com</span>).</p>
-      </div>
+    <h2 class="section-title">Registered Dynamic Modules</h2>
+    <div class="modules-list" id="modulesList">
+      <div style="padding: 20px; text-align: center; color: #64748b;">Loading metrics...</div>
     </div>
-
-  </main>
+  </div>
 
   <script>
-    const SUPER_ADMIN = "info@baljyoti.com";
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhSwScGcBlRSqrkyT-bfog22RL3z_YGMY8vwriNRNP5q4P7DqWhh-TKnz40L_BwCVp8w/exec";
+    const WORKSPACE_API_URL = "https://script.google.com/macros/s/AKfycbzkE6HJ9zsWXcjkZu0xbl1-db9vTx8CiSaIzkI0r7a5SCPrhS5a2TfsnmZ2otCdcaOTXQ/exec";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
-      authDomain: "baljyoti-portal.firebaseapp.com",
-      projectId: "baljyoti-portal",
-      storageBucket: "baljyoti-portal.firebasestorage.app",
-      messagingSenderId: "420727507952",
-      appId: "1:420727507952:web:de5bdbb73521b9fae4eb35"
-    };
+    async function loadDashboardData() {
+      try {
+        const [usersRes, modulesRes, inboxRes] = await Promise.allSettled([
+          fetch(WORKSPACE_API_URL, { redirect: "follow" }),
+          fetch(`${WORKSPACE_API_URL}?action=getModules`, { redirect: "follow" }),
+          fetch(`${WORKSPACE_API_URL}?action=getInbox`, { redirect: "follow" })
+        ]);
 
-    firebase.initializeApp(firebaseConfig);
-
-    firebase.auth().onAuthStateChanged((user) => {
-      if (!user || !user.email.endsWith("@baljyoti.com")) {
-        window.location.href = "index.html";
-        return;
-      }
-
-      document.getElementById("userBadge").innerText = user.email;
-      document.getElementById("welcomeUserName").innerText = user.displayName || user.email.split('@')[0];
-
-      // 1. Check if user is Super Admin info@baljyoti.com
-      if (user.email === SUPER_ADMIN) {
-        document.getElementById("rbacAdminBtn").classList.remove("hidden");
-        document.getElementById("roleBadge").innerText = "SUPER_ADMIN";
-        document.getElementById("roleBadge").className = "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-100 text-red-800 border border-red-200";
-        showAllModules();
-        return;
-      }
-
-      // 2. Fetch or parse assigned permissions for normal accounts
-      const cachedPermissions = sessionStorage.getItem("userPermissions");
-      if (cachedPermissions) {
-        const parsed = JSON.parse(cachedPermissions);
-        applyPermissions(parsed.role, parsed.modules);
-      } else {
-        fetch(`${SCRIPT_URL}?action=get_user_permissions&email=${encodeURIComponent(user.email)}`)
-          .then(res => res.json())
-          .then(data => {
-            if (data.status === "SUCCESS" && data.role !== "NO_ACCESS") {
-              sessionStorage.setItem("userPermissions", JSON.stringify(data));
-              applyPermissions(data.role, data.modules);
-            } else {
-              applyPermissions("NO_ACCESS", { sis: false, finance: false, academics: false, adminOps: false });
-            }
-          })
-          .catch(err => {
-            console.error("RBAC Enforcement Fetch Error:", err);
-            document.getElementById("noModulesFallback").classList.remove("hidden");
-          });
-      }
-    });
-
-    function showAllModules() {
-      document.querySelectorAll("[data-module]").forEach(el => el.classList.remove("hidden"));
-      document.getElementById("noModulesFallback").classList.add("hidden");
-    }
-
-    function applyPermissions(role, modules) {
-      document.getElementById("roleBadge").innerText = role || "UNASSIGNED";
-
-      let activeCount = 0;
-      document.querySelectorAll("[data-module]").forEach(element => {
-        const modKey = element.getAttribute("data-module");
-        if (modules && modules[modKey] === true) {
-          element.classList.remove("hidden");
-          activeCount++;
-        } else {
-          element.classList.add("hidden");
+        if (usersRes.status === "fulfilled" && usersRes.value.ok) {
+          const userData = await usersRes.value.json();
+          document.getElementById("userCount").textContent = userData.count || (userData.users ? userData.users.length : 0);
         }
-      });
 
-      if (activeCount === 0 && role !== "SUPER_ADMIN") {
-        document.getElementById("noModulesFallback").classList.remove("hidden");
-      } else {
-        document.getElementById("noModulesFallback").classList.add("hidden");
+        let dynamicModules = [];
+        if (modulesRes.status === "fulfilled" && modulesRes.value.ok) {
+          const modData = await modulesRes.value.json();
+          dynamicModules = modData.modules || [];
+        }
+
+        if (dynamicModules.length === 0) {
+          const stored = localStorage.getItem("workspace_dynamic_modules");
+          dynamicModules = stored ? JSON.parse(stored) : [
+            { id: "mod_inbox", name: "Gmail Inbox Integration", category: "Communication" },
+            { id: "mod_users", name: "User Directory & Accounts", category: "Core" },
+            { id: "mod_classroom", name: "Google Classroom Sync", category: "Academic" },
+            { id: "mod_ou", name: "Organizational Unit (OU) Control", category: "Admin" },
+            { id: "mod_reports", name: "Audit & Usage Analytics", category: "Security" }
+          ];
+        }
+
+        document.getElementById("moduleCount").textContent = dynamicModules.length;
+        renderModulesList(dynamicModules);
+
+        if (inboxRes.status === "fulfilled" && inboxRes.value.ok) {
+          const inboxData = await inboxRes.value.json();
+          document.getElementById("inboxCount").textContent = inboxData.threads ? inboxData.threads.length : 0;
+        }
+
+      } catch (err) {
+        console.error("Dashboard Load Error:", err);
       }
     }
 
-    function logout() {
-      sessionStorage.clear();
-      firebase.auth().signOut().then(() => {
-        window.location.href = "index.html";
-      });
+    function renderModulesList(modules) {
+      const container = document.getElementById("modulesList");
+      const pathMap = {
+        "mod_inbox": "modules/inbox.html",
+        "mod_users": "user-permissions.html"
+      };
+
+      container.innerHTML = modules.map(m => `
+        <div class="module-item">
+          <div>
+            <div class="module-info-name">${escapeHtml(m.name)}</div>
+            <div class="module-info-category">Category: ${escapeHtml(m.category)} | ID: ${escapeHtml(m.id)}</div>
+          </div>
+          ${pathMap[m.id] 
+            ? `<a href="${pathMap[m.id]}" class="btn-action">Open Module</a>` 
+            : `<a href="modules/role-modules.html" class="btn-action">Configure Access</a>`}
+        </div>
+      `).join('');
     }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    window.addEventListener("DOMContentLoaded", loadDashboardData);
   </script>
 </body>
 </html>
