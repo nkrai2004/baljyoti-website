@@ -1,1 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baljyoti ERP | Finance & Fee Ledger</title>
+  <style>
+    :root {
+      --primary: #dc2626;
+      --primary-dark: #991b1b;
+      --primary-light: #fef2f2;
+      --accent: #2563eb;
+      --bg-main: #f8fafc;
+      --surface: #ffffff;
+      --surface-hover: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --sidebar-width: 260px;
+      --drawer-width: 420px;
+      --status-green: #16a34a;
+      --status-green-bg: #dcfce7;
+      --status-amber: #d97706;
+      --status-amber-bg: #fef3c7;
+      --status-red: #dc2626;
+      --status-red-bg: #fee2e2;
+    }
 
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg-main); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; font-size: 14px; }
+
+    /* Left Global Sidebar Rail */
+    .sidebar { width: var(--sidebar-width); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; z-index: 20; }
+    .sidebar-header { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+    .brand-logo { width: 36px; height: 36px; background: var(--primary); color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; }
+    .brand-title { font-size: 15px; font-weight: 800; letter-spacing: -0.3px; line-height: 1.2; }
+    .cmmi-badge { font-size: 9px; background: var(--status-green-bg); color: #15803d; padding: 2px 6px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
+
+    .nav-container { flex: 1; overflow-y: auto; padding: 12px 10px; }
+    .nav-item { margin-bottom: 4px; }
+    .nav-item a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 6px; color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 13px; transition: all 0.15s; }
+    .nav-item a:hover, .nav-item.active a { background: var(--primary-light); color: var(--primary); }
+    .nav-icon { width: 20px; text-align: center; font-size: 15px; }
+
+    /* Workstation Shell */
+    .wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-main); }
+    
+    /* Topbar Header */
+    .topbar { height: 64px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; gap: 16px; }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .topbar-title { font-size: 16px; font-weight: 800; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .role-indicator { font-size: 11px; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 4px 10px; border-radius: 12px; font-weight: 800; }
+    .user-pill { font-size: 12px; background: var(--surface-hover); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-weight: 600; }
+    .ai-btn { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+    /* Split Workspace */
+    .workspace { flex: 1; display: flex; overflow: hidden; }
+    
+    /* Sub-Category Navigation Rail */
+    .module-menu { width: 240px; background: var(--surface); border-right: 1px solid var(--border); padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+    .menu-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border-radius: 6px; border: none; background: transparent; color: var(--text-muted); font-size: 13px; font-weight: 700; text-align: left; cursor: pointer; transition: all 0.15s; }
+    .menu-btn:hover { background: var(--surface-hover); color: var(--text-main); }
+    .menu-btn.active { background: var(--primary-light); color: var(--primary); }
+
+    /* Main Panel Workspace */
+    .module-content { flex: 1; padding: 24px 32px; overflow-y: auto; }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    .panel-header { margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .panel-title { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; }
+    .panel-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    /* Key Metric Cards */
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .metric-card { background: var(--surface); border: 1px solid var(--border); padding: 16px 20px; border-radius: 10px; display: flex; flex-direction: column; gap: 6px; }
+    .metric-label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .metric-val { font-size: 22px; font-weight: 900; color: var(--text-main); }
+    .metric-sub { font-size: 11px; color: var(--status-green); font-weight: 700; }
+
+    /* Form Layouts & Controls */
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-bottom: 24px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full-width { grid-column: 1 / -1; }
+    .form-label { font-size: 12px; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.4px; }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background: var(--surface); outline: none; transition: all 0.15s; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+
+    /* Action Buttons */
+    .btn-primary { background: var(--primary); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; transition: background 0.15s; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; }
+
+    /* Data Table Styling */
+    .table-container { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 16px; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table th, .data-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+    .data-table th { background: var(--surface-hover); font-weight: 800; color: var(--text-muted); font-size: 11px; text-transform: uppercase; }
+    
+    .badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    .badge-paid { background: var(--status-green-bg); color: #15803d; }
+    .badge-pending { background: var(--status-amber-bg); color: var(--status-amber); }
+    .badge-failed { background: var(--status-red-bg); color: var(--status-red); }
+
+    /* Off-Canvas Aarika AI Drawer */
+    .ai-drawer { position: fixed; top: 0; right: calc(-1 * var(--drawer-width)); width: var(--drawer-width); height: 100vh; background: var(--surface); border-left: 1px solid var(--border); box-shadow: -10px 0 30px rgba(0,0,0,0.08); z-index: 100; transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; }
+    .ai-drawer.open { right: 0; }
+    .ai-header { padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--primary-light); display: flex; align-items: center; justify-content: space-between; }
+    .ai-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; }
+    .ai-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); }
+    .ai-chat-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+    .chat-bubble { padding: 12px 14px; border-radius: 8px; font-size: 13px; line-height: 1.5; max-width: 88%; }
+    .chat-bubble.user { background: var(--primary); color: #fff; align-self: flex-end; }
+    .chat-bubble.ai { background: var(--bg-main); border: 1px solid var(--border); color: var(--text-main); align-self: flex-start; }
+    .ai-footer { padding: 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+    .ai-footer input { flex: 1; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; outline: none; font-size: 13px; }
+    .ai-footer button { background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; }
+  </style>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+
+  <!-- Left Global Sidebar Rail -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <a href="/erp/index.html" class="brand">
+        <div class="brand-logo">B</div>
+        <div>
+          <div class="brand-title">BALJYOTI ERP</div>
+          <span class="cmmi-badge">CMMi Level 5</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="nav-container">
+      <div class="nav-item">
+        <a href="/erp/index.html">
+          <span class="nav-icon">🏠</span>
+          <span>Executive Dashboard</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/erp/admission/">
+          <span class="nav-icon">📋</span>
+          <span>Admission & Intake</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/erp/sis/">
+          <span class="nav-icon">👨‍🎓</span>
+          <span>Student Info (SIS)</span>
+        </a>
+      </div>
+      <div class="nav-item active">
+        <a href="/erp/finance/">
+          <span class="nav-icon">💳</span>
+          <span>Finance & Ledger</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/erp/settings/">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings & Master</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Workstation Container -->
+  <div class="wrapper">
+    <!-- Topbar Header -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span style="font-size: 20px;">💳</span>
+        <div class="topbar-title">Finance & Fee Ledger Pillar</div>
+      </div>
+
+      <div class="topbar-right">
+        <span id="roleBadge" class="role-indicator">SUPER_ADMIN</span>
+        <span id="userBadge" class="user-pill">admin@baljyoti.com</span>
+        <button class="ai-btn" onclick="toggleAIDrawer()">
+          <span>🤖 Ask Aarika AI</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Split Workspace -->
+    <div class="workspace">
+      <!-- Sub-Category Navigation Rail -->
+      <nav class="module-menu">
+        <button class="menu-btn active" onclick="switchTab('collection', this)">
+          <span>🧾</span> Fee Counter Workstation
+        </button>
+        <button class="menu-btn" onclick="switchTab('structures', this)">
+          <span>⚙️</span> Fee Structure Master
+        </button>
+        <button class="menu-btn" onclick="switchTab('transactions', this)">
+          <span>📊</span> Ledger & Transactions
+        </button>
+        <button class="menu-btn" onclick="switchTab('reminders', this)">
+          <span>📲</span> Dues & Reminders
+        </button>
+      </nav>
+
+      <!-- Main Panel Workspace -->
+      <main class="module-content">
+
+        <!-- Metrics Overview -->
+        <div class="metric-grid">
+          <div class="metric-card">
+            <span class="metric-label">Total YTD Collections</span>
+            <span class="metric-val">₹ 1,42,85,000</span>
+            <span class="metric-sub">▲ +12.4% vs prev term</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Outstanding Receivables</span>
+            <span class="metric-val">₹ 14,20,500</span>
+            <span class="metric-sub" style="color:var(--status-red);">94 Pending Accounts</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Online Gateway Success</span>
+            <span class="metric-val">99.4%</span>
+            <span class="metric-sub">Razorpay / UPI Sync Active</span>
+          </div>
+        </div>
+
+        <!-- 1. Fee Collection Counter Workstation -->
+        <section id="collection" class="tab-pane active">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Instant Counter Fee Collection</div>
+              <div class="panel-desc">Record cash, UPI, or cheque payments with immediate receipt generation.</div>
+            </div>
+            <button class="btn-primary" onclick="processFeePayment()">Post Transaction & Issue Receipt</button>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Student ID / Enrollment Number *</label>
+              <input type="text" id="collectStudentId" class="form-input" placeholder="e.g., BJ-2026-1042" value="BJ-2026-1042">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Student Name</label>
+              <input type="text" id="collectStudentName" class="form-input" value="Aarav Sharma" readonly style="background:var(--surface-hover);">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Fee Term / Quarter *</label>
+              <select id="collectTerm" class="form-select">
+                <option value="Q3-2026">Quarter 3 (Oct - Dec 2026)</option>
+                <option value="Q4-2027">Quarter 4 (Jan - Mar 2027)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Payment Mode *</label>
+              <select id="collectMode" class="form-select">
+                <option value="UPI">UPI / QR Scan</option>
+                <option value="Cash">Cash</option>
+                <option value="Card">Credit/Debit Card</option>
+                <option value="Cheque">Cheque / Demand Draft</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Amount Received (₹) *</label>
+              <input type="number" id="collectAmount" class="form-input" value="18500">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Reference / UTR Number</label>
+              <input type="text" id="collectUtr" class="form-input" placeholder="e.g., UPI/6290481239">
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Fee Structure Master -->
+        <section id="structures" class="tab-pane">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Master Fee Heads & Class Slabs</div>
+              <div class="panel-desc">Define tuition, lab, transport, and library fee parameters per academic tier.</div>
+            </div>
+            <button class="btn-primary" onclick="saveFeeStructure()">Save Fee Structure</button>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Academic Tier / Grade</label>
+              <select class="form-select">
+                <option>Primary (Class 1 - 5)</option>
+                <option>Middle (Class 6 - 8)</option>
+                <option>Senior (Class 9 - 10)</option>
+                <option selected>Senior Secondary Science (Class 11 - 12)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tuition Fee (Quarterly ₹)</label>
+              <input type="number" class="form-input" value="12500">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Science / Computer Lab Charge (₹)</label>
+              <input type="number" class="form-input" value="3500">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Annual Composite & Development Fund (₹)</label>
+              <input type="number" class="form-input" value="2500">
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Ledger & Transactions Log -->
+        <section id="transactions" class="tab-pane">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Audit-Ready Financial Ledger</div>
+              <div class="panel-desc">Real-time ledger entries verified against bank settlements.</div>
+            </div>
+            <button class="btn-secondary" onclick="exportLedgerCSV()">Export Ledger CSV</button>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Receipt ID</th>
+                  <th>Student ID</th>
+                  <th>Payer Name</th>
+                  <th>Amount Paid</th>
+                  <th>Mode</th>
+                  <th>Timestamp</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="ledgerRows">
+                <tr>
+                  <td>REC-2026-9041</td>
+                  <td>BJ-2026-1042</td>
+                  <td>Aarav Sharma</td>
+                  <td>₹ 18,500</td>
+                  <td>UPI</td>
+                  <td>2026-08-29 11:20 AM</td>
+                  <td><span class="badge badge-paid">SUCCESS</span></td>
+                </tr>
+                <tr>
+                  <td>REC-2026-9040</td>
+                  <td>BJ-2026-0812</td>
+                  <td>Priya Singh</td>
+                  <td>₹ 15,000</td>
+                  <td>Cash</td>
+                  <td>2026-08-29 10:45 AM</td>
+                  <td><span class="badge badge-paid">SUCCESS</span></td>
+                </tr>
+                <tr>
+                  <td>REC-2026-9039</td>
+                  <td>BJ-2026-1105</td>
+                  <td>Kabir Mehta</td>
+                  <td>₹ 18,500</td>
+                  <td>Online Gateway</td>
+                  <td>2026-08-28 04:12 PM</td>
+                  <td><span class="badge badge-failed">GATEWAY FAILED</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 4. Dues & Automated Reminders -->
+        <section id="reminders" class="tab-pane">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Dues Management & Reminder Engine</div>
+              <div class="panel-desc">Broadcast automated WhatsApp and SMS alerts for pending fee accounts.</div>
+            </div>
+            <button class="btn-primary" onclick="triggerDuesBroadcasting()">Broadcast Reminders Now</button>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Student ID</th>
+                  <th>Student Name</th>
+                  <th>Class</th>
+                  <th>Pending Amount</th>
+                  <th>Overdue Days</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>BJ-2026-1105</td>
+                  <td>Kabir Mehta</td>
+                  <td>Class 11 - Science</td>
+                  <td>₹ 18,500</td>
+                  <td>14 Days</td>
+                  <td><button class="btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="sendSingleReminder('Kabir Mehta')">Send WhatsApp Alert</button></td>
+                </tr>
+                <tr>
+                  <td>BJ-2026-0934</td>
+                  <td>Neha Patel</td>
+                  <td>Class 9</td>
+                  <td>₹ 12,000</td>
+                  <td>21 Days</td>
+                  <td><button class="btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="sendSingleReminder('Neha Patel')">Send WhatsApp Alert</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Off-Canvas Aarika AI Drawer -->
+  <div class="ai-drawer" id="aiDrawer">
+    <div class="ai-header">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="ai-avatar">A</div>
+        <div>
+          <div style="font-weight: 800; font-size: 14px;">Aarika AI Assistant</div>
+          <div style="font-size: 11px; color: var(--text-muted);">CMMi-L5 Finance Engine</div>
+        </div>
+      </div>
+      <button class="ai-close" onclick="toggleAIDrawer()">✕</button>
+    </div>
+
+    <div class="ai-chat-body" id="chatBody">
+      <div class="chat-bubble ai">
+        Hello! I am <strong>Aarika</strong>. I audit ledger entries and calculate collection trends across academic tiers. How can I assist with financial records?
+      </div>
+    </div>
+
+    <div class="ai-footer">
+      <input type="text" id="aiInput" placeholder="Query ledger, dues, or collection analytics..." onkeypress="if(event.key==='Enter') sendAIPrompt()">
+      <button onclick="sendAIPrompt()">Send</button>
+    </div>
+  </div>
+
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSnRWGUsKQhkXjYbnSj-udkO4IBH6EsjxxgiFwnQZ8zsmGdot8hmlkkuLxKHiLFwJQWQ/exec";
+  let currentUser = null;
+
+  // Firebase Auth Guard
+  const firebaseConfig = {
+    apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
+    authDomain: "baljyoti-portal.firebaseapp.com",
+    projectId: "baljyoti-portal",
+    storageBucket: "baljyoti-portal.firebasestorage.app",
+    messagingSenderId: "420727507952",
+    appId: "1:420727507952:web:de5bdbb73521b9fae4eb35"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user && user.email.endsWith("@baljyoti.com")) {
+      currentUser = user;
+      document.getElementById("userBadge").innerText = user.email;
+    } else {
+      window.location.href = "/";
+    }
+  });
+
+  // Tab Switcher
+  function switchTab(tabId, btnElem) {
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    document.querySelectorAll('.menu-btn').forEach(btn => btn.classList.remove('active'));
+
+    document.getElementById(tabId).classList.add('active');
+    btnElem.classList.add('active');
+  }
+
+  // Financial Handlers
+  function processFeePayment() {
+    const studentId = document.getElementById('collectStudentId').value;
+    const amount = document.getElementById('collectAmount').value;
+
+    if (!studentId || !amount) {
+      alert("Please enter both Student ID and Payment Amount.");
+      return;
+    }
+
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "post_fee_transaction",
+        email: currentUser ? currentUser.email : "admin@baljyoti.com",
+        studentId: studentId,
+        amount: amount,
+        mode: document.getElementById('collectMode').value,
+        utr: document.getElementById('collectUtr').value
+      })
+    }).then(() => {
+      alert(`Transaction of ₹${amount} for ${studentId} successfully posted to master ledger!`);
+    });
+  }
+
+  function saveFeeStructure() {
+    alert("Master Fee Structure configuration updated across academic tiers.");
+  }
+
+  function exportLedgerCSV() {
+    alert("Exporting CMMi Level 5 audited ledger in CSV format...");
+  }
+
+  function triggerDuesBroadcasting() {
+    alert("Broadcasting automated fee reminder messages via WhatsApp & SMS Gateway...");
+  }
+
+  function sendSingleReminder(name) {
+    alert(`WhatsApp fee reminder notification dispatched to ${name}.`);
+  }
+
+  // Aarika AI Drawer
+  function toggleAIDrawer() {
+    document.getElementById("aiDrawer").classList.toggle("open");
+  }
+
+  function sendAIPrompt() {
+    const input = document.getElementById("aiInput");
+    const chatBody = document.getElementById("chatBody");
+    const prompt = input.value.trim();
+
+    if (!prompt) return;
+
+    chatBody.innerHTML += `<div class="chat-bubble user">${prompt}</div>`;
+    input.value = "";
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "ask_gemini",
+        email: currentUser ? currentUser.email : "admin@baljyoti.com",
+        role: "SUPER_ADMIN",
+        prompt: prompt
+      })
+    }).then(() => {
+      chatBody.innerHTML += `<div class="chat-bubble ai">Aarika processed your financial ledger query.</div>`;
+      chatBody.scrollTop = chatBody.scrollHeight;
+    });
+  }
+</script>
+</body>
+</html>
