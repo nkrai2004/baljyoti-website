@@ -67,46 +67,8 @@
     <div>
       <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Authorized System Modules</h3>
 
-      <!-- System Module Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-        <div data-module="sis" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
-          <div class="space-y-3">
-            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl font-bold">👨‍🎓</div>
-            <h4 class="text-base font-bold text-slate-900">Student Info System</h4>
-            <p class="text-xs text-slate-500 leading-relaxed">Manage student profiles, enrollments, attendance registers, and academic history records.</p>
-          </div>
-          <button class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition">Launch SIS</button>
-        </div>
-
-        <div data-module="finance" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
-          <div class="space-y-3">
-            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl font-bold">💳</div>
-            <h4 class="text-base font-bold text-slate-900">Finance & Fee Ledger</h4>
-            <p class="text-xs text-slate-500 leading-relaxed">Fee collection management, payment gateways, expense tracking, and ledger generation.</p>
-          </div>
-          <button class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition">Launch Finance</button>
-        </div>
-
-        <div data-module="academics" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
-          <div class="space-y-3">
-            <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-xl font-bold">📚</div>
-            <h4 class="text-base font-bold text-slate-900">Academics & Exams</h4>
-            <p class="text-xs text-slate-500 leading-relaxed">Curriculum management, lesson planning, marks entry, and report card generation.</p>
-          </div>
-          <button class="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-lg transition">Launch Academics</button>
-        </div>
-
-        <div data-module="adminOps" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
-          <div class="space-y-3">
-            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl font-bold">🏢</div>
-            <h4 class="text-base font-bold text-slate-900">Admin Operations</h4>
-            <p class="text-xs text-slate-500 leading-relaxed">Fleet tracking, inventory management, staff duty rosters, and facility operations.</p>
-          </div>
-          <button class="w-full py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg transition">Launch Admin Ops</button>
-        </div>
-
-      </div>
+      <!-- Dynamic System Module Container -->
+      <div id="modulesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
 
       <!-- Fallback display when user is NOT info@baljyoti.com and has NO ROLE ASSIGNED -->
       <div id="noModulesFallback" class="hidden p-8 bg-white border border-slate-200 rounded-2xl text-center space-y-3 shadow-sm">
@@ -123,6 +85,42 @@
   <script>
     const SUPER_ADMIN = "info@baljyoti.com";
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhSwScGcBlRSqrkyT-bfog22RL3z_YGMY8vwriNRNP5q4P7DqWhh-TKnz40L_BwCVp8w/exec";
+
+    // System Modules Definition Map
+    const MODULE_DEFINITIONS = {
+      sis: {
+        title: "Student Info System",
+        icon: "👨‍🎓",
+        description: "Manage student profiles, enrollments, attendance registers, and academic history records.",
+        btnText: "Launch SIS",
+        bgIcon: "bg-blue-50 text-blue-600",
+        btnClass: "bg-blue-600 hover:bg-blue-700"
+      },
+      finance: {
+        title: "Finance & Fee Ledger",
+        icon: "💳",
+        description: "Fee collection management, payment gateways, expense tracking, and ledger generation.",
+        btnText: "Launch Finance",
+        bgIcon: "bg-emerald-50 text-emerald-600",
+        btnClass: "bg-emerald-600 hover:bg-emerald-700"
+      },
+      academics: {
+        title: "Academics & Exams",
+        icon: "📚",
+        description: "Curriculum management, lesson planning, marks entry, and report card generation.",
+        btnText: "Launch Academics",
+        bgIcon: "bg-purple-50 text-purple-600",
+        btnClass: "bg-purple-600 hover:bg-purple-700"
+      },
+      adminOps: {
+        title: "Admin Operations",
+        icon: "🏢",
+        description: "Fleet tracking, inventory management, staff duty rosters, and facility operations.",
+        btnText: "Launch Admin Ops",
+        bgIcon: "bg-amber-50 text-amber-600",
+        btnClass: "bg-amber-600 hover:bg-amber-700"
+      }
+    };
 
     const firebaseConfig = {
       apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
@@ -149,7 +147,7 @@
         document.getElementById("rbacAdminBtn").classList.remove("hidden");
         document.getElementById("roleBadge").innerText = "SUPER_ADMIN";
         document.getElementById("roleBadge").className = "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-100 text-red-800 border border-red-200";
-        showAllModules();
+        renderModules("ALL");
         return;
       }
 
@@ -168,20 +166,15 @@
               sessionStorage.setItem("userPermissions", JSON.stringify(data));
               applyPermissions(data.role, data.modules);
             } else {
-              applyPermissions("NO ROLE ASSIGNED", { sis: false, finance: false, academics: false, adminOps: false });
+              applyPermissions("NO ROLE ASSIGNED", {});
             }
           })
           .catch(err => {
             console.error("RBAC Fetch Error:", err);
-            applyPermissions("NO ROLE ASSIGNED", { sis: false, finance: false, academics: false, adminOps: false });
+            applyPermissions("NO ROLE ASSIGNED", {});
           });
       }
     });
-
-    function showAllModules() {
-      document.querySelectorAll("[data-module]").forEach(el => el.classList.remove("hidden"));
-      document.getElementById("noModulesFallback").classList.add("hidden");
-    }
 
     function applyPermissions(role, modules) {
       const isRoleAssigned = role && role !== "NO_ACCESS" && role !== "NO ROLE ASSIGNED";
@@ -190,14 +183,30 @@
         ? "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200" 
         : "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200";
 
+      renderModules(modules);
+    }
+
+    function renderModules(allowedModules) {
+      const container = document.getElementById("modulesContainer");
+      container.innerHTML = "";
       let activeCount = 0;
-      document.querySelectorAll("[data-module]").forEach(element => {
-        const modKey = element.getAttribute("data-module");
-        if (modules && modules[modKey] === true) {
-          element.classList.remove("hidden");
+
+      Object.keys(MODULE_DEFINITIONS).forEach(modKey => {
+        const isAllowed = allowedModules === "ALL" || (allowedModules && allowedModules[modKey] === true);
+        if (isAllowed) {
+          const mod = MODULE_DEFINITIONS[modKey];
+          const cardHtml = `
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
+              <div class="space-y-3">
+                <div class="w-12 h-12 ${mod.bgIcon} rounded-xl flex items-center justify-center text-xl font-bold">${mod.icon}</div>
+                <h4 class="text-base font-bold text-slate-900">${mod.title}</h4>
+                <p class="text-xs text-slate-500 leading-relaxed">${mod.description}</p>
+              </div>
+              <button class="w-full py-2 ${mod.btnClass} text-white text-xs font-bold rounded-lg transition">${mod.btnText}</button>
+            </div>
+          `;
+          container.insertAdjacentHTML("beforeend", cardHtml);
           activeCount++;
-        } else {
-          element.classList.add("hidden");
         }
       });
 
