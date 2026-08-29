@@ -3,35 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baljyoti ERP Portal</title>
+  <title>Baljyoti School ERP Master Portal</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #f9fafb; color: #111827; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+    body { background-color: #f3f4f6; color: #111827; min-height: 100vh; display: flex; flex-direction: column; }
 
-    .navbar { width: 100%; background: #ffffff; border-bottom: 2px solid #dc2626; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    .brand { font-size: 18px; font-weight: 900; color: #dc2626; text-transform: uppercase; letter-spacing: 0.5px; }
-    .user-badge { font-size: 12px; background: #fff5f5; color: #dc2626; border: 1px solid #dc2626; padding: 6px 12px; border-radius: 20px; font-weight: 700; }
+    .navbar { background: #ffffff; border-bottom: 2px solid #dc2626; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .brand { font-size: 20px; font-weight: 900; color: #dc2626; text-transform: uppercase; text-decoration: none; letter-spacing: 0.5px; }
+    .user-badge { font-size: 13px; background: #fff5f5; color: #dc2626; border: 1px solid #dc2626; padding: 6px 14px; border-radius: 20px; font-weight: 700; }
 
-    .container { width: 100%; max-width: 900px; padding: 24px 16px; display: flex; flex-direction: column; gap: 20px; }
+    .layout { display: flex; flex: 1; gap: 20px; padding: 24px; max-width: 1400px; margin: 0 auto; width: 100%; }
 
-    .welcome-card { background: #ffffff; border: 1.5px solid #e5e7eb; border-left: 5px solid #dc2626; border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-    .welcome-title { font-size: 20px; font-weight: 800; color: #111827; margin-bottom: 6px; }
-    .welcome-sub { font-size: 13px; color: #6b7280; font-weight: 600; }
+    .main-panel { flex: 2; display: flex; flex-direction: column; gap: 20px; }
+    .ai-panel { flex: 1; background: #ffffff; border-radius: 12px; border: 1.5px solid #e5e7eb; display: flex; flex-direction: column; height: fit-content; max-height: 750px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 10px; }
+    .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .module-card { background: #ffffff; border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 20px; text-decoration: none; color: inherit; transition: border-color 0.2s; }
+    .module-card:hover { border-color: #dc2626; }
+    .module-card h3 { font-size: 16px; font-weight: 800; color: #dc2626; margin-bottom: 8px; }
+    .module-card p { font-size: 13px; color: #4b5563; line-height: 1.4; }
 
-    .module-card { background: #ffffff; border: 1.5px solid #e5e7eb; border-radius: 14px; padding: 20px; text-decoration: none; color: inherit; transition: all 0.2s ease; display: flex; flex-direction: column; justify-content: space-between; }
-    .module-card:hover { border-color: #dc2626; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(220, 38, 38, 0.1); }
-    
-    .card-icon { font-size: 28px; margin-bottom: 12px; }
-    .card-title { font-size: 16px; font-weight: 800; color: #dc2626; margin-bottom: 6px; text-transform: uppercase; }
-    .card-desc { font-size: 12px; color: #4b5563; line-height: 1.4; }
+    .ai-header { padding: 16px; border-bottom: 1px solid #e5e7eb; background: #fff5f5; border-radius: 12px 12px 0 0; }
+    .ai-title { font-size: 15px; font-weight: 800; color: #dc2626; }
+    .ai-chat-box { padding: 16px; height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; font-size: 13px; }
+    .msg { padding: 10px 14px; border-radius: 8px; line-height: 1.4; }
+    .msg.user { background: #dc2626; color: #ffffff; align-self: flex-end; max-width: 85%; }
+    .msg.ai { background: #f3f4f6; color: #111827; align-self: flex-start; max-width: 90%; border: 1px solid #e5e7eb; }
 
-    .status-msg { text-align: center; font-weight: 700; color: #dc2626; padding: 40px; font-size: 15px; }
-    .btn-login { background: #dc2626; color: #ffffff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: background 0.2s; }
-    .btn-login:hover { background: #b91c1c; }
-    .btn-logout { background: #dc2626; color: #ffffff; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; }
-    .hidden { display: none !important; }
+    .ai-input-area { padding: 12px; border-top: 1px solid #e5e7eb; display: flex; gap: 8px; }
+    .ai-input-area input { flex: 1; padding: 10px; border: 1.5px solid #d1d5db; border-radius: 6px; outline: none; font-size: 13px; }
+    .ai-input-area button { background: #dc2626; color: #ffffff; border: none; padding: 10px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; }
   </style>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -40,32 +41,47 @@
 <body>
 
   <div class="navbar">
-    <div class="brand">BALJYOTI ERP</div>
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <span id="userBadge" class="user-badge">Checking Auth...</span>
-      <button id="logoutBtn" class="btn-logout hidden" onclick="logout()">Logout</button>
-    </div>
+    <a href="#" class="brand">BALJYOTI SCHOOL ERP</a>
+    <span id="userBadge" class="user-badge">Authenticating...</span>
   </div>
 
-  <div class="container">
-    <div id="loadingStatus" class="status-msg">Authenticating session...</div>
+  <div class="layout">
+    <div class="main-panel">
+      <h2 style="font-size: 20px; font-weight: 800; color: #111827;">System Dashboard</h2>
+      
+      <div class="grid-container">
+        <a href="/erp/sis/" class="module-card">
+          <h3>SIS & Attendance</h3>
+          <p>Student Directory, Class Rosters, and Daily Roll Call Attendance Tracking.</p>
+        </a>
 
-    <!-- Login Prompt Card -->
-    <div id="unauthBanner" class="welcome-card hidden" style="text-align: center;">
-      <div class="welcome-title">Session Expired or Not Logged In</div>
-      <div class="welcome-sub" style="margin-bottom: 20px;">Please log in with your @baljyoti.com or authorized domain Google Account.</div>
-      <button class="btn-login" onclick="loginWithGoogle()">Sign In With Google</button>
+        <a href="/erp/classroom/" class="module-card">
+          <h3>Google Classroom Sync</h3>
+          <p>Sync active Workspace Google Classroom courses and rosters automatically.</p>
+        </a>
+
+        <a href="/erp/finance/" class="module-card">
+          <h3>Finance & Fees</h3>
+          <p>Collect fee payments, issue electronic receipts, and view financial ledgers.</p>
+        </a>
+
+        <a href="/erp/staff/" class="module-card">
+          <h3>Staff HR & Operations</h3>
+          <p>Staff check-ins with GPS/photo verification and daily campus inspection logs.</p>
+        </a>
+      </div>
     </div>
 
-    <!-- Authenticated Dashboard Content -->
-    <div id="mainContent" class="hidden">
-      <div class="welcome-card">
-        <div class="welcome-title" id="welcomeUser">Welcome Back</div>
-        <div class="welcome-sub" id="tenantDomain">Tenant Workspace: Loading...</div>
+    <div class="ai-panel">
+      <div class="ai-header">
+        <div class="ai-title">Gemini AI ERP Assistant</div>
       </div>
-
-      <div class="grid" id="moduleGrid">
-        <!-- Dynamically Rendered Based on Roles -->
+      <div class="ai-chat-box" id="chatBox">
+        <div class="msg ai">Hello! I am your AI Administrative Assistant. Ask me anything about enrolled students, system stats, or administrative logs.</div>
+      </div>
+      <div class="ai-input-area">
+        <input type="text" id="aiPrompt" placeholder="Ask Gemini..." onkeypress="if(event.key==='Enter') sendAIPrompt()">
+        <button onclick="sendAIPrompt()">Ask</button>
       </div>
     </div>
   </div>
@@ -84,108 +100,38 @@
   };
   firebase.initializeApp(firebaseConfig);
 
-  const googleProvider = new firebase.auth.GoogleAuthProvider();
-
   firebase.auth().onAuthStateChanged((user) => {
-    document.getElementById("loadingStatus").classList.add("hidden");
-
-    if (user) {
-      const allowedDomains = ["baljyoti.com", "ssquare.org.in"];
-      const userDomain = user.email.split("@")[1] ? user.email.split("@")[1].toLowerCase() : "";
-
-      if (user.email.toLowerCase() === "info@baljyoti.com" || allowedDomains.includes(userDomain)) {
-        currentUser = user;
-        document.getElementById("unauthBanner").classList.add("hidden");
-        document.getElementById("userBadge").innerText = user.email;
-        document.getElementById("logoutBtn").classList.remove("hidden");
-        document.getElementById("welcomeUser").innerText = "Welcome, " + (user.displayName || user.email.split("@")[0]);
-        document.getElementById("tenantDomain").innerText = "Tenant Workspace: @" + userDomain;
-        
-        loadPermissionsJSONP(user.email);
-      } else {
-        alert("Unauthorized domain access: @" + userDomain);
-        firebase.auth().signOut();
-      }
+    if (user && user.email.endsWith("@baljyoti.com")) {
+      currentUser = user;
+      document.getElementById("userBadge").innerText = user.email;
     } else {
-      document.getElementById("mainContent").classList.add("hidden");
-      document.getElementById("logoutBtn").classList.add("hidden");
-      document.getElementById("unauthBanner").classList.remove("hidden");
-      document.getElementById("userBadge").innerText = "Not Logged In";
+      window.location.href = "/";
     }
   });
 
-  function loginWithGoogle() {
-    firebase.auth().signInWithPopup(googleProvider).catch((error) => {
-      alert("Login failed: " + error.message);
-    });
-  }
+  function sendAIPrompt() {
+    const input = document.getElementById("aiPrompt");
+    const chatBox = document.getElementById("chatBox");
+    const prompt = input.value.trim();
 
-  window.handlePermissions = function(res) {
-    document.getElementById("mainContent").classList.remove("hidden");
+    if (!prompt) return;
 
-    let allowedModules = ["Attendance", "DutyReports"];
-    
-    if (currentUser && currentUser.email.toLowerCase() === "info@baljyoti.com") {
-      allowedModules = ["Attendance", "DutyReports", "Roles", "SIS", "Finance"];
-    } else if (res && res.status === "success" && res.data) {
-      const userRecord = res.data.find(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
-      if (userRecord && userRecord.permissions) {
-        try {
-          allowedModules = typeof userRecord.permissions === 'string' ? JSON.parse(userRecord.permissions) : userRecord.permissions;
-        } catch(e) {
-          allowedModules = [userRecord.permissions];
-        }
-      }
-    }
+    chatBox.innerHTML += `<div class="msg user">${prompt}</div>`;
+    input.value = "";
+    chatBox.scrollTop = chatBox.scrollHeight;
 
-    renderDashboard(allowedModules);
-  };
-
-  function loadPermissionsJSONP(email) {
-    const existingScript = document.getElementById("jsonp-perm");
-    if (existingScript) existingScript.remove();
-
-    const script = document.createElement("script");
-    script.id = "jsonp-perm";
-    script.src = SCRIPT_URL + "?action=get_roles&email=" + encodeURIComponent(email) + "&callback=handlePermissions";
-    script.onerror = function() {
-      handlePermissions(null);
-    };
-    document.body.appendChild(script);
-  }
-
-  function renderDashboard(permissions) {
-    const grid = document.getElementById("moduleGrid");
-    grid.innerHTML = "";
-
-    const modules = [
-      { id: "Attendance", title: "Staff Attendance", icon: "📌", desc: "Geofenced GPS and selfie verification log.", link: "./attendance/" },
-      { id: "DutyReports", title: "Duty Reports", icon: "📋", desc: "Field inspections, photos, and location tracking.", link: "./duty-report/" },
-      { id: "Roles", title: "Roles & Permissions", icon: "🔐", desc: "Manage multi-tenant user access rights.", link: "./roles/" },
-      { id: "SIS", title: "Student Information (SIS)", icon: "🎓", desc: "Manage student profiles, classes, and registers.", link: "#" },
-      { id: "Finance", title: "Finance & Fees", icon: "💳", desc: "Fee ledgers, payments, and outstanding balances.", link: "#" }
-    ];
-
-    modules.forEach(mod => {
-      if (permissions.includes(mod.id) || (currentUser && currentUser.email.toLowerCase() === "info@baljyoti.com")) {
-        const a = document.createElement("a");
-        a.className = "module-card";
-        a.href = mod.link;
-        a.innerHTML = `
-          <div>
-            <div class="card-icon">${mod.icon}</div>
-            <div class="card-title">${mod.title}</div>
-            <div class="card-desc">${mod.desc}</div>
-          </div>
-        `;
-        grid.appendChild(a);
-      }
-    });
-  }
-
-  function logout() {
-    firebase.auth().signOut().then(() => {
-      window.location.reload();
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "ask_gemini",
+        email: currentUser.email,
+        prompt: prompt
+      })
+    }).then(() => {
+      chatBox.innerHTML += `<div class="msg ai">Query submitted. Check backend logs for real-time stream.</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
     });
   }
 </script>
