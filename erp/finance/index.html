@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baljyoti ERP | Finance & Fee Ledger</title>
+  <title>Baljyoti ERP | Finance & Fee Ledger Module</title>
   <style>
     :root {
-      --primary: #dc2626;
-      --primary-dark: #991b1b;
-      --primary-light: #fef2f2;
+      --primary: #059669;
+      --primary-dark: #047857;
+      --primary-light: #ecfdf5;
       --accent: #2563eb;
       --bg-main: #f8fafc;
       --surface: #ffffff;
@@ -73,36 +73,43 @@
     .panel-title { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; }
     .panel-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
-    /* Key Metric Cards */
+    /* Metric Cards */
     .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
     .metric-card { background: var(--surface); border: 1px solid var(--border); padding: 16px 20px; border-radius: 10px; display: flex; flex-direction: column; gap: 6px; }
     .metric-label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
     .metric-val { font-size: 22px; font-weight: 900; color: var(--text-main); }
     .metric-sub { font-size: 11px; color: var(--status-green); font-weight: 700; }
+    .metric-sub.danger { color: var(--status-red); }
 
-    /* Form Layouts & Controls */
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-bottom: 24px; }
+    /* Forms & Search Bar */
+    .search-row { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .search-input { flex: 1; min-width: 240px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background: var(--surface); outline: none; }
+    .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(5,150,105,0.1); }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 24px; }
     .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group.full-width { grid-column: 1 / -1; }
     .form-label { font-size: 12px; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.4px; }
     .form-input, .form-select, .form-textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background: var(--surface); outline: none; transition: all 0.15s; }
-    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(5,150,105,0.1); }
 
-    /* Action Buttons */
+    /* Buttons */
     .btn-primary { background: var(--primary); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; transition: background 0.15s; }
     .btn-primary:hover { background: var(--primary-dark); }
     .btn-secondary { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; }
 
-    /* Data Table Styling */
+    /* Tables */
     .table-container { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 16px; }
     .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
     .data-table th, .data-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
     .data-table th { background: var(--surface-hover); font-weight: 800; color: var(--text-muted); font-size: 11px; text-transform: uppercase; }
-    
+
     .badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-    .badge-paid { background: var(--status-green-bg); color: #15803d; }
-    .badge-pending { background: var(--status-amber-bg); color: var(--status-amber); }
-    .badge-failed { background: var(--status-red-bg); color: var(--status-red); }
+    .badge-success { background: var(--status-green-bg); color: #15803d; }
+    .badge-warn { background: var(--status-amber-bg); color: var(--status-amber); }
+    .badge-danger { background: var(--status-red-bg); color: var(--status-red); }
+
+    /* Fee Collection Box */
+    .receipt-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 24px; }
+    .receipt-header { font-size: 15px; font-weight: 800; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 16px; display: flex; justify-content: space-between; }
 
     /* Off-Canvas Aarika AI Drawer */
     .ai-drawer { position: fixed; top: 0; right: calc(-1 * var(--drawer-width)); width: var(--drawer-width); height: 100vh; background: var(--surface); border-left: 1px solid var(--border); box-shadow: -10px 0 30px rgba(0,0,0,0.08); z-index: 100; transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; }
@@ -162,6 +169,18 @@
         </a>
       </div>
       <div class="nav-item">
+        <a href="/erp/academics/">
+          <span class="nav-icon">📚</span>
+          <span>Academic & Campus Life</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/erp/admin-ops/">
+          <span class="nav-icon">🏢</span>
+          <span>Administration & Ops</span>
+        </a>
+      </div>
+      <div class="nav-item">
         <a href="/erp/settings/">
           <span class="nav-icon">⚙️</span>
           <span>Settings & Master</span>
@@ -176,12 +195,12 @@
     <header class="topbar">
       <div class="topbar-left">
         <span style="font-size: 20px;">💳</span>
-        <div class="topbar-title">Finance & Fee Ledger Pillar</div>
+        <div class="topbar-title">Finance & Fee Ledger Module</div>
       </div>
 
       <div class="topbar-right">
-        <span id="roleBadge" class="role-indicator">SUPER_ADMIN</span>
-        <span id="userBadge" class="user-pill">admin@baljyoti.com</span>
+        <span id="roleBadge" class="role-indicator">FINANCE_ADMIN</span>
+        <span id="userBadge" class="user-pill">accounts@baljyoti.com</span>
         <button class="ai-btn" onclick="toggleAIDrawer()">
           <span>🤖 Ask Aarika AI</span>
         </button>
@@ -193,216 +212,293 @@
       <!-- Sub-Category Navigation Rail -->
       <nav class="module-menu">
         <button class="menu-btn active" onclick="switchTab('collection', this)">
-          <span>🧾</span> Fee Counter Workstation
+          <span>💰</span> Fee Collection & Receipting
         </button>
-        <button class="menu-btn" onclick="switchTab('structures', this)">
-          <span>⚙️</span> Fee Structure Master
+        <button class="menu-btn" onclick="switchTab('studentLedger', this)">
+          <span>📗</span> Student Fee Ledger
         </button>
-        <button class="menu-btn" onclick="switchTab('transactions', this)">
-          <span>📊</span> Ledger & Transactions
+        <button class="menu-btn" onclick="switchTab('concessions', this)">
+          <span>🏷️</span> Discounts & Waivers
         </button>
-        <button class="menu-btn" onclick="switchTab('reminders', this)">
-          <span>📲</span> Dues & Reminders
+        <button class="menu-btn" onclick="switchTab('expenses', this)">
+          <span>🧾</span> Expense Ledger & Payroll
         </button>
       </nav>
 
       <!-- Main Panel Workspace -->
       <main class="module-content">
 
-        <!-- Metrics Overview -->
+        <!-- Key Financial Metrics -->
         <div class="metric-grid">
           <div class="metric-card">
-            <span class="metric-label">Total YTD Collections</span>
-            <span class="metric-val">₹ 1,42,85,000</span>
-            <span class="metric-sub">▲ +12.4% vs prev term</span>
+            <span class="metric-label">YTD Total Collections</span>
+            <span class="metric-val">₹ 1,84,50,000</span>
+            <span class="metric-sub">+12.4% vs target</span>
           </div>
           <div class="metric-card">
-            <span class="metric-label">Outstanding Receivables</span>
-            <span class="metric-val">₹ 14,20,500</span>
-            <span class="metric-sub" style="color:var(--status-red);">94 Pending Accounts</span>
+            <span class="metric-label">Outstanding Dues</span>
+            <span class="metric-val">₹ 14,20,000</span>
+            <span class="metric-sub danger">48 Outstanding Accounts</span>
           </div>
           <div class="metric-card">
-            <span class="metric-label">Online Gateway Success</span>
-            <span class="metric-val">99.4%</span>
-            <span class="metric-sub">Razorpay / UPI Sync Active</span>
+            <span class="metric-label">Scholarships & Waivers</span>
+            <span class="metric-val">₹ 8,60,000</span>
+            <span class="metric-sub">32 Approved Cases</span>
           </div>
         </div>
 
-        <!-- 1. Fee Collection Counter Workstation -->
+        <!-- 1. Fee Collection & Receipting -->
         <section id="collection" class="tab-pane active">
           <div class="panel-header">
             <div>
-              <div class="panel-title">Instant Counter Fee Collection</div>
-              <div class="panel-desc">Record cash, UPI, or cheque payments with immediate receipt generation.</div>
-            </div>
-            <button class="btn-primary" onclick="processFeePayment()">Post Transaction & Issue Receipt</button>
-          </div>
-
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label">Student ID / Enrollment Number *</label>
-              <input type="text" id="collectStudentId" class="form-input" placeholder="e.g., BJ-2026-1042" value="BJ-2026-1042">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Student Name</label>
-              <input type="text" id="collectStudentName" class="form-input" value="Aarav Sharma" readonly style="background:var(--surface-hover);">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Fee Term / Quarter *</label>
-              <select id="collectTerm" class="form-select">
-                <option value="Q3-2026">Quarter 3 (Oct - Dec 2026)</option>
-                <option value="Q4-2027">Quarter 4 (Jan - Mar 2027)</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Payment Mode *</label>
-              <select id="collectMode" class="form-select">
-                <option value="UPI">UPI / QR Scan</option>
-                <option value="Cash">Cash</option>
-                <option value="Card">Credit/Debit Card</option>
-                <option value="Cheque">Cheque / Demand Draft</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Amount Received (₹) *</label>
-              <input type="number" id="collectAmount" class="form-input" value="18500">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Reference / UTR Number</label>
-              <input type="text" id="collectUtr" class="form-input" placeholder="e.g., UPI/6290481239">
+              <div class="panel-title">Counter Fee Collection Station</div>
+              <div class="panel-desc">Process real-time student fee payments, generate GST/Tax Compliant Receipts, and log payment modes.</div>
             </div>
           </div>
-        </section>
 
-        <!-- 2. Fee Structure Master -->
-        <section id="structures" class="tab-pane">
-          <div class="panel-header">
-            <div>
-              <div class="panel-title">Master Fee Heads & Class Slabs</div>
-              <div class="panel-desc">Define tuition, lab, transport, and library fee parameters per academic tier.</div>
+          <div class="receipt-card">
+            <div class="receipt-header">
+              <span>Student Account Lookup</span>
+              <span style="font-size: 12px; color: var(--text-muted);">Session: 2026-2027</span>
             </div>
-            <button class="btn-primary" onclick="saveFeeStructure()">Save Fee Structure</button>
+
+            <div class="search-row">
+              <input type="text" class="search-input" id="searchAdmNo" placeholder="Enter Admission Number (e.g. ADM-2024-0101)..." value="ADM-2024-0101">
+              <button class="btn-primary" onclick="loadFeeDetails()">Fetch Ledger Dues</button>
+            </div>
+
+            <div class="form-grid" style="margin-top: 16px;">
+              <div class="form-group">
+                <label class="form-label">Student Name</label>
+                <input type="text" class="form-input" id="stuName" value="Aarav Sharma" readonly>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Class & Section</label>
+                <input type="text" class="form-input" id="stuClass" value="Class 11 - Science A" readonly>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Pending Dues (Q2 Term)</label>
+                <input type="text" class="form-input" id="dueAmount" value="₹ 24,500" readonly style="font-weight: 800; color: var(--status-red);">
+              </div>
+            </div>
+
+            <div class="receipt-header" style="margin-top: 20px;">
+              <span>Payment Entry</span>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Amount Payable (₹)</label>
+                <input type="number" class="form-input" id="payAmount" value="24500">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Payment Mode</label>
+                <select class="form-select" id="payMode">
+                  <option value="UPI">UPI / QR Code</option>
+                  <option value="CARD">Credit / Debit Card</option>
+                  <option value="NETBANKING">Net Banking</option>
+                  <option value="CASH">Cash Counter</option>
+                  <option value="CHEQUE">Cheque / Demand Draft</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Transaction Ref / Cheque No.</label>
+                <input type="text" class="form-input" id="txnRef" placeholder="e.g. UPI/9081234412">
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 10px;">
+              <button class="btn-secondary" onclick="resetFeeForm()">Clear Form</button>
+              <button class="btn-primary" onclick="processReceipt()">Process Payment & Issue Receipt</button>
+            </div>
           </div>
 
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label">Academic Tier / Grade</label>
-              <select class="form-select">
-                <option>Primary (Class 1 - 5)</option>
-                <option>Middle (Class 6 - 8)</option>
-                <option>Senior (Class 9 - 10)</option>
-                <option selected>Senior Secondary Science (Class 11 - 12)</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Tuition Fee (Quarterly ₹)</label>
-              <input type="number" class="form-input" value="12500">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Science / Computer Lab Charge (₹)</label>
-              <input type="number" class="form-input" value="3500">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Annual Composite & Development Fund (₹)</label>
-              <input type="number" class="form-input" value="2500">
-            </div>
-          </div>
-        </section>
-
-        <!-- 3. Ledger & Transactions Log -->
-        <section id="transactions" class="tab-pane">
-          <div class="panel-header">
-            <div>
-              <div class="panel-title">Audit-Ready Financial Ledger</div>
-              <div class="panel-desc">Real-time ledger entries verified against bank settlements.</div>
-            </div>
-            <button class="btn-secondary" onclick="exportLedgerCSV()">Export Ledger CSV</button>
-          </div>
-
+          <div class="panel-title" style="font-size: 15px;">Recent Counter Transactions Today</div>
           <div class="table-container">
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Receipt ID</th>
-                  <th>Student ID</th>
-                  <th>Payer Name</th>
-                  <th>Amount Paid</th>
+                  <th>Receipt No</th>
+                  <th>Adm No</th>
+                  <th>Student Name</th>
+                  <th>Amount</th>
                   <th>Mode</th>
-                  <th>Timestamp</th>
+                  <th>Ref ID</th>
                   <th>Status</th>
+                  <th>Print</th>
                 </tr>
               </thead>
-              <tbody id="ledgerRows">
+              <tbody>
                 <tr>
-                  <td>REC-2026-9041</td>
-                  <td>BJ-2026-1042</td>
+                  <td>REC-2026-8901</td>
+                  <td>ADM-2024-0101</td>
                   <td>Aarav Sharma</td>
-                  <td>₹ 18,500</td>
+                  <td>₹ 24,500</td>
                   <td>UPI</td>
-                  <td>2026-08-29 11:20 AM</td>
-                  <td><span class="badge badge-paid">SUCCESS</span></td>
+                  <td>UPI/9081234412</td>
+                  <td><span class="badge badge-success">CLEARED</span></td>
+                  <td><button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="printReceipt('REC-2026-8901')">Print</button></td>
                 </tr>
                 <tr>
-                  <td>REC-2026-9040</td>
-                  <td>BJ-2026-0812</td>
+                  <td>REC-2026-8900</td>
+                  <td>ADM-2024-0102</td>
                   <td>Priya Singh</td>
-                  <td>₹ 15,000</td>
-                  <td>Cash</td>
-                  <td>2026-08-29 10:45 AM</td>
-                  <td><span class="badge badge-paid">SUCCESS</span></td>
-                </tr>
-                <tr>
-                  <td>REC-2026-9039</td>
-                  <td>BJ-2026-1105</td>
-                  <td>Kabir Mehta</td>
-                  <td>₹ 18,500</td>
-                  <td>Online Gateway</td>
-                  <td>2026-08-28 04:12 PM</td>
-                  <td><span class="badge badge-failed">GATEWAY FAILED</span></td>
+                  <td>₹ 24,500</td>
+                  <td>CARD</td>
+                  <td>TXN-88120391</td>
+                  <td><span class="badge badge-success">CLEARED</span></td>
+                  <td><button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="printReceipt('REC-2026-8900')">Print</button></td>
                 </tr>
               </tbody>
             </table>
           </div>
         </section>
 
-        <!-- 4. Dues & Automated Reminders -->
-        <section id="reminders" class="tab-pane">
+        <!-- 2. Student Fee Ledger -->
+        <section id="studentLedger" class="tab-pane">
           <div class="panel-header">
             <div>
-              <div class="panel-title">Dues Management & Reminder Engine</div>
-              <div class="panel-desc">Broadcast automated WhatsApp and SMS alerts for pending fee accounts.</div>
+              <div class="panel-title">Audit-Ready Student Ledger</div>
+              <div class="panel-desc">Complete financial debit/credit transaction history per student record.</div>
             </div>
-            <button class="btn-primary" onclick="triggerDuesBroadcasting()">Broadcast Reminders Now</button>
+            <button class="btn-secondary" onclick="exportLedger()">Export Ledger (PDF)</button>
+          </div>
+
+          <div class="search-row">
+            <input type="text" class="search-input" placeholder="Search by Student Name or Admission Number..." value="ADM-2024-0101">
+            <button class="btn-primary">View Ledger</button>
           </div>
 
           <div class="table-container">
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Student ID</th>
-                  <th>Student Name</th>
-                  <th>Class</th>
-                  <th>Pending Amount</th>
-                  <th>Overdue Days</th>
-                  <th>Action</th>
+                  <th>Date</th>
+                  <th>Transaction Type</th>
+                  <th>Reference / Receipt</th>
+                  <th>Debit (₹)</th>
+                  <th>Credit (₹)</th>
+                  <th>Balance (₹)</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>BJ-2026-1105</td>
-                  <td>Kabir Mehta</td>
-                  <td>Class 11 - Science</td>
-                  <td>₹ 18,500</td>
-                  <td>14 Days</td>
-                  <td><button class="btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="sendSingleReminder('Kabir Mehta')">Send WhatsApp Alert</button></td>
+                  <td>01 Apr 2026</td>
+                  <td>Annual Fee Invoice (Q1 & Q2)</td>
+                  <td>INV-2026-0012</td>
+                  <td>₹ 49,000</td>
+                  <td>-</td>
+                  <td>₹ 49,000 Dr</td>
                 </tr>
                 <tr>
-                  <td>BJ-2026-0934</td>
-                  <td>Neha Patel</td>
-                  <td>Class 9</td>
-                  <td>₹ 12,000</td>
-                  <td>21 Days</td>
-                  <td><button class="btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="sendSingleReminder('Neha Patel')">Send WhatsApp Alert</button></td>
+                  <td>10 Apr 2026</td>
+                  <td>Fee Payment Received (Q1)</td>
+                  <td>REC-2026-1022</td>
+                  <td>-</td>
+                  <td>₹ 24,500</td>
+                  <td>₹ 24,500 Dr</td>
+                </tr>
+                <tr>
+                  <td>29 Aug 2026</td>
+                  <td>Fee Payment Received (Q2)</td>
+                  <td>REC-2026-8901</td>
+                  <td>-</td>
+                  <td>₹ 24,500</td>
+                  <td><strong>₹ 0 (Nil)</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 3. Discounts & Waivers -->
+        <section id="concessions" class="tab-pane">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Concessions, Scholarships & Waivers</div>
+              <div class="panel-desc">Manage fee waiver requests, sibling discounts, and merit-based scholarship allocations.</div>
+            </div>
+            <button class="btn-primary" onclick="requestWaiver()">Apply New Waiver</button>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Application ID</th>
+                  <th>Adm No</th>
+                  <th>Student Name</th>
+                  <th>Concession Category</th>
+                  <th>Waiver % / Amount</th>
+                  <th>Approving Authority</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>WVR-2026-041</td>
+                  <td>ADM-2024-0103</td>
+                  <td>Rohan Verma</td>
+                  <td>Merit Scholarship</td>
+                  <td>25% Tuition Fee</td>
+                  <td>Principal Office</td>
+                  <td><span class="badge badge-success">APPROVED</span></td>
+                </tr>
+                <tr>
+                  <td>WVR-2026-042</td>
+                  <td>ADM-2024-0210</td>
+                  <td>Ananya Das</td>
+                  <td>Sibling Concession</td>
+                  <td>15% Tuition Fee</td>
+                  <td>Finance Committee</td>
+                  <td><span class="badge badge-warn">PENDING REVIEW</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 4. Expense Ledger & Payroll -->
+        <section id="expenses" class="tab-pane">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Institutional Expense & Payroll Ledger</div>
+              <div class="panel-desc">Track operational vendor payouts, staff payroll disbursements, and petty cash logs.</div>
+            </div>
+            <button class="btn-primary" onclick="logExpense()">Log Vendor Expense</button>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Voucher ID</th>
+                  <th>Date</th>
+                  <th>Expense Category</th>
+                  <th>Vendor / Payee</th>
+                  <th>Amount (₹)</th>
+                  <th>Payment Mode</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>EXP-2026-0811</td>
+                  <td>28 Aug 2026</td>
+                  <td>Staff Payroll (Aug 2026)</td>
+                  <td>All Faculty & Staff</td>
+                  <td>₹ 42,50,000</td>
+                  <td>Bank Transfer (NEFT)</td>
+                  <td><span class="badge badge-success">DISBURSED</span></td>
+                </tr>
+                <tr>
+                  <td>EXP-2026-0812</td>
+                  <td>29 Aug 2026</td>
+                  <td>Campus Maintenance & Utilities</td>
+                  <td>Power Grid Corp / Vendor</td>
+                  <td>₹ 1,12,000</td>
+                  <td>Net Banking</td>
+                  <td><span class="badge badge-success">PAID</span></td>
                 </tr>
               </tbody>
             </table>
@@ -420,7 +516,7 @@
         <div class="ai-avatar">A</div>
         <div>
           <div style="font-weight: 800; font-size: 14px;">Aarika AI Assistant</div>
-          <div style="font-size: 11px; color: var(--text-muted);">CMMi-L5 Finance Engine</div>
+          <div style="font-size: 11px; color: var(--text-muted);">Finance Analytics Engine</div>
         </div>
       </div>
       <button class="ai-close" onclick="toggleAIDrawer()">✕</button>
@@ -428,12 +524,12 @@
 
     <div class="ai-chat-body" id="chatBody">
       <div class="chat-bubble ai">
-        Hello! I am <strong>Aarika</strong>. I audit ledger entries and calculate collection trends across academic tiers. How can I assist with financial records?
+        Hello! I am <strong>Aarika</strong>. I analyze fee collections, track outstanding dues, audit student ledgers, and summarize financial health. How can I assist you?
       </div>
     </div>
 
     <div class="ai-footer">
-      <input type="text" id="aiInput" placeholder="Query ledger, dues, or collection analytics..." onkeypress="if(event.key==='Enter') sendAIPrompt()">
+      <input type="text" id="aiInput" placeholder="Ask about dues, receipts, or financial forecasts..." onkeypress="if(event.key==='Enter') sendAIPrompt()">
       <button onclick="sendAIPrompt()">Send</button>
     </div>
   </div>
@@ -471,47 +567,40 @@
     btnElem.classList.add('active');
   }
 
-  // Financial Handlers
-  function processFeePayment() {
-    const studentId = document.getElementById('collectStudentId').value;
-    const amount = document.getElementById('collectAmount').value;
+  // Finance Actions
+  function loadFeeDetails() {
+    alert("Fetched active fee structure for ADM-2024-0101.");
+  }
 
-    if (!studentId || !amount) {
-      alert("Please enter both Student ID and Payment Amount.");
+  function processReceipt() {
+    const amount = document.getElementById("payAmount").value;
+    const mode = document.getElementById("payMode").value;
+    if (!amount || amount <= 0) {
+      alert("Please enter a valid payment amount.");
       return;
     }
-
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "post_fee_transaction",
-        email: currentUser ? currentUser.email : "admin@baljyoti.com",
-        studentId: studentId,
-        amount: amount,
-        mode: document.getElementById('collectMode').value,
-        utr: document.getElementById('collectUtr').value
-      })
-    }).then(() => {
-      alert(`Transaction of ₹${amount} for ${studentId} successfully posted to master ledger!`);
-    });
+    alert(`Payment of ₹ ${amount} via ${mode} processed successfully! Receipt REC-2026-8902 generated.`);
   }
 
-  function saveFeeStructure() {
-    alert("Master Fee Structure configuration updated across academic tiers.");
+  function resetFeeForm() {
+    document.getElementById("payAmount").value = "";
+    document.getElementById("txnRef").value = "";
   }
 
-  function exportLedgerCSV() {
-    alert("Exporting CMMi Level 5 audited ledger in CSV format...");
+  function printReceipt(receiptNo) {
+    alert(`Opening printable invoice layout for ${receiptNo}...`);
   }
 
-  function triggerDuesBroadcasting() {
-    alert("Broadcasting automated fee reminder messages via WhatsApp & SMS Gateway...");
+  function exportLedger() {
+    alert("Exporting Student Fee Ledger to PDF format...");
   }
 
-  function sendSingleReminder(name) {
-    alert(`WhatsApp fee reminder notification dispatched to ${name}.`);
+  function requestWaiver() {
+    alert("Opening Waiver Application Form...");
+  }
+
+  function logExpense() {
+    alert("Opening Vendor Expense Entry Modal...");
   }
 
   // Aarika AI Drawer
@@ -536,8 +625,8 @@
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         action: "ask_gemini",
-        email: currentUser ? currentUser.email : "admin@baljyoti.com",
-        role: "SUPER_ADMIN",
+        email: currentUser ? currentUser.email : "accounts@baljyoti.com",
+        role: "FINANCE_ADMIN",
         prompt: prompt
       })
     }).then(() => {
