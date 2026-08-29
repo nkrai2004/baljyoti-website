@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-50">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - Bal Jyoti ERP</title>
+  <title>Dashboard - Bal Jyoti Portal</title>
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -16,14 +17,18 @@
       }
     }
   </script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-    body { font-family: 'Inter', sans-serif; }
-  </style>
+
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+  </style>
 </head>
-<body class="h-full flex flex-col text-slate-800">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
   <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-30">
     <div class="flex items-center space-x-3">
@@ -33,8 +38,7 @@
     </div>
 
     <div class="flex items-center space-x-3">
-      <!-- "Manage Users" Button - Strictly visible ONLY for info@baljyoti.com -->
-      <a id="rbacAdminBtn" href="user-permissions.html" class="hidden inline-flex items-center space-x-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition shadow-sm">
+      <a id="rbacAdminBtn" href="user-permissions.html" class="inline-flex items-center space-x-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition shadow-sm">
         <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
         </svg>
@@ -43,7 +47,7 @@
 
       <div class="flex items-center space-x-2 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg">
         <span id="userBadge" class="text-xs font-mono font-bold text-slate-700">Loading...</span>
-        <span id="roleBadge" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-slate-200 text-slate-700">...</span>
+        <span id="roleBadge" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200">GUEST</span>
       </div>
 
       <button onclick="logout()" class="text-xs font-bold text-slate-500 hover:text-red-600 px-2 py-1.5 transition">
@@ -52,40 +56,60 @@
     </div>
   </header>
 
-  <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
-
-    <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+  <main class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full">
+    <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
-        <h2 class="text-xl font-bold">Welcome back, <span id="welcomeUserName" class="text-brand-500">User</span></h2>
-        <p class="text-xs text-slate-400 mt-1">Access to ERP modules is dynamically governed based on your assigned Workspace permissions.</p>
+        <h1 class="text-2xl font-bold text-slate-900">Module Dashboard</h1>
+        <p class="text-sm text-slate-500 mt-1">Select an accessible module below based on your assigned role permissions.</p>
       </div>
-      <div class="text-xs font-mono bg-slate-800/80 px-4 py-2 rounded-xl border border-slate-700/60 self-start md:self-auto">
-        <span class="text-slate-400">Security Guard:</span> <span class="text-emerald-400 font-bold">RBAC Enforced</span>
-      </div>
-    </div>
-
-    <div>
-      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Authorized System Modules</h3>
-
-      <!-- Container dynamically populated from Google Apps Script / Backend API -->
-      <div id="modulesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
-
-      <!-- Fallback display when no modules are returned -->
-      <div id="noModulesFallback" class="hidden p-8 bg-white border border-slate-200 rounded-2xl text-center space-y-3 shadow-sm">
-        <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto font-bold text-xl">
-          ⚠️
-        </div>
-        <h4 class="text-base font-bold text-slate-900">No Authorized Modules Found</h4>
-        <p class="text-xs text-slate-500 max-w-md mx-auto">Your account is authenticated, but no module permissions have been assigned to your profile by the administrator (<span class="font-mono font-bold text-slate-700">info@baljyoti.com</span>).</p>
+      <div id="roleInfoBanner" class="text-xs bg-slate-100 border border-slate-200 px-4 py-2 rounded-lg text-slate-600">
+        Assigned Role: <strong id="assignedRoleText" class="text-slate-900">Loading...</strong>
       </div>
     </div>
 
+    <div id="modulesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="col-span-full text-center py-12 text-slate-400">Loading authorized modules...</div>
+    </div>
   </main>
 
   <script>
-    const SUPER_ADMIN = "info@baljyoti.com";
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhSwScGcBlRSqrkyT-bfog22RL3z_YGMY8vwriNRNP5q4P7DqWhh-TKnz40L_BwCVp8w/exec";
+    // Module definitions registry (Icons, descriptions, links)
+    const MODULE_REGISTRY = {
+      "User Directory": {
+        description: "Manage system user accounts, directory synchronization, and user privileges.",
+        url: "user-permissions.html",
+        icon: `<svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`
+      },
+      "Role-Module Mapping": {
+        description: "Configure dynamic roles, module items, and cross-system permission access matrices.",
+        url: "modules/role-modules.html",
+        icon: `<svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>`
+      },
+      "Inbox": {
+        description: "Access system notifications, inter-departmental communications, and user queries.",
+        url: "modules/inbox.html",
+        icon: `<svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>`
+      },
+      "Student Attendance": {
+        description: "Record, monitor, and generate daily and monthly student attendance records.",
+        url: "#",
+        icon: `<svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>`
+      },
+      "Exam & Marks": {
+        description: "Input student grades, publish report cards, and analyze class academic results.",
+        url: "#",
+        icon: `<svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>`
+      },
+      "Fee Management": {
+        description: "Track fee payments, generate receipts, and manage outstanding balances.",
+        url: "#",
+        icon: `<svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>`
+      }
+    };
 
+    let currentUserEmail = "";
+
+    // Firebase Auth Setup
     const firebaseConfig = {
       apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
       authDomain: "baljyoti-portal.firebaseapp.com",
@@ -95,120 +119,100 @@
       appId: "1:420727507952:web:de5bdbb73521b9fae4eb35"
     };
 
-    firebase.initializeApp(firebaseConfig);
-
-    firebase.auth().onAuthStateChanged((user) => {
-      if (!user || !user.email.endsWith("@baljyoti.com")) {
-        window.location.href = "index.html";
-        return;
-      }
-
-      document.getElementById("userBadge").innerText = user.email;
-      document.getElementById("welcomeUserName").innerText = user.displayName || user.email.split('@')[0];
-
-      // Super Admin special button
-      if (user.email === SUPER_ADMIN) {
-        document.getElementById("rbacAdminBtn").classList.remove("hidden");
-      } else {
-        document.getElementById("rbacAdminBtn").classList.add("hidden");
-      }
-
-      // Check cached permissions or fetch dynamically from backend
-      const cachedPermissions = sessionStorage.getItem("userPermissions");
-      if (cachedPermissions) {
-        const parsed = JSON.parse(cachedPermissions);
-        applyPermissions(parsed.role, parsed.modules, user.email);
-      } else {
-        fetchPermissions(user.email);
-      }
-    });
-
-    function fetchPermissions(userEmail) {
-      fetch(`${SCRIPT_URL}?action=get_user_permissions&email=${encodeURIComponent(userEmail)}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === "SUCCESS") {
-            sessionStorage.setItem("userPermissions", JSON.stringify(data));
-            applyPermissions(data.role, data.modules, userEmail);
-          } else {
-            applyPermissions("NO ROLE ASSIGNED", [], userEmail);
-          }
-        })
-        .catch(err => {
-          console.error("RBAC Fetch Error:", err);
-          applyPermissions("NO ROLE ASSIGNED", [], userEmail);
-        });
-    }
-
-    function applyPermissions(role, modules, email) {
-      const isSuperAdmin = email === SUPER_ADMIN;
-      const displayRole = isSuperAdmin ? "SUPER_ADMIN" : (role || "NO ROLE ASSIGNED");
-      
-      const badgeClass = isSuperAdmin
-        ? "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-100 text-red-800 border border-red-200"
-        : (role && role !== "NO_ACCESS" && role !== "NO ROLE ASSIGNED"
-            ? "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200"
-            : "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200");
-
-      document.getElementById("roleBadge").innerText = displayRole;
-      document.getElementById("roleBadge").className = badgeClass;
-
-      renderDynamicModules(modules);
-    }
-
-    function renderDynamicModules(modulesData) {
-      const container = document.getElementById("modulesContainer");
-      container.innerHTML = "";
-
-      if (!modulesData) {
-        document.getElementById("noModulesFallback").classList.remove("hidden");
-        return;
-      }
-
-      // Format module items depending on whether array or key-value object is returned
-      const moduleList = Array.isArray(modulesData) 
-        ? modulesData 
-        : Object.keys(modulesData).map(key => typeof modulesData[key] === 'object' ? { id: key, ...modulesData[key] } : null).filter(Boolean);
-
-      let activeCount = 0;
-
-      moduleList.forEach(mod => {
-        if (!mod) return;
-        
-        const title = mod.title || mod.name || "Module";
-        const icon = mod.icon || "⚙️";
-        const description = mod.description || "Authorized workspace module.";
-        const url = mod.url || mod.link || "#";
-        const btnText = mod.btnText || `Launch ${title}`;
-        const colorClass = mod.btnClass || "bg-brand-600 hover:bg-brand-700";
-
-        const cardHtml = `
-          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
-            <div class="space-y-3">
-              <div class="w-12 h-12 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center text-xl font-bold">${icon}</div>
-              <h4 class="text-base font-bold text-slate-900">${title}</h4>
-              <p class="text-xs text-slate-500 leading-relaxed">${description}</p>
-            </div>
-            <a href="${url}" class="w-full text-center py-2 ${colorClass} text-white text-xs font-bold rounded-lg transition inline-block">${btnText}</a>
-          </div>
-        `;
-        container.insertAdjacentHTML("beforeend", cardHtml);
-        activeCount++;
+    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          currentUserEmail = user.email;
+          document.getElementById("userBadge").innerText = user.email;
+          renderDashboard();
+        } else {
+          document.getElementById("userBadge").innerText = "Not Signed In";
+          renderDashboard();
+        }
       });
-
-      if (activeCount === 0) {
-        document.getElementById("noModulesFallback").classList.remove("hidden");
-      } else {
-        document.getElementById("noModulesFallback").classList.add("hidden");
-      }
     }
 
     function logout() {
       sessionStorage.clear();
-      firebase.auth().signOut().then(() => {
+      if (typeof firebase !== 'undefined' && firebase.auth()) {
+        firebase.auth().signOut().then(() => { window.location.href = "index.html"; });
+      } else {
         window.location.href = "index.html";
-      });
+      }
     }
+
+    // Dynamic Render Logic
+    function renderDashboard() {
+      const grid = document.getElementById("modulesGrid");
+      const roleBadge = document.getElementById("roleBadge");
+      const assignedRoleText = document.getElementById("assignedRoleText");
+
+      // 1. Fetch data from localStorage
+      const userAssignments = JSON.parse(localStorage.getItem("user_role_assignments") || "{}");
+      const portalMappings = JSON.parse(localStorage.getItem("portal_mappings") || "{}");
+      const definedModules = JSON.parse(localStorage.getItem("portal_modules") || "[]");
+
+      // 2. Identify active role for logged-in user
+      const assignedRole = userAssignments[currentUserEmail] || "Super Admin";
+      roleBadge.innerText = assignedRole.toUpperCase();
+      assignedRoleText.innerText = assignedRole;
+
+      // 3. Get mapped modules for this role
+      const allowedModules = portalMappings[assignedRole] || [];
+
+      // 4. Handle empty state
+      if (allowedModules.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full bg-white border border-slate-200 rounded-xl p-8 text-center">
+            <p class="text-slate-500 text-sm">No modules have been mapped to your assigned role (<strong>${escapeHtml(assignedRole)}</strong>).</p>
+            <p class="text-xs text-slate-400 mt-1">Please contact your system administrator to configure access in Role-Module Mapping.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // 5. Render active module cards
+      grid.innerHTML = allowedModules.map(moduleName => {
+        const meta = MODULE_REGISTRY[moduleName] || {
+          description: "Access system module services.",
+          url: "#",
+          icon: `<svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>`
+        };
+
+        return `
+          <a href="${meta.url}" class="group bg-white border border-slate-200 hover:border-blue-500 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <div class="p-3 rounded-lg bg-slate-50 group-hover:bg-blue-50 transition">
+                  ${meta.icon}
+                </div>
+                <span class="text-xs font-semibold text-slate-400 group-hover:text-blue-600 transition">Access →</span>
+              </div>
+              <h3 class="text-base font-bold text-slate-900 group-hover:text-blue-600 transition mb-2">${escapeHtml(moduleName)}</h3>
+              <p class="text-xs text-slate-500 leading-relaxed">${escapeHtml(meta.description)}</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] font-medium text-slate-400">Active Module</span>
+              <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+            </div>
+          </a>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    // Cross-Tab Listener for Real-Time Updates
+    window.addEventListener("storage", (e) => {
+      if (e.key === "portal_mappings" || e.key === "portal_modules" || e.key === "user_role_assignments") {
+        renderDashboard();
+      }
+    });
+
+    window.addEventListener("DOMContentLoaded", renderDashboard);
   </script>
 </body>
 </html>
