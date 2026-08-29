@@ -1,161 +1,230 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-900">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Bal Jyoti ERP</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <title>ERP System Portal</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    body { font-family: 'Inter', sans-serif; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    nav {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 12px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #64748b;
+      font-weight: 500;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    nav a.active {
+      background-color: #2563eb;
+      color: white;
+    }
+
+    header {
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+
+    p.subtitle {
+      color: #64748b;
+      font-size: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .badge {
+      background-color: #eff6ff;
+      color: #2563eb;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-core { background-color: #f1f5f9; color: #475569; }
+    .badge-admin { background-color: #fef3c7; color: #92400e; }
+
+    .card-desc {
+      font-size: 0.875rem;
+      color: #64748b;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #2563eb;
+      color: white;
+      text-decoration: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .card-link:hover {
+      background-color: #1d4ed8;
+    }
+
+    .card-link.disabled {
+      background-color: #cbd5e1;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
   </style>
 </head>
-<body class="h-full flex items-center justify-center p-4">
+<body>
 
-  <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 space-y-6 border border-slate-100">
-    <div class="text-center space-y-2">
-      <img src="logo.png" alt="Bal Jyoti ERP" class="h-16 mx-auto object-contain">
-      <h1 class="text-xl font-bold text-slate-900">Bal Jyoti Educational Portal</h1>
-      <p class="text-xs text-slate-500">Sign in with your official @baljyoti.com Google Workspace account</p>
-    </div>
+  <div class="container">
+    <nav>
+      <a href="../dashboard.html">Dashboard</a>
+      <a href="../user-permissions.html">User Permissions</a>
+      <a href="../modules/role-modules.html">Role-Module Mapping</a>
+      <a href="../modules/inbox.html">Inbox</a>
+    </nav>
 
-    <div id="authAlert" class="hidden p-3.5 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-medium space-y-1">
-      <div class="font-bold flex items-center space-x-1.5">
-        <svg class="w-4 h-4 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-        </svg>
-        <span id="alertTitle">Access Denied</span>
+    <header>
+      <h1>Enterprise Resource Planning Portal</h1>
+      <p class="subtitle">Access active platform integrations and security controls</p>
+    </header>
+
+    <div class="grid" id="moduleGrid">
+      <div class="card">
+        <div>
+          <div class="card-header">
+            <h2 class="card-title">Gmail Inbox</h2>
+            <span class="badge">Communication</span>
+          </div>
+          <p class="card-desc">Direct Google Workspace Gmail integration for reading and managing incoming messages.</p>
+        </div>
+        <a href="../modules/inbox.html" class="card-link">Launch Inbox Module</a>
       </div>
-      <p id="alertMessage" class="text-slate-600 text-[11px] leading-relaxed"></p>
-    </div>
 
-    <button onclick="signInWithGoogle()" id="loginBtn" class="w-full py-3.5 px-4 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold flex items-center justify-center space-x-3 transition shadow-lg active:scale-[0.99]">
-      <svg class="w-4 h-4" viewBox="0 0 24 24">
-        <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.2 9 5 12 5z"/>
-        <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
-        <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15s.7 5.3 1.9 7.7l3.7-2.9z"/>
-        <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.2-6.4-5.2L1.9 16c1.8 3.7 5.6 7 10.1 7z"/>
-      </svg>
-      <span id="loginBtnText">Sign in with Google Workspace</span>
-    </button>
+      <div class="card">
+        <div>
+          <div class="card-header">
+            <h2 class="card-title">User Permissions</h2>
+            <span class="badge badge-core">Core</span>
+          </div>
+          <p class="card-desc">Directory user lookup, account status auditing, and custom role assignments.</p>
+        </div>
+        <a href="../user-permissions.html" class="card-link">Manage Users</a>
+      </div>
 
-    <div class="pt-4 border-t border-slate-100 text-center">
-      <p class="text-[11px] text-slate-400">Zero-Trust Access Control System • Bal Jyoti IT Ops</p>
+      <div class="card">
+        <div>
+          <div class="card-header">
+            <h2 class="card-title">Role-Module Matrix</h2>
+            <span class="badge badge-admin">Admin</span>
+          </div>
+          <p class="card-desc">Configure granular Read, Write, and Delete access levels for system modules across roles.</p>
+        </div>
+        <a href="../modules/role-modules.html" class="card-link">Configure Access</a>
+      </div>
+
+      <div class="card">
+        <div>
+          <div class="card-header">
+            <h2 class="card-title">Google Classroom Sync</h2>
+            <span class="badge">Academic</span>
+          </div>
+          <p class="card-desc">Synchronize courses, student rosters, and assignment metadata with Google Classroom API.</p>
+        </div>
+        <a href="#" class="card-link disabled">Coming Soon</a>
+      </div>
+
+      <div class="card">
+        <div>
+          <div class="card-header">
+            <h2 class="card-title">OU Control</h2>
+            <span class="badge badge-admin">Admin</span>
+          </div>
+          <p class="card-desc">Manage Organizational Unit structures and hierarchy policies across domain users.</p>
+        </div>
+        <a href="#" class="card-link disabled">Coming Soon</a>
+      </div>
+
+      <div class="card">
+        <div>
+          <div class="card-header">
+            <h2 class="card-title">Audit & Analytics</h2>
+            <span class="badge badge-core">Security</span>
+          </div>
+          <p class="card-desc">Monitor workspace activity logs, security alerts, and dynamic access reports.</p>
+        </div>
+        <a href="#" class="card-link disabled">Coming Soon</a>
+      </div>
     </div>
   </div>
 
-  <script>
-    const SUPER_ADMIN_EMAIL = "info@baljyoti.com";
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhSwScGcBlRSqrkyT-bfog22RL3z_YGMY8vwriNRNP5q4P7DqWhh-TKnz40L_BwCVp8w/exec";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
-      authDomain: "baljyoti-portal.firebaseapp.com",
-      projectId: "baljyoti-portal",
-      storageBucket: "baljyoti-portal.firebasestorage.app",
-      messagingSenderId: "420727507952",
-      appId: "1:420727507952:web:de5bdbb73521b9fae4eb35"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-
-    // Auto-redirect if already signed in
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user && user.email.endsWith("@baljyoti.com")) {
-        verifyAndRedirectUser(user.email);
-      }
-    });
-
-    function signInWithGoogle() {
-      setLoadingState(true);
-      hideError();
-
-      const provider = new firebase.auth.GoogleAuthProvider();
-      provider.setCustomParameters({ 
-        hd: "baljyoti.com",
-        prompt: "select_account"
-      });
-
-      firebase.auth().signInWithPopup(provider)
-        .then((result) => {
-          const email = result.user.email;
-          if (!email.endsWith("@baljyoti.com")) {
-            firebase.auth().signOut();
-            showError("Unauthorized Domain", "Only official @baljyoti.com Google Workspace accounts are permitted.");
-            setLoadingState(false);
-            return;
-          }
-          verifyAndRedirectUser(email);
-        })
-        .catch((error) => {
-          setLoadingState(false);
-          if (error.code !== "auth/popup-closed-by-user") {
-            showError("Authentication Error", error.message);
-          }
-        });
-    }
-
-    function verifyAndRedirectUser(email) {
-      // 1. Super Admin Direct Bypass
-      if (email === SUPER_ADMIN_EMAIL) {
-        sessionStorage.setItem("userPermissions", JSON.stringify({
-          status: "SUCCESS",
-          email: email,
-          role: "SUPER_ADMIN",
-          modules: { sis: true, finance: true, academics: true, adminOps: true }
-        }));
-        window.location.href = "dashboard.html";
-        return;
-      }
-
-      // 2. Fetch User RBAC Permission State from Backend
-      fetch(`${SCRIPT_URL}?action=get_user_permissions&email=${encodeURIComponent(email)}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.status === "SUCCESS" && data.role !== "NO_ACCESS") {
-            sessionStorage.setItem("userPermissions", JSON.stringify(data));
-            window.location.href = "dashboard.html";
-          } else {
-            firebase.auth().signOut();
-            showError(
-              "Account Not Provisioned",
-              "Your Google Workspace account has ZERO module permissions. Please request access from info@baljyoti.com."
-            );
-            setLoadingState(false);
-          }
-        })
-        .catch((err) => {
-          console.error("RBAC Verification Error:", err);
-          window.location.href = "dashboard.html";
-        });
-    }
-
-    function setLoadingState(isLoading) {
-      const btn = document.getElementById("loginBtn");
-      const btnText = document.getElementById("loginBtnText");
-      if (isLoading) {
-        btn.disabled = true;
-        btn.classList.add("opacity-75", "cursor-not-allowed");
-        btnText.innerText = "Verifying Workspace Permissions...";
-      } else {
-        btn.disabled = false;
-        btn.classList.remove("opacity-75", "cursor-not-allowed");
-        btnText.innerText = "Sign in with Google Workspace";
-      }
-    }
-
-    function showError(title, message) {
-      const alertBox = document.getElementById("authAlert");
-      document.getElementById("alertTitle").innerText = title;
-      document.getElementById("alertMessage").innerText = message;
-      alertBox.classList.remove("hidden");
-    }
-
-    function hideError() {
-      document.getElementById("authAlert").classList.add("hidden");
-    }
-  </script>
 </body>
 </html>
