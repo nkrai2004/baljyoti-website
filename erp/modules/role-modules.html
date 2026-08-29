@@ -257,7 +257,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800">
 
-  <!-- Common Header across all modules -->
+  <!-- Header -->
   <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-30">
     <div class="flex items-center space-x-3">
       <img src="logo.png" alt="Bal Jyoti Logo" class="h-9 object-contain">
@@ -266,12 +266,11 @@
     </div>
 
     <div class="flex items-center space-x-3">
-      <a href="dashboard.html" class="inline-flex items-center space-x-1 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition">
+      <a href="../dashboard.html" class="inline-flex items-center space-x-1 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition">
         ← Dashboard
       </a>
 
-      <!-- Manage Users Button -->
-      <a id="rbacAdminBtn" href="user-permissions.html" class="inline-flex items-center space-x-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition shadow-sm">
+      <a id="rbacAdminBtn" href="../user-permissions.html" class="inline-flex items-center space-x-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition shadow-sm">
         <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
         </svg>
@@ -291,9 +290,9 @@
 
   <div class="container">
     <nav>
-     
+      <a href="../user-permissions.html">User Permissions</a>
       <a href="role-modules.html" class="active">Role-Module Mapping</a>
-      
+      <a href="inbox.html">Inbox</a>
     </nav>
 
     <div class="page-header">
@@ -349,7 +348,7 @@
   <div id="toast" class="toast">Permissions saved successfully!</div>
 
   <script>
-    // Default initial data structure
+    // System Defaults
     const DEFAULT_ROLES = ["Super Admin", "Admin", "Teacher", "Student", "Staff"];
     const DEFAULT_MODULES = [
       "User Directory",
@@ -372,7 +371,7 @@
     let currentModules = [];
     let currentMappings = {};
 
-    // Firebase Auth Header Init
+    // Firebase Auth Init
     const firebaseConfig = {
       apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
       authDomain: "baljyoti-portal.firebaseapp.com",
@@ -397,26 +396,28 @@
       sessionStorage.clear();
       if (typeof firebase !== 'undefined' && firebase.auth()) {
         firebase.auth().signOut().then(() => {
-          window.location.href = "index.html";
+          window.location.href = "../index.html";
         });
       } else {
-        window.location.href = "index.html";
+        window.location.href = "../index.html";
       }
     }
 
-    // Storage Management
+    // Load & Save Logic
     function loadSetupData() {
       currentRoles = JSON.parse(localStorage.getItem("portal_roles")) || DEFAULT_ROLES;
       currentModules = JSON.parse(localStorage.getItem("portal_modules")) || DEFAULT_MODULES;
       currentMappings = JSON.parse(localStorage.getItem("portal_mappings")) || DEFAULT_MAPPINGS;
 
-      // Ensure all roles exist in mappings object
+      // Ensure every role has an entry in mapping
       currentRoles.forEach(role => {
         if (!currentMappings[role]) {
           currentMappings[role] = [];
         }
       });
 
+      // Synchronize back to localStorage if missing
+      saveData();
       renderAll();
     }
 
@@ -424,7 +425,6 @@
       localStorage.setItem("portal_roles", JSON.stringify(currentRoles));
       localStorage.setItem("portal_modules", JSON.stringify(currentModules));
       localStorage.setItem("portal_mappings", JSON.stringify(currentMappings));
-      showToast();
     }
 
     // Role Operations
@@ -439,6 +439,7 @@
         input.value = "";
         saveData();
         renderAll();
+        showToast("Role added successfully");
       } else {
         alert("Role already exists!");
       }
@@ -453,6 +454,7 @@
       delete currentMappings[roleName];
       saveData();
       renderAll();
+      showToast("Role removed successfully");
     }
 
     // Module Operations
@@ -466,6 +468,7 @@
         input.value = "";
         saveData();
         renderAll();
+        showToast("Module added successfully");
       } else {
         alert("Module already exists!");
       }
@@ -478,16 +481,16 @@
       }
       currentModules = currentModules.filter(m => m !== moduleName);
       
-      // Remove module from mappings
       Object.keys(currentMappings).forEach(role => {
         currentMappings[role] = currentMappings[role].filter(m => m !== moduleName);
       });
 
       saveData();
       renderAll();
+      showToast("Module removed successfully");
     }
 
-    // Toggle Checkbox Mapping
+    // Toggle Matrix Permissions
     function toggleMapping(role, module, isChecked) {
       if (!currentMappings[role]) {
         currentMappings[role] = [];
@@ -502,9 +505,9 @@
       }
 
       saveData();
+      showToast("Permissions updated");
     }
 
-    // Reset Configuration
     function resetDefaults() {
       if (confirm("Reset all roles, modules, and mappings to system defaults?")) {
         currentRoles = [...DEFAULT_ROLES];
@@ -512,10 +515,11 @@
         currentMappings = JSON.parse(JSON.stringify(DEFAULT_MAPPINGS));
         saveData();
         renderAll();
+        showToast("Reset to default configuration");
       }
     }
 
-    // Render Logic
+    // Render Functions
     function renderAll() {
       renderRoles();
       renderModules();
@@ -546,7 +550,6 @@
       const head = document.getElementById("matrixHead");
       const body = document.getElementById("matrixBody");
 
-      // Table Header: Module Name | Role 1 | Role 2 ...
       head.innerHTML = `
         <tr>
           <th>Module Name</th>
@@ -554,7 +557,6 @@
         </tr>
       `;
 
-      // Table Body: Each Row is a Module
       body.innerHTML = currentModules.map(module => {
         return `
           <tr>
@@ -572,8 +574,9 @@
       }).join('');
     }
 
-    function showToast() {
+    function showToast(message = "Permissions saved successfully!") {
       const toast = document.getElementById("toast");
+      toast.innerText = message;
       toast.style.display = "block";
       setTimeout(() => { toast.style.display = "none"; }, 2000);
     }
