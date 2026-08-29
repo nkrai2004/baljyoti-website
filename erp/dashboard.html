@@ -41,7 +41,8 @@
     </div>
 
     <div class="flex items-center space-x-3">
-      <a id="rbacAdminBtn" href="user-permissions.html" class="inline-flex items-center space-x-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition shadow-sm">
+      <!-- Hidden by default; visible ONLY to info@baljyoti.com -->
+      <a id="rbacAdminBtn" href="user-permissions.html" style="display: none;" class="items-center space-x-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition shadow-sm">
         <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
         </svg>
@@ -59,7 +60,7 @@
     </div>
   </header>
 
-  <!-- Main Content Area -->
+  <!-- Main Content -->
   <main class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full">
     <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
@@ -78,8 +79,8 @@
   </main>
 
   <script>
-    // System Modules Registry
-    const MODULE_REGISTRY = {
+    // Standard Base Modules
+    const BASE_MODULE_REGISTRY = {
       "User Directory": {
         description: "Manage system user accounts, directory synchronization, and user privileges.",
         url: "user-permissions.html",
@@ -112,40 +113,88 @@
       }
     };
 
-    let currentUserEmail = "";
+    let currentUserEmail = "backup@baljyoti.com";
 
-    function clean(str) {
-      return (str || "").toLowerCase().trim();
+    function cleanStr(s) {
+      return String(s || "").toLowerCase().trim();
     }
 
-    // Safely resolve assigned role for the authenticated user
+    // Role Resolver across LocalStorage structures
     function getResolvedUserRole(email) {
-      const targetEmail = clean(email);
-      if (!targetEmail) return "Teacher";
+      const target = cleanStr(email);
+      if (!target) return "Teacher";
 
-      // Super Admin primary account check
-      if (targetEmail === "info@baljyoti.com") {
+      if (target === "info@baljyoti.com") {
         return "Super Admin";
       }
 
-      // Check across storage keys used by User Directory and Permission modules
-      const storageKeys = ["user_role_assignments", "user_roles", "rbac_user_roles"];
+      const storageKeys = ["user_role_assignments", "user_roles", "users", "portal_users", "directory_users", "rbac_users", "user_list"];
+
       for (const key of storageKeys) {
-        const data = JSON.parse(localStorage.getItem(key) || "{}");
-        for (const [storedEmail, role] of Object.entries(data)) {
-          if (clean(storedEmail) === targetEmail && role) {
-            return role;
+        try {
+          const raw = localStorage.getItem(key);
+          if (!raw) continue;
+          const parsed = JSON.parse(raw);
+
+          if (typeof parsed === "object" && !Array.isArray(parsed)) {
+            for (const [k, v] of Object.entries(parsed)) {
+              if (cleanStr(k) === target && v) {
+                return String(v);
+              }
+            }
           }
+
+          if (Array.isArray(parsed)) {
+            const found = parsed.find(u => 
+              cleanStr(u.email || u.primaryEmail || u.userEmail) === target
+            );
+            if (found && (found.role || found.assignedRole || found.userRole)) {
+              return String(found.role || found.assignedRole || found.userRole);
+            }
+          }
+        } catch (e) {
+          console.error("Error reading key " + key, e);
         }
       }
 
-      // Default fallback for regular users is Teacher (NOT Super Admin)
       return "Teacher";
     }
 
-    // Seed initial defaults if missing
+    // Merge default registry with custom modules
+    function getFullModuleRegistry() {
+      const registry = { ...BASE_MODULE_REGISTRY };
+
+      const customKeys = ["portal_modules", "system_modules", "all_modules"];
+      for (const key of customKeys) {
+        try {
+          const raw = localStorage.getItem(key);
+          if (!raw) continue;
+          const list = JSON.parse(raw);
+
+          if (Array.isArray(list)) {
+            list.forEach(mod => {
+              const modName = typeof mod === "string" ? mod : (mod.name || mod.title);
+              if (modName && !registry[modName]) {
+                const slug = modName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                registry[modName] = {
+                  description: (typeof mod === "object" && mod.description) ? mod.description : `Access and manage operations for ${modName}.`,
+                  url: (typeof mod === "object" && mod.url) ? mod.url : `modules/${slug}.html`,
+                  icon: (typeof mod === "object" && mod.icon) ? mod.icon : `<svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>`
+                };
+              }
+            });
+          }
+        } catch (e) {
+          console.error("Error reading custom modules key " + key, e);
+        }
+      }
+
+      return registry;
+    }
+
     function initializeDefaultData() {
-      const allModulesList = Object.keys(MODULE_REGISTRY);
+      const fullRegistry = getFullModuleRegistry();
+      const allModulesList = Object.keys(fullRegistry);
 
       const existingMappings = JSON.parse(localStorage.getItem("portal_mappings") || "{}");
       if (!existingMappings["Super Admin"] || existingMappings["Super Admin"].length === 0) {
@@ -176,18 +225,15 @@
     if (typeof firebase !== 'undefined' && !firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
       firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
+        if (user && user.email) {
           currentUserEmail = user.email;
-          document.getElementById("userBadge").innerText = user.email;
-        } else {
-          currentUserEmail = "backup@baljyoti.com"; // Fallback for local testing
-          document.getElementById("userBadge").innerText = currentUserEmail;
         }
+        document.getElementById("userBadge").innerText = currentUserEmail;
         initializeDefaultData();
         populateDashboardModules();
       });
     } else {
-      currentUserEmail = "backup@baljyoti.com";
+      document.getElementById("userBadge").innerText = currentUserEmail;
       initializeDefaultData();
       populateDashboardModules();
     }
@@ -201,28 +247,51 @@
       }
     }
 
-    // Dynamic Module Renderer
+    // Dynamic Module Population Logic
     function populateDashboardModules() {
       const grid = document.getElementById("modulesGrid");
       const roleBadge = document.getElementById("roleBadge");
       const assignedRoleText = document.getElementById("assignedRoleText");
+      const rbacAdminBtn = document.getElementById("rbacAdminBtn");
 
-      // Resolve role dynamically for logged in email
+      const isSuperAdminEmail = cleanStr(currentUserEmail) === "info@baljyoti.com";
+
+      // 1. Strict Header Button Access Check
+      if (rbacAdminBtn) {
+        if (isSuperAdminEmail) {
+          rbacAdminBtn.style.display = "inline-flex";
+        } else {
+          rbacAdminBtn.style.display = "none";
+        }
+      }
+
+      // Resolve user role
       const assignedRole = getResolvedUserRole(currentUserEmail);
 
       if (roleBadge) roleBadge.innerText = assignedRole.toUpperCase();
       if (assignedRoleText) assignedRoleText.innerText = assignedRole;
 
-      // Fetch module mappings for assigned role
-      const portalMappings = JSON.parse(localStorage.getItem("portal_mappings") || "{}");
-      let allowedModules = portalMappings[assignedRole] || [];
+      const fullRegistry = getFullModuleRegistry();
 
-      // Fallback for Super Admin if mappings key is empty
-      if (allowedModules.length === 0 && assignedRole === "Super Admin") {
-        allowedModules = Object.keys(MODULE_REGISTRY);
+      const portalMappings = JSON.parse(localStorage.getItem("portal_mappings") || "{}");
+      let allowedModules = portalMappings[assignedRole];
+
+      if (!allowedModules || !Array.isArray(allowedModules)) {
+        if (assignedRole === "Super Admin") {
+          allowedModules = Object.keys(fullRegistry);
+        } else if (assignedRole === "Teacher") {
+          allowedModules = ["Inbox", "Student Attendance", "Exam & Marks"];
+        } else {
+          allowedModules = [];
+        }
       }
 
-      // Render empty state if role has zero module access
+      // 2. Filter out "User Directory" module card for all other users
+      if (!isSuperAdminEmail) {
+        allowedModules = allowedModules.filter(mod => cleanStr(mod) !== "user directory");
+      }
+
+      // Empty State
       if (allowedModules.length === 0) {
         grid.innerHTML = `
           <div class="col-span-full bg-white border border-slate-200 rounded-xl p-8 text-center shadow-sm">
@@ -230,15 +299,15 @@
               <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             </div>
             <h3 class="text-base font-bold text-slate-900">No Authorized Modules Found</h3>
-            <p class="text-slate-500 text-xs mt-1">Your account (<strong>${escapeHtml(currentUserEmail)}</strong>) is assigned the role <strong>${escapeHtml(assignedRole)}</strong>, but no modules are configured for this role.</p>
+            <p class="text-slate-500 text-xs mt-1">Logged in as <strong>${escapeHtml(currentUserEmail)}</strong> (${escapeHtml(assignedRole)}). No modules are assigned to this account.</p>
           </div>`;
         return;
       }
 
-      // Populate Grid
+      // Render Cards
       grid.innerHTML = allowedModules.map(moduleName => {
         const slug = moduleName.toLowerCase().replace(/[^a-z0-9]/g, '-');
-        const meta = MODULE_REGISTRY[moduleName] || {
+        const meta = fullRegistry[moduleName] || {
           description: `Access and manage operations for ${moduleName}.`,
           url: `modules/${slug}.html`,
           icon: `<svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>`
@@ -269,9 +338,9 @@
       return String(str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
-    // Storage Sync Event Listener
+    // Cross-Tab Listener
     window.addEventListener("storage", (event) => {
-      if (["portal_mappings", "portal_modules", "user_role_assignments", "user_roles", "rbac_user_roles"].includes(event.key)) {
+      if (["portal_mappings", "portal_modules", "system_modules", "user_role_assignments", "user_roles", "users"].includes(event.key)) {
         populateDashboardModules();
       }
     });
