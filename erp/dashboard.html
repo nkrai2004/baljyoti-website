@@ -1,1 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Bal Jyoti ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#fef2f2', 100: '#ffe1e1', 500: '#ef4444', 600: '#dc2626', 700: '#b91c1c', 800: '#991b1b' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+</head>
+<body class="h-full flex flex-col text-slate-800">
 
+  <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-30">
+    <div class="flex items-center space-x-3">
+      <img src="logo.png" alt="Bal Jyoti Logo" class="h-9 object-contain">
+      <span class="text-slate-300">|</span>
+      <h1 class="text-base font-bold text-slate-900">Bal Jyoti Educational Portal</h1>
+    </div>
+
+    <div class="flex items-center space-x-3">
+      <!-- "Manage Users" Button - Strictly visible ONLY for info@baljyoti.com -->
+      <a id="rbacAdminBtn" href="user-permissions.html" class="hidden inline-flex items-center space-x-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition shadow-sm">
+        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+        <span>Manage Users</span>
+      </a>
+
+      <div class="flex items-center space-x-2 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg">
+        <span id="userBadge" class="text-xs font-mono font-bold text-slate-700">Loading...</span>
+        <span id="roleBadge" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-slate-200 text-slate-700">...</span>
+      </div>
+
+      <button onclick="logout()" class="text-xs font-bold text-slate-500 hover:text-red-600 px-2 py-1.5 transition">
+        Sign Out
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+
+    <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h2 class="text-xl font-bold">Welcome back, <span id="welcomeUserName" class="text-brand-500">User</span></h2>
+        <p class="text-xs text-slate-400 mt-1">Access to ERP modules is dynamically governed based on your assigned Workspace permissions.</p>
+      </div>
+      <div class="text-xs font-mono bg-slate-800/80 px-4 py-2 rounded-xl border border-slate-700/60 self-start md:self-auto">
+        <span class="text-slate-400">Security Guard:</span> <span class="text-emerald-400 font-bold">RBAC Enforced</span>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Authorized System Modules</h3>
+
+      <!-- System Module Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <div data-module="sis" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl font-bold">👨‍🎓</div>
+            <h4 class="text-base font-bold text-slate-900">Student Info System</h4>
+            <p class="text-xs text-slate-500 leading-relaxed">Manage student profiles, enrollments, attendance registers, and academic history records.</p>
+          </div>
+          <button class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition">Launch SIS</button>
+        </div>
+
+        <div data-module="finance" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl font-bold">💳</div>
+            <h4 class="text-base font-bold text-slate-900">Finance & Fee Ledger</h4>
+            <p class="text-xs text-slate-500 leading-relaxed">Fee collection management, payment gateways, expense tracking, and ledger generation.</p>
+          </div>
+          <button class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition">Launch Finance</button>
+        </div>
+
+        <div data-module="academics" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-xl font-bold">📚</div>
+            <h4 class="text-base font-bold text-slate-900">Academics & Exams</h4>
+            <p class="text-xs text-slate-500 leading-relaxed">Curriculum management, lesson planning, marks entry, and report card generation.</p>
+          </div>
+          <button class="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-lg transition">Launch Academics</button>
+        </div>
+
+        <div data-module="adminOps" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl font-bold">🏢</div>
+            <h4 class="text-base font-bold text-slate-900">Admin Operations</h4>
+            <p class="text-xs text-slate-500 leading-relaxed">Fleet tracking, inventory management, staff duty rosters, and facility operations.</p>
+          </div>
+          <button class="w-full py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg transition">Launch Admin Ops</button>
+        </div>
+
+      </div>
+
+      <!-- Fallback display when user is NOT info@baljyoti.com and has NO ROLE ASSIGNED -->
+      <div id="noModulesFallback" class="hidden p-8 bg-white border border-slate-200 rounded-2xl text-center space-y-3 shadow-sm">
+        <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto font-bold text-xl">
+          ⚠️
+        </div>
+        <h4 class="text-base font-bold text-slate-900">No Role Assigned</h4>
+        <p class="text-xs text-slate-500 max-w-md mx-auto">Your account is authenticated, but no access role or system permissions have been granted by the administrator (<span class="font-mono font-bold text-slate-700">info@baljyoti.com</span>).</p>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const SUPER_ADMIN = "info@baljyoti.com";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhSwScGcBlRSqrkyT-bfog22RL3z_YGMY8vwriNRNP5q4P7DqWhh-TKnz40L_BwCVp8w/exec";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
+      authDomain: "baljyoti-portal.firebaseapp.com",
+      projectId: "baljyoti-portal",
+      storageBucket: "baljyoti-portal.firebasestorage.app",
+      messagingSenderId: "420727507952",
+      appId: "1:420727507952:web:de5bdbb73521b9fae4eb35"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user || !user.email.endsWith("@baljyoti.com")) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      document.getElementById("userBadge").innerText = user.email;
+      document.getElementById("welcomeUserName").innerText = user.displayName || user.email.split('@')[0];
+
+      // CONDITION 1: Super Admin (info@baljyoti.com)
+      if (user.email === SUPER_ADMIN) {
+        // Show Manage Users button
+        document.getElementById("rbacAdminBtn").classList.remove("hidden");
+        document.getElementById("roleBadge").innerText = "SUPER_ADMIN";
+        document.getElementById("roleBadge").className = "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-100 text-red-800 border border-red-200";
+        showAllModules();
+        return;
+      }
+
+      // CONDITION 2: Standard User (Not info@baljyoti.com)
+      // Hide Manage Users button explicitly
+      document.getElementById("rbacAdminBtn").classList.add("hidden");
+
+      const cachedPermissions = sessionStorage.getItem("userPermissions");
+      if (cachedPermissions) {
+        const parsed = JSON.parse(cachedPermissions);
+        applyPermissions(parsed.role, parsed.modules);
+      } else {
+        fetch(`${SCRIPT_URL}?action=get_user_permissions&email=${encodeURIComponent(user.email)}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.status === "SUCCESS" && data.role && data.role !== "NO_ACCESS") {
+              sessionStorage.setItem("userPermissions", JSON.stringify(data));
+              applyPermissions(data.role, data.modules);
+            } else {
+              applyPermissions("NO ROLE ASSIGNED", { sis: false, finance: false, academics: false, adminOps: false });
+            }
+          })
+          .catch(err => {
+            console.error("RBAC Fetch Error:", err);
+            applyPermissions("NO ROLE ASSIGNED", { sis: false, finance: false, academics: false, adminOps: false });
+          });
+      }
+    });
+
+    function showAllModules() {
+      document.querySelectorAll("[data-module]").forEach(el => el.classList.remove("hidden"));
+      document.getElementById("noModulesFallback").classList.add("hidden");
+    }
+
+    function applyPermissions(role, modules) {
+      const isRoleAssigned = role && role !== "NO_ACCESS" && role !== "NO ROLE ASSIGNED";
+      document.getElementById("roleBadge").innerText = isRoleAssigned ? role : "NO ROLE ASSIGNED";
+      document.getElementById("roleBadge").className = isRoleAssigned 
+        ? "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200" 
+        : "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200";
+
+      let activeCount = 0;
+      document.querySelectorAll("[data-module]").forEach(element => {
+        const modKey = element.getAttribute("data-module");
+        if (modules && modules[modKey] === true) {
+          element.classList.remove("hidden");
+          activeCount++;
+        } else {
+          element.classList.add("hidden");
+        }
+      });
+
+      if (activeCount === 0) {
+        document.getElementById("noModulesFallback").classList.remove("hidden");
+      } else {
+        document.getElementById("noModulesFallback").classList.add("hidden");
+      }
+    }
+
+    function logout() {
+      sessionStorage.clear();
+      firebase.auth().signOut().then(() => {
+        window.location.href = "index.html";
+      });
+    }
+  </script>
+</body>
+</html>
