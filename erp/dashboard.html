@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - Bal Jyoti Portal</title>
   
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -18,6 +19,7 @@
     }
   </script>
 
+  <!-- Firebase Auth for Session Management -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
@@ -30,9 +32,10 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
+  <!-- Header Navigation -->
   <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-30">
     <div class="flex items-center space-x-3">
-      <img src="logo.png" alt="Bal Jyoti Logo" class="h-9 object-contain">
+      <img src="logo.png" alt="Bal Jyoti Logo" class="h-9 object-contain" onerror="this.style.display='none'">
       <span class="text-slate-300">|</span>
       <h1 class="text-base font-bold text-slate-900">Bal Jyoti Educational Portal</h1>
     </div>
@@ -56,6 +59,7 @@
     </div>
   </header>
 
+  <!-- Main Content -->
   <main class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full">
     <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
@@ -67,13 +71,14 @@
       </div>
     </div>
 
+    <!-- Dynamic Modules Grid -->
     <div id="modulesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       <div class="col-span-full text-center py-12 text-slate-400">Loading authorized modules...</div>
     </div>
   </main>
 
   <script>
-    // Module definitions registry (Icons, descriptions, links)
+    // System Modules Registry (6 Default Modules)
     const MODULE_REGISTRY = {
       "User Directory": {
         description: "Manage system user accounts, directory synchronization, and user privileges.",
@@ -92,22 +97,41 @@
       },
       "Student Attendance": {
         description: "Record, monitor, and generate daily and monthly student attendance records.",
-        url: "#",
+        url: "modules/attendance.html",
         icon: `<svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>`
       },
       "Exam & Marks": {
         description: "Input student grades, publish report cards, and analyze class academic results.",
-        url: "#",
+        url: "modules/exam.html",
         icon: `<svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>`
       },
       "Fee Management": {
         description: "Track fee payments, generate receipts, and manage outstanding balances.",
-        url: "#",
+        url: "modules/fees.html",
         icon: `<svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>`
       }
     };
 
-    let currentUserEmail = "";
+    let currentUserEmail = "info@baljyoti.com";
+
+    // Initialize Default Seed Data in LocalStorage if Empty
+    function initializeDefaultData() {
+      const allModulesList = Object.keys(MODULE_REGISTRY);
+
+      // Seed portal mappings if not present or empty
+      const existingMappings = JSON.parse(localStorage.getItem("portal_mappings") || "{}");
+      if (!existingMappings["Super Admin"] || existingMappings["Super Admin"].length === 0) {
+        existingMappings["Super Admin"] = allModulesList;
+        localStorage.setItem("portal_mappings", JSON.stringify(existingMappings));
+      }
+
+      // Seed user assignments if missing info@baljyoti.com
+      const existingAssignments = JSON.parse(localStorage.getItem("user_role_assignments") || "{}");
+      if (!existingAssignments[currentUserEmail]) {
+        existingAssignments[currentUserEmail] = "Super Admin";
+        localStorage.setItem("user_role_assignments", JSON.stringify(existingAssignments));
+      }
+    }
 
     // Firebase Auth Setup
     const firebaseConfig = {
@@ -125,12 +149,15 @@
         if (user) {
           currentUserEmail = user.email;
           document.getElementById("userBadge").innerText = user.email;
-          renderDashboard();
         } else {
-          document.getElementById("userBadge").innerText = "Not Signed In";
-          renderDashboard();
+          document.getElementById("userBadge").innerText = currentUserEmail;
         }
+        initializeDefaultData();
+        populateDashboardModules();
       });
+    } else {
+      initializeDefaultData();
+      populateDashboardModules();
     }
 
     function logout() {
@@ -142,41 +169,51 @@
       }
     }
 
-    // Dynamic Render Logic
-    function renderDashboard() {
+    // Dynamic Module Population Logic
+    function populateDashboardModules() {
       const grid = document.getElementById("modulesGrid");
       const roleBadge = document.getElementById("roleBadge");
       const assignedRoleText = document.getElementById("assignedRoleText");
 
-      // 1. Fetch data from localStorage
+      // Read live assignments & mappings
       const userAssignments = JSON.parse(localStorage.getItem("user_role_assignments") || "{}");
       const portalMappings = JSON.parse(localStorage.getItem("portal_mappings") || "{}");
-      const definedModules = JSON.parse(localStorage.getItem("portal_modules") || "[]");
 
-      // 2. Identify active role for logged-in user
+      // Get user's role (Defaults to Super Admin)
       const assignedRole = userAssignments[currentUserEmail] || "Super Admin";
-      roleBadge.innerText = assignedRole.toUpperCase();
-      assignedRoleText.innerText = assignedRole;
+      
+      if (roleBadge) roleBadge.innerText = assignedRole.toUpperCase();
+      if (assignedRoleText) assignedRoleText.innerText = assignedRole;
 
-      // 3. Get mapped modules for this role
-      const allowedModules = portalMappings[assignedRole] || [];
+      // Get modules allowed for assignedRole (Fallback to all 6 modules for Super Admin)
+      let allowedModules = portalMappings[assignedRole];
+      if (!allowedModules || allowedModules.length === 0) {
+        if (assignedRole === "Super Admin") {
+          allowedModules = Object.keys(MODULE_REGISTRY);
+        } else {
+          allowedModules = [];
+        }
+      }
 
-      // 4. Handle empty state
+      // Empty state handler
       if (allowedModules.length === 0) {
         grid.innerHTML = `
-          <div class="col-span-full bg-white border border-slate-200 rounded-xl p-8 text-center">
-            <p class="text-slate-500 text-sm">No modules have been mapped to your assigned role (<strong>${escapeHtml(assignedRole)}</strong>).</p>
-            <p class="text-xs text-slate-400 mt-1">Please contact your system administrator to configure access in Role-Module Mapping.</p>
-          </div>
-        `;
+          <div class="col-span-full bg-white border border-slate-200 rounded-xl p-8 text-center shadow-sm">
+            <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h3 class="text-base font-bold text-slate-900">No Authorized Modules Found</h3>
+            <p class="text-slate-500 text-xs mt-1">Your account is authenticated, but no module permissions have been assigned to your profile by the administrator (<strong>${escapeHtml(currentUserEmail)}</strong>).</p>
+          </div>`;
         return;
       }
 
-      // 5. Render active module cards
+      // Render cards for all authorized modules
       grid.innerHTML = allowedModules.map(moduleName => {
+        const slug = moduleName.toLowerCase().replace(/[^a-z0-9]/g, '-');
         const meta = MODULE_REGISTRY[moduleName] || {
-          description: "Access system module services.",
-          url: "#",
+          description: `Access and manage operations for ${moduleName}.`,
+          url: `modules/${slug}.html`,
           icon: `<svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>`
         };
 
@@ -205,14 +242,17 @@
       return String(str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
-    // Cross-Tab Listener for Real-Time Updates
-    window.addEventListener("storage", (e) => {
-      if (e.key === "portal_mappings" || e.key === "portal_modules" || e.key === "user_role_assignments") {
-        renderDashboard();
+    // Cross-Tab Listener for updates from role-modules.html
+    window.addEventListener("storage", (event) => {
+      if (event.key === "portal_mappings" || event.key === "portal_modules" || event.key === "user_role_assignments") {
+        populateDashboardModules();
       }
     });
 
-    window.addEventListener("DOMContentLoaded", renderDashboard);
+    window.addEventListener("DOMContentLoaded", () => {
+      initializeDefaultData();
+      populateDashboardModules();
+    });
   </script>
 </body>
 </html>
