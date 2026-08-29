@@ -146,7 +146,6 @@
 
       // CONDITION 1: Super Admin (info@baljyoti.com)
       if (user.email === SUPER_ADMIN) {
-        // Show Manage Users button
         document.getElementById("rbacAdminBtn").classList.remove("hidden");
         document.getElementById("roleBadge").innerText = "SUPER_ADMIN";
         document.getElementById("roleBadge").className = "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-100 text-red-800 border border-red-200";
@@ -155,7 +154,6 @@
       }
 
       // CONDITION 2: Standard User (Not info@baljyoti.com)
-      // Hide Manage Users button explicitly
       document.getElementById("rbacAdminBtn").classList.add("hidden");
 
       const cachedPermissions = sessionStorage.getItem("userPermissions");
