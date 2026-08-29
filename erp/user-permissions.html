@@ -1,9 +1,10 @@
+<!-- user-permissions.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Google Workspace User Permissions Directory</title>
+  <title>Google Workspace User Permissions</title>
   <style>
     * {
       box-sizing: border-box;
@@ -21,6 +22,29 @@
     .container {
       max-width: 1200px;
       margin: 0 auto;
+    }
+
+    nav {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 12px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #64748b;
+      font-weight: 500;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    nav a.active {
+      background-color: #2563eb;
+      color: white;
     }
 
     header {
@@ -52,7 +76,6 @@
       border-radius: 6px;
       font-size: 0.875rem;
       outline: none;
-      transition: border-color 0.2s;
     }
 
     input[type="text"]:focus {
@@ -70,9 +93,6 @@
       font-weight: 500;
       cursor: pointer;
       transition: background-color 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
 
     button:hover {
@@ -117,12 +137,24 @@
       color: #334155;
     }
 
-    tr:last-child td {
-      border-bottom: none;
-    }
-
     tr:hover {
       background-color: #f8fafc;
+    }
+
+    select.role-select {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background-color: #ffffff;
+      font-size: 0.85rem;
+      color: #1e293b;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+    }
+
+    select.role-select:focus {
+      border-color: #2563eb;
     }
 
     .badge {
@@ -133,25 +165,8 @@
       font-weight: 500;
     }
 
-    .badge-active {
-      background-color: #dcfce7;
-      color: #166534;
-    }
-
-    .badge-suspended {
-      background-color: #fee2e2;
-      color: #991b1b;
-    }
-
-    .badge-admin {
-      background-color: #dbeafe;
-      color: #1e40af;
-    }
-
-    .badge-user {
-      background-color: #f1f5f9;
-      color: #475569;
-    }
+    .badge-active { background-color: #dcfce7; color: #166534; }
+    .badge-suspended { background-color: #fee2e2; color: #991b1b; }
 
     .status-container {
       padding: 32px;
@@ -183,13 +198,16 @@
 <body>
 
   <div class="container">
+    <nav>
+      <a href="user-permissions.html" class="active">User Permissions</a>
+      <a href="role-modules.html">Role-Module Mapping</a>
+    </nav>
+
     <header>
-      <h1>Google Workspace User Permissions</h1>
+      <h1>User Directory & Role Assignment</h1>
       <div class="controls">
         <input type="text" id="searchInput" placeholder="Search by name, email, or OU..." oninput="filterUsers()">
-        <button id="refreshBtn" onclick="fetchDirectoryUsers()">
-          <span>Refresh</span>
-        </button>
+        <button id="refreshBtn" onclick="fetchDirectoryUsers()">Refresh</button>
       </div>
     </header>
 
@@ -203,15 +221,15 @@
               <th>Full Name</th>
               <th>Primary Email</th>
               <th>Organizational Unit</th>
-              <th>Role</th>
-              <th>Account Status</th>
+              <th>Assigned Role</th>
+              <th>Status</th>
               <th>Created</th>
             </tr>
           </thead>
           <tbody id="userTableBody">
             <tr>
               <td colspan="6">
-                <div class="status-container">Click refresh or wait for automatic directory load...</div>
+                <div class="status-container">Loading Google Workspace users...</div>
               </td>
             </tr>
           </tbody>
@@ -227,6 +245,7 @@
   <script>
     const WORKSPACE_API_URL = "https://script.google.com/macros/s/AKfycbzkE6HJ9zsWXcjkZu0xbl1-db9vTx8CiSaIzkI0r7a5SCPrhS5a2TfsnmZ2otCdcaOTXQ/exec";
     
+    const ROLES = ["Super Admin", "Admin", "Teacher", "Student", "Staff"];
     let globalUsers = [];
 
     async function fetchDirectoryUsers() {
@@ -234,58 +253,34 @@
       const errorContainer = document.getElementById("errorContainer");
       const refreshBtn = document.getElementById("refreshBtn");
 
-      // Reset state
       errorContainer.style.display = "none";
       errorContainer.textContent = "";
       refreshBtn.disabled = true;
-      tableBody.innerHTML = `
-        <tr>
-          <td colspan="6">
-            <div class="status-container">Loading Google Workspace directory users...</div>
-          </td>
-        </tr>
-      `;
 
       try {
-        const response = await fetch(WORKSPACE_API_URL, {
-          method: "GET",
-          redirect: "follow"
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP Error Status: ${response.status} (${response.statusText})`);
-        }
+        const response = await fetch(WORKSPACE_API_URL, { method: "GET", redirect: "follow" });
+        if (!response.ok) throw new Error(`HTTP Error Status: ${response.status}`);
 
         const rawText = await response.text();
-        let data;
+        const data = JSON.parse(rawText);
 
-        try {
-          data = JSON.parse(rawText);
-        } catch (jsonErr) {
-          throw new Error("Invalid response received. The endpoint returned HTML instead of JSON. Verify Apps Script deployment settings.");
-        }
+        if (data.status === "error") throw new Error(data.message);
 
-        if (data.status === "error") {
-          throw new Error(data.message || "Apps Script returned an internal error.");
-        }
+        // Load saved roles from localStorage or fall back to default Google Admin status
+        const localRoles = JSON.parse(localStorage.getItem("user_role_assignments") || "{}");
 
-        globalUsers = data.users || [];
+        globalUsers = (data.users || []).map(u => ({
+          ...u,
+          assignedRole: localRoles[u.primaryEmail] || (u.isAdmin ? "Super Admin" : "User")
+        }));
+
         renderTable(globalUsers);
-        
         document.getElementById("lastUpdatedText").textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
 
       } catch (error) {
         console.error("Directory Load Error:", error);
         errorContainer.textContent = error.message;
         errorContainer.style.display = "block";
-        tableBody.innerHTML = `
-          <tr>
-            <td colspan="6">
-              <div class="status-container" style="color: #ef4444;">Failed to load user directory. See error banner above.</div>
-            </td>
-          </tr>
-        `;
-        document.getElementById("userCountText").textContent = "Showing 0 users";
       } finally {
         refreshBtn.disabled = false;
       }
@@ -296,39 +291,47 @@
       document.getElementById("userCountText").textContent = `Showing ${users.length} users`;
 
       if (users.length === 0) {
-        tableBody.innerHTML = `
-          <tr>
-            <td colspan="6">
-              <div class="status-container">No workspace users found.</div>
-            </td>
-          </tr>
-        `;
+        tableBody.innerHTML = `<tr><td colspan="6"><div class="status-container">No users found.</div></td></tr>`;
         return;
       }
 
       tableBody.innerHTML = users.map(user => {
         const name = user.fullName || `${user.givenName || ''} ${user.familyName || ''}`.trim() || 'N/A';
-        const roleBadge = user.isAdmin 
-          ? `<span class="badge badge-admin">Super Admin</span>` 
-          : `<span class="badge badge-user">User</span>`;
         const statusBadge = user.suspended 
           ? `<span class="badge badge-suspended">Suspended</span>` 
           : `<span class="badge badge-active">Active</span>`;
-        const createdDate = user.creationTime 
-          ? new Date(user.creationTime).toLocaleDateString() 
-          : 'N/A';
+        const createdDate = user.creationTime ? new Date(user.creationTime).toLocaleDateString() : 'N/A';
+
+        const roleOptions = ROLES.map(role => 
+          `<option value="${role}" ${user.assignedRole === role ? 'selected' : ''}>${role}</option>`
+        ).join('');
 
         return `
           <tr>
             <td><strong>${escapeHtml(name)}</strong></td>
             <td>${escapeHtml(user.primaryEmail)}</td>
             <td><code>${escapeHtml(user.orgUnitPath || '/')}</code></td>
-            <td>${roleBadge}</td>
+            <td>
+              <select class="role-select" onchange="updateUserRole('${escapeHtml(user.primaryEmail)}', this.value)">
+                ${roleOptions}
+              </select>
+            </td>
             <td>${statusBadge}</td>
             <td>${createdDate}</td>
           </tr>
         `;
       }).join('');
+    }
+
+    function updateUserRole(email, newRole) {
+      const localRoles = JSON.parse(localStorage.getItem("user_role_assignments") || "{}");
+      localRoles[email] = newRole;
+      localStorage.setItem("user_role_assignments", JSON.stringify(localRoles));
+
+      const targetUser = globalUsers.find(u => u.primaryEmail === email);
+      if (targetUser) targetUser.assignedRole = newRole;
+
+      console.log(`Updated ${email} role to ${newRole}`);
     }
 
     function filterUsers() {
@@ -337,21 +340,16 @@
         const name = (user.fullName || `${user.givenName} ${user.familyName}`).toLowerCase();
         const email = user.primaryEmail.toLowerCase();
         const org = (user.orgUnitPath || '').toLowerCase();
-        return name.includes(query) || email.includes(query) || org.includes(query);
+        const role = user.assignedRole.toLowerCase();
+        return name.includes(query) || email.includes(query) || org.includes(query) || role.includes(query);
       });
       renderTable(filtered);
     }
 
     function escapeHtml(str) {
-      return String(str || '')
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+      return String(str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
-    // Auto load directory on page load
     window.addEventListener("DOMContentLoaded", fetchDirectoryUsers);
   </script>
 </body>
