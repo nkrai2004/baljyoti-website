@@ -172,20 +172,20 @@
     const existingScript = document.getElementById("jsonp-students");
     if (existingScript) existingScript.remove();
 
-    // Fallback timer if Apps Script fails to respond in 8 seconds
+    // Safety fallback timer if API response is delayed
     const timeout = setTimeout(() => {
       document.getElementById("loadingStatus").classList.add("hidden");
       document.getElementById("mainContent").classList.remove("hidden");
       populateClassFilter();
       renderDirectory();
-    }, 8000);
+    }, 6000);
 
     const script = document.createElement("script");
     script.id = "jsonp-students";
     script.src = SCRIPT_URL + "?action=get_students&email=" + encodeURIComponent(currentUser.email) + "&callback=handleStudents";
     script.onerror = function() {
       clearTimeout(timeout);
-      document.getElementById("loadingStatus").innerText = "Failed to connect to backend server.";
+      document.getElementById("loadingStatus").innerText = "Error connecting to server. Please check backend deployment settings.";
     };
     document.body.appendChild(script);
   }
@@ -230,17 +230,21 @@
     }
 
     const filtered = allStudents.filter(s => s.classSection === selectedClass);
-    filtered.forEach(s => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${s.rollNo}</td>
-        <td><strong>${s.fullName}</strong></td>
-        <td>
-          <button class="toggle-btn status-present" data-id="${s.studentId}" data-name="${s.fullName}" onclick="toggleStatus(this)">PRESENT</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
+    if(filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#6b7280;">No students found for this class.</td></tr>';
+    } else {
+      filtered.forEach(s => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${s.rollNo}</td>
+          <td><strong>${s.fullName}</strong></td>
+          <td>
+            <button class="toggle-btn status-present" data-id="${s.studentId}" data-name="${s.fullName}" onclick="toggleStatus(this)">PRESENT</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
 
     table.classList.remove("hidden");
     submitBtn.classList.remove("hidden");
@@ -323,7 +327,7 @@
     const tbody = document.getElementById("directoryTbody");
     tbody.innerHTML = "";
     if (allStudents.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#6b7280;">No student records found. Use the "Register Student" tab to add students.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#6b7280;">No student records found. Click "Register Student" tab to add students.</td></tr>';
       return;
     }
     allStudents.forEach(s => {
