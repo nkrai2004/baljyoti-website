@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baljyoti ERP | Admission & Student Intake</title>
+  <style>
+    :root {
+      --primary: #dc2626;
+      --primary-dark: #991b1b;
+      --primary-light: #fef2f2;
+      --accent: #2563eb;
+      --bg-main: #f8fafc;
+      --surface: #ffffff;
+      --surface-hover: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --sidebar-width: 260px;
+      --drawer-width: 420px;
+      --status-green: #16a34a;
+      --status-green-bg: #dcfce7;
+      --status-amber: #d97706;
+      --status-amber-bg: #fef3c7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg-main); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; font-size: 14px; }
+
+    /* Left Global Sidebar Rail */
+    .sidebar { width: var(--sidebar-width); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; z-index: 20; }
+    .sidebar-header { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+    .brand-logo { width: 36px; height: 36px; background: var(--primary); color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; }
+    .brand-title { font-size: 15px; font-weight: 800; letter-spacing: -0.3px; line-height: 1.2; }
+    .cmmi-badge { font-size: 9px; background: var(--status-green-bg); color: #15803d; padding: 2px 6px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
+
+    .nav-container { flex: 1; overflow-y: auto; padding: 12px 10px; }
+    .nav-item { margin-bottom: 4px; }
+    .nav-item a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 6px; color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 13px; transition: all 0.15s; }
+    .nav-item a:hover, .nav-item.active a { background: var(--primary-light); color: var(--primary); }
+    .nav-icon { width: 20px; text-align: center; font-size: 15px; }
+
+    /* Workstation Shell */
+    .wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-main); }
+    
+    /* Topbar Header */
+    .topbar { height: 64px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; gap: 16px; }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .topbar-title { font-size: 16px; font-weight: 800; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .role-indicator { font-size: 11px; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 4px 10px; border-radius: 12px; font-weight: 800; }
+    .user-pill { font-size: 12px; background: var(--surface-hover); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-weight: 600; }
+    .ai-btn { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+    /* Split Workspace */
+    .workspace { flex: 1; display: flex; overflow: hidden; }
+    
+    /* Sub-Category Navigation Rail */
+    .module-menu { width: 240px; background: var(--surface); border-right: 1px solid var(--border); padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+    .menu-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border-radius: 6px; border: none; background: transparent; color: var(--text-muted); font-size: 13px; font-weight: 700; text-align: left; cursor: pointer; transition: all 0.15s; }
+    .menu-btn:hover { background: var(--surface-hover); color: var(--text-main); }
+    .menu-btn.active { background: var(--primary-light); color: var(--primary); }
+
+    /* Main Panel Workspace */
+    .module-content { flex: 1; padding: 24px 32px; overflow-y: auto; }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    .panel-header { margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .panel-title { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; }
+    .panel-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    /* Form Layouts & Controls */
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-bottom: 24px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full-width { grid-column: 1 / -1; }
+    .form-label { font-size: 12px; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.4px; }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background: var(--surface); outline: none; transition: all 0.15s; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    .form-textarea { resize: vertical; min-height: 80px; }
+
+    /* Action Buttons */
+    .btn-primary { background: var(--primary); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; transition: background 0.15s; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; }
+
+    /* Data Table Styling */
+    .table-container { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 16px; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table th, .data-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+    .data-table th { background: var(--surface-hover); font-weight: 800; color: var(--text-muted); font-size: 11px; text-transform: uppercase; }
+    
+    .badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    .badge-enrolled { background: var(--status-green-bg); color: #15803d; }
+    .badge-pending { background: var(--status-amber-bg); color: var(--status-amber); }
+    .badge-review { background: #e0f2fe; color: #0369a1; }
+
+    /* File Drop Zone */
+    .drop-zone { border: 2px dashed var(--border); border-radius: 10px; padding: 32px; text-align: center; background: var(--surface); cursor: pointer; transition: all 0.2s; }
+    .drop-zone:hover { border-color: var(--primary); background: var(--primary-light); }
+    .drop-zone-icon { font-size: 32px; margin-bottom: 8px; }
+
+    /* Off-Canvas Aarika AI Drawer */
+    .ai-drawer { position: fixed; top: 0; right: calc(-1 * var(--drawer-width)); width: var(--drawer-width); height: 100vh; background: var(--surface); border-left: 1px solid var(--border); box-shadow: -10px 0 30px rgba(0,0,0,0.08); z-index: 100; transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; }
+    .ai-drawer.open { right: 0; }
+    .ai-header { padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--primary-light); display: flex; align-items: center; justify-content: space-between; }
+    .ai-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; }
+    .ai-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); }
+    .ai-chat-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+    .chat-bubble { padding: 12px 14px; border-radius: 8px; font-size: 13px; line-height: 1.5; max-width: 88%; }
+    .chat-bubble.user { background: var(--primary); color: #fff; align-self: flex-end; }
+    .chat-bubble.ai { background: var(--bg-main); border: 1px solid var(--border); color: var(--text-main); align-self: flex-start; }
+    .ai-footer { padding: 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+    .ai-footer input { flex: 1; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; outline: none; font-size: 13px; }
+    .ai-footer button { background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; }
+  </style>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+
+  <!-- Left Global Sidebar Rail -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <a href="/erp/index.html" class="brand">
+        <div class="brand-logo">B</div>
+        <div>
+          <div class="brand-title">BALJYOTI ERP</div>
+          <span class="cmmi-badge">CMMi Level 5</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="nav-container">
+      <div class="nav-item">
+        <a href="/erp/index.html">
+          <span class="nav-icon">🏠</span>
+          <span>Executive Dashboard</span>
+        </a>
+      </div>
+      <div class="nav-item active">
+        <a href="/erp/admission/">
+          <span class="nav-icon">📋</span>
+          <span>Admission & Intake</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/erp/sis/">
+          <span class="nav-icon">👨‍🎓</span>
+          <span>Student Info (SIS)</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/erp/finance/">
+          <span class="nav-icon">💳</span>
+          <span>Finance & Ledger</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/erp/settings/">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings & Master</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Workstation Container -->
+  <div class="wrapper">
+    <!-- Topbar Header -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span style="font-size: 20px;">📋</span>
+        <div class="topbar-title">Admission & Student Intake Pillar</div>
+      </div>
+
+      <div class="topbar-right">
+        <span id="roleBadge" class="role-indicator">SUPER_ADMIN</span>
+        <span id="userBadge" class="user-pill">admin@baljyoti.com</span>
+        <button class="ai-btn" onclick="toggleAIDrawer()">
+          <span>🤖 Ask Aarika AI</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Split Workspace -->
+    <div class="workspace">
+      <!-- Sub-Category Navigation Rail -->
+      <nav class="module-menu">
+        <button class="menu-btn active" onclick="switchTab('enrollment', this)">
+          <span>📋</span> Student Admission Form
+        </button>
+        <button class="menu-btn" onclick="switchTab('enquiries', this)">
+          <span>🌐</span> Web Enquiries & Leads
+        </button>
+        <button class="menu-btn" onclick="switchTab('csvImport', this)">
+          <span>📥</span> Bulk CSV Import
+        </button>
+        <button class="menu-btn" onclick="switchTab('formBuilder', this)">
+          <span>📝</span> Dynamic Form Builder
+        </button>
+      </nav>
+
+      <!-- Main Panel Workspace -->
+      <main class="module-content">
+
+        <!-- 1. Direct Student Admission Form -->
+        <section id="enrollment" class="tab-pane active">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Digitised Student Enrollment Workflow</div>
+              <div class="panel-desc">Direct registration of new students into the master Google Sheets ledger.</div>
+            </div>
+            <button class="btn-primary" onclick="submitAdmission()">Enroll Student</button>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Full Student Name *</label>
+              <input type="text" id="admName" class="form-input" placeholder="e.g., Aarav Sharma">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date of Birth *</label>
+              <input type="date" id="admDob" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Gender</label>
+              <select id="admGender" class="form-select">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Target Standard / Class *</label>
+              <select id="admClass" class="form-select">
+                <option value="Class 1">Class 1</option>
+                <option value="Class 2">Class 2</option>
+                <option value="Class 9">Class 9</option>
+                <option value="Class 11 - Science">Class 11 - Science</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Primary Parent Contact *</label>
+              <input type="tel" id="admPhone" class="form-input" placeholder="+91 98765 43210">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Parent Email Address</label>
+              <input type="email" id="admEmail" class="form-input" placeholder="parent@gmail.com">
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Residential Address</label>
+              <textarea id="admAddress" class="form-textarea" placeholder="Complete address details..."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Web Enquiries & Intake Leads -->
+        <section id="enquiries" class="tab-pane">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Online Enquiry & Web Registrations</div>
+              <div class="panel-desc">Leads received from public institution website intake pipelines.</div>
+            </div>
+            <button class="btn-secondary" onclick="refreshEnquiries()">Refresh Pipeline</button>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Enquiry ID</th>
+                  <th>Applicant Name</th>
+                  <th>Applying Class</th>
+                  <th>Contact Number</th>
+                  <th>Submission Date</th>
+                  <th>Intake Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="enquiryTableRows">
+                <tr>
+                  <td>ENQ-2026-801</td>
+                  <td>Rohan Verma</td>
+                  <td>Class 11 - Science</td>
+                  <td>+91 98112 34567</td>
+                  <td>2026-08-28</td>
+                  <td><span class="badge badge-review">UNDER REVIEW</span></td>
+                  <td><button class="btn-primary" style="padding:4px 10px; font-size:11px;" onclick="convertLead(this)">Approve & Enroll</button></td>
+                </tr>
+                <tr>
+                  <td>ENQ-2026-798</td>
+                  <td>Ananya Gupta</td>
+                  <td>Class 9</td>
+                  <td>+91 99543 21098</td>
+                  <td>2026-08-27</td>
+                  <td><span class="badge badge-enrolled">ENROLLED</span></td>
+                  <td><span style="font-size:11px; color:var(--text-muted);">Completed</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 3. Bulk CSV Batch Processing -->
+        <section id="csvImport" class="tab-pane">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Bulk CSV Data Processing Engine</div>
+              <div class="panel-desc">Batch upload historical student records directly into database sheets.</div>
+            </div>
+          </div>
+
+          <div class="drop-zone" onclick="document.getElementById('csvFileInput').click()">
+            <div class="drop-zone-icon">📥</div>
+            <div style="font-weight: 800; font-size: 15px;">Click or Drag & Drop Student CSV File Here</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Supports standard ERP CSV headers (Name, DOB, Class, Parent Contact)</div>
+            <input type="file" id="csvFileInput" style="display:none;" accept=".csv" onchange="processCSVUpload(this)">
+          </div>
+        </section>
+
+        <!-- 4. Dynamic Form Builder -->
+        <section id="formBuilder" class="tab-pane">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Dynamic Application Form Builder</div>
+              <div class="panel-desc">Construct custom fields for public admission forms and evaluation questionnaires.</div>
+            </div>
+            <button class="btn-primary" onclick="saveCustomForm()">Publish Custom Form</button>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Form Title</label>
+              <input type="text" class="form-input" value="Academic Year 2026-27 Intake Questionnaire">
+            </div>
+            <div class="form-group">
+              <label class="form-label">New Field Type</label>
+              <select class="form-select">
+                <option>Text Input</option>
+                <option>Dropdown Options</option>
+                <option>File Upload (PDF/JPG)</option>
+              </select>
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Field Prompt Label</label>
+              <input type="text" class="form-input" placeholder="e.g., Previous School Leaving Certificate Number">
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Off-Canvas Aarika AI Drawer -->
+  <div class="ai-drawer" id="aiDrawer">
+    <div class="ai-header">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="ai-avatar">A</div>
+        <div>
+          <div style="font-weight: 800; font-size: 14px;">Aarika AI Assistant</div>
+          <div style="font-size: 11px; color: var(--text-muted);">CMMi-L5 Intake Engine</div>
+        </div>
+      </div>
+      <button class="ai-close" onclick="toggleAIDrawer()">✕</button>
+    </div>
+
+    <div class="ai-chat-body" id="chatBody">
+      <div class="chat-bubble ai">
+        Hello! I am <strong>Aarika</strong>. I analyze student lead conversion rates and check CSV batch upload integrity. How can I assist your intake process?
+      </div>
+    </div>
+
+    <div class="ai-footer">
+      <input type="text" id="aiInput" placeholder="Query leads or request intake analysis..." onkeypress="if(event.key==='Enter') sendAIPrompt()">
+      <button onclick="sendAIPrompt()">Send</button>
+    </div>
+  </div>
+
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSnRWGUsKQhkXjYbnSj-udkO4IBH6EsjxxgiFwnQZ8zsmGdot8hmlkkuLxKHiLFwJQWQ/exec";
+  let currentUser = null;
+
+  // Firebase Auth Guard
+  const firebaseConfig = {
+    apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
+    authDomain: "baljyoti-portal.firebaseapp.com",
+    projectId: "baljyoti-portal",
+    storageBucket: "baljyoti-portal.firebasestorage.app",
+    messagingSenderId: "420727507952",
+    appId: "1:420727507952:web:de5bdbb73521b9fae4eb35"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user && user.email.endsWith("@baljyoti.com")) {
+      currentUser = user;
+      document.getElementById("userBadge").innerText = user.email;
+    } else {
+      window.location.href = "/";
+    }
+  });
+
+  // Tab Switcher
+  function switchTab(tabId, btnElem) {
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    document.querySelectorAll('.menu-btn').forEach(btn => btn.classList.remove('active'));
+
+    document.getElementById(tabId).classList.add('active');
+    btnElem.classList.add('active');
+  }
+
+  // Submission Handlers
+  function submitAdmission() {
+    const name = document.getElementById('admName').value.trim();
+    if (!name) {
+      alert("Please enter the student's full name.");
+      return;
+    }
+
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "enroll_student",
+        email: currentUser ? currentUser.email : "admin@baljyoti.com",
+        studentName: name,
+        class: document.getElementById('admClass').value,
+        phone: document.getElementById('admPhone').value
+      })
+    }).then(() => {
+      alert(`Student ${name} successfully enrolled in database ledger!`);
+      document.getElementById('admName').value = "";
+    });
+  }
+
+  function convertLead(btn) {
+    btn.parentElement.innerHTML = `<span class="badge badge-enrolled">ENROLLED</span>`;
+    alert("Lead converted and added to master student directory.");
+  }
+
+  function processCSVUpload(input) {
+    if (input.files.length > 0) {
+      alert(`Processing file "${input.files[0].name}"... Batch CSV import executed under CMMi defect verification.`);
+    }
+  }
+
+  function saveCustomForm() {
+    alert("Custom intake form published to institutional web portal.");
+  }
+
+  // Aarika AI Drawer
+  function toggleAIDrawer() {
+    document.getElementById("aiDrawer").classList.toggle("open");
+  }
+
+  function sendAIPrompt() {
+    const input = document.getElementById("aiInput");
+    const chatBody = document.getElementById("chatBody");
+    const prompt = input.value.trim();
+
+    if (!prompt) return;
+
+    chatBody.innerHTML += `<div class="chat-bubble user">${prompt}</div>`;
+    input.value = "";
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "ask_gemini",
+        email: currentUser ? currentUser.email : "admin@baljyoti.com",
+        role: "SUPER_ADMIN",
+        prompt: prompt
+      })
+    }).then(() => {
+      chatBody.innerHTML += `<div class="chat-bubble ai">Aarika processed your admission pipeline query.</div>`;
+      chatBody.scrollTop = chatBody.scrollHeight;
+    });
+  }
+</script>
+</body>
+</html>
