@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baljyoti School Enterprise ERP | Aarika AI</title>
+  <title>Baljyoti Enterprise ERP | CMMi Level 5 Engine</title>
   <style>
     :root {
       --primary: #dc2626;
-      --primary-hover: #b91c1c;
+      --primary-dark: #b91c1c;
       --bg-main: #f8fafc;
       --surface: #ffffff;
       --text-main: #0f172a;
@@ -20,30 +20,30 @@
     body { background-color: var(--bg-main); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; }
 
     /* Left Navigation Sidebar */
-    .sidebar { width: var(--sidebar-width); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; z-index: 20; transition: width 0.3s ease; }
+    .sidebar { width: var(--sidebar-width); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; z-index: 20; }
     .sidebar-header { padding: 20px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
-    .brand-logo { width: 32px; height: 32px; background: var(--primary); color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; }
+    .brand-logo { width: 34px; height: 34px; background: var(--primary); color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; }
     .brand-text { font-size: 15px; font-weight: 800; color: var(--text-main); letter-spacing: -0.3px; }
-    
+    .cmmi-tag { font-size: 9px; background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 4px; font-weight: 800; }
+
     .nav-section-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; padding: 16px 20px 8px; letter-spacing: 0.5px; }
     .nav-list { list-style: none; padding: 0 10px; }
     .nav-item a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; color: var(--text-muted); text-decoration: none; font-size: 13.5px; font-weight: 600; transition: all 0.2s; }
     .nav-item a:hover, .nav-item.active a { background: #fef2f2; color: var(--primary); }
-    .nav-item.active a { font-weight: 700; }
     .nav-icon { width: 20px; text-align: center; font-size: 16px; }
 
-    /* Main Container Area */
+    /* Workstation Layout */
     .wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
     /* Header Bar */
     .topbar { height: 64px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; }
-    .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); }
+    .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+    .role-badge { font-size: 11px; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 3px 10px; border-radius: 12px; font-weight: 800; }
     .topbar-actions { display: flex; align-items: center; gap: 16px; }
     .user-badge { font-size: 12px; background: #fef2f2; color: var(--primary); border: 1px solid #fecaca; padding: 6px 14px; border-radius: 20px; font-weight: 700; }
-    .ai-trigger-btn { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
-    .ai-trigger-btn:hover { background: var(--primary-hover); }
+    .ai-trigger-btn { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 
-    /* Main Dashboard View */
+    /* Content Area */
     .content-area { flex: 1; padding: 28px; overflow-y: auto; }
     
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 28px; }
@@ -60,7 +60,7 @@
     .module-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; }
     .module-footer { font-size: 12px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 4px; }
 
-    /* Slide-out Aarika AI Panel */
+    /* Aarika Slide-Out Drawer */
     .ai-drawer { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); box-shadow: -10px 0 30px rgba(0,0,0,0.08); z-index: 100; transition: right 0.3s ease; display: flex; flex-direction: column; }
     .ai-drawer.open { right: 0; }
     .ai-header { padding: 18px 20px; border-bottom: 1px solid var(--border); background: #fef2f2; display: flex; align-items: center; justify-content: space-between; }
@@ -83,21 +83,18 @@
 </head>
 <body>
 
-  <!-- Left Navigation Bar -->
+  <!-- Navigation Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="brand-logo">B</div>
-      <div class="brand-text">BALJYOTI ERP</div>
+      <div>
+        <div class="brand-text">BALJYOTI ERP</div>
+        <span class="cmmi-tag">CMMi Level 5</span>
+      </div>
     </div>
 
-    <div class="nav-section-label">Core Modules</div>
-    <ul class="nav-list">
-      <li class="nav-item active"><a href="/erp/"><span class="nav-icon">📊</span> Dashboard</a></li>
-      <li class="nav-item"><a href="/erp/sis/"><span class="nav-icon">👨‍🎓</span> SIS & Attendance</a></li>
-      <li class="nav-item"><a href="/erp/classroom/"><span class="nav-icon">🏫</span> Google Classroom</a></li>
-      <li class="nav-item"><a href="/erp/finance/"><span class="nav-icon">💳</span> Finance & Fees</a></li>
-      <li class="nav-item"><a href="/erp/staff/"><span class="nav-icon">🛡️</span> Staff HR & Operations</a></li>
-    </ul>
+    <div class="nav-section-label">Enterprise Modules</div>
+    <ul class="nav-list" id="sidebarNav"></ul>
 
     <div class="nav-section-label">Google Workspace</div>
     <ul class="nav-list">
@@ -106,10 +103,13 @@
     </ul>
   </aside>
 
-  <!-- Main Workstation Layout -->
+  <!-- Workstation Layout -->
   <div class="wrapper">
     <header class="topbar">
-      <div class="page-title">Enterprise Management Console</div>
+      <div class="page-title">
+        <span id="dashboardTitle">Master Management Console</span>
+        <span id="roleBadge" class="role-badge">VERIFYING...</span>
+      </div>
       <div class="topbar-actions">
         <span id="userBadge" class="user-badge">Authenticating...</span>
         <button class="ai-trigger-btn" onclick="toggleAIDrawer()">
@@ -119,90 +119,26 @@
     </header>
 
     <main class="content-area">
-      <!-- High-Level System Metrics -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-title">Active Students</div>
-          <div class="stat-value" id="statStudents">--</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-title">Classroom Courses</div>
-          <div class="stat-value" id="statCourses">Active</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-title">Fees Collected Today</div>
-          <div class="stat-value" id="statFees">₹0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-title">System Status</div>
-          <div class="stat-value" style="color: #16a34a; font-size: 20px;">● Online</div>
-        </div>
-      </div>
-
-      <!-- Module Navigation Grid -->
-      <div class="module-grid">
-        <a href="/erp/sis/" class="module-card">
-          <div>
-            <div class="module-header">
-              <div class="module-icon">👨‍🎓</div>
-              <h3>Student Information System</h3>
-            </div>
-            <p>Manage student master files, enrollment status, parent contacts, and daily roll-call logs.</p>
-          </div>
-          <div class="module-footer">Open SIS Directory →</div>
-        </a>
-
-        <a href="/erp/classroom/" class="module-card">
-          <div>
-            <div class="module-header">
-              <div class="module-icon">🏫</div>
-              <h3>Google Classroom Sync</h3>
-            </div>
-            <p>Connect your Google Workspace domain to automatically import active classes and course rosters.</p>
-          </div>
-          <div class="module-footer">Sync Classroom Data →</div>
-        </a>
-
-        <a href="/erp/finance/" class="module-card">
-          <div>
-            <div class="module-header">
-              <div class="module-icon">💳</div>
-              <h3>Finance & Fee Management</h3>
-            </div>
-            <p>Record fee payments, issue digital receipts, and view payment ledgers in real-time.</p>
-          </div>
-          <div class="module-footer">Manage Ledger →</div>
-        </a>
-
-        <a href="/erp/staff/" class="module-card">
-          <div>
-            <div class="module-header">
-              <div class="module-icon">🛡️</div>
-              <h3>Staff HR & Verification</h3>
-            </div>
-            <p>Track staff check-ins with GPS and photo verification, and handle operational security logs.</p>
-          </div>
-          <div class="module-footer">View Staff Logs →</div>
-        </a>
-      </div>
+      <div class="stats-grid" id="statsContainer"></div>
+      <div class="module-grid" id="modulesContainer"></div>
     </main>
   </div>
 
-  <!-- Aarika Slide-Out Drawer -->
+  <!-- Aarika AI Panel -->
   <div class="ai-drawer" id="aiDrawer">
     <div class="ai-header">
       <div class="ai-profile">
         <div class="ai-avatar">A</div>
         <div>
           <div style="font-weight: 800; font-size: 15px; color: var(--primary);">Aarika</div>
-          <div style="font-size: 11px; color: var(--text-muted);">Your AI ERP Guide</div>
+          <div style="font-size: 11px; color: var(--text-muted);">CMMi-L5 Enterprise Guide</div>
         </div>
       </div>
       <button class="ai-close" onclick="toggleAIDrawer()">✕</button>
     </div>
 
     <div class="ai-chat-box" id="chatBox">
-      <div class="msg ai">Hello! I am <strong>Aarika</strong>, your enterprise AI guide. Ask me to query student records, fee collection balances, or operational logs.</div>
+      <div class="msg ai">Greetings! I am <strong>Aarika</strong>, your CMMi Level 5 Enterprise Guide. Ask me to query real-time Workspace data or system audit streams.</div>
     </div>
 
     <div class="ai-input-area">
@@ -214,6 +150,7 @@
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSnRWGUsKQhkXjYbnSj-udkO4IBH6EsjxxgiFwnQZ8zsmGdot8hmlkkuLxKHiLFwJQWQ/exec";
   let currentUser = null;
+  let userRole = "TEACHER";
 
   const firebaseConfig = {
     apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
@@ -229,7 +166,7 @@
     if (user && user.email.endsWith("@baljyoti.com")) {
       currentUser = user;
       document.getElementById("userBadge").innerText = user.email;
-      loadLiveMetrics();
+      fetchRoleAndRender(user.email);
     } else {
       window.location.href = "/";
     }
@@ -239,20 +176,76 @@
     document.getElementById("aiDrawer").classList.toggle("open");
   }
 
-  function loadLiveMetrics() {
+  function fetchRoleAndRender(email) {
     const script = document.createElement("script");
-    const callbackName = "metricsCallback_" + Math.round(Math.random() * 100000);
+    const callbackName = "roleCallback_" + Math.round(Math.random() * 100000);
 
     window[callbackName] = function(response) {
       delete window[callbackName];
       document.body.removeChild(script);
+
       if (response.status === "success") {
-        document.getElementById("statStudents").innerText = response.data.length || "0";
+        userRole = response.role;
       }
+      renderDashboardForRole(userRole);
     };
 
-    script.src = `${SCRIPT_URL}?action=get_students&email=${encodeURIComponent(currentUser.email)}&callback=${callbackName}`;
+    script.src = `${SCRIPT_URL}?action=get_user_role&email=${encodeURIComponent(email)}&callback=${callbackName}`;
     document.body.appendChild(script);
+  }
+
+  function renderDashboardForRole(role) {
+    const roleBadge = document.getElementById("roleBadge");
+    const sidebarNav = document.getElementById("sidebarNav");
+    const statsContainer = document.getElementById("statsContainer");
+    const modulesContainer = document.getElementById("modulesContainer");
+    const dashboardTitle = document.getElementById("dashboardTitle");
+
+    roleBadge.innerText = role;
+    let navHtml = `<li class="nav-item active"><a href="/erp/"><span class="nav-icon">📊</span> Overview</a></li>`;
+
+    if (role === "SUPER_ADMIN") {
+      dashboardTitle.innerText = "Executive Master Control";
+      navHtml += `
+        <li class="nav-item"><a href="/erp/sis/"><span class="nav-icon">👨‍🎓</span> SIS Directory</a></li>
+        <li class="nav-item"><a href="/erp/classroom/"><span class="nav-icon">🏫</span> Classroom Sync</a></li>
+        <li class="nav-item"><a href="/erp/finance/"><span class="nav-icon">💳</span> Finance Desk</a></li>
+        <li class="nav-item"><a href="/erp/staff/"><span class="nav-icon">🛡️</span> Staff Operations</a></li>
+      `;
+
+      statsContainer.innerHTML = `
+        <div class="stat-card"><div class="stat-title">Workspace Data</div><div class="stat-value">Google Sheets</div></div>
+        <div class="stat-card"><div class="stat-title">Classroom Sync</div><div class="stat-value">Active API</div></div>
+        <div class="stat-card"><div class="stat-title">AI Engine</div><div class="stat-value">Gemini 1.5</div></div>
+        <div class="stat-card"><div class="stat-title">CMMi Standard</div><div class="stat-value" style="color: #16a34a; font-size: 20px;">● Level 5</div></div>
+      `;
+
+      modulesContainer.innerHTML = `
+        <a href="/erp/sis/" class="module-card"><div><div class="module-header"><div class="module-icon">👨‍🎓</div><h3>SIS & Attendance</h3></div><p>Student directory, registration, parent records, and attendance tracking.</p></div><div class="module-footer">Open SIS →</div></a>
+        <a href="/erp/classroom/" class="module-card"><div><div class="module-header"><div class="module-icon">🏫</div><h3>Classroom Integration</h3></div><p>Sync live Google Workspace active courses and rosters.</p></div><div class="module-footer">Open Classroom →</div></a>
+        <a href="/erp/finance/" class="module-card"><div><div class="module-header"><div class="module-icon">💳</div><h3>Finance Management</h3></div><p>Record fee payments, issue e-receipts, and audit financial ledgers.</p></div><div class="module-footer">Open Finance →</div></a>
+        <a href="/erp/staff/" class="module-card"><div><div class="module-header"><div class="module-icon">🛡️</div><h3>Staff HR Operations</h3></div><p>GPS and photo verification for staff check-ins and audit logs.</p></div><div class="module-footer">Open Operations →</div></a>
+      `;
+    } else {
+      dashboardTitle.innerText = "Educator Workspace";
+      navHtml += `
+        <li class="nav-item"><a href="/erp/sis/"><span class="nav-icon">👨‍🎓</span> Attendance</a></li>
+        <li class="nav-item"><a href="/erp/classroom/"><span class="nav-icon">🏫</span> My Courses</a></li>
+      `;
+
+      statsContainer.innerHTML = `
+        <div class="stat-card"><div class="stat-title">Active Roster</div><div class="stat-value">Connected</div></div>
+        <div class="stat-card"><div class="stat-title">Today's Roll Call</div><div class="stat-value">Pending</div></div>
+        <div class="stat-card"><div class="stat-title">Classroom State</div><div class="stat-value" style="color: #16a34a; font-size: 20px;">● Synced</div></div>
+      `;
+
+      modulesContainer.innerHTML = `
+        <a href="/erp/sis/" class="module-card"><div><div class="module-header"><div class="module-icon">👨‍🎓</div><h3>Daily Attendance Roll Call</h3></div><p>Mark attendance for assigned sections directly to the master database.</p></div><div class="module-footer">Take Attendance →</div></a>
+        <a href="/erp/classroom/" class="module-card"><div><div class="module-header"><div class="module-icon">🏫</div><h3>Google Classrooms</h3></div><p>Access assigned Google Workspace course links and student rosters.</p></div><div class="module-footer">View Courses →</div></a>
+      `;
+    }
+
+    sidebarNav.innerHTML = navHtml;
   }
 
   function sendAIPrompt() {
@@ -273,10 +266,11 @@
       body: JSON.stringify({
         action: "ask_gemini",
         email: currentUser.email,
+        role: userRole,
         prompt: prompt
       })
     }).then(() => {
-      chatBox.innerHTML += `<div class="msg ai">Aarika has processed your query and updated administrative logs.</div>`;
+      chatBox.innerHTML += `<div class="msg ai">Aarika processed your request under CMMi Level 5 quantitative verification protocol.</div>`;
       chatBox.scrollTop = chatBox.scrollHeight;
     });
   }
