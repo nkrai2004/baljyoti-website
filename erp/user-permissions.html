@@ -4,23 +4,44 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Google Workspace User Permissions</title>
+  
+  <!-- Tailwind CSS for standard portal header -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#fef2f2', 100: '#ffe1e1', 500: '#ef4444', 600: '#dc2626', 700: '#b91c1c', 800: '#991b1b' }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Firebase Auth for Header Session Management -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     body {
       background-color: #f8fafc;
       color: #0f172a;
-      padding: 24px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     .container {
       max-width: 1200px;
       margin: 0 auto;
+      padding: 24px;
     }
 
     nav {
@@ -46,7 +67,7 @@
       color: white;
     }
 
-    header {
+    .page-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -55,7 +76,7 @@
       gap: 16px;
     }
 
-    h1 {
+    h1.page-title {
       font-size: 1.5rem;
       font-weight: 600;
       color: #1e293b;
@@ -82,7 +103,7 @@
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
     }
 
-    button {
+    button.btn-primary {
       background-color: #2563eb;
       color: white;
       border: none;
@@ -94,11 +115,11 @@
       transition: background-color 0.2s;
     }
 
-    button:hover {
+    button.btn-primary:hover {
       background-color: #1d4ed8;
     }
 
-    button:disabled {
+    button.btn-primary:disabled {
       background-color: #94a3b8;
       cursor: not-allowed;
     }
@@ -194,7 +215,39 @@
     }
   </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800">
+
+  <!-- Common Header across all modules -->
+  <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-30">
+    <div class="flex items-center space-x-3">
+      <img src="logo.png" alt="Bal Jyoti Logo" class="h-9 object-contain">
+      <span class="text-slate-300">|</span>
+      <h1 class="text-base font-bold text-slate-900">Bal Jyoti Educational Portal</h1>
+    </div>
+
+    <div class="flex items-center space-x-3">
+      <a href="dashboard.html" class="inline-flex items-center space-x-1 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition">
+        ← Dashboard
+      </a>
+
+      <!-- Manage Users Button -->
+      <a id="rbacAdminBtn" href="user-permissions.html" class="inline-flex items-center space-x-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition shadow-sm">
+        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+        <span>Manage Users</span>
+      </a>
+
+      <div class="flex items-center space-x-2 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg">
+        <span id="userBadge" class="text-xs font-mono font-bold text-slate-700">Loading...</span>
+        <span id="roleBadge" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-100 text-red-800 border border-red-200">SUPER_ADMIN</span>
+      </div>
+
+      <button onclick="logout()" class="text-xs font-bold text-slate-500 hover:text-red-600 px-2 py-1.5 transition">
+        Sign Out
+      </button>
+    </div>
+  </header>
 
   <div class="container">
     <nav>
@@ -203,13 +256,13 @@
       <a href="modules/inbox.html">Inbox</a>
     </nav>
 
-    <header>
-      <h1>User Directory & Role Assignment</h1>
+    <div class="page-header">
+      <h1 class="page-title">User Directory & Role Assignment</h1>
       <div class="controls">
         <input type="text" id="searchInput" placeholder="Search by name, email, or OU..." oninput="filterUsers()">
-        <button id="refreshBtn" onclick="fetchDirectoryUsers()">Refresh</button>
+        <button id="refreshBtn" class="btn-primary" onclick="fetchDirectoryUsers()">Refresh</button>
       </div>
-    </header>
+    </div>
 
     <div id="errorContainer" class="error-box"></div>
 
@@ -243,9 +296,42 @@
   </div>
 
   <script>
+    const SUPER_ADMIN = "info@baljyoti.com";
     const WORKSPACE_API_URL = "https://script.google.com/macros/s/AKfycbzkE6HJ9zsWXcjkZu0xbl1-db9vTx8CiSaIzkI0r7a5SCPrhS5a2TfsnmZ2otCdcaOTXQ/exec";
     const ROLES = ["Super Admin", "Admin", "Teacher", "Student", "Staff"];
     let globalUsers = [];
+
+    // Firebase Init for Navigation Header Status
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
+      authDomain: "baljyoti-portal.firebaseapp.com",
+      projectId: "baljyoti-portal",
+      storageBucket: "baljyoti-portal.firebasestorage.app",
+      messagingSenderId: "420727507952",
+      appId: "1:420727507952:web:de5bdbb73521b9fae4eb35"
+    };
+
+    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          document.getElementById("userBadge").innerText = user.email;
+        } else {
+          document.getElementById("userBadge").innerText = "Not Signed In";
+        }
+      });
+    }
+
+    function logout() {
+      sessionStorage.clear();
+      if (typeof firebase !== 'undefined' && firebase.auth()) {
+        firebase.auth().signOut().then(() => {
+          window.location.href = "index.html";
+        });
+      } else {
+        window.location.href = "index.html";
+      }
+    }
 
     async function fetchDirectoryUsers() {
       const tableBody = document.getElementById("userTableBody");
