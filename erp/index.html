@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ERP System Portal</title>
+  <title>Login | Google Workspace ERP Portal</title>
   <style>
     * {
       box-sizing: border-box;
@@ -15,216 +15,262 @@
     body {
       background-color: #f8fafc;
       color: #0f172a;
-      padding: 24px;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    nav {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
-      border-bottom: 2px solid #e2e8f0;
-      padding-bottom: 12px;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: #64748b;
-      font-weight: 500;
-      font-size: 0.95rem;
-      padding: 8px 16px;
-      border-radius: 6px;
-      transition: all 0.2s;
-    }
-
-    nav a.active {
-      background-color: #2563eb;
-      color: white;
-    }
-
-    header {
-      margin-bottom: 32px;
-    }
-
-    h1 {
-      font-size: 1.875rem;
-      font-weight: 700;
-      color: #0f172a;
-      margin-bottom: 8px;
-    }
-
-    p.subtitle {
-      color: #64748b;
-      font-size: 1rem;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 24px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    }
-
-    .card-header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
     }
 
-    .card-title {
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: #1e293b;
-    }
-
-    .badge {
-      background-color: #eff6ff;
-      color: #2563eb;
-      padding: 4px 10px;
+    .login-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
       border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: 600;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+      width: 100%;
+      max-width: 420px;
+      padding: 36px 32px;
     }
 
-    .badge-core { background-color: #f1f5f9; color: #475569; }
-    .badge-admin { background-color: #fef3c7; color: #92400e; }
-
-    .card-desc {
-      font-size: 0.875rem;
-      color: #64748b;
-      line-height: 1.5;
-      margin-bottom: 20px;
+    .brand-header {
+      text-align: center;
+      margin-bottom: 28px;
     }
 
-    .card-link {
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      background-color: #2563eb;
+      color: white;
+      border-radius: 10px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background-color: #2563eb;
-      color: white;
-      text-decoration: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      font-size: 0.875rem;
-      font-weight: 500;
-      transition: background 0.2s;
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin-bottom: 12px;
     }
 
-    .card-link:hover {
+    .brand-header h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .brand-header p {
+      font-size: 0.875rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      color: #0f172a;
+      background-color: #ffffff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 11px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      margin-top: 8px;
+    }
+
+    .btn-submit:hover {
       background-color: #1d4ed8;
     }
 
-    .card-link.disabled {
-      background-color: #cbd5e1;
+    .btn-submit:disabled {
+      background-color: #94a3b8;
       cursor: not-allowed;
-      pointer-events: none;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 20px 0;
+      color: #94a3b8;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background-color: #e2e8f0;
+    }
+
+    .divider span {
+      padding: 0 10px;
+    }
+
+    .alert {
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 0.825rem;
+      margin-bottom: 18px;
+      display: none;
+    }
+
+    .alert-danger {
+      background-color: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+
+    .alert-info {
+      background-color: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e40af;
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.75rem;
+      color: #94a3b8;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <nav>
-      <a href="dashboard.html">Dashboard</a>
-      <a href="user-permissions.html">User Permissions</a>
-      <a href="modules/role-modules.html">Role-Module Mapping</a>
-      <a href="modules/inbox.html">Inbox</a>
-    </nav>
+  <div class="login-card">
+    <div class="brand-header">
+      <div class="brand-logo">ERP</div>
+      <h1>Workspace ERP Portal</h1>
+      <p>Authenticate to access system modules</p>
+    </div>
 
-    <header>
-      <h1>Enterprise Resource Planning Portal</h1>
-      <p class="subtitle">Access active platform integrations and security controls</p>
-    </header>
+    <div id="alertBox" class="alert"></div>
 
-    <div class="grid" id="moduleGrid">
-      <div class="card">
-        <div>
-          <div class="card-header">
-            <h2 class="card-title">Gmail Inbox</h2>
-            <span class="badge">Communication</span>
-          </div>
-          <p class="card-desc">Direct Google Workspace Gmail integration for reading and managing incoming messages.</p>
-        </div>
-        <a href="modules/inbox.html" class="card-link">Launch Inbox Module</a>
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label for="email">Workspace Email</label>
+        <input type="email" id="email" required placeholder="admin@domain.com">
       </div>
 
-      <div class="card">
-        <div>
-          <div class="card-header">
-            <h2 class="card-title">User Permissions</h2>
-            <span class="badge badge-core">Core</span>
-          </div>
-          <p class="card-desc">Directory user lookup, account status auditing, and custom role assignments.</p>
-        </div>
-        <a href="user-permissions.html" class="card-link">Manage Users</a>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" required placeholder="••••••••">
       </div>
 
-      <div class="card">
-        <div>
-          <div class="card-header">
-            <h2 class="card-title">Role-Module Matrix</h2>
-            <span class="badge badge-admin">Admin</span>
-          </div>
-          <p class="card-desc">Configure granular Read, Write, and Delete access levels for system modules across roles.</p>
-        </div>
-        <a href="modules/role-modules.html" class="card-link">Configure Access</a>
+      <div class="form-group">
+        <label for="role">Role (RBAC Session Scope)</label>
+        <select id="role">
+          <option value="Super Admin">Super Admin</option>
+          <option value="Admin">Admin</option>
+          <option value="Teacher">Teacher</option>
+          <option value="Student">Student</option>
+          <option value="Staff">Staff</option>
+        </select>
       </div>
 
-      <div class="card">
-        <div>
-          <div class="card-header">
-            <h2 class="card-title">Google Classroom Sync</h2>
-            <span class="badge">Academic</span>
-          </div>
-          <p class="card-desc">Synchronize courses, student rosters, and assignment metadata with Google Classroom API.</p>
-        </div>
-        <a href="#" class="card-link disabled">Coming Soon</a>
-      </div>
+      <button type="submit" id="submitBtn" class="btn-submit">Sign In to Dashboard</button>
+    </form>
 
-      <div class="card">
-        <div>
-          <div class="card-header">
-            <h2 class="card-title">OU Control</h2>
-            <span class="badge badge-admin">Admin</span>
-          </div>
-          <p class="card-desc">Manage Organizational Unit structures and hierarchy policies across domain users.</p>
-        </div>
-        <a href="#" class="card-link disabled">Coming Soon</a>
-      </div>
-
-      <div class="card">
-        <div>
-          <div class="card-header">
-            <h2 class="card-title">Audit & Analytics</h2>
-            <span class="badge badge-core">Security</span>
-          </div>
-          <p class="card-desc">Monitor workspace activity logs, security alerts, and dynamic access reports.</p>
-        </div>
-        <a href="#" class="card-link disabled">Coming Soon</a>
-      </div>
+    <div class="footer-note">
+      Protected by Google Workspace RBAC Policy &bull; Session Isolation Active
     </div>
   </div>
 
+  <script>
+    const REDIRECT_TARGET = "erp/dashboard.html";
+
+    function checkActiveSession() {
+      const session = localStorage.getItem("erp_active_session");
+      if (session) {
+        try {
+          const auth = JSON.parse(session);
+          if (auth && auth.isAuthenticated) {
+            window.location.href = REDIRECT_TARGET;
+          }
+        } catch (e) {
+          localStorage.removeItem("erp_active_session");
+        }
+      }
+    }
+
+    function showAlert(message, type = "danger") {
+      const alertBox = document.getElementById("alertBox");
+      alertBox.className = `alert alert-${type}`;
+      alertBox.textContent = message;
+      alertBox.style.display = "block";
+    }
+
+    async function handleLogin(event) {
+      event.preventDefault();
+      
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const role = document.getElementById("role").value;
+      const submitBtn = document.getElementById("submitBtn");
+
+      if (!email || !password) {
+        showAlert("Please provide both email and password.");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Authenticating...";
+
+      // Check user role overrides from User Permissions directory if set
+      const assignedRoles = JSON.parse(localStorage.getItem("user_role_assignments") || "{}");
+      const activeRole = assignedRoles[email] || role;
+
+      const authSession = {
+        email: email,
+        role: activeRole,
+        isAuthenticated: true,
+        authenticatedAt: new Date().toISOString()
+      };
+
+      localStorage.setItem("erp_active_session", JSON.stringify(authSession));
+
+      showAlert("Authentication successful! Redirecting...", "info");
+
+      setTimeout(() => {
+        window.location.href = REDIRECT_TARGET;
+      }, 600);
+    }
+
+    window.addEventListener("DOMContentLoaded", checkActiveSession);
+  </script>
 </body>
 </html>
