@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Duty Report - Baljyoti ERP</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #ffffff; color: #111827; min-height: 100vh; padding: 16px; display: flex; flex-direction: column; align-items: center; }
+
+    .header-bar { width: 100%; max-width: 480px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #dc2626; padding-bottom: 12px; margin-bottom: 20px; }
+    .back-btn { color: #dc2626; text-decoration: none; font-weight: 800; font-size: 14px; text-transform: uppercase; }
+    .title { font-size: 18px; font-weight: 800; color: #dc2626; text-transform: uppercase; }
+
+    .form-card { background: #ffffff; border: 2px solid #dc2626; border-radius: 16px; padding: 20px; width: 100%; max-width: 480px; box-shadow: 0 4px 16px rgba(220, 38, 38, 0.08); }
+
+    .form-group { margin-bottom: 16px; text-align: left; }
+    label { font-size: 12px; font-weight: 800; color: #dc2626; text-transform: uppercase; display: block; margin-bottom: 6px; letter-spacing: 0.5px; }
+    
+    select, input[type="text"] { width: 100%; padding: 12px; border: 1.5px solid #dc2626; border-radius: 8px; font-size: 14px; color: #111827; background: #ffffff; outline: none; }
+    select:focus, input[type="text"]:focus { border-width: 2px; }
+
+    .status-group { display: flex; gap: 12px; }
+    .status-btn { flex: 1; padding: 12px; border: 1.5px solid #dc2626; border-radius: 8px; background: #ffffff; color: #dc2626; font-weight: 800; font-size: 14px; text-align: center; cursor: pointer; text-transform: uppercase; }
+    .status-btn.selected { background: #dc2626; color: #ffffff; }
+
+    .file-input { display: none; }
+    .cam-btn { background: #ffffff; border: 2px dashed #dc2626; color: #dc2626; padding: 16px; border-radius: 12px; font-weight: 800; font-size: 14px; text-align: center; cursor: pointer; width: 100%; display: block; text-transform: uppercase; margin-top: 6px; }
+    
+    .preview-img { width: 100%; border-radius: 8px; border: 2px solid #dc2626; margin-top: 10px; display: none; }
+
+    .gps-box { background: #fff5f5; border: 1px solid #dc2626; border-radius: 8px; padding: 10px; font-size: 12px; color: #dc2626; font-weight: 700; margin-bottom: 16px; word-break: break-all; }
+
+    .btn-submit { background: #dc2626; color: #ffffff; border: none; padding: 16px; border-radius: 12px; font-weight: 800; font-size: 16px; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+  </style>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+
+  <div class="header-bar">
+    <a href="../" class="back-btn">← Back</a>
+    <div class="title">Duty Report</div>
+    <div></div>
+  </div>
+
+  <div class="form-card" id="main-card">
+    <form id="dutyForm" onsubmit="submitReport(event)">
+      
+      <!-- Dropdown -->
+      <div class="form-group">
+        <label for="dutyType">1. Select Duty Type</label>
+        <select id="dutyType" required>
+          <option value="" disabled selected>-- Select Inspection Duty --</option>
+          <option value="Cleaning">1. Cleaning Inspection</option>
+          <option value="Morning">2. Morning Duty</option>
+          <option value="Lunch">3. Lunch Duty</option>
+          <option value="Departure">4. Departure Duty</option>
+        </select>
+      </div>
+
+      <!-- Location Input -->
+      <div class="form-group">
+        <label for="location">2. Location Details</label>
+        <input type="text" id="location" placeholder="e.g. Ground Floor Corridor / Gate 1" required>
+      </div>
+
+      <!-- Status Option -->
+      <div class="form-group">
+        <label>3. Inspection Status</label>
+        <div class="status-group">
+          <div class="status-btn selected" id="btnDone" onclick="setStatus('Done')">Done</div>
+          <div class="status-btn" id="btnNotDone" onclick="setStatus('Not Done')">Not Done</div>
+        </div>
+      </div>
+
+      <!-- Enforced Rear Camera Upload -->
+      <div class="form-group">
+        <label>4. Photo Verification (Back Camera Required)</label>
+        <label for="cameraInput" class="cam-btn">📷 Open Back Camera</label>
+        <input type="file" id="cameraInput" class="file-input" accept="image/*" capture="environment" onchange="handlePhoto(event)" required>
+        <img id="preview" class="preview-img" alt="Inspection proof preview">
+      </div>
+
+      <!-- GPS Status -->
+      <div class="gps-box" id="gpsStatus">Fetching GPS Coordinates...</div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">Submit Report</button>
+    </form>
+  </div>
+
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSnRWGUsKQhkXjYbnSj-udkO4IBH6EsjxxgiFwnQZ8zsmGdot8hmlkkuLxKHiLFwJQWQ/exec";
+
+  let currentUser = null;
+  let currentStatus = "Done";
+  let gpsCoords = "";
+  let photoBase64 = "";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
+    authDomain: "baljyoti-portal.firebaseapp.com",
+    projectId: "baljyoti-portal",
+    storageBucket: "baljyoti-portal.firebasestorage.app",
+    messagingSenderId: "420727507952",
+    appId: "1:420727507952:web:de5bdbb73521b9fae4eb35"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user && user.email.endsWith("@baljyoti.com")) {
+      currentUser = user;
+      fetchGPS();
+    } else {
+      window.location.href = "../";
+    }
+  });
+
+  function setStatus(val) {
+    currentStatus = val;
+    if (val === 'Done') {
+      document.getElementById('btnDone').classList.add('selected');
+      document.getElementById('btnNotDone').classList.remove('selected');
+    } else {
+      document.getElementById('btnNotDone').classList.add('selected');
+      document.getElementById('btnDone').classList.remove('selected');
+    }
+  }
+
+  function fetchGPS() {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        gpsCoords = pos.coords.latitude + ", " + pos.coords.longitude;
+        document.getElementById("gpsStatus").innerText = "📍 GPS Locked: " + gpsCoords;
+      }, (err) => {
+        document.getElementById("gpsStatus").innerText = "⚠️ GPS Error: Enable Location Services";
+      }, { enableHighAccuracy: true });
+    } else {
+      document.getElementById("gpsStatus").innerText = "⚠️ GPS Not Supported";
+    }
+  }
+
+  function handlePhoto(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        photoBase64 = e.target.result;
+        const img = document.getElementById("preview");
+        img.src = photoBase64;
+        img.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function submitReport(e) {
+    e.preventDefault();
+    if (!gpsCoords) {
+      alert("GPS Location is required. Please enable location services.");
+      return;
+    }
+    if (!photoBase64) {
+      alert("Please capture a back camera photo for verification.");
+      return;
+    }
+
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = true;
+    btn.innerText = "Submitting...";
+
+    const payload = {
+      action: "duty_report",
+      email: currentUser.email,
+      name: currentUser.displayName,
+      dutyType: document.getElementById("dutyType").value,
+      location: document.getElementById("location").value,
+      status: currentStatus,
+      gps: gpsCoords,
+      photo: photoBase64
+    };
+
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    }).then(() => {
+      alert("Duty Report Submitted Successfully!");
+      window.location.href = "../";
+    }).catch((err) => {
+      alert("Submission Error: " + err.message);
+      btn.disabled = false;
+      btn.innerText = "Submit Report";
+    });
+  }
+</script>
+</body>
+</html>
