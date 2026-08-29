@@ -71,7 +71,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
       gap: 16px;
     }
@@ -145,10 +145,11 @@
 
     th {
       background-color: #f1f5f9;
-      padding: 12px 16px;
+      padding: 10px 12px;
       font-weight: 600;
       color: #475569;
       border-bottom: 1px solid #e2e8f0;
+      vertical-align: top;
     }
 
     td {
@@ -174,6 +175,24 @@
     }
 
     select.role-select:focus {
+      border-color: #2563eb;
+    }
+
+    /* Inline Header Column Filters */
+    .col-filter-input, .col-filter-select {
+      width: 100%;
+      margin-top: 6px;
+      padding: 5px 8px;
+      font-size: 0.75rem;
+      font-weight: normal;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      background-color: #ffffff;
+      color: #1e293b;
+      outline: none;
+    }
+
+    .col-filter-input:focus, .col-filter-select:focus {
       border-color: #2563eb;
     }
 
@@ -259,7 +278,7 @@
     <div class="page-header">
       <h1 class="page-title">User Directory & Role Assignment</h1>
       <div class="controls">
-        <input type="text" id="searchInput" placeholder="Search by name, email, or OU..." oninput="filterUsers()">
+        <input type="text" id="searchInput" placeholder="Global search..." oninput="filterUsers()">
         <button id="refreshBtn" class="btn-primary" onclick="fetchDirectoryUsers()">Refresh</button>
       </div>
     </div>
@@ -271,12 +290,43 @@
         <table>
           <thead>
             <tr>
-              <th>Full Name</th>
-              <th>Primary Email</th>
-              <th>Organizational Unit</th>
-              <th>Assigned Role</th>
-              <th>Status</th>
-              <th>Created</th>
+              <!-- Column Header Filters -->
+              <th style="width: 20%;">
+                <div>Full Name</div>
+                <input type="text" id="filterName" class="col-filter-input" placeholder="Filter Name..." oninput="filterUsers()">
+              </th>
+              <th style="width: 25%;">
+                <div>Primary Email</div>
+                <input type="text" id="filterEmail" class="col-filter-input" placeholder="Filter Email..." oninput="filterUsers()">
+              </th>
+              <th style="width: 18%;">
+                <div>Organizational Unit</div>
+                <select id="filterOU" class="col-filter-select" multiple size="2" onchange="filterUsers()">
+                  <!-- Dynamically populated -->
+                </select>
+              </th>
+              <th style="width: 15%;">
+                <div>Assigned Role</div>
+                <select id="filterRole" class="col-filter-select" multiple size="2" onchange="filterUsers()">
+                  <option value="Super Admin">Super Admin</option>
+                  <option value="Admin">Admin</option>
+                  <option value="Teacher">Teacher</option>
+                  <option value="Student">Student</option>
+                  <option value="Staff">Staff</option>
+                  <option value="User">User</option>
+                </select>
+              </th>
+              <th style="width: 12%;">
+                <div>Status</div>
+                <select id="filterStatus" class="col-filter-select" multiple size="2" onchange="filterUsers()">
+                  <option value="Active">Active</option>
+                  <option value="Suspended">Suspended</option>
+                </select>
+              </th>
+              <th style="width: 10%;">
+                <div>Created</div>
+                <input type="text" id="filterCreated" class="col-filter-input" placeholder="Filter Date..." oninput="filterUsers()">
+              </th>
             </tr>
           </thead>
           <tbody id="userTableBody">
@@ -358,7 +408,8 @@
           assignedRole: localRoles[u.primaryEmail] || (u.isAdmin ? "Super Admin" : "User")
         }));
 
-        renderTable(globalUsers);
+        populateOUOptions(globalUsers);
+        filterUsers();
         document.getElementById("lastUpdatedText").textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
 
       } catch (error) {
@@ -370,12 +421,19 @@
       }
     }
 
+    function populateOUOptions(users) {
+      const ouSelect = document.getElementById("filterOU");
+      const ous = Array.from(new Set(users.map(u => u.orgUnitPath || '/'))).sort();
+      
+      ouSelect.innerHTML = ous.map(ou => `<option value="${escapeHtml(ou)}">${escapeHtml(ou)}</option>`).join('');
+    }
+
     function renderTable(users) {
       const tableBody = document.getElementById("userTableBody");
       document.getElementById("userCountText").textContent = `Showing ${users.length} users`;
 
       if (users.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="6"><div class="status-container">No users found.</div></td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="6"><div class="status-container">No users found matching filter criteria.</div></td></tr>`;
         return;
       }
 
@@ -416,15 +474,40 @@
       if (targetUser) targetUser.assignedRole = newRole;
     }
 
+    function getSelectedValues(selectElement) {
+      return Array.from(selectElement.selectedOptions).map(opt => opt.value);
+    }
+
     function filterUsers() {
-      const query = document.getElementById("searchInput").value.toLowerCase();
+      const globalQuery = document.getElementById("searchInput").value.toLowerCase();
+      const filterName = document.getElementById("filterName").value.toLowerCase();
+      const filterEmail = document.getElementById("filterEmail").value.toLowerCase();
+      const filterCreated = document.getElementById("filterCreated").value.toLowerCase();
+
+      const selectedOUs = getSelectedValues(document.getElementById("filterOU"));
+      const selectedRoles = getSelectedValues(document.getElementById("filterRole"));
+      const selectedStatuses = getSelectedValues(document.getElementById("filterStatus"));
+
       const filtered = globalUsers.filter(user => {
-        const name = (user.fullName || `${user.givenName} ${user.familyName}`).toLowerCase();
-        const email = user.primaryEmail.toLowerCase();
-        const org = (user.orgUnitPath || '').toLowerCase();
-        const role = user.assignedRole.toLowerCase();
-        return name.includes(query) || email.includes(query) || org.includes(query) || role.includes(query);
+        const name = (user.fullName || `${user.givenName || ''} ${user.familyName || ''}`).toLowerCase();
+        const email = (user.primaryEmail || '').toLowerCase();
+        const org = user.orgUnitPath || '/';
+        const role = user.assignedRole || 'User';
+        const status = user.suspended ? 'Suspended' : 'Active';
+        const createdDate = user.creationTime ? new Date(user.creationTime).toLocaleDateString().toLowerCase() : '';
+
+        const matchesGlobal = !globalQuery || name.includes(globalQuery) || email.includes(globalQuery) || org.toLowerCase().includes(globalQuery) || role.toLowerCase().includes(globalQuery);
+        const matchesName = !filterName || name.includes(filterName);
+        const matchesEmail = !filterEmail || email.includes(filterEmail);
+        const matchesCreated = !filterCreated || createdDate.includes(filterCreated);
+
+        const matchesOU = selectedOUs.length === 0 || selectedOUs.includes(org);
+        const matchesRole = selectedRoles.length === 0 || selectedRoles.includes(role);
+        const matchesStatus = selectedStatuses.length === 0 || selectedStatuses.includes(status);
+
+        return matchesGlobal && matchesName && matchesEmail && matchesCreated && matchesOU && matchesRole && matchesStatus;
       });
+
       renderTable(filtered);
     }
 
