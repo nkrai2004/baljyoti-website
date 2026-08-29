@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Google Workspace User Permissions</title>
+  <title>Google Workspace User Permissions - Bal Jyoti Portal</title>
   
-  <!-- Tailwind CSS for standard portal header -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -19,7 +18,6 @@
     }
   </script>
 
-  <!-- Firebase Auth for Header Session Management -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
@@ -178,7 +176,6 @@
       border-color: #2563eb;
     }
 
-    /* Inline Header Column Filters */
     .col-filter-input, .col-filter-select {
       width: 100%;
       margin-top: 6px;
@@ -236,7 +233,6 @@
 </head>
 <body class="bg-slate-50 text-slate-800">
 
-  <!-- Common Header across all modules -->
   <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-30">
     <div class="flex items-center space-x-3">
       <img src="logo.png" alt="Bal Jyoti Logo" class="h-9 object-contain">
@@ -249,7 +245,6 @@
         ← Dashboard
       </a>
 
-      <!-- Manage Users Button -->
       <a id="rbacAdminBtn" href="user-permissions.html" class="inline-flex items-center space-x-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition shadow-sm">
         <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
@@ -290,7 +285,6 @@
         <table>
           <thead>
             <tr>
-              <!-- Column Header Filters -->
               <th style="width: 20%;">
                 <div>Full Name</div>
                 <input type="text" id="filterName" class="col-filter-input" placeholder="Filter Name..." oninput="filterUsers()">
@@ -301,20 +295,11 @@
               </th>
               <th style="width: 18%;">
                 <div>Organizational Unit</div>
-                <select id="filterOU" class="col-filter-select" multiple size="2" onchange="filterUsers()">
-                  <!-- Dynamically populated -->
-                </select>
+                <select id="filterOU" class="col-filter-select" multiple size="2" onchange="filterUsers()"></select>
               </th>
               <th style="width: 15%;">
                 <div>Assigned Role</div>
-                <select id="filterRole" class="col-filter-select" multiple size="2" onchange="filterUsers()">
-                  <option value="Super Admin">Super Admin</option>
-                  <option value="Admin">Admin</option>
-                  <option value="Teacher">Teacher</option>
-                  <option value="Student">Student</option>
-                  <option value="Staff">Staff</option>
-                  <option value="User">User</option>
-                </select>
+                <select id="filterRole" class="col-filter-select" multiple size="2" onchange="filterUsers()"></select>
               </th>
               <th style="width: 12%;">
                 <div>Status</div>
@@ -346,12 +331,17 @@
   </div>
 
   <script>
-    const SUPER_ADMIN = "info@baljyoti.com";
     const WORKSPACE_API_URL = "https://script.google.com/macros/s/AKfycbzkE6HJ9zsWXcjkZu0xbl1-db9vTx8CiSaIzkI0r7a5SCPrhS5a2TfsnmZ2otCdcaOTXQ/exec";
-    const ROLES = ["Super Admin", "Admin", "Teacher", "Student", "Staff"];
+    const DEFAULT_ROLES = ["Super Admin", "Admin", "Teacher", "Student", "Staff"];
     let globalUsers = [];
 
-    // Firebase Init for Navigation Header Status
+    // Retrieve roles dynamically from Define Roles setup (role-modules.html)
+    function getDefinedRoles() {
+      const stored = localStorage.getItem("portal_roles");
+      return stored ? JSON.parse(stored) : DEFAULT_ROLES;
+    }
+
+    // Firebase Init
     const firebaseConfig = {
       apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
       authDomain: "baljyoti-portal.firebaseapp.com",
@@ -383,8 +373,8 @@
       }
     }
 
+    // Fetch Google Workspace Users
     async function fetchDirectoryUsers() {
-      const tableBody = document.getElementById("userTableBody");
       const errorContainer = document.getElementById("errorContainer");
       const refreshBtn = document.getElementById("refreshBtn");
 
@@ -402,13 +392,17 @@
         if (data.status === "error") throw new Error(data.message);
 
         const localRoles = JSON.parse(localStorage.getItem("user_role_assignments") || "{}");
+        const availableRoles = getDefinedRoles();
 
-        globalUsers = (data.users || []).map(u => ({
-          ...u,
-          assignedRole: localRoles[u.primaryEmail] || (u.isAdmin ? "Super Admin" : "User")
-        }));
+        globalUsers = (data.users || []).map(u => {
+          const defaultRole = u.isAdmin ? "Super Admin" : (availableRoles[0] || "User");
+          return {
+            ...u,
+            assignedRole: localRoles[u.primaryEmail] || defaultRole
+          };
+        });
 
-        populateOUOptions(globalUsers);
+        populateFilterOptions(globalUsers);
         filterUsers();
         document.getElementById("lastUpdatedText").textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
 
@@ -421,13 +415,19 @@
       }
     }
 
-    function populateOUOptions(users) {
+    // Populate Filters Dynamically
+    function populateFilterOptions(users) {
       const ouSelect = document.getElementById("filterOU");
       const ous = Array.from(new Set(users.map(u => u.orgUnitPath || '/'))).sort();
-      
       ouSelect.innerHTML = ous.map(ou => `<option value="${escapeHtml(ou)}">${escapeHtml(ou)}</option>`).join('');
+
+      // Populate Role Filter using getDefinedRoles()
+      const roleSelect = document.getElementById("filterRole");
+      const roles = getDefinedRoles();
+      roleSelect.innerHTML = roles.map(role => `<option value="${escapeHtml(role)}">${escapeHtml(role)}</option>`).join('');
     }
 
+    // Render User Table Rows
     function renderTable(users) {
       const tableBody = document.getElementById("userTableBody");
       document.getElementById("userCountText").textContent = `Showing ${users.length} users`;
@@ -437,6 +437,9 @@
         return;
       }
 
+      // Fetch dynamic role choices from role-modules.html setup
+      const availableRoles = getDefinedRoles();
+
       tableBody.innerHTML = users.map(user => {
         const name = user.fullName || `${user.givenName || ''} ${user.familyName || ''}`.trim() || 'N/A';
         const statusBadge = user.suspended 
@@ -444,8 +447,9 @@
           : `<span class="badge badge-active">Active</span>`;
         const createdDate = user.creationTime ? new Date(user.creationTime).toLocaleDateString() : 'N/A';
 
-        const roleOptions = ROLES.map(role => 
-          `<option value="${role}" ${user.assignedRole === role ? 'selected' : ''}>${role}</option>`
+        // Dynamic Role Options
+        const roleOptions = availableRoles.map(role => 
+          `<option value="${escapeHtml(role)}" ${user.assignedRole === role ? 'selected' : ''}>${escapeHtml(role)}</option>`
         ).join('');
 
         return `
@@ -492,7 +496,7 @@
         const name = (user.fullName || `${user.givenName || ''} ${user.familyName || ''}`).toLowerCase();
         const email = (user.primaryEmail || '').toLowerCase();
         const org = user.orgUnitPath || '/';
-        const role = user.assignedRole || 'User';
+        const role = user.assignedRole || '';
         const status = user.suspended ? 'Suspended' : 'Active';
         const createdDate = user.creationTime ? new Date(user.creationTime).toLocaleDateString().toLowerCase() : '';
 
@@ -514,6 +518,14 @@
     function escapeHtml(str) {
       return String(str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
+
+    // Cross-tab real-time sync when roles are modified in role-modules.html
+    window.addEventListener("storage", (e) => {
+      if (e.key === "portal_roles") {
+        populateFilterOptions(globalUsers);
+        filterUsers();
+      }
+    });
 
     window.addEventListener("DOMContentLoaded", fetchDirectoryUsers);
   </script>
