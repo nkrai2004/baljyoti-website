@@ -1,4 +1,3 @@
-<!-- user-permissions.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -200,7 +199,8 @@
   <div class="container">
     <nav>
       <a href="user-permissions.html" class="active">User Permissions</a>
-      <a href="role-modules.html">Role-Module Mapping</a>
+      <a href="modules/role-modules.html">Role-Module Mapping</a>
+      <a href="modules/inbox.html">Inbox</a>
     </nav>
 
     <header>
@@ -244,7 +244,6 @@
 
   <script>
     const WORKSPACE_API_URL = "https://script.google.com/macros/s/AKfycbzkE6HJ9zsWXcjkZu0xbl1-db9vTx8CiSaIzkI0r7a5SCPrhS5a2TfsnmZ2otCdcaOTXQ/exec";
-    
     const ROLES = ["Super Admin", "Admin", "Teacher", "Student", "Staff"];
     let globalUsers = [];
 
@@ -266,7 +265,6 @@
 
         if (data.status === "error") throw new Error(data.message);
 
-        // Load saved roles from localStorage or fall back to default Google Admin status
         const localRoles = JSON.parse(localStorage.getItem("user_role_assignments") || "{}");
 
         globalUsers = (data.users || []).map(u => ({
@@ -330,8 +328,6 @@
 
       const targetUser = globalUsers.find(u => u.primaryEmail === email);
       if (targetUser) targetUser.assignedRole = newRole;
-
-      console.log(`Updated ${email} role to ${newRole}`);
     }
 
     function filterUsers() {
