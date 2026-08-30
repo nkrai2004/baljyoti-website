@@ -1,96 +1,335 @@
-const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbyOwoDE8W2PvjPdwejJYne4g2KxvpKrRFXXqUh_kvhAmflgN-hBlGnqockW76d-Tzdl/exec";
-
-let portalRoles = ["Super Admin", "Admin", "Teacher", "Student", "Staff"];
-let portalModules = ["User Directory", "Role-Module Mapping", "Inbox", "Student Attendance", "Exam & Marks", "Fee Management"];
-let portalMappings = {
-  "Super Admin": ["User Directory", "Role-Module Mapping", "Inbox", "Student Attendance", "Exam & Marks", "Fee Management"],
-  "Teacher": ["Inbox", "Student Attendance", "Exam & Marks"]
-};
-
-// Fetch real-time roles and mappings from Google Sheet
-async function syncFromGoogleSheet() {
-  if (typeof showLoadingState === "function") showLoadingState(true);
-  try {
-    const response = await fetch(GOOGLE_SHEET_API, { method: "GET", redirect: "follow" });
-    if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-
-    const data = await response.json();
-
-    if (Array.isArray(data.roles) && data.roles.length) portalRoles = data.roles;
-    if (Array.isArray(data.modules) && data.modules.length) portalModules = data.modules;
-    if (data.mappings && typeof data.mappings === "object") portalMappings = data.mappings;
-
-    localStorage.setItem("portal_roles", JSON.stringify(portalRoles));
-    localStorage.setItem("portal_modules", JSON.stringify(portalModules));
-    localStorage.setItem("portal_mappings", JSON.stringify(portalMappings));
-
-    if (typeof renderUI === "function") renderUI();
-  } catch (error) {
-    console.warn("Failed to fetch from Google Sheet, using cached storage:", error);
-    loadFromLocalStorage();
-    if (typeof renderUI === "function") renderUI();
-  } finally {
-    if (typeof showLoadingState === "function") showLoadingState(false);
-  }
-}
-
-// Push local changes to Google Sheet
-async function syncToGoogleSheet() {
-  if (typeof showSaveStatus === "function") showSaveStatus("Syncing with Google Sheet...");
-  
-  const payload = {
-    roles: portalRoles,
-    modules: portalModules,
-    mappings: portalMappings
-  };
-
-  localStorage.setItem("portal_roles", JSON.stringify(portalRoles));
-  localStorage.setItem("portal_modules", JSON.stringify(portalModules));
-  localStorage.setItem("portal_mappings", JSON.stringify(portalMappings));
-
-  try {
-    const response = await fetch(GOOGLE_SHEET_API, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload),
-      redirect: "follow"
-    });
-
-    const result = await response.json();
-    if (result.status === "success") {
-      if (typeof showSaveStatus === "function") showSaveStatus("Saved to Google Sheet successfully!");
-    } else {
-      throw new Error(result.message || "Execution failed");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Role & Module Configuration Setup - Bal Jyoti Educational Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' }
+          }
+        }
+      }
     }
-  } catch (error) {
-    console.error("Error saving to Google Sheet:", error);
-    if (typeof showSaveStatus === "function") showSaveStatus("Error syncing to Google Sheet.");
-  }
-}
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-function loadFromLocalStorage() {
-  try {
-    const r = localStorage.getItem("portal_roles");
-    const m = localStorage.getItem("portal_modules");
-    const map = localStorage.getItem("portal_mappings");
-    if (r) portalRoles = JSON.parse(r);
-    if (m) portalModules = JSON.parse(m);
-    if (map) portalMappings = JSON.parse(map);
-  } catch (e) {}
-}
+  <!-- Header Header Nav -->
+  <header class="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <span class="font-bold text-slate-900 text-lg flex items-center gap-2">
+        <span class="text-blue-600 font-extrabold text-xl">Bal Jyoti</span> Educational Portal
+      </span>
+    </div>
+    <div class="flex items-center space-x-3 text-sm">
+      <a href="../dashboard.html" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-medium text-xs">← Dashboard</a>
+      <a href="../user-permissions.html" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-md font-medium text-xs flex items-center gap-1">
+        <span>👤</span> Manage Users
+      </a>
+      <div id="userInfo" class="bg-slate-100 border border-slate-200 px-3 py-1 rounded-md text-xs font-semibold text-slate-700 flex items-center gap-2">
+        <span id="userEmailText">info@baljyoti.com</span>
+        <span id="userRoleBadge" class="bg-rose-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">SUPER_ADMIN</span>
+      </div>
+      <button onclick="window.location.href='../index.html'" class="text-xs text-slate-500 hover:text-slate-800 font-medium">Sign Out</button>
+    </div>
+  </header>
 
-function toggleMappingPermission(role, moduleName, isChecked) {
-  if (!portalMappings[role]) portalMappings[role] = [];
+  <!-- Navigation Tabs -->
+  <div class="bg-white border-b border-slate-200 px-8 py-2">
+    <div class="flex space-x-2 text-sm">
+      <a href="../user-permissions.html" class="px-4 py-2 text-slate-600 font-medium rounded-lg hover:bg-slate-50">User Permissions</a>
+      <a href="#" class="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg shadow-sm">Role-Module Mapping</a>
+      <a href="inbox.html" class="px-4 py-2 text-slate-600 font-medium rounded-lg hover:bg-slate-50">Inbox</a>
+    </div>
+  </div>
 
-  if (isChecked) {
-    if (!portalMappings[role].includes(moduleName)) {
-      portalMappings[role].push(moduleName);
+  <main class="max-w-7xl mx-auto px-6 py-8 w-full flex-1">
+    
+    <!-- Title & Sync Status Bar -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900">Role & Module Configuration Setup</h1>
+        <div id="syncStatus" class="text-xs text-slate-500 mt-1 flex items-center gap-2">
+          <span class="inline-block w-2 h-2 rounded-full bg-emerald-500" id="syncDot"></span>
+          <span id="syncText">Connected to Google Sheet</span>
+        </div>
+      </div>
+      <button onclick="resetToDefaults()" class="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-medium text-sm rounded-lg shadow-sm transition">
+        Reset to Defaults
+      </button>
+    </div>
+
+    <!-- Top Section: Define Roles and Define Modules -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      
+      <!-- 1. Define Roles -->
+      <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+        <h2 class="text-base font-bold text-slate-900 mb-4">1. Define Roles</h2>
+        <form onsubmit="handleAddRole(event)" class="flex gap-2 mb-4">
+          <input type="text" id="newRoleInput" placeholder="Enter new role (e.g. Accountant)" class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow-sm">Add Role</button>
+        </form>
+        <div id="rolesTagList" class="flex flex-wrap gap-2 min-h-[40px] items-center">
+          <!-- Role tags render here -->
+        </div>
+      </div>
+
+      <!-- 2. Define Modules -->
+      <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+        <h2 class="text-base font-bold text-slate-900 mb-4">2. Define Modules</h2>
+        <form onsubmit="handleAddModule(event)" class="flex gap-2 mb-4">
+          <input type="text" id="newModuleInput" placeholder="Enter new module (e.g. Fee Management)" class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow-sm">Add Module</button>
+        </form>
+        <div id="modulesTagList" class="flex flex-wrap gap-2 min-h-[40px] items-center">
+          <!-- Module tags render here -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 3. Role-Module Access Matrix -->
+    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+      <h2 class="text-base font-bold text-slate-900">3. Role-Module Access Matrix</h2>
+      <p class="text-xs text-slate-500 mt-1 mb-6">Check the boxes to allow specific roles to access each portal module.</p>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-50 border-y border-slate-200 text-xs font-semibold text-slate-700">
+              <th class="py-3 px-4 min-w-[180px]">Module Name</th>
+              <th id="matrixHeaderRoles" class="contents">
+                <!-- Role headers render here -->
+              </th>
+            </tr>
+          </thead>
+          <tbody id="matrixTableBody" class="divide-y divide-slate-200 text-sm">
+            <!-- Matrix rows render here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbyOwoDE8W2PvjPdwejJYne4g2KxvpKrRFXXqUh_kvhAmflgN-hBlGnqockW76d-Tzdl/exec";
+
+    let portalRoles = ["Super Admin", "Admin", "Teacher", "Student", "Staff"];
+    let portalModules = ["User Directory", "Role-Module Mapping", "Inbox", "Student Attendance", "Exam & Marks", "Fee Management"];
+    let portalMappings = {
+      "Super Admin": ["User Directory", "Role-Module Mapping", "Inbox", "Student Attendance", "Exam & Marks", "Fee Management"],
+      "Teacher": ["Inbox", "Student Attendance", "Exam & Marks"]
+    };
+
+    function showSaveStatus(text, isError = false) {
+      const statusText = document.getElementById("syncText");
+      const statusDot = document.getElementById("syncDot");
+      if (statusText) statusText.innerText = text;
+      if (statusDot) {
+        statusDot.className = `inline-block w-2 h-2 rounded-full ${isError ? 'bg-rose-500' : 'bg-emerald-500'}`;
+      }
     }
-  } else {
-    portalMappings[role] = portalMappings[role].filter(m => m !== moduleName);
-  }
 
-  syncToGoogleSheet();
-}
+    function saveToLocalStorage() {
+      try {
+        localStorage.setItem("portal_roles", JSON.stringify(portalRoles));
+        localStorage.setItem("portal_modules", JSON.stringify(portalModules));
+        localStorage.setItem("portal_mappings", JSON.stringify(portalMappings));
+      } catch (e) {}
+    }
 
-document.addEventListener("DOMContentLoaded", syncFromGoogleSheet);
+    function loadFromLocalStorage() {
+      try {
+        const r = localStorage.getItem("portal_roles");
+        const m = localStorage.getItem("portal_modules");
+        const map = localStorage.getItem("portal_mappings");
+        if (r) portalRoles = JSON.parse(r);
+        if (m) portalModules = JSON.parse(m);
+        if (map) portalMappings = JSON.parse(map);
+      } catch (e) {}
+    }
+
+    async function syncFromGoogleSheet() {
+      showSaveStatus("Syncing from Google Sheet...");
+      try {
+        const response = await fetch(GOOGLE_SHEET_API, { method: "GET", redirect: "follow" });
+        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+
+        const data = await response.json();
+
+        if (Array.isArray(data.roles) && data.roles.length) portalRoles = data.roles;
+        if (Array.isArray(data.modules) && data.modules.length) portalModules = data.modules;
+        if (data.mappings && typeof data.mappings === "object") portalMappings = data.mappings;
+
+        saveToLocalStorage();
+        showSaveStatus("Connected to Google Sheet");
+      } catch (error) {
+        console.warn("Failed to sync from Google Sheet, using local cache:", error);
+        loadFromLocalStorage();
+        showSaveStatus("Offline (Using Cached Storage)", true);
+      } finally {
+        renderUI();
+      }
+    }
+
+    async function syncToGoogleSheet() {
+      showSaveStatus("Saving changes to Google Sheet...");
+      saveToLocalStorage();
+
+      const payload = {
+        roles: portalRoles,
+        modules: portalModules,
+        mappings: portalMappings
+      };
+
+      try {
+        // Mode 'no-cors' safely posts payload without failing on GAS 302 redirect handling
+        await fetch(GOOGLE_SHEET_API, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        showSaveStatus("Saved to Google Sheet successfully!");
+      } catch (error) {
+        console.error("Error saving to Google Sheet:", error);
+        showSaveStatus("Error syncing to Google Sheet.", true);
+      }
+    }
+
+    function handleAddRole(e) {
+      e.preventDefault();
+      const input = document.getElementById("newRoleInput");
+      const val = input.value.trim();
+      if (val && !portalRoles.includes(val)) {
+        portalRoles.push(val);
+        if (!portalMappings[val]) portalMappings[val] = [];
+        input.value = "";
+        renderUI();
+        syncToGoogleSheet();
+      }
+    }
+
+    function handleRemoveRole(role) {
+      portalRoles = portalRoles.filter(r => r !== role);
+      delete portalMappings[role];
+      renderUI();
+      syncToGoogleSheet();
+    }
+
+    function handleAddModule(e) {
+      e.preventDefault();
+      const input = document.getElementById("newModuleInput");
+      const val = input.value.trim();
+      if (val && !portalModules.includes(val)) {
+        portalModules.push(val);
+        input.value = "";
+        renderUI();
+        syncToGoogleSheet();
+      }
+    }
+
+    function handleRemoveModule(mod) {
+      portalModules = portalModules.filter(m => m !== mod);
+      Object.keys(portalMappings).forEach(role => {
+        portalMappings[role] = portalMappings[role].filter(m => m !== mod);
+      });
+      renderUI();
+      syncToGoogleSheet();
+    }
+
+    function toggleMappingPermission(role, moduleName, isChecked) {
+      if (!portalMappings[role]) portalMappings[role] = [];
+
+      if (isChecked) {
+        if (!portalMappings[role].includes(moduleName)) {
+          portalMappings[role].push(moduleName);
+        }
+      } else {
+        portalMappings[role] = portalMappings[role].filter(m => m !== moduleName);
+      }
+
+      syncToGoogleSheet();
+    }
+
+    function resetToDefaults() {
+      if (confirm("Reset all roles, modules, and access mappings to default values?")) {
+        portalRoles = ["Super Admin", "Admin", "Teacher", "Student", "Staff"];
+        portalModules = ["User Directory", "Role-Module Mapping", "Inbox", "Student Attendance", "Exam & Marks", "Fee Management"];
+        portalMappings = {
+          "Super Admin": ["User Directory", "Role-Module Mapping", "Inbox", "Student Attendance", "Exam & Marks", "Fee Management"],
+          "Teacher": ["Inbox", "Student Attendance", "Exam & Marks"]
+        };
+        renderUI();
+        syncToGoogleSheet();
+      }
+    }
+
+    function renderUI() {
+      // 1. Render Roles Tags
+      const rolesTagList = document.getElementById("rolesTagList");
+      rolesTagList.innerHTML = portalRoles.map(role => `
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold rounded-full">
+          ${escapeHtml(role)}
+          <button onclick="handleRemoveRole('${escapeJs(role)}')" class="text-slate-400 hover:text-rose-600 font-bold ml-0.5">×</button>
+        </span>
+      `).join('');
+
+      // 2. Render Modules Tags
+      const modulesTagList = document.getElementById("modulesTagList");
+      modulesTagList.innerHTML = portalModules.map(mod => `
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold rounded-full">
+          ${escapeHtml(mod)}
+          <button onclick="handleRemoveModule('${escapeJs(mod)}')" class="text-slate-400 hover:text-rose-600 font-bold ml-0.5">×</button>
+        </span>
+      `).join('');
+
+      // 3. Render Matrix Headers
+      const matrixHeaderRoles = document.getElementById("matrixHeaderRoles");
+      matrixHeaderRoles.innerHTML = portalRoles.map(role => `
+        <th class="py-3 px-4 text-center">${escapeHtml(role)}</th>
+      `).join('');
+
+      // 4. Render Matrix Rows
+      const matrixTableBody = document.getElementById("matrixTableBody");
+      matrixTableBody.innerHTML = portalModules.map(mod => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="py-3 px-4 font-semibold text-slate-800 text-xs">${escapeHtml(mod)}</td>
+          ${portalRoles.map(role => {
+            const isChecked = (portalMappings[role] || []).includes(mod);
+            return `
+              <td class="py-3 px-4 text-center">
+                <input type="checkbox" 
+                  ${isChecked ? 'checked' : ''} 
+                  onchange="toggleMappingPermission('${escapeJs(role)}', '${escapeJs(mod)}', this.checked)"
+                  class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer">
+              </td>
+            `;
+          }).join('')}
+        </tr>
+      `).join('');
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function escapeJs(str) {
+      return String(str || '').replace(/'/g, "\\'");
+    }
+
+    document.addEventListener("DOMContentLoaded", syncFromGoogleSheet);
+  </script>
+</body>
+</html>
