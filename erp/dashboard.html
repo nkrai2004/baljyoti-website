@@ -39,7 +39,7 @@
         <p class="text-sm text-slate-500 mt-1">Select an accessible module below based on your assigned role permissions.</p>
       </div>
       <div id="roleInfoBanner" class="text-xs bg-slate-100 border border-slate-200 px-4 py-2 rounded-lg text-slate-600">
-        Assigned Role: <strong id="assignedRoleText" class="text-slate-900">Loading...</strong>
+        Assigned Role: <strong id="assignedRoleText" class="text-slate-900">Teacher</strong>
       </div>
     </div>
 
@@ -80,7 +80,7 @@
       "Fee Management": {
         description: "Track fee payments, generate receipts, and manage outstanding balances.",
         url: "modules/fees.html",
-        icon: `<svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>`
+        icon: `<svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 00-2 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>`
       }
     };
 
@@ -89,23 +89,25 @@
     }
 
     function getActiveUserEmail() {
-      if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.email) {
-        return firebase.auth().currentUser.email;
-      }
+      try {
+        if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.email) {
+          return firebase.auth().currentUser.email;
+        }
+      } catch (e) {}
 
       const sessionKeys = ["currentUserEmail", "userEmail", "loggedInUser", "user", "email"];
       for (const key of sessionKeys) {
-        const val = sessionStorage.getItem(key) || localStorage.getItem(key);
-        if (val) {
-          if (val.startsWith("{")) {
-            try {
+        try {
+          const val = sessionStorage.getItem(key) || localStorage.getItem(key);
+          if (val) {
+            if (val.startsWith("{")) {
               const parsed = JSON.parse(val);
               if (parsed.email) return parsed.email;
-            } catch(e) {}
-          } else if (val.includes("@")) {
-            return val;
+            } else if (val.includes("@")) {
+              return val;
+            }
           }
-        }
+        } catch (e) {}
       }
 
       return "guest@baljyoti.com";
@@ -174,6 +176,7 @@
     function populateDashboardModules() {
       const grid = document.getElementById("modulesGrid");
       const assignedRoleText = document.getElementById("assignedRoleText");
+      if (!grid) return;
 
       const currentUserEmail = getActiveUserEmail();
       const isSuperAdminEmail = cleanStr(currentUserEmail) === "info@baljyoti.com";
@@ -182,7 +185,11 @@
       if (assignedRoleText) assignedRoleText.innerText = assignedRole;
 
       const fullRegistry = getFullModuleRegistry();
-      const portalMappings = JSON.parse(localStorage.getItem("portal_mappings") || "{}");
+      let portalMappings = {};
+      try {
+        portalMappings = JSON.parse(localStorage.getItem("portal_mappings") || "{}");
+      } catch (e) {}
+
       let allowedModules = portalMappings[assignedRole];
 
       if (!allowedModules || !Array.isArray(allowedModules)) {
@@ -191,7 +198,7 @@
         } else if (assignedRole === "Teacher") {
           allowedModules = ["Inbox", "Student Attendance", "Exam & Marks"];
         } else {
-          allowedModules = [];
+          allowedModules = ["Inbox", "Student Attendance", "Exam & Marks"];
         }
       }
 
@@ -244,13 +251,39 @@
       return String(str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
-    window.addEventListener("storage", () => {
-      populateDashboardModules();
-    });
+    // Execute immediately
+    populateDashboardModules();
 
-    window.addEventListener("DOMContentLoaded", () => {
-      populateDashboardModules();
-    });
+    // Re-run on lifecycle events
+    window.addEventListener("DOMContentLoaded", populateDashboardModules);
+    window.addEventListener("pageshow", populateDashboardModules);
+    window.addEventListener("storage", populateDashboardModules);
+
+    // Safe Firebase authentication listener
+    try {
+      const firebaseConfig = {
+        apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
+        authDomain: "baljyoti-portal.firebaseapp.com",
+        projectId: "baljyoti-portal",
+        storageBucket: "baljyoti-portal.firebasestorage.app",
+        messagingSenderId: "420727507952",
+        appId: "1:420727507952:web:de5bdbb73521b9fae4eb35"
+      };
+
+      if (typeof firebase !== 'undefined') {
+        if (!firebase.apps.length) {
+          firebase.initializeApp(firebaseConfig);
+        }
+        firebase.auth().onAuthStateChanged(() => {
+          if (typeof window.updateAuthHeader === "function") {
+            window.updateAuthHeader();
+          }
+          populateDashboardModules();
+        });
+      }
+    } catch (e) {
+      console.warn("Firebase fallback mode activated", e);
+    }
   </script>
 </body>
 </html>
