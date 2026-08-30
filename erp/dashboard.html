@@ -1,289 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - Bal Jyoti Portal</title>
+const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbyXec4u_xSbh1WaejMGW9eO8P7o8pwuB1FFKXNIcjKuzlxDH8gqhoCe8XW_St2eoIT9/exec";
+
+async function getLiveRoleMappings() {
+  try {
+    const res = await fetch(GOOGLE_SHEET_API);
+    const data = await res.json();
+    if (data.mappings) {
+      localStorage.setItem("portal_mappings", JSON.stringify(data.mappings));
+      return data.mappings;
+    }
+  } catch (e) {
+    console.warn("Using cached role mappings");
+  }
   
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: { 50: '#fef2f2', 100: '#ffe1e1', 500: '#ef4444', 600: '#dc2626', 700: '#b91c1c', 800: '#991b1b' }
-          }
-        }
-      }
-    }
-  </script>
+  return JSON.parse(localStorage.getItem("portal_mappings") || "{}");
+}
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+async function populateDashboardModules() {
+  const grid = document.getElementById("modulesGrid");
+  const assignedRoleText = document.getElementById("assignedRoleText");
+  if (!grid) return;
 
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-  </style>
-</head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+  const currentUserEmail = getActiveUserEmail();
+  const isSuperAdminEmail = cleanStr(currentUserEmail) === "info@baljyoti.com";
+  const assignedRole = getResolvedUserRole(currentUserEmail);
 
-  <div id="portalHeaderContainer"></div>
+  if (assignedRoleText) assignedRoleText.innerText = assignedRole;
 
-  <main class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full">
-    <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-slate-900">Module Dashboard</h1>
-        <p class="text-sm text-slate-500 mt-1">Select an accessible module below based on your assigned role permissions.</p>
-      </div>
-      <div id="roleInfoBanner" class="text-xs bg-slate-100 border border-slate-200 px-4 py-2 rounded-lg text-slate-600">
-        Assigned Role: <strong id="assignedRoleText" class="text-slate-900">Teacher</strong>
-      </div>
-    </div>
+  const fullRegistry = getFullModuleRegistry();
+  const portalMappings = await getLiveRoleMappings();
+  
+  let allowedModules = portalMappings[assignedRole];
 
-    <div id="modulesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div class="col-span-full text-center py-12 text-slate-400">Loading authorized modules...</div>
-    </div>
-  </main>
+  if (!allowedModules || !Array.isArray(allowedModules)) {
+    allowedModules = (assignedRole === "Super Admin") ? Object.keys(fullRegistry) : ["Inbox", "Student Attendance", "Exam & Marks"];
+  }
 
-  <script src="header.js"></script>
+  if (!isSuperAdminEmail) {
+    allowedModules = allowedModules.filter(mod => cleanStr(mod) !== "user directory");
+  }
 
-  <script>
-    const BASE_MODULE_REGISTRY = {
-      "User Directory": {
-        description: "Manage system user accounts, directory synchronization, and user privileges.",
-        url: "user-permissions.html",
-        icon: `<svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`
-      },
-      "Role-Module Mapping": {
-        description: "Configure dynamic roles, module items, and cross-system permission access matrices.",
-        url: "modules/role-modules.html",
-        icon: `<svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>`
-      },
-      "Inbox": {
-        description: "Access system notifications, inter-departmental communications, and user queries.",
-        url: "modules/inbox.html",
-        icon: `<svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>`
-      },
-      "Student Attendance": {
-        description: "Record, monitor, and generate daily and monthly student attendance records.",
-        url: "modules/attendance.html",
-        icon: `<svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>`
-      },
-      "Exam & Marks": {
-        description: "Input student grades, publish report cards, and analyze class academic results.",
-        url: "modules/exam.html",
-        icon: `<svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>`
-      },
-      "Fee Management": {
-        description: "Track fee payments, generate receipts, and manage outstanding balances.",
-        url: "modules/fees.html",
-        icon: `<svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 00-2 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>`
-      }
-    };
-
-    function cleanStr(s) {
-      return String(s || "").toLowerCase().trim();
-    }
-
-    function getActiveUserEmail() {
-      try {
-        if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.email) {
-          return firebase.auth().currentUser.email;
-        }
-      } catch (e) {}
-
-      const sessionKeys = ["currentUserEmail", "userEmail", "loggedInUser", "user", "email"];
-      for (const key of sessionKeys) {
-        try {
-          const val = sessionStorage.getItem(key) || localStorage.getItem(key);
-          if (val) {
-            if (val.startsWith("{")) {
-              const parsed = JSON.parse(val);
-              if (parsed.email) return parsed.email;
-            } else if (val.includes("@")) {
-              return val;
-            }
-          }
-        } catch (e) {}
-      }
-
-      return "guest@baljyoti.com";
-    }
-
-    function getResolvedUserRole(email) {
-      const target = cleanStr(email);
-      if (!target || target === "guest@baljyoti.com") return "Teacher";
-      if (target === "info@baljyoti.com") return "Super Admin";
-
-      const storageKeys = ["user_role_assignments", "user_roles", "users", "portal_users", "directory_users", "rbac_users"];
-
-      for (const key of storageKeys) {
-        try {
-          const raw = localStorage.getItem(key);
-          if (!raw) continue;
-          const parsed = JSON.parse(raw);
-
-          if (typeof parsed === "object" && !Array.isArray(parsed)) {
-            for (const [k, v] of Object.entries(parsed)) {
-              if (cleanStr(k) === target && v) return String(v);
-            }
-          }
-
-          if (Array.isArray(parsed)) {
-            const found = parsed.find(u => cleanStr(u.email || u.primaryEmail || u.userEmail) === target);
-            if (found && (found.role || found.assignedRole || found.userRole)) {
-              return String(found.role || found.assignedRole || found.userRole);
-            }
-          }
-        } catch (e) {}
-      }
-
-      return "Teacher";
-    }
-
-    function getFullModuleRegistry() {
-      const registry = { ...BASE_MODULE_REGISTRY };
-
-      const customKeys = ["portal_modules", "system_modules", "all_modules"];
-      for (const key of customKeys) {
-        try {
-          const raw = localStorage.getItem(key);
-          if (!raw) continue;
-          const list = JSON.parse(raw);
-
-          if (Array.isArray(list)) {
-            list.forEach(mod => {
-              const modName = typeof mod === "string" ? mod : (mod.name || mod.title);
-              if (modName && !registry[modName]) {
-                const slug = modName.toLowerCase().replace(/[^a-z0-9]/g, '-');
-                registry[modName] = {
-                  description: (typeof mod === "object" && mod.description) ? mod.description : `Access and manage operations for ${modName}.`,
-                  url: (typeof mod === "object" && mod.url) ? mod.url : `modules/${slug}.html`,
-                  icon: `<svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>`
-                };
-              }
-            });
-          }
-        } catch (e) {}
-      }
-
-      return registry;
-    }
-
-    function populateDashboardModules() {
-      const grid = document.getElementById("modulesGrid");
-      const assignedRoleText = document.getElementById("assignedRoleText");
-      if (!grid) return;
-
-      const currentUserEmail = getActiveUserEmail();
-      const isSuperAdminEmail = cleanStr(currentUserEmail) === "info@baljyoti.com";
-      const assignedRole = getResolvedUserRole(currentUserEmail);
-
-      if (assignedRoleText) assignedRoleText.innerText = assignedRole;
-
-      const fullRegistry = getFullModuleRegistry();
-      let portalMappings = {};
-      try {
-        portalMappings = JSON.parse(localStorage.getItem("portal_mappings") || "{}");
-      } catch (e) {}
-
-      let allowedModules = portalMappings[assignedRole];
-
-      if (!allowedModules || !Array.isArray(allowedModules)) {
-        if (assignedRole === "Super Admin") {
-          allowedModules = Object.keys(fullRegistry);
-        } else if (assignedRole === "Teacher") {
-          allowedModules = ["Inbox", "Student Attendance", "Exam & Marks"];
-        } else {
-          allowedModules = ["Inbox", "Student Attendance", "Exam & Marks"];
-        }
-      }
-
-      if (!isSuperAdminEmail) {
-        allowedModules = allowedModules.filter(mod => cleanStr(mod) !== "user directory");
-      }
-
-      if (allowedModules.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full bg-white border border-slate-200 rounded-xl p-8 text-center shadow-sm">
-            <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-            </div>
-            <h3 class="text-base font-bold text-slate-900">No Authorized Modules Found</h3>
-            <p class="text-slate-500 text-xs mt-1">Logged in as <strong>${escapeHtml(currentUserEmail)}</strong> (${escapeHtml(assignedRole)}). No modules are assigned to this account.</p>
-          </div>`;
-        return;
-      }
-
-      grid.innerHTML = allowedModules.map(moduleName => {
-        const slug = moduleName.toLowerCase().replace(/[^a-z0-9]/g, '-');
-        const meta = fullRegistry[moduleName] || {
-          description: `Access and manage operations for ${moduleName}.`,
-          url: `modules/${slug}.html`,
-          icon: `<svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>`
-        };
-
-        return `
-          <a href="${meta.url}" class="group bg-white border border-slate-200 hover:border-blue-500 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <div class="p-3 rounded-lg bg-slate-50 group-hover:bg-blue-50 transition">
-                  ${meta.icon}
-                </div>
-                <span class="text-xs font-semibold text-slate-400 group-hover:text-blue-600 transition">Access →</span>
-              </div>
-              <h3 class="text-base font-bold text-slate-900 group-hover:text-blue-600 transition mb-2">${escapeHtml(moduleName)}</h3>
-              <p class="text-xs text-slate-500 leading-relaxed">${escapeHtml(meta.description)}</p>
-            </div>
-            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
-              <span class="text-[11px] font-medium text-slate-400">Active Module</span>
-              <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
-            </div>
-          </a>
-        `;
-      }).join('');
-    }
-
-    function escapeHtml(str) {
-      return String(str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    }
-
-    // Execute immediately
-    populateDashboardModules();
-
-    // Re-run on lifecycle events
-    window.addEventListener("DOMContentLoaded", populateDashboardModules);
-    window.addEventListener("pageshow", populateDashboardModules);
-    window.addEventListener("storage", populateDashboardModules);
-
-    // Safe Firebase authentication listener
-    try {
-      const firebaseConfig = {
-        apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
-        authDomain: "baljyoti-portal.firebaseapp.com",
-        projectId: "baljyoti-portal",
-        storageBucket: "baljyoti-portal.firebasestorage.app",
-        messagingSenderId: "420727507952",
-        appId: "1:420727507952:web:de5bdbb73521b9fae4eb35"
-      };
-
-      if (typeof firebase !== 'undefined') {
-        if (!firebase.apps.length) {
-          firebase.initializeApp(firebaseConfig);
-        }
-        firebase.auth().onAuthStateChanged(() => {
-          if (typeof window.updateAuthHeader === "function") {
-            window.updateAuthHeader();
-          }
-          populateDashboardModules();
-        });
-      }
-    } catch (e) {
-      console.warn("Firebase fallback mode activated", e);
-    }
-  </script>
-</body>
-</html>
+  renderModuleGrid(allowedModules, fullRegistry, currentUserEmail, assignedRole);
+}
