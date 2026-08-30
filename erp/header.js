@@ -21,8 +21,8 @@
       </a>
 
       <div class="flex items-center space-x-2 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg">
-        <span id="headerUserBadge" class="text-xs font-mono font-bold text-slate-700">Loading...</span>
-        <span id="headerRoleBadge" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200">GUEST</span>
+        <span id="headerUserBadge" class="text-xs font-mono font-bold text-slate-700">Guest</span>
+        <span id="headerRoleBadge" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200">TEACHER</span>
       </div>
 
       <button onclick="globalLogout()" class="text-xs font-bold text-slate-500 hover:text-red-600 px-2 py-1.5 transition">
@@ -36,25 +36,26 @@
     return String(s || "").toLowerCase().trim();
   }
 
-  // Detect logged-in email across Firebase, Session Storage, and Local Storage
   function getActiveUserEmail() {
-    if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.email) {
-      return firebase.auth().currentUser.email;
-    }
+    try {
+      if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.email) {
+        return firebase.auth().currentUser.email;
+      }
+    } catch (e) {}
 
     const sessionKeys = ["currentUserEmail", "userEmail", "loggedInUser", "user", "email"];
     for (const key of sessionKeys) {
-      const val = sessionStorage.getItem(key) || localStorage.getItem(key);
-      if (val) {
-        if (val.startsWith("{")) {
-          try {
+      try {
+        const val = sessionStorage.getItem(key) || localStorage.getItem(key);
+        if (val) {
+          if (val.startsWith("{")) {
             const parsed = JSON.parse(val);
             if (parsed.email) return parsed.email;
-          } catch(e) {}
-        } else if (val.includes("@")) {
-          return val;
+          } else if (val.includes("@")) {
+            return val;
+          }
         }
-      }
+      } catch (e) {}
     }
 
     return "guest@baljyoti.com";
@@ -88,17 +89,6 @@
     return "Teacher";
   }
 
-  function injectHeader() {
-    let container = document.getElementById("portalHeaderContainer");
-    if (!container) {
-      container = document.createElement("div");
-      container.id = "portalHeaderContainer";
-      document.body.prepend(container);
-    }
-    container.innerHTML = headerTemplate;
-    updateAuthHeader();
-  }
-
   function updateAuthHeader() {
     const currentEmail = getActiveUserEmail();
     const userBadge = document.getElementById("headerUserBadge");
@@ -119,13 +109,30 @@
     }
   }
 
+  function injectHeader() {
+    let container = document.getElementById("portalHeaderContainer");
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "portalHeaderContainer";
+      document.body.prepend(container);
+    }
+    container.innerHTML = headerTemplate;
+    updateAuthHeader();
+  }
+
   window.globalLogout = function () {
-    sessionStorage.clear();
-    if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
-      firebase.auth().signOut().then(() => {
+    try {
+      sessionStorage.clear();
+      if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
+        firebase.auth().signOut().then(() => {
+          window.location.href = basePath + "index.html";
+        }).catch(() => {
+          window.location.href = basePath + "index.html";
+        });
+      } else {
         window.location.href = basePath + "index.html";
-      });
-    } else {
+      }
+    } catch (e) {
       window.location.href = basePath + "index.html";
     }
   };
@@ -136,15 +143,19 @@
     injectHeader();
   }
 
-  if (typeof firebase !== 'undefined' && firebase.auth) {
-    firebase.auth().onAuthStateChanged(() => {
-      updateAuthHeader();
-    });
-  }
+  try {
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      firebase.auth().onAuthStateChanged(() => {
+        updateAuthHeader();
+      });
+    }
+  } catch (e) {}
 
   window.addEventListener("storage", (e) => {
     if (["user_role_assignments", "user_roles", "users", "currentUserEmail"].includes(e.key)) {
       updateAuthHeader();
     }
   });
+
+  window.updateAuthHeader = updateAuthHeader;
 })();
