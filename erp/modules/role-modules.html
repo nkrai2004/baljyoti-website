@@ -1,4 +1,4 @@
-const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbyXec4u_xSbh1WaejMGW9eO8P7o8pwuB1FFKXNIcjKuzlxDH8gqhoCe8XW_St2eoIT9/exec";
+const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbyOwoDE8W2PvjPdwejJYne4g2KxvpKrRFXXqUh_kvhAmflgN-hBlGnqockW76d-Tzdl/exec";
 
 let portalRoles = ["Super Admin", "Admin", "Teacher", "Student", "Staff"];
 let portalModules = ["User Directory", "Role-Module Mapping", "Inbox", "Student Attendance", "Exam & Marks", "Fee Management"];
@@ -7,59 +7,64 @@ let portalMappings = {
   "Teacher": ["Inbox", "Student Attendance", "Exam & Marks"]
 };
 
-// 1. Fetch live configuration from Google Sheet on page load
+// Fetch real-time roles and mappings from Google Sheet
 async function syncFromGoogleSheet() {
-  showLoadingState(true);
+  if (typeof showLoadingState === "function") showLoadingState(true);
   try {
-    const response = await fetch(GOOGLE_SHEET_API);
+    const response = await fetch(GOOGLE_SHEET_API, { method: "GET", redirect: "follow" });
+    if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+
     const data = await response.json();
 
-    if (data.roles && data.roles.length) portalRoles = data.roles;
-    if (data.modules && data.modules.length) portalModules = data.modules;
-    if (data.mappings) portalMappings = data.mappings;
+    if (Array.isArray(data.roles) && data.roles.length) portalRoles = data.roles;
+    if (Array.isArray(data.modules) && data.modules.length) portalModules = data.modules;
+    if (data.mappings && typeof data.mappings === "object") portalMappings = data.mappings;
 
-    // Cache to localStorage for instant offline fallback
     localStorage.setItem("portal_roles", JSON.stringify(portalRoles));
     localStorage.setItem("portal_modules", JSON.stringify(portalModules));
     localStorage.setItem("portal_mappings", JSON.stringify(portalMappings));
 
-    renderUI();
+    if (typeof renderUI === "function") renderUI();
   } catch (error) {
-    console.warn("Failed to fetch from Google Sheet, loading cached local data:", error);
+    console.warn("Failed to fetch from Google Sheet, using cached storage:", error);
     loadFromLocalStorage();
-    renderUI();
+    if (typeof renderUI === "function") renderUI();
   } finally {
-    showLoadingState(false);
+    if (typeof showLoadingState === "function") showLoadingState(false);
   }
 }
 
-// 2. Save current state to Google Sheet
+// Push local changes to Google Sheet
 async function syncToGoogleSheet() {
-  showSaveStatus("Syncing with Google Sheet...");
+  if (typeof showSaveStatus === "function") showSaveStatus("Syncing with Google Sheet...");
+  
   const payload = {
     roles: portalRoles,
     modules: portalModules,
     mappings: portalMappings
   };
 
-  try {
-    // Update local cache immediately
-    localStorage.setItem("portal_roles", JSON.stringify(portalRoles));
-    localStorage.setItem("portal_modules", JSON.stringify(portalModules));
-    localStorage.setItem("portal_mappings", JSON.stringify(portalMappings));
+  localStorage.setItem("portal_roles", JSON.stringify(portalRoles));
+  localStorage.setItem("portal_modules", JSON.stringify(portalModules));
+  localStorage.setItem("portal_mappings", JSON.stringify(portalMappings));
 
-    // Post data to Google Apps Script Web App
-    await fetch(GOOGLE_SHEET_API, {
+  try {
+    const response = await fetch(GOOGLE_SHEET_API, {
       method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+      redirect: "follow"
     });
 
-    showSaveStatus("Saved to Google Sheet successfully!");
+    const result = await response.json();
+    if (result.status === "success") {
+      if (typeof showSaveStatus === "function") showSaveStatus("Saved to Google Sheet successfully!");
+    } else {
+      throw new Error(result.message || "Execution failed");
+    }
   } catch (error) {
     console.error("Error saving to Google Sheet:", error);
-    showSaveStatus("Error syncing to Google Sheet.");
+    if (typeof showSaveStatus === "function") showSaveStatus("Error syncing to Google Sheet.");
   }
 }
 
@@ -76,7 +81,7 @@ function loadFromLocalStorage() {
 
 function toggleMappingPermission(role, moduleName, isChecked) {
   if (!portalMappings[role]) portalMappings[role] = [];
-  
+
   if (isChecked) {
     if (!portalMappings[role].includes(moduleName)) {
       portalMappings[role].push(moduleName);
@@ -84,8 +89,7 @@ function toggleMappingPermission(role, moduleName, isChecked) {
   } else {
     portalMappings[role] = portalMappings[role].filter(m => m !== moduleName);
   }
-  
-  // Auto-sync changes live to Google Sheet
+
   syncToGoogleSheet();
 }
 
