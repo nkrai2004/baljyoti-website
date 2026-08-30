@@ -11,7 +11,7 @@
       theme: {
         extend: {
           colors: {
-            brand: { 50: '#fef2f2', 100: '#ffe1e1', 500: '#ef4444', 600: '#dc2626', 700: '#b91c1c', 800: '#991b1b' }
+            brand: { 50: '#fef2f2', 100: '#ffe1e1', 500: '#ef4444', 600: '#dc2626', 700: '#b91c1c' }
           }
         }
       }
@@ -23,9 +23,7 @@
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
+    body { font-family: 'Inter', sans-serif; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
@@ -44,7 +42,10 @@
     </div>
 
     <div id="modulesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div class="col-span-full text-center py-12 text-slate-400">Loading authorized modules...</div>
+      <div class="col-span-full py-12 text-center text-slate-500 text-sm">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
+        <p>Fetching authorized modules directly from Google Sheet...</p>
+      </div>
     </div>
   </main>
 
@@ -59,12 +60,4 @@
         url: "user-permissions.html",
         icon: `<svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`
       },
-      "Role-Module Mapping": {
-        description: "Configure dynamic roles, module items, and cross-system permission access matrices.",
-        url: "modules/role-modules.html",
-        icon: `<svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>`
-      },
-      "Inbox": {
-        description: "Access system notifications, inter-departmental communications, and user queries.",
-        url: "modules/inbox.html",
-        icon: `<svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-
+      "
