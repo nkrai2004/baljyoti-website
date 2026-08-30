@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - Bal Jyoti Portal</title>
   
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -19,7 +18,6 @@
     }
   </script>
 
-  <!-- Firebase Auth for Session Management -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
@@ -32,35 +30,8 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-  <!-- Header Navigation -->
-  <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-30">
-    <div class="flex items-center space-x-3">
-      <img src="logo.png" alt="Bal Jyoti Logo" class="h-9 object-contain" onerror="this.style.display='none'">
-      <span class="text-slate-300">|</span>
-      <h1 class="text-base font-bold text-slate-900">Bal Jyoti Educational Portal</h1>
-    </div>
+  <div id="portalHeaderContainer"></div>
 
-    <div class="flex items-center space-x-3">
-      <!-- Hidden by default; visible ONLY to info@baljyoti.com -->
-      <a id="rbacAdminBtn" href="user-permissions.html" style="display: none;" class="items-center space-x-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition shadow-sm">
-        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-        </svg>
-        <span>Manage Users</span>
-      </a>
-
-      <div class="flex items-center space-x-2 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg">
-        <span id="userBadge" class="text-xs font-mono font-bold text-slate-700">Loading...</span>
-        <span id="roleBadge" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200">GUEST</span>
-      </div>
-
-      <button onclick="logout()" class="text-xs font-bold text-slate-500 hover:text-red-600 px-2 py-1.5 transition">
-        Sign Out
-      </button>
-    </div>
-  </header>
-
-  <!-- Main Content -->
   <main class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full">
     <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
@@ -72,14 +43,14 @@
       </div>
     </div>
 
-    <!-- Dynamic Modules Grid -->
     <div id="modulesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       <div class="col-span-full text-center py-12 text-slate-400">Loading authorized modules...</div>
     </div>
   </main>
 
+  <script src="header.js"></script>
+
   <script>
-    // Standard Base Modules
     const BASE_MODULE_REGISTRY = {
       "User Directory": {
         description: "Manage system user accounts, directory synchronization, and user privileges.",
@@ -109,26 +80,43 @@
       "Fee Management": {
         description: "Track fee payments, generate receipts, and manage outstanding balances.",
         url: "modules/fees.html",
-        icon: `<svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>`
+        icon: `<svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>`
       }
     };
-
-    let currentUserEmail = "backup@baljyoti.com";
 
     function cleanStr(s) {
       return String(s || "").toLowerCase().trim();
     }
 
-    // Role Resolver across LocalStorage structures
-    function getResolvedUserRole(email) {
-      const target = cleanStr(email);
-      if (!target) return "Teacher";
-
-      if (target === "info@baljyoti.com") {
-        return "Super Admin";
+    function getActiveUserEmail() {
+      if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.email) {
+        return firebase.auth().currentUser.email;
       }
 
-      const storageKeys = ["user_role_assignments", "user_roles", "users", "portal_users", "directory_users", "rbac_users", "user_list"];
+      const sessionKeys = ["currentUserEmail", "userEmail", "loggedInUser", "user", "email"];
+      for (const key of sessionKeys) {
+        const val = sessionStorage.getItem(key) || localStorage.getItem(key);
+        if (val) {
+          if (val.startsWith("{")) {
+            try {
+              const parsed = JSON.parse(val);
+              if (parsed.email) return parsed.email;
+            } catch(e) {}
+          } else if (val.includes("@")) {
+            return val;
+          }
+        }
+      }
+
+      return "guest@baljyoti.com";
+    }
+
+    function getResolvedUserRole(email) {
+      const target = cleanStr(email);
+      if (!target || target === "guest@baljyoti.com") return "Teacher";
+      if (target === "info@baljyoti.com") return "Super Admin";
+
+      const storageKeys = ["user_role_assignments", "user_roles", "users", "portal_users", "directory_users", "rbac_users"];
 
       for (const key of storageKeys) {
         try {
@@ -138,29 +126,22 @@
 
           if (typeof parsed === "object" && !Array.isArray(parsed)) {
             for (const [k, v] of Object.entries(parsed)) {
-              if (cleanStr(k) === target && v) {
-                return String(v);
-              }
+              if (cleanStr(k) === target && v) return String(v);
             }
           }
 
           if (Array.isArray(parsed)) {
-            const found = parsed.find(u => 
-              cleanStr(u.email || u.primaryEmail || u.userEmail) === target
-            );
+            const found = parsed.find(u => cleanStr(u.email || u.primaryEmail || u.userEmail) === target);
             if (found && (found.role || found.assignedRole || found.userRole)) {
               return String(found.role || found.assignedRole || found.userRole);
             }
           }
-        } catch (e) {
-          console.error("Error reading key " + key, e);
-        }
+        } catch (e) {}
       }
 
       return "Teacher";
     }
 
-    // Merge default registry with custom modules
     function getFullModuleRegistry() {
       const registry = { ...BASE_MODULE_REGISTRY };
 
@@ -179,100 +160,28 @@
                 registry[modName] = {
                   description: (typeof mod === "object" && mod.description) ? mod.description : `Access and manage operations for ${modName}.`,
                   url: (typeof mod === "object" && mod.url) ? mod.url : `modules/${slug}.html`,
-                  icon: (typeof mod === "object" && mod.icon) ? mod.icon : `<svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>`
+                  icon: `<svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>`
                 };
               }
             });
           }
-        } catch (e) {
-          console.error("Error reading custom modules key " + key, e);
-        }
+        } catch (e) {}
       }
 
       return registry;
     }
 
-    function initializeDefaultData() {
-      const fullRegistry = getFullModuleRegistry();
-      const allModulesList = Object.keys(fullRegistry);
-
-      const existingMappings = JSON.parse(localStorage.getItem("portal_mappings") || "{}");
-      if (!existingMappings["Super Admin"] || existingMappings["Super Admin"].length === 0) {
-        existingMappings["Super Admin"] = allModulesList;
-      }
-      if (!existingMappings["Teacher"]) {
-        existingMappings["Teacher"] = ["Inbox", "Student Attendance", "Exam & Marks"];
-      }
-      localStorage.setItem("portal_mappings", JSON.stringify(existingMappings));
-
-      const existingAssignments = JSON.parse(localStorage.getItem("user_role_assignments") || "{}");
-      if (!existingAssignments["info@baljyoti.com"]) {
-        existingAssignments["info@baljyoti.com"] = "Super Admin";
-        localStorage.setItem("user_role_assignments", JSON.stringify(existingAssignments));
-      }
-    }
-
-    // Firebase Auth Integration
-    const firebaseConfig = {
-      apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
-      authDomain: "baljyoti-portal.firebaseapp.com",
-      projectId: "baljyoti-portal",
-      storageBucket: "baljyoti-portal.firebasestorage.app",
-      messagingSenderId: "420727507952",
-      appId: "1:420727507952:web:de5bdbb73521b9fae4eb35"
-    };
-
-    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-      firebase.auth().onAuthStateChanged((user) => {
-        if (user && user.email) {
-          currentUserEmail = user.email;
-        }
-        document.getElementById("userBadge").innerText = currentUserEmail;
-        initializeDefaultData();
-        populateDashboardModules();
-      });
-    } else {
-      document.getElementById("userBadge").innerText = currentUserEmail;
-      initializeDefaultData();
-      populateDashboardModules();
-    }
-
-    function logout() {
-      sessionStorage.clear();
-      if (typeof firebase !== 'undefined' && firebase.auth()) {
-        firebase.auth().signOut().then(() => { window.location.href = "index.html"; });
-      } else {
-        window.location.href = "index.html";
-      }
-    }
-
-    // Dynamic Module Population Logic
     function populateDashboardModules() {
       const grid = document.getElementById("modulesGrid");
-      const roleBadge = document.getElementById("roleBadge");
       const assignedRoleText = document.getElementById("assignedRoleText");
-      const rbacAdminBtn = document.getElementById("rbacAdminBtn");
 
+      const currentUserEmail = getActiveUserEmail();
       const isSuperAdminEmail = cleanStr(currentUserEmail) === "info@baljyoti.com";
-
-      // 1. Strict Header Button Access Check
-      if (rbacAdminBtn) {
-        if (isSuperAdminEmail) {
-          rbacAdminBtn.style.display = "inline-flex";
-        } else {
-          rbacAdminBtn.style.display = "none";
-        }
-      }
-
-      // Resolve user role
       const assignedRole = getResolvedUserRole(currentUserEmail);
 
-      if (roleBadge) roleBadge.innerText = assignedRole.toUpperCase();
       if (assignedRoleText) assignedRoleText.innerText = assignedRole;
 
       const fullRegistry = getFullModuleRegistry();
-
       const portalMappings = JSON.parse(localStorage.getItem("portal_mappings") || "{}");
       let allowedModules = portalMappings[assignedRole];
 
@@ -286,12 +195,10 @@
         }
       }
 
-      // 2. Filter out "User Directory" module card for all other users
       if (!isSuperAdminEmail) {
         allowedModules = allowedModules.filter(mod => cleanStr(mod) !== "user directory");
       }
 
-      // Empty State
       if (allowedModules.length === 0) {
         grid.innerHTML = `
           <div class="col-span-full bg-white border border-slate-200 rounded-xl p-8 text-center shadow-sm">
@@ -304,7 +211,6 @@
         return;
       }
 
-      // Render Cards
       grid.innerHTML = allowedModules.map(moduleName => {
         const slug = moduleName.toLowerCase().replace(/[^a-z0-9]/g, '-');
         const meta = fullRegistry[moduleName] || {
@@ -338,18 +244,13 @@
       return String(str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
-    // Cross-Tab Listener
-    window.addEventListener("storage", (event) => {
-      if (["portal_mappings", "portal_modules", "system_modules", "user_role_assignments", "user_roles", "users"].includes(event.key)) {
-        populateDashboardModules();
-      }
+    window.addEventListener("storage", () => {
+      populateDashboardModules();
     });
 
     window.addEventListener("DOMContentLoaded", () => {
-      initializeDefaultData();
       populateDashboardModules();
     });
   </script>
-  <script src="header.js"></script>
 </body>
 </html>
