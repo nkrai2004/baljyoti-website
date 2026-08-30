@@ -1,43 +1,70 @@
-const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbyXec4u_xSbh1WaejMGW9eO8P7o8pwuB1FFKXNIcjKuzlxDH8gqhoCe8XW_St2eoIT9/exec";
-
-async function getLiveRoleMappings() {
-  try {
-    const res = await fetch(GOOGLE_SHEET_API);
-    const data = await res.json();
-    if (data.mappings) {
-      localStorage.setItem("portal_mappings", JSON.stringify(data.mappings));
-      return data.mappings;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Bal Jyoti Portal</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#fef2f2', 100: '#ffe1e1', 500: '#ef4444', 600: '#dc2626', 700: '#b91c1c', 800: '#991b1b' }
+          }
+        }
+      }
     }
-  } catch (e) {
-    console.warn("Using cached role mappings");
-  }
-  
-  return JSON.parse(localStorage.getItem("portal_mappings") || "{}");
-}
+  </script>
 
-async function populateDashboardModules() {
-  const grid = document.getElementById("modulesGrid");
-  const assignedRoleText = document.getElementById("assignedRoleText");
-  if (!grid) return;
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-  const currentUserEmail = getActiveUserEmail();
-  const isSuperAdminEmail = cleanStr(currentUserEmail) === "info@baljyoti.com";
-  const assignedRole = getResolvedUserRole(currentUserEmail);
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-  if (assignedRoleText) assignedRoleText.innerText = assignedRole;
+  <div id="portalHeaderContainer"></div>
 
-  const fullRegistry = getFullModuleRegistry();
-  const portalMappings = await getLiveRoleMappings();
-  
-  let allowedModules = portalMappings[assignedRole];
+  <main class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full">
+    <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900">Module Dashboard</h1>
+        <p class="text-sm text-slate-500 mt-1">Select an accessible module below based on your assigned role permissions.</p>
+      </div>
+      <div id="roleInfoBanner" class="text-xs bg-slate-100 border border-slate-200 px-4 py-2 rounded-lg text-slate-600">
+        Assigned Role: <strong id="assignedRoleText" class="text-slate-900">Loading...</strong>
+      </div>
+    </div>
 
-  if (!allowedModules || !Array.isArray(allowedModules)) {
-    allowedModules = (assignedRole === "Super Admin") ? Object.keys(fullRegistry) : ["Inbox", "Student Attendance", "Exam & Marks"];
-  }
+    <div id="modulesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="col-span-full text-center py-12 text-slate-400">Loading authorized modules...</div>
+    </div>
+  </main>
 
-  if (!isSuperAdminEmail) {
-    allowedModules = allowedModules.filter(mod => cleanStr(mod) !== "user directory");
-  }
+  <script src="header.js"></script>
 
-  renderModuleGrid(allowedModules, fullRegistry, currentUserEmail, assignedRole);
-}
+  <script>
+    const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbyOwoDE8W2PvjPdwejJYne4g2KxvpKrRFXXqUh_kvhAmflgN-hBlGnqockW76d-Tzdl/exec";
+
+    const BASE_MODULE_REGISTRY = {
+      "User Directory": {
+        description: "Manage system user accounts, directory synchronization, and user privileges.",
+        url: "user-permissions.html",
+        icon: `<svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`
+      },
+      "Role-Module Mapping": {
+        description: "Configure dynamic roles, module items, and cross-system permission access matrices.",
+        url: "modules/role-modules.html",
+        icon: `<svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>`
+      },
+      "Inbox": {
+        description: "Access system notifications, inter-departmental communications, and user queries.",
+        url: "modules/inbox.html",
+        icon: `<svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-
