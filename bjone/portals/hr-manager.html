@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HR Manager Portal | Bal Jyoti ERP</title><link rel="stylesheet" href="../assets/style.css">
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="../assets/js/firebase-config.js"></script><script src="../assets/js/access-control.js"></script><script src="../assets/js/auth.js"></script>
+</head><body><header class="topbar"><div class="brand">BAL JYOTI PUBLIC SCHOOL</div><div class="nav"><span>HR Manager Portal</span><button class="btn secondary" id="logoutBtn">Sign out</button></div></header>
+<main class="shell"><section class="panel"><span class="pill">ROLE VERIFIED</span><h1>Welcome, <span id="userName">User</span></h1><p class="muted" id="userEmail"></p><p>Your authorised modules are listed below.</p><div id="moduleGrid" class="grid"></div></section></main>
+<footer class="footer">Bal Jyoti Public School · Role-based ERP</footer>
+<script>
+window.BJ_AUTH.requireRole("HR Manager");
+document.addEventListener("bj-auth-ready", (event) => {
+ const {user, role} = event.detail;
+ document.getElementById("userName").textContent = user.displayName || user.email;
+ document.getElementById("userEmail").textContent = user.email;
+ const grid = document.getElementById("moduleGrid");
+ Object.entries(window.BJ_MODULES).forEach(([key,label]) => {
+   if (!window.bjCanAccess(role,key,"read")) return;
+   const a=document.createElement("a"); a.className="tile"; a.href=window.BJ_MODULE_PATHS[key];
+   const h=document.createElement("h3"); h.textContent=label;
+   const p=document.createElement("p"); p.className="muted"; p.textContent="Open authorised module";
+   a.append(h,p); grid.appendChild(a);
+ });
+ if (!grid.children.length) grid.textContent="No modules have been assigned. Contact the ERP Administrator.";
+});
+document.getElementById("logoutBtn").addEventListener("click",()=>window.BJ_AUTH.signOut());
+</script></body></html>
