@@ -1,0 +1,61 @@
+<!-- DASHBOARD VIEW -->
+<section id="dashboardView" class="app-view">
+
+  <!-- WELCOME BANNER -->
+  <div class="rounded-2xl bg-gradient-to-r from-bjred to-bjdark text-white p-6 sm:p-8 shadow-soft">
+
+    <p class="text-sm text-red-100">
+      Teacher workspace
+    </p>
+
+    <h2 class="mt-2 text-2xl sm:text-3xl font-extrabold">
+      Welcome, <span id="welcomeName">Teacher</span>
+    </h2>
+
+    <p class="mt-2 max-w-2xl text-sm sm:text-base text-red-50">
+      Your central access point for teaching tools and school activities.
+    </p>
+
+  </div>
+
+
+  <!-- QUICK ACCESS -->
+  <div class="mt-8 flex items-center justify-between gap-3">
+
+    <div>
+      <h3 class="text-lg font-bold text-slate-900">
+        Quick Access
+      </h3>
+
+      <p class="text-sm text-slate-500 mt-1">
+        Open the available teaching tools.
+      </p>
+    </div>
+
+    <button
+      class="text-sm font-semibold text-bjred hover:underline"
+      data-go="teachingView">
+      View teaching tools →
+    </button>
+
+  </div>
+
+  <div id="quickLinksGrid"
+    class="mt-4 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
+  </div>
+
+
+  <!-- IMPORTANT INFORMATION -->
+  <div class="mt-8 bg-white border border-slate-100 rounded-2xl p-6 shadow-soft">
+
+    <h3 class="font-bold text-slate-900">
+      Important Information
+    </h3>
+
+    <p class="mt-2 text-sm leading-6 text-slate-600">
+      Please use your official school Google account for all school-related communication and documents. Follow the reporting timelines and instructions shared by the school administration.
+    </p>
+
+  </div>
+
+</section>
