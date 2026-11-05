@@ -152,7 +152,7 @@
             <div class="rounded-2xl bg-gradient-to-r from-bjred to-bjdark text-white p-6 sm:p-8 shadow-soft">
               <p class="text-sm text-red-100">Teacher workspace</p>
               <h2 class="mt-2 text-2xl sm:text-3xl font-extrabold">Welcome, <span id="welcomeName">Teacher</span></h2>
-              <p class="mt-2 max-w-2xl text-sm sm:text-base text-red-50">Your central access point for teaching, communication and daily school activities.</p>
+              <p class="mt-2 max-w-2xl text-sm sm:text-base text-red-50">Your central access point for Gmail, Google Classroom and school activities.</p>
             </div>
 
             <div class="mt-7 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -163,8 +163,8 @@
               </div>
               <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft">
                 <div class="text-xs uppercase tracking-wide text-slate-400">School tools</div>
-                <div class="mt-2 text-xl font-bold text-slate-900">10+</div>
-                <div class="mt-1 text-xs text-slate-500">Google Workspace links</div>
+                <div class="mt-2 text-xl font-bold text-slate-900">2</div>
+                <div class="mt-1 text-xs text-slate-500">Approved Google Workspace tools</div>
               </div>
               <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft">
                 <div class="text-xs uppercase tracking-wide text-slate-400">Teaching resources</div>
@@ -181,7 +181,7 @@
             <div class="mt-8 flex items-center justify-between gap-3">
               <div>
                 <h3 class="text-lg font-bold text-slate-900">Quick access</h3>
-                <p class="text-sm text-slate-500 mt-1">Open commonly used school tools.</p>
+                <p class="text-sm text-slate-500 mt-1">Open the two approved school tools.</p>
               </div>
               <button class="text-sm font-semibold text-bjred hover:underline" data-go="workspaceView">View all tools →</button>
             </div>
@@ -212,11 +212,8 @@
               <a class="card-hover bg-white rounded-2xl p-5 border border-slate-100 shadow-soft" href="https://classroom.google.com/" target="_blank" rel="noopener noreferrer">
                 <div class="text-2xl">📚</div><h3 class="mt-3 font-bold">Google Classroom</h3><p class="mt-1 text-sm text-slate-500">Assignments, classwork and student communication.</p><span class="mt-4 inline-block text-sm text-bjred font-semibold">Open tool →</span>
               </a>
-              <a class="card-hover bg-white rounded-2xl p-5 border border-slate-100 shadow-soft" href="https://forms.google.com/" target="_blank" rel="noopener noreferrer">
-                <div class="text-2xl">📝</div><h3 class="mt-3 font-bold">Google Forms</h3><p class="mt-1 text-sm text-slate-500">Create quizzes, feedback forms and surveys.</p><span class="mt-4 inline-block text-sm text-bjred font-semibold">Open tool →</span>
-              </a>
-              <a class="card-hover bg-white rounded-2xl p-5 border border-slate-100 shadow-soft" href="https://meet.google.com/" target="_blank" rel="noopener noreferrer">
-                <div class="text-2xl">🎥</div><h3 class="mt-3 font-bold">Google Meet</h3><p class="mt-1 text-sm text-slate-500">Conduct online meetings and academic sessions.</p><span class="mt-4 inline-block text-sm text-bjred font-semibold">Open tool →</span>
+              <a class="card-hover bg-white rounded-2xl p-5 border border-slate-100 shadow-soft" href="https://mail.google.com/" target="_blank" rel="noopener noreferrer">
+                <div class="text-2xl">✉️</div><h3 class="mt-3 font-bold">Gmail</h3><p class="mt-1 text-sm text-slate-500">Official school email and communication.</p><span class="mt-4 inline-block text-sm text-bjred font-semibold">Open tool →</span>
               </a>
             </div>
           </section>
@@ -290,15 +287,7 @@
      ************************************************************/
     const WORKSPACE_TOOLS = [
       { name: "Gmail", description: "Official school email and communication", icon: "✉️", url: "https://mail.google.com/" },
-      { name: "Google Classroom", description: "Classes, assignments and learning", icon: "📚", url: "https://classroom.google.com/" },
-      { name: "Google Drive", description: "School files and shared documents", icon: "📁", url: "https://drive.google.com/" },
-      { name: "Google Meet", description: "Online meetings and virtual classes", icon: "🎥", url: "https://meet.google.com/" },
-      { name: "Google Calendar", description: "Academic calendar and schedules", icon: "📅", url: "https://calendar.google.com/" },
-      { name: "Google Forms", description: "Forms, quizzes and surveys", icon: "📝", url: "https://forms.google.com/" },
-      { name: "Google Docs", description: "Create and edit documents", icon: "📄", url: "https://docs.google.com/document/" },
-      { name: "Google Sheets", description: "Spreadsheets and reporting", icon: "📊", url: "https://sheets.google.com/" },
-      { name: "Google Slides", description: "Presentations and classroom material", icon: "📽️", url: "https://slides.google.com/" },
-      { name: "Google Gemini", description: "AI assistance for teaching and productivity", icon: "✨", url: "https://gemini.google.com/" }
+      { name: "Google Classroom", description: "Classes, assignments and learning", icon: "📚", url: "https://classroom.google.com/" }
     ];
 
     let auth = null;
