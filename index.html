@@ -1,1030 +1,366 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bal Jyoti Public School, Ghaziabad</title>
-<link rel="icon" type="image/png" href="logo.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --ink:#1A1A1A;
-    --paper:#FFFFFF;
-    --paper-deep:#F7EEEF;
-    --flame:#C8102E;
-    --flame-deep:#8E0E20;
-    --maroon:#6E0B1E;
-    --slate:#55606B;
-    --line: rgba(0,0,0,0.1);
-    --white:#FFFFFF;
-  }
-  *{box-sizing:border-box; margin:0; padding:0;}
-  html{scroll-behavior:smooth;}
-  body{
-    background:var(--paper);
-    color:var(--ink);
-    font-family:'Source Sans 3', sans-serif;
-    line-height:1.6;
-    -webkit-font-smoothing:antialiased;
-  }
-  h1,h2,h3,h4{
-    font-family:'Fraunces', serif;
-    font-weight:600;
-    line-height:1.15;
-    color:var(--ink);
-  }
-  a{color:inherit; text-decoration:none;}
-  img{max-width:100%; display:block;}
-  .wrap{max-width:1140px; margin:0 auto; padding:0 24px;}
-  .eyebrow{
-    text-transform:uppercase;
-    letter-spacing:.14em;
-    font-size:.78rem;
-    font-weight:700;
-    color:var(--flame-deep);
-  }
-
-  /* ---------- HEADER ---------- */
-  header.site{
-    position:sticky; top:0; z-index:50;
-    background:rgba(255,255,255,0.92);
-    backdrop-filter:blur(6px);
-    border-bottom:1px solid var(--line);
-  }
-  .nav-row{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:14px 24px;
-    max-width:1140px; margin:0 auto;
-  }
-  .brand{display:flex; align-items:center; gap:12px;}
-  .brand:hover .word{color:var(--maroon);}
-  .brand .mark{width:56px; height:56px; flex:none; object-fit:contain; border-radius:50%;}
-  .brand .word{font-family:'Fraunces', serif; font-weight:700; font-size:1.05rem; letter-spacing:.02em;}
-  .brand .word span{display:block; font-family:'Source Sans 3',sans-serif; font-weight:600; font-size:.68rem; letter-spacing:.12em; color:var(--slate); text-transform:uppercase;}
-  nav.links{display:flex; gap:20px; align-items:center; flex-wrap:wrap; justify-content:flex-end;}
-  nav.links a{font-weight:600; font-size:.92rem; color:var(--ink); position:relative; padding:4px 0;}
-  nav.links a::after{content:""; position:absolute; left:0; bottom:-2px; width:0; height:2px; background:var(--flame-deep); transition:width .25s ease;}
-  nav.links a:hover::after{width:100%;}
-  .nav-cta{
-    background:var(--maroon); color:var(--white)!important; font-weight:700;
-    padding:10px 18px; border-radius:999px; font-size:.86rem!important;
-  }
-  .nav-cta::after{display:none;}
-  .nav-login{
-    border:1.5px solid var(--ink); padding:8px 16px; border-radius:999px; font-weight:700; font-size:.85rem!important;
-  }
-  .nav-login:hover{background:var(--ink); color:var(--white)!important;}
-  .nav-login::after{display:none;}
-
-  .burger{display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:6px;}
-  .burger span{width:24px; height:2px; background:var(--ink); display:block;}
-
-  @media (max-width:880px){
-    nav.links{
-      position:fixed; top:70px; left:0; right:0; bottom:0;
-      background:var(--paper); flex-direction:column; align-items:flex-start;
-      padding:30px 24px; gap:22px; transform:translateX(100%);
-      transition:transform .3s ease; overflow-y:auto;
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#991b1b" />
-  <title>Bal Jyoti | School ERP</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: { extend: {
-        colors: { brand: { 50:'#fef2f2',100:'#fee2e2',200:'#fecaca',500:'#ef4444',600:'#dc2626',700:'#b91c1c',800:'#991b1b',900:'#7f1d1d' } },
-        boxShadow: { soft: '0 8px 30px rgba(15,23,42,.06)' }
-      }}
-    }
-    nav.links.open{transform:translateX(0);}
-    .burger{display:flex;}
-  }
-
-  /* ---------- HERO ---------- */
-  .hero{position:relative; overflow:hidden; padding:64px 0 40px;}
-  .hero .wrap{display:grid; grid-template-columns:1.15fr .85fr; gap:40px; align-items:center;}
-  @media (max-width:880px){ .hero .wrap{grid-template-columns:1fr;} }
-  .hero h1{font-size:clamp(2.1rem, 4.2vw, 3.4rem); margin:14px 0 18px; letter-spacing:-.01em;}
-  .hero p.lead{font-size:1.08rem; color:var(--slate); max-width:46ch; margin-bottom:28px;}
-  .btn-row{display:flex; gap:14px; flex-wrap:wrap;}
-  .btn{
-    display:inline-flex; align-items:center; gap:8px;
-    padding:13px 24px; border-radius:999px; font-weight:700; font-size:.94rem;
-    border:2px solid transparent; transition:transform .2s ease, background .2s ease;
-  }
-  .btn-primary{background:var(--maroon); color:var(--white);}
-  .btn-primary:hover{transform:translateY(-2px); background:#57081A;}
-  .btn-ghost{border-color:var(--ink); color:var(--ink);}
-  .btn-ghost:hover{transform:translateY(-2px); background:var(--ink); color:var(--paper);}
-
-  .diya-stage{position:relative; display:flex; justify-content:center; align-items:flex-end; height:320px;}
-  .diya-stage svg{width:280px; height:auto;}
-  .flame{transform-origin:50% 100%; animation:flicker 2.6s ease-in-out infinite;}
-  @keyframes flicker{
-    0%,100%{ transform:scaleY(1) scaleX(1) translateY(0) rotate(0deg);}
-    25%{ transform:scaleY(1.08) scaleX(.96) translateY(-1px) rotate(-1.5deg);}
-    50%{ transform:scaleY(.94) scaleX(1.04) translateY(1px) rotate(1deg);}
-    75%{ transform:scaleY(1.05) scaleX(.98) translateY(-1px) rotate(-.5deg);}
-  }
-  .glow{animation:glow 2.6s ease-in-out infinite;}
-  @keyframes glow{
-    0%,100%{opacity:.55;}
-    50%{opacity:.9;}
-  }
-
-  .stat-strip{
-    margin-top:44px; padding:22px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
-    display:grid; grid-template-columns:repeat(4,1fr); gap:20px; text-align:center;
-  }
-  @media (max-width:720px){ .stat-strip{grid-template-columns:repeat(2,1fr);} }
-  .stat-strip .num{font-family:'Fraunces',serif; font-size:1.7rem; font-weight:700; color:var(--maroon);}
-  .stat-strip .lbl{font-size:.8rem; color:var(--slate); text-transform:uppercase; letter-spacing:.06em; margin-top:2px;}
-
-  /* ---------- SECTION GENERIC ---------- */
-  section{padding:84px 0;}
-  section.alt{background:var(--paper-deep);}
-  .sec-head{max-width:640px; margin-bottom:44px;}
-  .sec-head h2{font-size:clamp(1.7rem,3vw,2.3rem); margin-top:10px;}
-  .sec-head p{color:var(--slate); margin-top:12px; font-size:1.02rem;}
-
-  /* ---------- ABOUT ---------- */
-  .about-grid{display:grid; grid-template-columns:1.2fr .8fr; gap:48px; align-items:start;}
-  @media (max-width:880px){ .about-grid{grid-template-columns:1fr;} }
-  .about-grid p{margin-bottom:16px; color:var(--slate);}
-  .fact-card{
-    background:var(--white); border:1px solid var(--line); border-radius:16px; padding:26px;
-  }
-  .fact-card h3{font-size:1.02rem; margin-bottom:16px; display:flex; align-items:center; gap:8px;}
-  .fact-list{list-style:none;}
-  .fact-list li{
-    display:flex; justify-content:space-between; gap:12px;
-    padding:11px 0; border-bottom:1px dashed var(--line); font-size:.94rem;
-  }
-  .fact-list li:last-child{border-bottom:none;}
-  .fact-list b{color:var(--ink); font-weight:700; text-align:right;}
-  .fact-list span:first-child{color:var(--slate);}
-
-  .flame-dot{width:9px; height:9px; flex:none;}
-
-  /* ---------- ACADEMIC LADDER ---------- */
-  .ladder{position:relative; padding-left:36px; margin-top:10px;}
-  .ladder::before{
-    content:""; position:absolute; left:9px; top:8px; bottom:8px; width:2px;
-    background:linear-gradient(var(--flame), var(--maroon));
-  }
-  .rung{position:relative; padding:0 0 40px 22px;}
-  .rung:last-child{padding-bottom:0;}
-  .rung::before{
-    content:""; position:absolute; left:-36px; top:2px; width:20px; height:20px;
-    background:var(--flame); border:3px solid var(--paper); border-radius:50%;
-    box-shadow:0 0 0 2px var(--flame-deep);
-  }
-  .rung h3{font-size:1.15rem;}
-  .rung .tag{font-size:.78rem; font-weight:700; color:var(--maroon); text-transform:uppercase; letter-spacing:.06em;}
-  .rung p{color:var(--slate); margin-top:6px; max-width:60ch;}
-
-  /* ---------- FACILITIES ---------- */
-  .fac-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
-  @media (max-width:880px){ .fac-grid{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:560px){ .fac-grid{grid-template-columns:1fr;} }
-  .fac-card{
-    background:var(--white); border:1px solid var(--line); border-radius:16px; padding:26px;
-    transition:transform .25s ease, box-shadow .25s ease;
-  }
-  .fac-card:hover{transform:translateY(-4px); box-shadow:0 14px 30px rgba(0,0,0,.08);}
-  .fac-card .ico{width:38px; height:38px; margin-bottom:16px; color:var(--maroon);}
-  .fac-card h3{font-size:1.05rem; margin-bottom:8px;}
-  .fac-card p{color:var(--slate); font-size:.92rem;}
-
-  /* ---------- STUDENT LIFE ---------- */
-  .chip-row{display:flex; flex-wrap:wrap; gap:12px; margin-top:8px;}
-  .chip{
-    background:var(--white); border:1px solid var(--line); padding:9px 18px; border-radius:999px;
-    font-size:.9rem; font-weight:600;
-  }
-  .timeline{display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:36px;}
-  @media (max-width:780px){ .timeline{grid-template-columns:1fr;} }
-  .tl-card{border-left:3px solid var(--flame-deep); padding:6px 0 6px 20px;}
-  .tl-card h4{font-size:1rem; margin-bottom:6px;}
-  .tl-card p{color:var(--slate); font-size:.9rem;}
-
-  /* ---------- ADMISSION ---------- */
-  .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:22px; margin-top:10px;}
-  @media (max-width:880px){ .steps{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:560px){ .steps{grid-template-columns:1fr;} }
-  .step{background:var(--white); border:1px solid var(--line); border-radius:16px; padding:24px;}
-  .step .n{font-family:'Fraunces',serif; font-size:1.6rem; color:var(--flame-deep); font-weight:700;}
-  .step h4{margin:8px 0 6px; font-size:1rem;}
-  .step p{color:var(--slate); font-size:.88rem;}
-  .admission-cta{
-    margin-top:40px; background:var(--ink); color:var(--paper); border-radius:20px;
-    padding:36px; display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap;
-  }
-  .admission-cta h3{color:var(--paper); font-size:1.3rem;}
-  .admission-cta p{color:#EBD3D7; margin-top:6px;}
-
-  /* ---------- CAMPUS GLIMPSE ---------- */
-  .glimpse-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:18px;}
-  @media (max-width:880px){ .glimpse-grid{grid-template-columns:repeat(2,1fr);} }
-  .glimpse-tile{
-    aspect-ratio:1/1; border-radius:16px; position:relative; overflow:hidden;
-    display:flex; align-items:flex-end; padding:16px; color:var(--white); font-weight:700; font-size:.94rem;
-  }
-  .glimpse-tile::before{content:""; position:absolute; inset:0; opacity:.9;}
-  .g1::before{background:linear-gradient(155deg,#6E0B1E,#3A0611);}
-  .g2::before{background:linear-gradient(155deg,#C8102E,#8E0E20);}
-  .g3::before{background:linear-gradient(155deg,#1A1A1A,#000000);}
-  .g4::before{background:linear-gradient(155deg,#8E0E20,#3A0611);}
-  .glimpse-tile span{position:relative; z-index:1;}
-  .glimpse-note{color:var(--slate); font-size:.85rem; margin-top:16px;}
-
-  /* ---------- CONTACT ---------- */
-  .contact-grid{display:grid; grid-template-columns:.9fr 1.1fr; gap:40px; align-items:start;}
-  @media (max-width:880px){ .contact-grid{grid-template-columns:1fr;} }
-  .contact-card{background:var(--white); border:1px solid var(--line); border-radius:16px; padding:28px;}
-  .contact-card h3{font-size:1.05rem; margin-bottom:18px;}
-  .c-row{display:flex; gap:14px; margin-bottom:16px; align-items:flex-start;}
-  .c-row .ico{width:22px; height:22px; flex:none; color:var(--maroon); margin-top:2px;}
-  .c-row div b{display:block; font-size:.9rem;}
-  .c-row div span{color:var(--slate); font-size:.9rem;}
-  .map-frame{border-radius:16px; overflow:hidden; border:1px solid var(--line); height:100%; min-height:360px;}
-  .map-frame iframe{width:100%; height:100%; min-height:360px; border:0;}
-
-  /* ---------- FOOTER ---------- */
-  footer{background:var(--ink); color:#EBD3D7; padding:48px 0 26px;}
-  .foot-grid{display:flex; justify-content:space-between; flex-wrap:wrap; gap:28px; padding-bottom:28px; border-bottom:1px solid rgba(255,255,255,.12);}
-  .foot-brand{max-width:320px;}
-  .foot-brand h4{color:var(--paper); font-size:1.1rem; margin-bottom:8px;}
-  .foot-brand p{font-size:.88rem; color:#D9B9BE;}
-  .foot-links h5{color:var(--paper); font-size:.85rem; text-transform:uppercase; letter-spacing:.08em; margin-bottom:14px;}
-  .foot-links a{display:block; font-size:.88rem; margin-bottom:9px; color:#EBD3D7;}
-  .foot-links a:hover{color:var(--flame);}
-  .foot-bottom{display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; padding-top:20px; font-size:.8rem; color:#B98D93;}
-
-  /* ---- WHATSAPP FLOATING BUTTON ---- */
-  .whatsapp-fab{
-    position:fixed; right:20px; bottom:20px; z-index:9999;
-    width:60px; height:60px; border-radius:50%;
-    background:#25D366; display:flex; align-items:center; justify-content:center;
-    box-shadow:0 10px 26px rgba(0,0,0,.3);
-    transition:transform .2s ease;
-  }
-  .whatsapp-fab:hover{ transform:scale(1.08); }
-  .whatsapp-fab svg{ width:30px; height:30px; position:relative; z-index:2; }
-  .whatsapp-ping{
-    position:absolute; inset:0; border-radius:50%; background:#25D366;
-    animation:wa-pulse 2.2s ease-out infinite; z-index:1;
-  }
-  @keyframes wa-pulse{
-    0%{ transform:scale(1); opacity:.55; }
-    100%{ transform:scale(1.9); opacity:0; }
-  }
-  @media (max-width:480px){
-    .whatsapp-fab{ width:52px; height:52px; right:14px; bottom:14px; }
-    .whatsapp-fab svg{ width:26px; height:26px; }
-  }
-
-  /* ---- TOP ANNOUNCEMENT BANNER ---- */
-  .ann-bar{
-    background:var(--maroon); color:var(--white); text-align:center;
-    padding:11px 44px; font-size:.86rem; font-weight:600; position:relative; z-index:40;
-  }
-  .ann-bar-inner{display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; max-width:1100px; margin:0 auto;}
-  .ann-cta{background:var(--white); color:var(--maroon); padding:6px 16px; border-radius:999px; font-weight:700; font-size:.8rem; flex:none;}
-  .ann-cta:hover{background:#F3E4E6;}
-  .ann-close{
-    position:absolute; right:14px; top:50%; transform:translateY(-50%);
-    background:none; border:none; color:rgba(255,255,255,.8); font-size:1.2rem; cursor:pointer; line-height:1; padding:2px 8px;
-  }
-  .ann-close:hover{color:#fff;}
-  @media (max-width:560px){ .ann-bar{padding:10px 40px;} .ann-bar-inner{font-size:.8rem;} }
-
-  /* ---- ADMISSION POPUP ---- */
-  .admission-popup-overlay{
-    position:fixed; inset:0; background:rgba(26,26,26,.6); z-index:300;
-    display:none; align-items:center; justify-content:center; padding:20px;
-  }
-  .admission-popup-overlay.show{display:flex;}
-  .admission-popup{
-    background:var(--white); border-radius:20px; padding:36px; max-width:400px; width:100%;
-    text-align:center; box-shadow:0 30px 60px rgba(0,0,0,.35); position:relative;
-    animation:popIn .3s ease;
-  }
-  @keyframes popIn{ from{transform:scale(.92); opacity:0;} to{transform:scale(1); opacity:1;} }
-  .popup-close{
-    position:absolute; top:14px; right:14px; background:none; border:none; font-size:1.5rem;
-    color:var(--slate); cursor:pointer; line-height:1; padding:4px 9px; border-radius:50%;
-  }
-  .popup-close:hover{color:var(--white); background:var(--maroon);}
-  .popup-icon{
-    width:56px; height:56px; border-radius:50%; margin:0 auto 16px;
-    background:linear-gradient(135deg,var(--maroon),var(--flame));
-    display:flex; align-items:center; justify-content:center; font-size:1.6rem;
-  }
-  .admission-popup h3{font-size:1.25rem; margin-bottom:10px;}
-  .admission-popup p{color:var(--slate); font-size:.92rem; margin-bottom:24px;}
-  .popup-actions{display:flex; flex-direction:column; gap:10px;}
-  .popup-btn-primary{background:var(--maroon); color:var(--white); padding:12px 20px; border-radius:999px; font-weight:700; font-size:.92rem; display:block;}
-  .popup-btn-primary:hover{background:#57081A;}
-  .popup-btn-secondary{border:2px solid var(--ink); color:var(--ink); padding:10px 20px; border-radius:999px; font-weight:700; font-size:.9rem; display:block;}
-  .popup-btn-secondary:hover{background:var(--ink); color:var(--white);}
-
-  /* ---- ABOUT DROPDOWN ---- */
-  .nav-dropdown{position:relative;}
-  .dropdown-menu{
-    position:absolute; top:100%; left:0; margin-top:10px; background:var(--white);
-    border:1px solid var(--line); border-radius:12px; box-shadow:0 16px 32px rgba(0,0,0,.14);
-    padding:8px; min-width:210px; opacity:0; visibility:hidden; transform:translateY(6px);
-    transition:opacity .2s ease, transform .2s ease, visibility .2s ease; z-index:60;
-  }
-  .nav-dropdown:hover .dropdown-menu, .nav-dropdown:focus-within .dropdown-menu{
-    opacity:1; visibility:visible; transform:translateY(0);
-  }
-  .dropdown-menu a{display:block; padding:10px 12px; border-radius:8px; font-size:.88rem; white-space:nowrap;}
-  .dropdown-menu a::after{display:none;}
-  .dropdown-menu a:hover{background:var(--paper-deep); color:var(--maroon);}
-  @media (max-width:940px){
-    .dropdown-menu{
-      position:static; opacity:1; visibility:visible; transform:none; box-shadow:none;
-      border:none; padding:0 0 0 16px; margin-top:10px; display:flex; flex-direction:column;
-      gap:14px; min-width:0;
-    }
-  }
-</style>
-  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#8e0e20">
+  <meta name="description" content="Bal Jyoti Public School, Lal Kuan, Ghaziabad. CBSE-affiliated co-educational school from Nursery to Class XII, established in 1987.">
+  <title>Bal Jyoti Public School | Ghaziabad</title>
+  <link rel="icon" type="image/png" href="logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
-    * { font-family: Inter, system-ui, sans-serif; }
-    html { scroll-behavior: smooth; }
-    .nav-active { background:#fef2f2; color:#991b1b; border-left:3px solid #b91c1c; }
-    .workspace-card:hover,.module-card:hover { transform:translateY(-2px); box-shadow:0 12px 28px rgba(15,23,42,.09); }
-    .workspace-card,.module-card { transition:all .18s ease; }
-    .sidebar-scroll { scrollbar-width:thin; }
-    .toast { animation: slideIn .2s ease-out; }
-    @keyframes slideIn { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+    :root {
+      --red:#c8102e; --red-dark:#8e0e20; --maroon:#6e0b1e;
+      --ink:#202124; --muted:#667085; --paper:#fff; --soft:#fff6f7;
+      --line:#eadde0; --shadow:0 16px 40px rgba(70,10,25,.09);
+      --radius:20px; --max:1160px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;scroll-padding-top:100px}
+    body{margin:0;color:var(--ink);background:var(--paper);font-family:"DM Sans",Arial,sans-serif;line-height:1.65}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    button{font:inherit}
+    .wrap{width:min(var(--max),calc(100% - 40px));margin:auto}
+    .announcement{background:var(--maroon);color:#fff;font-size:.9rem}
+    .announcement-inner{min-height:42px;display:flex;align-items:center;justify-content:center;gap:12px;text-align:center;padding:8px 38px;position:relative}
+    .announcement a{background:#fff;color:var(--maroon);font-weight:800;padding:5px 13px;border-radius:99px;font-size:.8rem}
+    .announcement button{position:absolute;right:0;top:50%;transform:translateY(-50%);border:0;background:none;color:#fff;font-size:1.4rem;cursor:pointer}
+    .site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+    .nav-wrap{min-height:84px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+    .brand{display:flex;align-items:center;gap:12px;min-width:230px}
+    .brand img{width:58px;height:58px;object-fit:contain}
+    .brand-name{font-family:"Playfair Display",serif;font-weight:800;font-size:1.12rem;line-height:1.15;color:var(--maroon)}
+    .brand-name small{display:block;margin-top:5px;font-family:"DM Sans",sans-serif;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+    .nav-links{display:flex;align-items:center;justify-content:flex-end;gap:20px}
+    .nav-links>a,.nav-group>a{font-size:.9rem;font-weight:700;padding:9px 0;white-space:nowrap}
+    .nav-links>a:hover,.nav-group>a:hover{color:var(--red)}
+    .nav-group{position:relative}
+    .dropdown{position:absolute;top:100%;left:-14px;min-width:220px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px;box-shadow:var(--shadow);display:none}
+    .dropdown a{display:block;padding:9px 12px;border-radius:9px;font-size:.88rem;font-weight:600}
+    .dropdown a:hover{background:var(--soft);color:var(--red-dark)}
+    .nav-group:hover .dropdown,.nav-group:focus-within .dropdown{display:block}
+    .nav-links .login-link{border:1px solid var(--maroon);padding:9px 16px;border-radius:99px;color:var(--maroon)}
+    .nav-links .apply-link,.btn-primary{background:var(--maroon);color:#fff;padding:11px 19px;border-radius:99px}
+    .nav-links .apply-link:hover,.btn-primary:hover{background:#570817;color:#fff}
+    .menu-toggle{display:none;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-size:1.2rem}
+    .hero{padding:76px 0 58px;background:radial-gradient(circle at 85% 25%,#fbe8ec 0,transparent 32%),linear-gradient(135deg,#fff 45%,#fff7f8)}
+    .hero-grid{display:grid;grid-template-columns:1.12fr .88fr;gap:52px;align-items:center}
+    .eyebrow{color:var(--red-dark);font-size:.76rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+    h1,h2,h3,h4{font-family:"Playfair Display",Georgia,serif;line-height:1.18;margin:0}
+    h1{font-size:clamp(2.55rem,5vw,4.45rem);letter-spacing:-.035em;margin:15px 0 18px;max-width:720px}
+    .hero h1 span{color:var(--red)}
+    .lead{font-size:1.1rem;color:var(--muted);max-width:610px;margin:0 0 27px}
+    .button-row{display:flex;flex-wrap:wrap;gap:12px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 21px;border-radius:99px;font-weight:800;font-size:.92rem;border:1.5px solid transparent;transition:.2s}
+    .btn:hover{transform:translateY(-2px)}
+    .btn-outline{border-color:var(--maroon);color:var(--maroon);background:#fff}
+    .hero-art{min-height:360px;border-radius:30px;background:linear-gradient(145deg,#8e0e20,#c8102e 58%,#e76a7c);position:relative;overflow:hidden;display:grid;place-items:center;box-shadow:var(--shadow)}
+    .hero-art:before,.hero-art:after{content:"";position:absolute;border:1px solid rgba(255,255,255,.25);border-radius:50%}
+    .hero-art:before{width:330px;height:330px}
+    .hero-art:after{width:430px;height:430px}
+    .lamp{position:relative;z-index:1;text-align:center;color:#fff;padding:25px}
+    .lamp .symbol{font-size:7rem;line-height:1.2;filter:drop-shadow(0 10px 15px rgba(0,0,0,.2))}
+    .lamp strong{display:block;font-family:"Playfair Display",serif;font-size:1.65rem}
+    .lamp span{display:block;opacity:.9;margin-top:8px}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:54px}
+    .stat{padding:18px 10px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);text-align:center}
+    .stat strong{display:block;font-family:"Playfair Display",serif;font-size:1.7rem;color:var(--maroon)}
+    .stat span{font-size:.74rem;color:var(--muted);font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+    section{padding:82px 0}
+    .section-soft{background:var(--soft)}
+    .section-head{max-width:700px;margin-bottom:38px}
+    .section-head h2{font-size:clamp(1.9rem,3.5vw,2.8rem);margin-top:10px}
+    .section-head p{color:var(--muted);margin:13px 0 0}
+    .about-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:44px;align-items:start}
+    .body-copy p{color:var(--muted);margin:0 0 16px}
+    .fact-card,.facility-card,.step-card,.contact-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:25px;box-shadow:0 5px 20px rgba(40,10,20,.035)}
+    .fact-card h3,.contact-card h3{font-size:1.2rem;margin-bottom:14px}
+    .fact-list{list-style:none;padding:0;margin:0}
+    .fact-list li{display:flex;justify-content:space-between;gap:18px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:.9rem}
+    .fact-list li:last-child{border:0}
+    .fact-list span{color:var(--muted)}
+    .fact-list b{text-align:right}
+    .ladder{max-width:850px;margin:0 auto;padding-left:28px;border-left:2px solid #e8aab5}
+    .rung{position:relative;padding:0 0 30px 26px}
+    .rung:last-child{padding-bottom:0}
+    .rung:before{content:"";position:absolute;left:-37px;top:3px;width:17px;height:17px;border-radius:50%;background:var(--red);border:4px solid #fff;box-shadow:0 0 0 1px var(--red)}
+    .rung .tag{font-size:.75rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--red-dark)}
+    .rung h3{font-size:1.25rem;margin:4px 0}
+    .rung p{color:var(--muted);margin:0}
+    .facility-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .facility-card{transition:.2s}
+    .facility-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+    .facility-icon{width:46px;height:46px;border-radius:14px;background:var(--soft);display:grid;place-items:center;color:var(--maroon);font-size:1.4rem;margin-bottom:15px}
+    .facility-card h3{font-size:1.12rem;margin-bottom:8px}
+    .facility-card p{font-size:.91rem;color:var(--muted);margin:0}
+    .chips{display:flex;flex-wrap:wrap;gap:11px}
+    .chip{background:#fff;border:1px solid var(--line);padding:10px 16px;border-radius:99px;font-size:.9rem;font-weight:700}
+    .life-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:34px}
+    .life-item{border-left:3px solid var(--red);padding:5px 0 5px 18px}
+    .life-item h3{font-size:1.08rem;margin-bottom:7px}
+    .life-item p{margin:0;color:var(--muted);font-size:.9rem}
+    .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .step-number{font-family:"Playfair Display",serif;color:var(--red);font-size:1.8rem;font-weight:800}
+    .step-card h3{font-size:1.08rem;margin:7px 0}
+    .step-card p{font-size:.9rem;color:var(--muted);margin:0}
+    .admission-cta{margin-top:28px;background:var(--ink);color:#fff;border-radius:24px;padding:30px 34px;display:flex;justify-content:space-between;align-items:center;gap:24px}
+    .admission-cta h3{font-size:1.5rem;color:#fff}
+    .admission-cta p{color:#e7cbd0;margin:7px 0 0}
+    .admission-cta .btn{background:#fff;color:var(--maroon);white-space:nowrap}
+    .gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .gallery-tile{min-height:190px;border-radius:18px;padding:18px;display:flex;align-items:flex-end;color:#fff;font-weight:800;background:linear-gradient(145deg,#6e0b1e,#c8102e);position:relative;overflow:hidden}
+    .gallery-tile:nth-child(2){background:linear-gradient(145deg,#a61a35,#e36a7e)}
+    .gallery-tile:nth-child(3){background:linear-gradient(145deg,#343434,#111)}
+    .gallery-tile:nth-child(4){background:linear-gradient(145deg,#8e0e20,#4b0714)}
+    .gallery-tile:before{content:"";position:absolute;width:170px;height:170px;border:1px solid #ffffff55;border-radius:50%;right:-40px;top:-45px}
+    .gallery-tile span{position:relative}
+    .gallery-note{font-size:.82rem;color:var(--muted);margin-top:13px}
+    .contact-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:22px}
+    .contact-row{display:flex;gap:13px;margin:17px 0;align-items:flex-start}
+    .contact-row .ico{width:30px;height:30px;flex:none;border-radius:9px;background:var(--soft);display:grid;place-items:center}
+    .contact-row b{display:block;font-size:.9rem}
+    .contact-row span,.contact-row a{font-size:.9rem;color:var(--muted);overflow-wrap:anywhere}
+    .map-frame{min-height:390px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+    .map-frame iframe{width:100%;height:100%;min-height:390px;border:0}
+    footer{background:#201316;color:#f5dfe3;padding:48px 0 22px}
+    .footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:30px;padding-bottom:30px;border-bottom:1px solid #ffffff24}
+    footer h3,footer h4{color:#fff}
+    footer h3{font-size:1.2rem;margin-bottom:10px}
+    footer h4{font-family:"DM Sans",sans-serif;font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;margin:0 0 13px}
+    footer p{font-size:.88rem;color:#d7b9bf;margin:0}
+    footer a{display:block;color:#f5dfe3;font-size:.88rem;margin:8px 0}
+    footer a:hover{color:#fff;text-decoration:underline}
+    .footer-bottom{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;padding-top:18px;font-size:.78rem;color:#c6a2aa}
+    .whatsapp{position:fixed;right:20px;bottom:20px;z-index:90;width:56px;height:56px;border-radius:50%;background:#20bd5a;color:#fff;display:grid;place-items:center;font-size:1.7rem;box-shadow:0 8px 24px #0003}
+    .whatsapp:hover{transform:scale(1.06)}
+    @media(max-width:980px){
+      .nav-links{gap:13px}.nav-links>a,.nav-group>a{font-size:.82rem}
+      .hero-grid{gap:28px}.facility-grid{grid-template-columns:repeat(2,1fr)}
+      .footer-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:760px){
+      .nav-wrap{min-height:72px}.brand img{width:49px;height:49px}.brand{min-width:0}
+      .menu-toggle{display:block}
+      .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border-bottom:1px solid var(--line);padding:18px 22px 24px;align-items:stretch;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
+      .nav-links.open{display:flex}
+      .nav-links>a,.nav-group>a{display:block;padding:9px 0;font-size:.95rem}
+      .dropdown{position:static;display:block;box-shadow:none;border:0;padding:0 0 0 14px;min-width:0}
+      .hero{padding:52px 0 38px}.hero-grid,.about-grid,.contact-grid{grid-template-columns:1fr}
+      .hero-art{min-height:260px}.stats{grid-template-columns:repeat(2,1fr);margin-top:36px}
+      section{padding:62px 0}.steps{grid-template-columns:repeat(2,1fr)}
+      .gallery-grid{grid-template-columns:repeat(2,1fr)}
+      .admission-cta{align-items:flex-start;flex-direction:column}
+    }
+    @media(max-width:520px){
+      .wrap{width:min(100% - 30px,var(--max))}
+      .announcement-inner{font-size:.78rem;gap:7px}
+      .announcement a{font-size:.72rem;padding:4px 9px}
+      .brand-name{font-size:.98rem}.brand-name small{font-size:.58rem}
+      .hero-art{min-height:220px}.lamp .symbol{font-size:5.4rem}
+      .facility-grid,.life-grid,.steps,.footer-grid{grid-template-columns:1fr}
+      .gallery-tile{min-height:145px}.fact-list li{font-size:.82rem}
+      .map-frame,.map-frame iframe{min-height:300px}
+    }
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
   </style>
 </head>
 <body>
-<div class="ann-bar" id="annBar">
-  <div class="ann-bar-inner">
-    <span>🎓 Admission Closing Soon — Limited Seats for 2026–27</span>
-    <a class="ann-cta" href="admission.html#apply">Apply Now</a>
-    <button class="ann-close" onclick="document.getElementById('annBar').style.display='none'" aria-label="Close banner">×</button>
-  </div>
-</div>
-
-
-<header class="site">
-  <div class="nav-row">
-    <a class="brand" href="index.html" aria-label="Bal Jyoti Public School - Home">
-      <img class="mark" src="logo.png" alt="Bal Jyoti Public School logo">
-      <div class="word">BAL JYOTI<span>Public School · Ghaziabad</span></div>
-    </a>
-    <button class="burger" aria-label="Menu" onclick="document.getElementById('nav').classList.toggle('open')">
-      <span></span><span></span><span></span>
-    </button>
-    <nav class="links" id="nav">
-      <a href="index.html">Home</a>
-      <div class="nav-dropdown">
-        <a href="about.html">About ▾</a>
-        <div class="dropdown-menu">
-          <a href="about.html">About Us</a>
-          <a href="leaders.html">Our Leaders</a>
-          <a href="disclosure.html">Mandatory Disclosure</a>
-          <a href="gallery.html">Gallery</a>
-        </div>
-      </div>
-      <div class="nav-dropdown">
-        <a href="academics.html">Academics ▾</a>
-        <div class="dropdown-menu">
-          <a href="academics.html">Academics</a>
-          <a href="student-life.html">Student Life</a>
-          <a href="facilities.html">Facilities</a>
-<body class="bg-slate-50 text-slate-800 min-h-screen">
-  <!--
-    BAL JYOTI ERP - FRONT-END STARTER
-    Before deployment:
-    1. Replace FIREBASE_CONFIG values below with your Firebase web-app config.
-    2. Replace ALLOWED_EMAIL_DOMAIN with the school's actual Google Workspace domain.
-    3. Enable Google provider in Firebase Authentication.
-    4. Add the deployed domain to Firebase Authentication > Settings > Authorized domains.
-    5. Enforce domain and role checks on a trusted backend before exposing private school data.
-  -->
-
-  <div id="loginScreen" class="hidden min-h-screen bg-gradient-to-br from-brand-900 via-brand-800 to-brand-700 p-5">
-    <div class="max-w-md mx-auto min-h-[90vh] flex items-center">
-      <div class="w-full bg-white rounded-3xl shadow-2xl p-8">
-        <div class="flex items-center gap-3 mb-8">
-          <div class="w-14 h-14 rounded-2xl bg-brand-800 text-white grid place-items-center text-xl font-extrabold">BJ</div>
-          <div><div class="font-extrabold text-slate-900 tracking-wide">BAL JYOTI</div><div class="text-xs text-slate-500">PUBLIC SCHOOL · ERP PORTAL</div></div>
-        </div>
-        <p class="text-xs font-bold uppercase tracking-widest text-brand-700">Teacher workspace</p>
-        <h1 class="text-3xl font-extrabold mt-2 text-slate-900">Welcome back</h1>
-        <p class="text-sm text-slate-500 mt-2 mb-7">Sign in using your authorised school Google account.</p>
-        <button id="googleSignInBtn" class="w-full border border-slate-200 hover:bg-slate-50 rounded-xl py-3 px-4 flex items-center justify-center gap-3 font-semibold text-sm">
-          <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.06 13.22l7.98 6.19C11.97 13.72 17.46 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.76 7.18l7.73 6C44.42 37.98 46.98 31.86 46.98 24.55z"/><path fill="#FBBC05" d="M10.04 28.59A14.4 14.4 0 0 1 9.25 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.54 2.58 10.78l7.46-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.14 1.44-4.88 2.3-8.18 2.3-6.54 0-12.03-4.22-14-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-          Continue with Google
-        </button>
-        <p id="loginError" class="hidden text-sm text-red-600 mt-4"></p>
-        <div class="mt-8 pt-5 border-t border-slate-100 text-center text-xs text-slate-400">Secure access for authorised Bal Jyoti school staff</div>
-      </div>
-      <a href="admission.html">Admission</a>
-      <a href="careers.html">Careers</a>
-      <a href="#contact">Contact</a>
-      <a href="erp" class="nav-login">Login</a>
-      <a href="admission.html#apply" class="nav-cta">Apply Now</a>
-    </nav>
-  </div>
-</header>
-
-<section class="hero">
-  <div class="wrap">
-    <div>
-      <div class="eyebrow">CBSE Affiliated · Nursery to Class XII · Est. 1987</div>
-      <h1>Where every child's light finds its lamp.</h1>
-      <p class="lead">Bal Jyoti Public School has been shaping young minds in Lal Kuan, Ghaziabad for over three decades — building strong academics, good character and confident citizens under the CBSE curriculum.</p>
-      <div class="btn-row">
-        <a class="btn btn-primary" href="#admission">Admission Enquiry</a>
-        <a class="btn btn-ghost" href="#contact">Visit Our Campus</a>
-      </div>
-      <div class="stat-strip">
-        <div><div class="num">1987</div><div class="lbl">Founded</div></div>
-        <div><div class="num">8,855&nbsp;m²</div><div class="lbl">Campus Area</div></div>
-        <div><div class="num">N–XII</div><div class="lbl">Nursery to Sr. Sec.</div></div>
-        <div><div class="num">CBSE</div><div class="lbl">Affiliation No. 2130361</div></div>
-      </div>
-    </div>
-    <div class="diya-stage">
-      <svg viewBox="0 0 240 260" xmlns="http://www.w3.org/2000/svg">
-        <ellipse class="glow" cx="120" cy="150" rx="90" ry="40" fill="#C8102E" opacity=".35"/>
-        <g class="flame">
-          <path d="M120 60c14 22-8 30-8 48a20 20 0 0 0 40 0c0-9-5-14-5-14 12 12 20 28 20 44 0 26-21 47-47 47s-47-21-47-47c0-38 34-54 47-78Z" fill="url(#flameGrad)"/>
-        </g>
-        <defs>
-          <linearGradient id="flameGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#F6B6BE"/>
-            <stop offset=".5" stop-color="#C8102E"/>
-            <stop offset="1" stop-color="#8E0E20"/>
-          </linearGradient>
-        </defs>
-        <path d="M40 190c22 16 46 24 80 24s58-8 80-24l-8 26c-18 14-44 22-72 22s-54-8-72-22Z" fill="#6E0B1E"/>
-        <ellipse cx="120" cy="188" rx="82" ry="14" fill="#8E0E20"/>
-        <ellipse cx="120" cy="184" rx="70" ry="10" fill="#C8102E"/>
-      </svg>
+  <div class="announcement" id="announcement">
+    <div class="wrap announcement-inner">
+      <span>Admissions open for the 2026–27 academic session</span>
+      <a href="admission.html#apply">Enquire now</a>
+      <button type="button" aria-label="Close announcement" onclick="document.getElementById('announcement').hidden=true">×</button>
     </div>
   </div>
-</section>
 
-<section id="about">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">About Us</div>
-      <h2>A campus built on discipline, warmth and steady growth</h2>
-    </div>
-    <div class="about-grid">
-      <div>
-        <p>Bal Jyoti Public School was established in 1987 and is managed by the Krishna Gopal Samitee, Uttar Pradesh. Located on GT Road at Lal Kuan, near NH-24 in Ghaziabad, the school has grown into a co-educational institution spread across a campus of roughly 8,855 square metres.</p>
-        <p>The school is affiliated to the Central Board of Secondary Education (CBSE) and offers English-medium education from Nursery through Class XII. Over the years it has built a reputation locally as a school that keeps academics rigorous while making room for art, sport and community life.</p>
-        <p>Our approach stays close to the meaning of our name — <em>Bal Jyoti</em>, "the light of children." Teachers act as steady guides who help students reason, question and build confidence, rather than simply memorise for exams. Alongside academics, the school places real emphasis on discipline, ethics and respect as everyday habits, not once-a-year lessons.</p>
-      </div>
-      <div class="fact-card">
-        <h3>
-          <svg class="flame-dot" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#8E0E20"/></svg>
-          School at a Glance
-        </h3>
-        <ul class="fact-list">
-          <li><span>Established</span><b>1987</b></li>
-          <li><span>Board</span><b>CBSE</b></li>
-          <li><span>Affiliation No.</span><b>2130361</b></li>
-          <li><span>Classes offered</span><b>Nursery – XII</b></li>
-          <li><span>Medium of instruction</span><b>English</b></li>
-          <li><span>Managing body</span><b>Krishna Gopal Samitee, Uttar Pradesh</b></li>
-          <li><span>Campus area</span><b>8,855 sq. m</b></li>
-          <li><span>School type</span><b>Co-educational, day school</b></li>
-          <li><span>Transport</span><b>Bus pick &amp; drop available</b></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="alt" id="academics">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">Academics</div>
-      <h2>A clear path from first steps to the final board exam</h2>
-      <p>Every stage builds on the one before it — from a child's first day in Nursery to the choices they make in the Senior Secondary years.</p>
-    </div>
-    <div class="ladder">
-      <div class="rung">
-        <div class="tag">Nursery – UKG</div>
-        <h3>Pre-Primary</h3>
-        <p>A gentle, activity-based introduction to school life — spoken language, motor skills, numbers and social habits, taught through play, stories and rhymes.</p>
-      </div>
-      <div class="rung">
-        <div class="tag">Class I – V</div>
-        <h3>Primary</h3>
-        <p>Core literacy and numeracy are built up alongside EVS, computer familiarity and the start of formal art, music and physical education periods.</p>
-      </div>
-      <div class="rung">
-        <div class="tag">Class VI – VIII</div>
-        <h3>Middle School</h3>
-        <p>Subjects widen into full Science, Social Science and Mathematics streams, with growing independence expected in homework, projects and classroom discussion.</p>
-      </div>
-      <div class="rung">
-        <div class="tag">Class IX – X</div>
-        <h3>Secondary</h3>
-        <p>Structured preparation for the CBSE Class X board examination, with regular assessments, doubt-clearing sessions and skill-based subjects as per the CBSE framework.</p>
-      </div>
-      <div class="rung">
-        <div class="tag">Class XI – XII</div>
-        <h3>Senior Secondary</h3>
-        <p>Stream-based study (Science / Commerce / Humanities, subject to availability) with focused board-exam preparation and guidance toward higher education and career choices.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="facilities">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">Facilities</div>
-      <h2>What the campus offers every day</h2>
-    </div>
-    <div class="fac-grid">
-      <div class="fac-card">
-        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="18" height="10" rx="2"/><circle cx="7.5" cy="19" r="1.5"/><circle cx="16.5" cy="19" r="1.5"/><path d="M3 11h18"/></svg>
-        <h3>School Transport</h3>
-        <p>Bus pick-up and drop-off service is available for students commuting from across the Lal Kuan and Ghaziabad area.</p>
-      </div>
-      <div class="fac-card">
-        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19V6a2 2 0 0 1 2-2h5v15"/><path d="M20 19V6a2 2 0 0 0-2-2h-5v15"/><path d="M4 19h16"/></svg>
-        <h3>Library</h3>
-        <p>A dedicated reading space with reference books, textbooks and fiction to build a habit of reading beyond the classroom.</p>
-      </div>
-      <div class="fac-card">
-        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 3h6v6l5 9a2 2 0 0 1-2 3H6a2 2 0 0 1-2-3l5-9V3Z"/><path d="M9 3h6"/></svg>
-        <h3>Science &amp; Computer Labs</h3>
-        <p>Practical, hands-on lab periods that turn Science and Computer Science lessons into real experiments and exercises.</p>
-      </div>
-      <div class="fac-card">
-        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11Z"/></svg>
-        <h3>Safety &amp; Security</h3>
-        <p>CCTV surveillance across the premises and supervised entry/exit help keep the day-to-day campus environment secure.</p>
-  <div id="appShell" class="hidden min-h-screen">
-    <div id="mobileOverlay" class="fixed inset-0 bg-slate-900/40 z-30 hidden lg:hidden"></div>
-    <aside id="sidebar" class="fixed z-40 inset-y-0 left-0 w-72 bg-white border-r border-slate-200 -translate-x-full lg:translate-x-0 transition-transform duration-200 flex flex-col">
-      <div class="h-20 px-5 flex items-center gap-3 border-b border-slate-100">
-        <div class="w-11 h-11 rounded-xl bg-brand-800 text-white grid place-items-center font-extrabold text-lg">BJ</div>
-        <div class="min-w-0"><div class="font-extrabold text-slate-900 tracking-wide">BAL JYOTI</div><div class="text-[10px] text-slate-500 tracking-wider">PUBLIC SCHOOL ERP</div></div>
-        <button id="closeSidebar" class="ml-auto lg:hidden text-slate-500" aria-label="Close menu">✕</button>
-      </div>
-      <div class="fac-card">
-        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
-        <h3>Sports &amp; Play Areas</h3>
-        <p>Open grounds and structured sports periods support the annual Sports Day along with regular physical education classes.</p>
-      <div class="px-4 py-5">
-        <div class="rounded-xl bg-brand-50 border border-brand-100 p-3">
-          <div class="text-[10px] font-bold uppercase tracking-widest text-brand-700">Teacher workspace</div>
-          <div class="text-sm font-semibold text-slate-800 mt-1">Your school, connected.</div>
-        </div>
-      </div>
-      <div class="fac-card">
-        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>
-        <h3>Well-Equipped Classrooms</h3>
-        <p>Classrooms are designed to support both traditional teaching and interactive, activity-based lessons across grade levels.</p>
-      <nav class="px-3 space-y-1 flex-1 sidebar-scroll overflow-y-auto">
-        <a href="#overview" class="nav-link nav-active flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold"><span>▦</span> Overview</a>
-        <a href="#workspace" class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50"><span>◫</span> Google Workspace</a>
-        <a href="#teaching" class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50"><span>▤</span> Teaching tools</a>
-        <a href="#operations" class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50"><span>✓</span> School operations</a>
-        <a href="#notices" class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50"><span>♧</span> Notices & support</a>
-      </nav>
-      <div class="p-4 border-t border-slate-100">
-        <div class="flex items-center gap-3 min-w-0">
-          <img id="sideAvatar" class="w-9 h-9 rounded-full bg-slate-100 object-cover" alt="" src="https://www.gravatar.com/avatar/?d=mp">
-          <div class="min-w-0 flex-1"><div id="sideName" class="text-sm font-semibold truncate">Teacher</div><div id="sideEmail" class="text-xs text-slate-500 truncate">School account</div></div>
-          <button id="signOutBtn" title="Sign out" class="text-slate-400 hover:text-brand-700 text-lg">↪</button>
-        </div>
-      </div>
-    </aside>
-
-    <div class="lg:pl-72 min-h-screen flex flex-col">
-      <header class="h-20 bg-white border-b border-slate-200 sticky top-0 z-20 px-4 sm:px-7 flex items-center gap-4">
-        <button id="openSidebar" class="lg:hidden p-2 rounded-lg hover:bg-slate-100" aria-label="Open menu">☰</button>
-        <div class="flex-1 min-w-0">
-          <div class="text-xs text-slate-500">Bal Jyoti Public School / <span class="text-brand-700 font-semibold">Teacher Portal</span></div>
-          <div class="font-bold text-slate-900 text-lg">School ERP Dashboard</div>
-        </div>
-        <div class="hidden sm:flex items-center gap-2 text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2"><span class="w-2 h-2 rounded-full bg-green-500"></span> Workspace access</div>
-        <button id="headerSignOut" class="text-sm font-semibold text-slate-600 hover:text-brand-700">Sign out</button>
-      </header>
-
-      <main id="overview" class="w-full max-w-7xl mx-auto px-4 sm:px-7 py-7 sm:py-9 flex-1">
-        <section class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-7">
-          <div><p id="todayLabel" class="text-xs font-semibold uppercase tracking-wider text-brand-700"></p><h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">Welcome, <span id="welcomeName">Teacher</span></h1><p class="text-sm text-slate-500 mt-1">Everything you need for your school day, in one place.</p></div>
-          <div class="flex gap-2"><a href="https://classroom.google.com/" target="_blank" rel="noopener" class="bg-brand-800 hover:bg-brand-900 text-white rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm">Open Classroom ↗</a><a href="https://drive.google.com/" target="_blank" rel="noopener" class="bg-white border border-slate-200 hover:bg-slate-50 rounded-xl px-4 py-2.5 text-sm font-semibold">My Drive ↗</a></div>
-        </section>
-
-        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-soft"><div class="flex justify-between"><span class="text-sm text-slate-500">My digital workspace</span><span class="text-brand-700">▦</span></div><div class="text-2xl font-extrabold mt-2">10 <span class="text-sm font-medium text-slate-400">tools</span></div><div class="text-xs text-slate-500 mt-1">Google for Education shortcuts</div></div>
-          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-soft"><div class="flex justify-between"><span class="text-sm text-slate-500">Teaching resources</span><span class="text-brand-700">▤</span></div><div class="text-2xl font-extrabold mt-2">Quick <span class="text-sm font-medium text-slate-400">access</span></div><div class="text-xs text-slate-500 mt-1">Classroom, Forms, Docs and more</div></div>
-          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-soft"><div class="flex justify-between"><span class="text-sm text-slate-500">Portal status</span><span class="text-green-600">●</span></div><div class="text-2xl font-extrabold mt-2">Active</div><div class="text-xs text-slate-500 mt-1">Signed in with school account</div></div>
-        </section>
-
-        <section id="workspace" class="mb-9 scroll-mt-24">
-          <div class="flex items-end justify-between gap-3 mb-4"><div><h2 class="text-lg font-bold text-slate-900">Google Workspace for Education</h2><p class="text-sm text-slate-500 mt-1">Open your school productivity tools with one click.</p></div><span class="hidden sm:inline text-xs text-slate-400">Opens in a new tab ↗</span></div>
-          <div id="workspaceGrid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3"></div>
-        </section>
-
-        <section id="teaching" class="mb-9 scroll-mt-24">
-          <div class="mb-4"><h2 class="text-lg font-bold text-slate-900">Teaching tools</h2><p class="text-sm text-slate-500 mt-1">Useful links for everyday classroom work.</p></div>
-          <div id="teachingGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3"></div>
-        </section>
-
-        <section id="operations" class="mb-9 scroll-mt-24">
-          <div class="mb-4"><h2 class="text-lg font-bold text-slate-900">School operations</h2><p class="text-sm text-slate-500 mt-1">The next modules planned for the Bal Jyoti ERP.</p></div>
-          <div id="operationsGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3"></div>
-        </section>
-
-        <section id="notices" class="grid grid-cols-1 lg:grid-cols-2 gap-4 scroll-mt-24">
-          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-soft"><h3 class="font-bold text-slate-900">School notices</h3><p class="text-sm text-slate-500 mt-2">School circulars and announcements will be published here.</p><div class="mt-4 rounded-xl bg-brand-50 border border-brand-100 p-3 text-sm text-brand-900">Please check your official school email and Google Classroom regularly for updates.</div></div>
-          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-soft"><h3 class="font-bold text-slate-900">Need help?</h3><p class="text-sm text-slate-500 mt-2">For login, access or technical support, contact the school ERP administrator.</p><a id="supportEmailLink" href="mailto:YOUR_ADMIN_EMAIL" class="inline-flex mt-4 text-sm font-semibold text-brand-700 hover:underline">Contact ERP administrator ↗</a><p class="text-xs text-slate-400 mt-2">Update the support email in the configuration before publishing.</p></div>
-        </section>
-      </main>
-      <footer class="px-4 sm:px-7 py-5 border-t border-slate-200 bg-white text-center text-xs text-slate-400">© <span id="year"></span> Bal Jyoti Public School · School ERP Portal</footer>
-    </div>
-  </div>
-</section>
-
-<section class="alt" id="student-life">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">Student Life</div>
-      <h2>Beyond the textbook</h2>
-      <p>Co-curricular activities and a full calendar of school events give students room to perform, compete and celebrate together.</p>
-    </div>
-    <div class="chip-row">
-      <span class="chip">Art &amp; Craft</span>
-      <span class="chip">Dance</span>
-      <span class="chip">Music</span>
-      <span class="chip">Picnics &amp; Excursions</span>
-      <span class="chip">Sports Day</span>
-      <span class="chip">Annual Day</span>
-      <span class="chip">Festival Celebrations</span>
-    </div>
-    <div class="timeline">
-      <div class="tl-card">
-        <h4>Annual Day</h4>
-        <p>A whole-school celebration of performances, prize distribution and a look back at the year's achievements.</p>
-      </div>
-      <div class="tl-card">
-        <h4>Sports Day</h4>
-        <p>Track and field events, team games and house competitions that bring out school spirit across age groups.</p>
-      </div>
-      <div class="tl-card">
-        <h4>Festival Celebrations</h4>
-        <p>Festivals through the year are marked with classroom activities, assemblies and cultural programmes.</p>
-      </div>
-    </div>
-  </div>
-</section>
-  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden max-w-sm rounded-xl bg-slate-900 text-white text-sm px-4 py-3 shadow-xl toast" role="status"></div>
-
-  <script>
-    // ===== SCHOOL CONFIGURATION: update these values before deployment =====
-    const FIREBASE_CONFIG = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      appId: "YOUR_APP_ID"
-    };
-    const ALLOWED_EMAIL_DOMAIN = "YOUR_SCHOOL_DOMAIN"; // e.g. schooldomain.edu.in (without @)
-    const SUPPORT_EMAIL = "YOUR_ADMIN_EMAIL";
-
-    const WORKSPACE_TOOLS = [
-      { name:"Gmail", desc:"Official school email", url:"https://mail.google.com/", icon:"✉", tint:"bg-red-50 text-red-700" },
-      { name:"Classroom", desc:"Classes & assignments", url:"https://classroom.google.com/", icon:"▣", tint:"bg-green-50 text-green-700" },
-      { name:"Google Drive", desc:"Files & shared folders", url:"https://drive.google.com/", icon:"◈", tint:"bg-yellow-50 text-yellow-700" },
-      { name:"Google Meet", desc:"Online meetings", url:"https://meet.google.com/", icon:"▰", tint:"bg-blue-50 text-blue-700" },
-      { name:"Google Calendar", desc:"Timetable & events", url:"https://calendar.google.com/", icon:"▦", tint:"bg-blue-50 text-blue-700" },
-      { name:"Google Forms", desc:"Quizzes & forms", url:"https://forms.google.com/", icon:"☷", tint:"bg-purple-50 text-purple-700" },
-      { name:"Google Docs", desc:"Documents", url:"https://docs.google.com/", icon:"▤", tint:"bg-blue-50 text-blue-700" },
-      { name:"Google Sheets", desc:"Spreadsheets", url:"https://sheets.google.com/", icon:"▦", tint:"bg-green-50 text-green-700" },
-      { name:"Google Slides", desc:"Presentations", url:"https://slides.google.com/", icon:"▧", tint:"bg-orange-50 text-orange-700" },
-      { name:"Google Gemini", desc:"AI learning assistant", url:"https://gemini.google.com/", icon:"✧", tint:"bg-indigo-50 text-indigo-700" }
-    ];
-
-    const TEACHING_TOOLS = [
-      { name:"Google Classroom", desc:"Manage classes, assignments and student communication.", url:"https://classroom.google.com/", icon:"▣" },
-      { name:"Create a Google Form", desc:"Prepare quizzes, surveys and classroom assessments.", url:"https://forms.google.com/", icon:"☷" },
-      { name:"Shared school resources", desc:"Access lesson plans, templates and shared documents in Drive.", url:"https://drive.google.com/", icon:"◈" }
-    ];
-
-    const PLANNED_MODULES = [
-      { name:"Daily Attendance", desc:"Record and review class attendance.", status:"Planned", icon:"✓" },
-      { name:"Timetable", desc:"View teaching periods and substitution schedule.", status:"Planned", icon:"▦" },
-      { name:"Lesson Plans", desc:"Submit lesson plans and track syllabus coverage.", status:"Planned", icon:"▤" },
-      { name:"Homework & Classwork", desc:"Record homework and classroom activities.", status:"Planned", icon:"✎" },
-      { name:"Daily Reports", desc:"Submit reports by school time slot.", status:"Planned", icon:"▣" },
-      { name:"Leave Applications", desc:"Apply for leave and view approval status.", status:"Planned", icon:"◷" }
-    ];
-
-    const $ = (id) => document.getElementById(id);
-    let auth = null;
-
-    function showToast(message) {
-      const el = $("toast"); el.textContent = message; el.classList.remove("hidden");
-      clearTimeout(window.__toastTimer); window.__toastTimer = setTimeout(() => el.classList.add("hidden"), 3200);
-    }
-
-<section id="admission">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">Admission</div>
-      <h2>How to apply</h2>
-      <p>Admissions are handled directly by the school office. Here's the general process families can expect.</p>
-    </div>
-    <div class="steps">
-      <div class="step">
-        <div class="n">01</div>
-        <h4>Enquire</h4>
-        <p>Reach out by phone, WhatsApp or email to check seat availability for your child's class.</p>
-      </div>
-      <div class="step">
-        <div class="n">02</div>
-        <h4>Visit the Campus</h4>
-        <p>Visit the school to see the facilities and collect the admission form and fee details in person.</p>
-      </div>
-      <div class="step">
-        <div class="n">03</div>
-        <h4>Submit Documents</h4>
-        <p>Complete the form along with the required documents — birth certificate, previous school records and address proof.</p>
-      </div>
-      <div class="step">
-        <div class="n">04</div>
-        <h4>Confirmation</h4>
-        <p>Once verified, the school confirms admission and shares fee payment and orientation details.</p>
-      </div>
-    </div>
-    <div class="admission-cta">
-      <div>
-        <h3>Ready to begin the process?</h3>
-        <p>Call, WhatsApp or email the school office — the team is happy to answer questions about seats, fees and documents.</p>
-      </div>
-      <a class="btn btn-primary" href="https://wa.me/919910363101?text=Hello%2C%20I%20am%20looking%20for%20admission%20information." target="_blank" rel="noopener">Message on WhatsApp</a>
-    </div>
-  </div>
-</section>
-    function renderCards() {
-      $("workspaceGrid").innerHTML = WORKSPACE_TOOLS.map(tool => `
-        <a class="workspace-card bg-white border border-slate-200 rounded-2xl p-4 shadow-soft flex flex-col min-h-36" href="${tool.url}" target="_blank" rel="noopener noreferrer">
-          <div class="w-10 h-10 rounded-xl ${tool.tint} grid place-items-center text-xl font-bold">${tool.icon}</div>
-          <div class="mt-3 font-bold text-sm text-slate-900">${tool.name}<span class="text-slate-400 ml-1">↗</span></div>
-          <div class="text-xs text-slate-500 mt-1">${tool.desc}</div>
-        </a>`).join("");
-
-      $("teachingGrid").innerHTML = TEACHING_TOOLS.map(tool => `
-        <a class="module-card bg-white border border-slate-200 rounded-2xl p-4 shadow-soft flex items-start gap-3" href="${tool.url}" target="_blank" rel="noopener noreferrer">
-          <div class="w-10 h-10 shrink-0 rounded-xl bg-brand-50 text-brand-800 grid place-items-center text-xl">${tool.icon}</div>
-          <div><div class="font-bold text-sm">${tool.name} <span class="text-slate-400">↗</span></div><p class="text-xs text-slate-500 mt-1">${tool.desc}</p></div>
-        </a>`).join("");
-
-      $("operationsGrid").innerHTML = PLANNED_MODULES.map(module => `
-        <div class="module-card bg-white border border-slate-200 rounded-2xl p-4 shadow-soft flex items-start gap-3">
-          <div class="w-10 h-10 shrink-0 rounded-xl bg-slate-100 text-slate-600 grid place-items-center text-xl">${module.icon}</div>
-          <div class="min-w-0 flex-1"><div class="flex items-center justify-between gap-2"><div class="font-bold text-sm">${module.name}</div><span class="text-[10px] rounded-full bg-amber-50 text-amber-700 px-2 py-1">${module.status}</span></div><p class="text-xs text-slate-500 mt-1">${module.desc}</p></div>
-        </div>`).join("");
-    }
-
-<section class="alt" id="campus">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">Campus Glimpse</div>
-      <h2>A quick tour, area by area</h2>
-    </div>
-    <div class="glimpse-grid">
-      <div class="glimpse-tile g1"><span>Classrooms</span></div>
-      <div class="glimpse-tile g2"><span>Playground</span></div>
-      <div class="glimpse-tile g3"><span>Library</span></div>
-      <div class="glimpse-tile g4"><span>Science Labs</span></div>
-    </div>
-    <p class="glimpse-note">Illustrative overview of campus areas. For current photographs, please visit the school's official Facebook page or the campus in person.</p>
-  </div>
-</section>
-    function setUser(user) {
-      const name = user.displayName || (user.email ? user.email.split("@")[0] : "Teacher");
-      $("welcomeName").textContent = name.split(" ")[0];
-      $("sideName").textContent = name;
-      $("sideEmail").textContent = user.email || "School account";
-      if (user.photoURL) $("sideAvatar").src = user.photoURL;
-    }
-
-<section id="contact">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">Contact</div>
-      <h2>Visit, call or write to us</h2>
-    </div>
-    <div class="contact-grid">
-      <div class="contact-card">
-        <h3>Reach the School Office</h3>
-        <div class="c-row">
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22s8-4.5 8-11a8 8 0 1 0-16 0c0 6.5 8 11 8 11Z"/><circle cx="12" cy="11" r="3"/></svg>
-          <div><b>Address</b><span>Bal Jyoti Public School, Lal Kuan, Near GT Road &amp; NH-24, P.O. Shahpur Bamheta, Ghaziabad, Uttar Pradesh – 201009</span></div>
-        </div>
-        <div class="c-row">
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5a2 2 0 0 1 2-2h3l2 5-2 1a11 11 0 0 0 5 5l1-2 5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 5Z"/></svg>
-          <div><b>WhatsApp / Phone</b><span>+91 99103 63101</span></div>
-        </div>
-        <div class="c-row">
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
-          <div><b>Email</b><span>info@baljyoti.com</span></div>
-        </div>
-        <div class="c-row">
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-          <div><b>Office Hours</b><span>Monday – Saturday, school working hours</span></div>
-        </div>
-        <div class="c-row">
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16v12H8l-4 4V4Z"/></svg>
-          <div><b>Official Website</b><span><a href="https://www.baljyoti.com" target="_blank" rel="noopener">www.baljyoti.com</a></span></div>
-        </div>
-      </div>
-      <div class="map-frame">
-        <iframe src="https://www.google.com/maps?q=Bal+Jyoti+Public+School+Lal+Kuan+Ghaziabad&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
-      </div>
-    </div>
-  </div>
-</section>
-    function showLogin(errorMessage = "") {
-      $("appShell").classList.add("hidden");
-      $("loginScreen").classList.remove("hidden");
-      if (errorMessage) { $("loginError").textContent = errorMessage; $("loginError").classList.remove("hidden"); }
-    }
-
-<footer>
-  <div class="wrap">
-    <div class="foot-grid">
-      <div class="foot-brand">
-        <h4>Bal Jyoti Public School</h4>
-        <p>CBSE-affiliated, co-educational school in Lal Kuan, Ghaziabad, serving students from Nursery to Class XII since 1987. Managed by the Krishna Gopal Samitee, Uttar Pradesh.</p>
-      </div>
-      <div class="foot-links">
-        <h5>Explore</h5>
-        <a href="#about">About Us</a>
-        <a href="#academics">Academics</a>
-        <a href="#facilities">Facilities</a>
-        <a href="#admission">Admission</a>
-      </div>
-      <div class="foot-links">
-        <h5>Connect</h5>
-        <a href="https://www.facebook.com/baljyotipublicschool/" target="_blank" rel="noopener">Facebook</a>
-        <a href="https://wa.me/919910363101" target="_blank" rel="noopener">WhatsApp</a>
-        <a href="mailto:info@baljyoti.com">Email Us</a>
-        <a href="https://www.baljyoti.com" target="_blank" rel="noopener">Official Website</a>
-      </div>
-      <div class="foot-links">
-        <h5>More Pages</h5>
-        <a href="about.html">About Us</a>
-        <a href="academics.html">Academics</a>
-        <a href="student-life.html">Student Life</a>
-        <a href="facilities.html">Facilities</a>
+  <header class="site-header">
+    <div class="wrap nav-wrap">
+      <a class="brand" href="index.html" aria-label="Bal Jyoti Public School home">
+        <img src="logo.png" alt="Bal Jyoti Public School logo">
+        <span class="brand-name">BAL JYOTI<small>Public School · Ghaziabad</small></span>
+      </a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Open navigation" aria-expanded="false">☰</button>
+      <nav class="nav-links" id="mainNav" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <div class="nav-group"><a href="about.html">About ▾</a><div class="dropdown">
+          <a href="about.html">About Us</a><a href="leaders.html">Our Leaders</a><a href="disclosure.html">Mandatory Disclosure</a><a href="gallery.html">Gallery</a>
+        </div></div>
+        <div class="nav-group"><a href="academics.html">Academics ▾</a><div class="dropdown">
+          <a href="academics.html">Academics</a><a href="student-life.html">Student Life</a><a href="facilities.html">Facilities</a>
+        </div></div>
         <a href="admission.html">Admission</a>
         <a href="careers.html">Careers</a>
-        <a href="leaders.html">Our Leaders</a>
-        <a href="gallery.html">Gallery</a>
-        <a href="disclosure.html">Mandatory Disclosure</a>
-        <a href="erp">Login</a>
+        <a href="#contact">Contact</a>
+        <a class="login-link" href="/erp/">Teacher Login</a>
+        <a class="apply-link" href="admission.html#apply">Apply Now</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <div class="hero-grid">
+          <div>
+            <div class="eyebrow">CBSE affiliated · Nursery to Class XII · Established 1987</div>
+            <h1>Where every child's <span>light</span> finds its way.</h1>
+            <p class="lead">For generations, Bal Jyoti Public School has nurtured young minds in Lal Kuan, Ghaziabad—building strong foundations in learning, character and confidence.</p>
+            <div class="button-row">
+              <a class="btn btn-primary" href="admission.html#apply">Admission Enquiry <span>→</span></a>
+              <a class="btn btn-outline" href="#contact">Visit Our Campus</a>
+            </div>
+          </div>
+          <div class="hero-art" aria-label="Bal Jyoti school theme">
+            <div class="lamp"><div class="symbol" aria-hidden="true">🪔</div><strong>ज्ञान · संस्कार · उज्ज्वल भविष्य</strong><span>Learning today. Leading tomorrow.</span></div>
+          </div>
+        </div>
+        <div class="stats" aria-label="School highlights">
+          <div class="stat"><strong>1987</strong><span>Year established</span></div>
+          <div class="stat"><strong>8,855 m²</strong><span>Campus area</span></div>
+          <div class="stat"><strong>Nursery–XII</strong><span>Classes offered</span></div>
+          <div class="stat"><strong>CBSE</strong><span>Affiliation 2130361</span></div>
+        </div>
       </div>
+    </section>
+
+    <section id="about">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">About Bal Jyoti</div><h2>A school built on learning, values and opportunity</h2></div>
+        <div class="about-grid">
+          <div class="body-copy">
+            <p>Bal Jyoti Public School was established in 1987 and is managed by the Krishna Gopal Samitee, Uttar Pradesh. Located on GT Road at Lal Kuan, near NH-24 in Ghaziabad, the school is a co-educational institution spread across a campus of approximately 8,855 square metres.</p>
+            <p>Affiliated to the Central Board of Secondary Education (CBSE), the school offers English-medium education from Nursery through Class XII. Our aim is to provide a supportive environment where academic learning goes hand in hand with creativity, discipline and community life.</p>
+            <p><em>Bal Jyoti</em> means “the light of children.” We believe every child has the potential to grow, question, create and contribute. Our teachers guide students to build knowledge, confidence, good character and respect for others.</p>
+          </div>
+          <aside class="fact-card">
+            <h3>School at a glance</h3>
+            <ul class="fact-list">
+              <li><span>Established</span><b>1987</b></li>
+              <li><span>Board</span><b>CBSE</b></li>
+              <li><span>Affiliation No.</span><b>2130361</b></li>
+              <li><span>Classes</span><b>Nursery – XII</b></li>
+              <li><span>Medium</span><b>English</b></li>
+              <li><span>Managing body</span><b>Krishna Gopal Samitee</b></li>
+              <li><span>Campus area</span><b>8,855 sq. m</b></li>
+              <li><span>School type</span><b>Co-educational, day school</b></li>
+              <li><span>Transport</span><b>Bus service available</b></li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-soft" id="academics">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">Academics</div><h2>A strong foundation at every stage</h2><p>Each stage of school builds the knowledge, skills and confidence students need for the next step.</p></div>
+        <div class="ladder">
+          <div class="rung"><div class="tag">Nursery – UKG</div><h3>Pre-Primary</h3><p>A warm, activity-based introduction to school through play, stories, rhymes, language, numbers and social learning.</p></div>
+          <div class="rung"><div class="tag">Class I – V</div><h3>Primary</h3><p>Strong foundations in literacy and numeracy, alongside environmental studies, computers, art and physical education.</p></div>
+          <div class="rung"><div class="tag">Class VI – VIII</div><h3>Middle School</h3><p>Wider subject learning in Science, Social Science and Mathematics, with growing independence and classroom participation.</p></div>
+          <div class="rung"><div class="tag">Class IX – X</div><h3>Secondary</h3><p>Structured learning and assessment to support students through the CBSE secondary curriculum and board examinations.</p></div>
+          <div class="rung"><div class="tag">Class XI – XII</div><h3>Senior Secondary</h3><p>Focused subject learning and preparation for board examinations and future higher-education choices, subject to school offerings.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="facilities">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">Facilities</div><h2>Spaces that support everyday learning</h2></div>
+        <div class="facility-grid">
+          <article class="facility-card"><div class="facility-icon">▰</div><h3>School Transport</h3><p>Bus pick-up and drop-off service for students travelling from the Lal Kuan and Ghaziabad area.</p></article>
+          <article class="facility-card"><div class="facility-icon">▤</div><h3>Library</h3><p>A reading space with books and reference resources to encourage curiosity and reading habits.</p></article>
+          <article class="facility-card"><div class="facility-icon">⚗</div><h3>Science & Computer Labs</h3><p>Practical learning opportunities that help students explore concepts through experiments and exercises.</p></article>
+          <article class="facility-card"><div class="facility-icon">♡</div><h3>Safety & Security</h3><p>Campus CCTV surveillance and supervised entry and exit arrangements support a secure school environment.</p></article>
+          <article class="facility-card"><div class="facility-icon">⚽</div><h3>Sports & Play Areas</h3><p>Sports periods and play areas encourage physical fitness, teamwork and participation.</p></article>
+          <article class="facility-card"><div class="facility-icon">▣</div><h3>Classrooms</h3><p>Learning spaces support classroom teaching and interactive, activity-based lessons.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-soft" id="student-life">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">Student Life</div><h2>Learning goes beyond the classroom</h2><p>Co-curricular activities give students opportunities to discover interests, express themselves and work together.</p></div>
+        <div class="chips"><span class="chip">Art & Craft</span><span class="chip">Dance</span><span class="chip">Music</span><span class="chip">Picnics & Excursions</span><span class="chip">Sports Day</span><span class="chip">Annual Day</span><span class="chip">Festival Celebrations</span></div>
+        <div class="life-grid">
+          <div class="life-item"><h3>Annual Day</h3><p>A school-wide celebration of student performances, participation and achievements.</p></div>
+          <div class="life-item"><h3>Sports Day</h3><p>Track events, team games and house activities that build fitness and school spirit.</p></div>
+          <div class="life-item"><h3>Festival Celebrations</h3><p>Classroom activities, assemblies and cultural programmes mark occasions through the year.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="admission">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">Admissions 2026–27</div><h2>Begin your child's journey at Bal Jyoti</h2><p>Connect with the school office to understand class availability, documents and the admission process.</p></div>
+        <div class="steps">
+          <article class="step-card"><div class="step-number">01</div><h3>Make an enquiry</h3><p>Call or WhatsApp the school office to check availability for your child's class.</p></article>
+          <article class="step-card"><div class="step-number">02</div><h3>Visit the campus</h3><p>Meet the school team, explore the campus and collect admission information.</p></article>
+          <article class="step-card"><div class="step-number">03</div><h3>Submit documents</h3><p>Complete the admission form and submit the documents requested by the school.</p></article>
+          <article class="step-card"><div class="step-number">04</div><h3>Admission confirmation</h3><p>After verification, the school office will guide you through the next steps.</p></article>
+        </div>
+        <div class="admission-cta"><div><h3>We look forward to meeting you.</h3><p>Speak with our team about admissions, fees, transport and school facilities.</p></div><a class="btn" href="https://wa.me/919910363101?text=Hello%2C%20I%20would%20like%20information%20about%20admission%20at%20Bal%20Jyoti%20Public%20School." target="_blank" rel="noopener noreferrer">WhatsApp the School Office ↗</a></div>
+      </div>
+    </section>
+
+    <section class="section-soft" id="campus">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">Campus Glimpse</div><h2>A place to learn, explore and grow</h2><p>Explore the different spaces that support school life at Bal Jyoti.</p></div>
+        <div class="gallery-grid"><div class="gallery-tile"><span>Classrooms</span></div><div class="gallery-tile"><span>Playground</span></div><div class="gallery-tile"><span>Library</span></div><div class="gallery-tile"><span>Science Labs</span></div></div>
+        <p class="gallery-note">These are illustrative category tiles. Replace them with current, school-approved campus photographs when available.</p>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">Contact Us</div><h2>We would be happy to hear from you</h2></div>
+        <div class="contact-grid">
+          <div class="contact-card">
+            <h3>Reach the School Office</h3>
+            <div class="contact-row"><div class="ico">⌖</div><div><b>Address</b><span>Bal Jyoti Public School, Lal Kuan, Near GT Road & NH-24, P.O. Shahpur Bamheta, Ghaziabad, Uttar Pradesh – 201009</span></div></div>
+            <div class="contact-row"><div class="ico">☎</div><div><b>Phone / WhatsApp</b><a href="tel:+919910363101">+91 99103 63101</a></div></div>
+            <div class="contact-row"><div class="ico">✉</div><div><b>Email</b><a href="mailto:info@baljyoti.com">info@baljyoti.com</a></div></div>
+            <div class="contact-row"><div class="ico">◷</div><div><b>Office Hours</b><span>Monday – Saturday, school working hours</span></div></div>
+            <div class="contact-row"><div class="ico">◎</div><div><b>Website</b><a href="https://www.baljyoti.com">www.baljyoti.com</a></div></div>
+          </div>
+          <div class="map-frame"><iframe title="Bal Jyoti Public School location map" src="https://www.google.com/maps?q=Bal+Jyoti+Public+School+Lal+Kuan+Ghaziabad&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="footer-grid">
+        <div><h3>Bal Jyoti Public School</h3><p>CBSE-affiliated, co-educational school in Lal Kuan, Ghaziabad, serving students from Nursery to Class XII since 1987. Managed by Krishna Gopal Samitee, Uttar Pradesh.</p></div>
+        <div><h4>Explore</h4><a href="#about">About Us</a><a href="#academics">Academics</a><a href="#facilities">Facilities</a><a href="#student-life">Student Life</a></div>
+        <div><h4>Admissions</h4><a href="admission.html">Admission Information</a><a href="admission.html#apply">Enquiry</a><a href="careers.html">Careers</a></div>
+        <div><h4>Connect</h4><a href="https://www.facebook.com/baljyotipublicschool/" target="_blank" rel="noopener noreferrer">Facebook</a><a href="https://wa.me/919910363101" target="_blank" rel="noopener noreferrer">WhatsApp</a><a href="mailto:info@baljyoti.com">Email Us</a><a href="/erp/">Teacher Login</a><a href="disclosure.html">Mandatory Disclosure</a></div>
+      </div>
+      <div class="footer-bottom"><span>© <span id="year"></span> Bal Jyoti Public School. All rights reserved.</span><span>CBSE Affiliation No. 2130361</span></div>
     </div>
-    <div class="foot-bottom">
-      <span>© Bal Jyoti Public School, Ghaziabad. All rights reserved.</span>
-      <span>CBSE Affiliation No. 2130361</span>
-    </div>
-  </div>
-</footer>
-    function showApp(user) {
-      $("loginScreen").classList.add("hidden");
-      $("appShell").classList.remove("hidden");
-      setUser(user);
-    }
+  </footer>
 
-    function isFirebaseConfigured() {
-      return FIREBASE_CONFIG.apiKey !== "YOUR_API_KEY" &&
-             FIREBASE_CONFIG.projectId !== "YOUR_PROJECT_ID" &&
-             ALLOWED_EMAIL_DOMAIN !== "YOUR_SCHOOL_DOMAIN";
-    }
+  <a class="whatsapp" href="https://wa.me/919910363101?text=Hello%2C%20I%20would%20like%20information%20about%20Bal%20Jyoti%20Public%20School." target="_blank" rel="noopener noreferrer" aria-label="Chat with Bal Jyoti Public School on WhatsApp" title="WhatsApp">☏</a>
 
-<a class="whatsapp-fab" href="https://wa.me/919910363101?text=Hello%2C%20I%20am%20looking%20for%20admission%20information." target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp for admission enquiries" title="WhatsApp Us for Admission">
-  <span class="whatsapp-ping"></span>
-  <svg viewBox="0 0 32 32" fill="#fff" xmlns="http://www.w3.org/2000/svg">
-    <path d="M16.004 3C9.377 3 4 8.373 4 15c0 2.386.7 4.607 1.908 6.472L4 29l7.72-1.874A11.94 11.94 0 0 0 16.004 27C22.63 27 28 21.627 28 15S22.63 3 16.004 3Zm.001 21.818c-1.99 0-3.85-.57-5.42-1.552l-.389-.232-4.58 1.112 1.13-4.463-.253-.399A9.77 9.77 0 0 1 5.2 15c0-5.965 4.84-10.818 10.805-10.818S26.809 9.035 26.809 15 21.97 24.818 16.005 24.818Zm5.61-8.15c-.307-.154-1.816-.897-2.098-.999-.281-.102-.486-.154-.69.154-.204.307-.79.998-.968 1.204-.178.205-.357.23-.664.077-.307-.154-1.297-.478-2.47-1.523-.913-.814-1.53-1.82-1.708-2.128-.178-.307-.019-.473.135-.626.139-.138.307-.358.46-.537.153-.18.204-.307.307-.512.102-.205.05-.384-.026-.538-.077-.154-.69-1.663-.945-2.278-.249-.6-.503-.518-.69-.527l-.588-.01c-.204 0-.537.077-.818.384-.281.307-1.073 1.05-1.073 2.56 0 1.512 1.098 2.972 1.251 3.177.153.205 2.163 3.303 5.242 4.632.733.317 1.305.506 1.75.647.735.234 1.404.201 1.933.122.59-.088 1.816-.742 2.073-1.459.256-.717.256-1.332.179-1.46-.077-.128-.281-.204-.588-.358Z"/>
-  </svg>
-</a>
-    async function signIn() {
-      if (!isFirebaseConfigured()) {
-        $("loginError").textContent = "Portal setup is incomplete. The administrator must add Firebase settings and the school email domain.";
-        $("loginError").classList.remove("hidden");
-        return;
-      }
-      try {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({ hd: ALLOWED_EMAIL_DOMAIN, prompt: "select_account" });
-        await auth.signInWithPopup(provider);
-      } catch (error) {
-        console.error(error);
-        $("loginError").textContent = error.code === "auth/popup-blocked"
-          ? "The sign-in window was blocked. Please allow pop-ups and try again."
-          : "Google sign-in failed. Please try again or contact the ERP administrator.";
-        $("loginError").classList.remove("hidden");
-      }
-    }
-
-    async function signOut() {
-      if (auth) await auth.signOut();
-      showLogin();
-    }
-
-<div class="admission-popup-overlay" id="admissionPopup">
-  <div class="admission-popup">
-    <button class="popup-close" onclick="document.getElementById('admissionPopup').classList.remove('show')" aria-label="Close">×</button>
-    <div class="popup-icon">🎓</div>
-    <h3>Admissions Open for 2026–27</h3>
-    <p>Nursery to Class XII — seats are limited this session. Start your child's application today.</p>
-    <div class="popup-actions">
-      <a class="popup-btn-primary" href="admission.html#apply">Apply Now</a>
-      <a class="popup-btn-secondary" href="https://wa.me/919910363101?text=Hello%2C%20I%20am%20looking%20for%20admission%20information." target="_blank" rel="noopener">WhatsApp Us</a>
-    </div>
-  </div>
-</div>
-    function initFirebase() {
-      if (!isFirebaseConfigured()) {
-        showLogin();
-        $("loginError").textContent = "Administrator setup required: add Firebase configuration and the authorised school email domain in this file.";
-        $("loginError").classList.remove("hidden");
-        return;
-      }
-      try {
-        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-        auth = firebase.auth();
-        auth.onAuthStateChanged(async user => {
-          if (!user) { showLogin(); return; }
-          const email = (user.email || "").toLowerCase();
-          const domain = email.split("@")[1] || "";
-          if (domain !== ALLOWED_EMAIL_DOMAIN.toLowerCase()) {
-            await auth.signOut();
-            showLogin("Access denied. Please sign in with your authorised school email account.");
-            return;
-          }
-          showApp(user);
-        });
-      } catch (error) {
-        console.error(error);
-        showLogin("Authentication could not be initialised. Please contact the ERP administrator.");
-      }
-    }
-
-<script>
-  (function(){
-    var alreadyShown = false;
-    try{ alreadyShown = sessionStorage.getItem('bjps_popup_shown'); }catch(e){}
-    if(!alreadyShown){
-      setTimeout(function(){
-        var el = document.getElementById('admissionPopup');
-        if(el){ el.classList.add('show'); }
-        try{ sessionStorage.setItem('bjps_popup_shown','1'); }catch(e){}
-      }, 4000);
-    function setupNavigation() {
-      $("openSidebar").addEventListener("click", () => { $("sidebar").classList.remove("-translate-x-full"); $("mobileOverlay").classList.remove("hidden"); });
-      const close = () => { $("sidebar").classList.add("-translate-x-full"); $("mobileOverlay").classList.add("hidden"); };
-      $("closeSidebar").addEventListener("click", close);
-      $("mobileOverlay").addEventListener("click", close);
-      document.querySelectorAll(".nav-link").forEach(link => link.addEventListener("click", () => {
-        document.querySelectorAll(".nav-link").forEach(item => item.classList.remove("nav-active"));
-        link.classList.add("nav-active"); close();
-      }));
-      $("googleSignInBtn").addEventListener("click", signIn);
-      $("signOutBtn").addEventListener("click", signOut);
-      $("headerSignOut").addEventListener("click", signOut);
-    }
-  })();
-</script>
-
-    document.addEventListener("DOMContentLoaded", () => {
-      $("todayLabel").textContent = new Intl.DateTimeFormat("en-IN", { weekday:"long", day:"numeric", month:"long", year:"numeric" }).format(new Date());
-      $("year").textContent = new Date().getFullYear();
-      if (SUPPORT_EMAIL !== "YOUR_ADMIN_EMAIL") $("supportEmailLink").href = "mailto:" + SUPPORT_EMAIL;
-      renderCards();
-      setupNavigation();
-      initFirebase();
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const mainNav = document.getElementById('mainNav');
+    menuToggle.addEventListener('click', () => {
+      const isOpen = mainNav.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', String(isOpen));
+      menuToggle.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
+      menuToggle.textContent = isOpen ? '×' : '☰';
     });
+    mainNav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+      mainNav.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+      menuToggle.setAttribute('aria-label', 'Open navigation');
+      menuToggle.textContent = '☰';
+    }));
+    document.getElementById('year').textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
