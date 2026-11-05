@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#b5121b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bal Jyoti ERP">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+
+<title>Bal Jyoti Public School | Teacher Portal</title>
+
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://accounts.google.com">
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+<style>
+:root {
+  --red:#b5121b;
+  --red-dark:#8f0d15;
+  --red-soft:#fff1f2;
+  --ink:#172033;
+  --muted:#667085;
+  --line:#e8eaf0;
+  --surface:#fff;
+  --canvas:#f6f7f9;
+  --green:#15803d;
+  --shadow:0 8px 28px rgba(15,23,42,.07);
+  --safe-top:env(safe-area-inset-top, 0px);
+  --safe-bottom:env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing:border-box; }
+
+html {
+  min-height:100%;
+  -webkit-text-size-adjust:100%;
+}
+
+body {
+  margin:0;
+  min-height:100vh;
+  min-height:100dvh;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;
+  color:var(--ink);
+  background:var(--canvas);
+  -webkit-tap-highlight-color:transparent;
+}
+
+button,a { font:inherit; }
+button { cursor:pointer; touch-action:manipulation; }
+a { color:inherit; text-decoration:none; }
+
+button:focus-visible,a:focus-visible {
+  outline:3px solid rgba(181,18,27,.35);
+  outline-offset:3px;
+}
+
+.hidden { display:none !important; }
+
+/* LOGIN */
+
+.login-shell {
+  min-height:100vh;
+  min-height:100dvh;
+  display:grid;
+  place-items:center;
+  padding:calc(24px + var(--safe-top)) 18px calc(24px + var(--safe-bottom));
+  background:
+    radial-gradient(circle at 15% 10%,#ffe4e6 0,transparent 34%),
+    linear-gradient(145deg,#fff 15%,#f5f6f8 100%);
+}
+
+.login-card {
+  width:min(100%,430px);
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:26px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+
+.login-brand {
+  background:var(--red);
+  color:#fff;
+  text-align:center;
+  padding:34px 24px 28px;
+}
+
+.brand-mark {
+  width:68px;
+  height:68px;
+  border-radius:20px;
+  background:#fff;
+  color:var(--red);
+  display:grid;
+  place-items:center;
+  margin:0 auto 16px;
+  font-size:25px;
+  font-weight:900;
+  box-shadow:0 5px 18px rgba(0,0,0,.13);
+}
+
+.login-brand h1 {
+  margin:0;
+  font-size:23px;
+  line-height:1.2;
+  font-weight:800;
+  letter-spacing:-.4px;
+}
+
+.login-brand p {
+  margin:8px 0 0;
+  color:#ffe4e6;
+  font-size:13px;
+}
+
+.login-content { padding:26px 24px 28px; }
+
+.login-content h2 {
+  margin:0;
+  font-size:21px;
+}
+
+.login-content .intro {
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.6;
+  margin:9px 0 0;
+}
+
+.primary-btn {
+  width:100%;
+  min-height:54px;
+  border:0;
+  border-radius:14px;
+  background:var(--red);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  font-weight:700;
+  margin-top:22px;
+  padding:13px 16px;
+  box-shadow:0 5px 14px rgba(181,18,27,.16);
+}
+
+.primary-btn:active {
+  background:var(--red-dark);
+  transform:scale(.99);
+}
+
+.primary-btn:disabled {
+  opacity:.65;
+  cursor:wait;
+}
+
+.google-icon {
+  width:21px;
+  height:21px;
+  flex:none;
+}
+
+.fine-print {
+  text-align:center;
+  color:#98a2b3;
+  font-size:11px;
+  line-height:1.5;
+  margin:18px 0 0;
+}
+
+.message {
+  margin-top:16px;
+  padding:12px 13px;
+  border-radius:12px;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.message.error {
+  color:#991b1b;
+  background:#fef2f2;
+  border:1px solid #fecaca;
+}
+
+.message.info {
+  color:#344054;
+  background:#f8fafc;
+  border:1px solid var(--line);
+}
+
+.login-help {
+  margin-top:16px;
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.5;
+}
+
+/* APPLICATION */
+
+.app {
+  min-height:100vh;
+  min-height:100dvh;
+}
+
+.topbar {
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:var(--red);
+  color:#fff;
+  padding:calc(12px + var(--safe-top)) 16px 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow:0 3px 12px rgba(0,0,0,.12);
+}
+
+.top-brand {
+  display:flex;
+  align-items:center;
+  gap:11px;
+  min-width:0;
+}
+
+.top-mark {
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  background:#fff;
+  color:var(--red);
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  flex:none;
+}
+
+.top-title {
+  font-size:16px;
+  font-weight:800;
+  line-height:1.15;
+}
+
+.top-subtitle {
+  font-size:11px;
+  color:#ffe4e6;
+  margin-top:3px;
+}
+
+.menu-btn {
+  border:1px solid rgba(255,255,255,.4);
+  background:rgba(255,255,255,.1);
+  color:#fff;
+  border-radius:11px;
+  padding:9px 12px;
+  font-size:13px;
+  font-weight:650;
+}
+
+.layout {
+  display:flex;
+  min-height:calc(100vh - 64px);
+}
+
+.sidebar {
+  width:250px;
+  background:#fff;
+  border-right:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  flex:none;
+}
+
+.side-brand {
+  padding:23px 20px;
+  background:var(--red);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.side-brand .top-mark {
+  width:44px;
+  height:44px;
+}
+
+.side-nav {
+  padding:14px;
+  display:grid;
+  gap:5px;
+}
+
+.nav-btn {
+  width:100%;
+  border:0;
+  background:transparent;
+  text-align:left;
+  border-radius:12px;
+  padding:13px 14px;
+  color:#475467;
+  font-size:14px;
+  font-weight:600;
+}
+
+.nav-btn.active {
+  background:var(--red-soft);
+  color:var(--red);
+}
+
+.side-user {
+  margin-top:auto;
+  padding:17px;
+  border-top:1px solid var(--line);
+}
+
+.eyebrow {
+  font-size:10px;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  color:#98a2b3;
+  font-weight:700;
+}
+
+.user-name {
+  margin-top:7px;
+  font-size:13px;
+  font-weight:700;
+  overflow-wrap:anywhere;
+}
+
+.user-email {
+  margin-top:4px;
+  font-size:11px;
+  color:var(--muted);
+  overflow-wrap:anywhere;
+}
+
+.outline-btn {
+  width:100%;
+  margin-top:14px;
+  border:1px solid #fecdd3;
+  color:var(--red);
+  background:#fff;
+  border-radius:11px;
+  padding:11px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.mobile-drawer {
+  display:none;
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  padding:10px 14px;
+  box-shadow:0 8px 18px rgba(15,23,42,.06);
+}
+
+.mobile-drawer.open {
+  display:grid;
+  gap:4px;
+}
+
+.content {
+  flex:1;
+  min-width:0;
+  padding:28px clamp(16px,3vw,38px) calc(28px + var(--safe-bottom));
+}
+
+.content-inner {
+  max-width:1120px;
+  margin:0 auto;
+}
+
+.desktop-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:24px;
+  gap:16px;
+}
+
+.desktop-heading h1 {
+  margin:4px 0 0;
+  font-size:25px;
+  letter-spacing:-.5px;
+}
+
+.date-user {
+  text-align:right;
+  font-size:13px;
+  font-weight:700;
+}
+
+.date-user small {
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:400;
+  margin-top:4px;
+}
+
+/* DASHBOARD */
+
+.welcome {
+  border-radius:22px;
+  padding:26px;
+  background:linear-gradient(120deg,var(--red),var(--red-dark));
+  color:#fff;
+  box-shadow:var(--shadow);
+}
+
+.welcome .eyebrow { color:#ffdadd; }
+
+.welcome h2 {
+  margin:9px 0 0;
+  font-size:clamp(23px,4vw,31px);
+  letter-spacing:-.5px;
+}
+
+.welcome p {
+  margin:9px 0 0;
+  color:#fff0f1;
+  font-size:14px;
+  line-height:1.6;
+  max-width:620px;
+}
+
+.stats {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:13px;
+  margin-top:18px;
+}
+
+.stat {
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:17px;
+  padding:17px;
+  box-shadow:0 3px 12px rgba(15,23,42,.025);
+}
+
+.stat-label {
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:#98a2b3;
+  font-weight:700;
+}
+
+.stat-value {
+  font-size:18px;
+  font-weight:800;
+  margin-top:8px;
+}
+
+.stat-note {
+  font-size:11px;
+  color:var(--muted);
+  margin-top:4px;
+  line-height:1.4;
+}
+
+.section-head {
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:12px;
+  margin:28px 0 13px;
+}
+
+.section-head h3 {
+  margin:0;
+  font-size:17px;
+}
+
+.section-head p {
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.text-link {
+  color:var(--red);
+  border:0;
+  background:none;
+  font-size:12px;
+  font-weight:700;
+  padding:8px 0;
+}
+
+/* TEACHING TOOLS */
+
+.tools-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+
+.tool-card {
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:19px;
+  box-shadow:0 3px 12px rgba(15,23,42,.03);
+  transition:transform .15s,box-shadow .15s;
+}
+
+.tool-card:active { transform:scale(.99); }
+
+.tool-icon {
+  width:46px;
+  height:46px;
+  border-radius:14px;
+  background:var(--red-soft);
+  display:grid;
+  place-items:center;
+  font-size:23px;
+}
+
+.tool-card h4 {
+  margin:13px 0 0;
+  font-size:15px;
+}
+
+.tool-card p {
+  margin:6px 0 0;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+}
+
+.tool-open {
+  display:inline-block;
+  color:var(--red);
+  font-size:12px;
+  font-weight:750;
+  margin-top:14px;
+}
+
+.info-panel,.profile-panel,.coming-panel {
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 3px 12px rgba(15,23,42,.025);
+}
+
+.info-panel { margin-top:22px; }
+
+.info-panel h3 {
+  margin:0;
+  font-size:14px;
+}
+
+.info-panel p {
+  margin:8px 0 0;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.65;
+}
+
+.view-title {
+  margin:0;
+  font-size:22px;
+  letter-spacing:-.4px;
+}
+
+.view-description {
+  margin:6px 0 20px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+}
+
+/* SCHOOL OPERATIONS */
+
+.coming-panel {
+  text-align:center;
+  padding:48px 20px;
+}
+
+.coming-icon {
+  width:58px;
+  height:58px;
+  margin:0 auto 15px;
+  border-radius:17px;
+  background:var(--red-soft);
+  display:grid;
+  place-items:center;
+  font-size:27px;
+}
+
+.coming-panel h2 {
+  margin:0;
+  font-size:23px;
+}
+
+.coming-panel p {
+  max-width:430px;
+  margin:9px auto 0;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+}
+
+/* PROFILE */
+
+.profile-top {
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.avatar {
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  background:var(--red-soft);
+  color:var(--red);
+  display:grid;
+  place-items:center;
+  font-size:21px;
+  font-weight:800;
+  flex:none;
+}
+
+.profile-top h3 {
+  margin:0;
+  font-size:17px;
+  overflow-wrap:anywhere;
+}
+
+.profile-top p {
+  margin:5px 0 0;
+  font-size:12px;
+  color:var(--muted);
+  overflow-wrap:anywhere;
+}
+
+.profile-meta {
+  border-top:1px solid var(--line);
+  margin-top:20px;
+  padding-top:17px;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+
+.profile-meta strong {
+  display:block;
+  margin-top:6px;
+  font-size:13px;
+}
+
+.footer {
+  border-top:1px solid var(--line);
+  margin-top:34px;
+  padding-top:16px;
+  color:#98a2b3;
+  font-size:11px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.bottom-nav { display:none; }
+
+/* TABLET */
+
+@media (max-width:900px) {
+  .sidebar { width:220px; }
+  .stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
+/* MOBILE */
+
+@media (max-width:680px) {
+  .layout {
+    display:block;
+    min-height:0;
+  }
+
+  .sidebar { display:none; }
+
+  .content {
+    padding:17px 15px calc(86px + var(--safe-bottom));
+  }
+
+  .desktop-heading { display:none; }
+
+  .welcome {
+    border-radius:19px;
+    padding:22px 19px;
+  }
+
+  .welcome h2 { font-size:25px; }
+
+  .stats {
+    gap:10px;
+    margin-top:13px;
+  }
+
+  .stat {
+    padding:14px;
+    border-radius:15px;
+  }
+
+  .stat-value { font-size:16px; }
+
+  .section-head { margin-top:24px; }
+
+  .tools-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+  }
+
+  .tool-card {
+    padding:15px;
+    border-radius:16px;
+    min-height:164px;
+  }
+
+  .tool-card h4 { font-size:14px; }
+  .tool-card p { font-size:11px; }
+
+  .info-panel {
+    padding:17px;
+    margin-top:17px;
+  }
+
+  .mobile-drawer { position:relative; }
+
+  .bottom-nav {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    position:fixed;
+    z-index:25;
+    bottom:0;
+    left:0;
+    right:0;
+    padding:7px 7px calc(7px + var(--safe-bottom));
+    background:rgba(255,255,255,.97);
+    border-top:1px solid var(--line);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+  }
+
+  .bottom-nav .nav-btn {
+    text-align:center;
+    padding:8px 2px;
+    font-size:10px;
+    border-radius:10px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+  }
+
+  .nav-symbol {
+    font-size:18px;
+    line-height:1;
+  }
+
+  .footer { margin-top:25px; }
+
+  .profile-meta { grid-template-columns:1fr; }
+}
+
+@media (max-width:360px) {
+  .tools-grid { grid-template-columns:1fr; }
+  .login-content { padding:23px 19px; }
+  .login-brand h1 { font-size:21px; }
+  .stat-value { font-size:15px; }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  *,*::before,*::after {
+    scroll-behavior:auto !important;
+    transition:none !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN SCREEN -->
+
+<main id="loginScreen" class="login-shell">
+  <section class="login-card" aria-labelledby="loginTitle">
+
+    <header class="login-brand">
+      <div class="brand-mark" aria-hidden="true">BJ</div>
+      <h1 id="loginTitle">Bal Jyoti Public School</h1>
+      <p>Teacher ERP &amp; Workspace Portal</p>
+    </header>
+
+    <div class="login-content">
+      <h2>Welcome</h2>
+
+      <p class="intro">
+        Sign in using your official Bal Jyoti school Google account
+        to access your teacher workspace.
+      </p>
+
+      <div id="loginMessage"
+           class="message hidden"
+           role="alert"
+           aria-live="polite"></div>
+
+      <button id="googleSignInBtn"
+              class="primary-btn"
+              type="button">
+
+        <svg class="google-icon" aria-hidden="true" viewBox="0 0 48 48">
+          <path fill="#FFC107"
+            d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11c-.5 2.5-1.9 4.6-4 6v5h6.5c3.8-3.5 6.1-8.6 6.1-14.7z"/>
+          <path fill="#FF3D00"
+            d="M24 44c5.4 0 9.9-1.8 13.2-4.8l-6.5-5c-1.8 1.2-4 1.9-6.7 1.9-5.2 0-9.6-3.5-11.2-8.2H6.1v5.2C9.4 39.6 16.2 44 24 44z"/>
+          <path fill="#4CAF50"
+            d="M12.8 27.9a12 12 0 0 1 0-7.8v-5.2H6.1a20 20 0 0 0 0 18.2l6.7-5.2z"/>
+          <path fill="#1976D2"
+            d="M24 11.9c2.9 0 5.5 1 7.5 3l5.7-5.7C33.9 6 29.4 4 24 4 16.2 4 9.4 8.4 6.1 14.9l6.7 5.2c1.6-4.7 6-8.2 11.2-8.2z"/>
+        </svg>
+
+        <span id="signInButtonText">Continue with Google</span>
+      </button>
+
+      <p class="fine-print">
+        Access is intended for authorised school staff using an
+        <strong>@baljyoti.com</strong> account.
+      </p>
+
+      <p class="login-help">
+        If sign-in does not complete, return to this page and try again.
+        Contact the school administrator if the issue continues.
+      </p>
+    </div>
+  </section>
+</main>
+
+
+<!-- APPLICATION SCREEN -->
+
+<div id="appScreen" class="app hidden">
+
+  <header class="topbar">
+
+    <div class="top-brand">
+      <div class="top-mark" aria-hidden="true">BJ</div>
+
+      <div>
+        <div class="top-title">Bal Jyoti ERP</div>
+        <div class="top-subtitle">Teacher Portal</div>
+      </div>
+    </div>
+
+    <button id="mobileMenuBtn"
+            class="menu-btn"
+            type="button"
+            aria-expanded="false"
+            aria-controls="mobileDrawer">
+      Menu ☰
+    </button>
+
+  </header>
+
+
+  <!-- MOBILE MENU -->
+
+  <div id="mobileDrawer"
+       class="mobile-drawer"
+       aria-label="Mobile navigation">
+
+    <button class="nav-btn active" data-view="dashboardView">
+      ▦ &nbsp; Dashboard
+    </button>
+
+    <button class="nav-btn" data-view="teachingView">
+      ▤ &nbsp; Teaching Tools
+    </button>
+
+    <button class="nav-btn" data-view="operationsView">
+      ☷ &nbsp; School Operations
+    </button>
+
+    <button class="nav-btn" data-view="profileView">
+      ◎ &nbsp; My Profile
+    </button>
+
+    <button id="mobileSignOutBtn"
+            class="nav-btn"
+            style="color:var(--red)">
+      ↪ &nbsp; Sign out
+    </button>
+
+  </div>
+
+
+  <div class="layout">
+
+    <!-- DESKTOP SIDEBAR -->
+
+    <aside class="sidebar">
+
+      <div class="side-brand">
+        <div class="top-mark" aria-hidden="true">BJ</div>
+
+        <div>
+          <div style="font-weight:800">Bal Jyoti</div>
+          <div style="font-size:11px;color:#ffe4e6;margin-top:3px">
+            Public School ERP
+          </div>
+        </div>
+      </div>
+
+      <nav class="side-nav" aria-label="Main navigation">
+
+        <button class="nav-btn active" data-view="dashboardView">
+          ▦ &nbsp; Dashboard
+        </button>
+
+        <button class="nav-btn" data-view="teachingView">
+          ▤ &nbsp; Teaching Tools
+        </button>
+
+        <button class="nav-btn" data-view="operationsView">
+          ☷ &nbsp; School Operations
+        </button>
+
+        <button class="nav-btn" data-view="profileView">
+          ◎ &nbsp; My Profile
+        </button>
+
+      </nav>
+
+      <div class="side-user">
+        <div class="eyebrow">Signed in as</div>
+
+        <div id="sidebarUserName" class="user-name">Teacher</div>
+        <div id="sidebarUserEmail" class="user-email"></div>
+
+        <button id="signOutBtn" class="outline-btn" type="button">
+          Sign out
+        </button>
+      </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="content">
+
+      <div class="content-inner">
+
+        <div class="desktop-heading">
+          <div>
+            <div class="eyebrow">Bal Jyoti Public School</div>
+            <h1 id="pageHeading">Teacher Dashboard</h1>
+          </div>
+
+          <div class="date-user">
+            <span id="headerUserName"></span>
+            <small id="headerDate"></small>
+          </div>
+        </div>
+
+
+        <!-- DASHBOARD -->
+
+        <section id="dashboardView" class="app-view">
+
+          <div class="welcome">
+            <div class="eyebrow">Teacher workspace</div>
+
+            <h2>
+              Welcome, <span id="welcomeName">Teacher</span>
+            </h2>
+
+            <p>
+              Your central access point for teaching tools
+              and school activities.
+            </p>
+          </div>
+
+
+          <div class="stats">
+
+            <article class="stat">
+              <div class="stat-label">Portal access</div>
+              <div class="stat-value">Active</div>
+              <div class="stat-note" style="color:var(--green)">
+                Signed in successfully
+              </div>
+            </article>
+
+            <article class="stat">
+              <div class="stat-label">School tools</div>
+              <div class="stat-value">2 available</div>
+              <div class="stat-note">
+                Gmail and Google Classroom
+              </div>
+            </article>
+
+            <article class="stat">
+              <div class="stat-label">Teaching resources</div>
+              <div class="stat-value">Available</div>
+              <div class="stat-note">
+                Classroom and communication
+              </div>
+            </article>
+
+            <article class="stat">
+              <div class="stat-label">ERP modules</div>
+              <div class="stat-value">Coming soon</div>
+              <div class="stat-note">
+                School workflows in future phases
+              </div>
+            </article>
+
+          </div>
+
+
+          <div class="section-head">
+
+            <div>
+              <h3>Quick access</h3>
+              <p>Open your everyday teaching tools.</p>
+            </div>
+
+            <button class="text-link"
+                    data-go="teachingView"
+                    type="button">
+              View all →
+            </button>
+
+          </div>
+
+
+          <div id="quickLinksGrid" class="tools-grid"></div>
+
+
+          <div class="info-panel">
+            <h3>Important information</h3>
+
+            <p>
+              Please use your official school Google account for
+              school-related communication and documents. Follow
+              the reporting timelines and instructions shared by
+              the school administration.
+            </p>
+          </div>
+
+        </section>
+
+
+        <!-- TEACHING TOOLS -->
+
+        <section id="teachingView" class="app-view hidden">
+
+          <h2 class="view-title">Teaching Tools</h2>
+
+          <p class="view-description">
+            Tools to support classroom teaching and learning.
+          </p>
+
+          <div class="tools-grid">
+
+            <a class="tool-card"
+               href="https://classroom.google.com/"
+               target="_blank"
+               rel="noopener noreferrer">
+
+              <div class="tool-icon">📚</div>
+
+              <h4>Google Classroom</h4>
+
+              <p>
+                Assignments, classwork and student communication.
+              </p>
+
+              <span class="tool-open">
+                Open Classroom ↗
+              </span>
+
+            </a>
+
+
+            <a class="tool-card"
+               href="https://mail.google.com/"
+               target="_blank"
+               rel="noopener noreferrer">
+
+              <div class="tool-icon">✉️</div>
+
+              <h4>Gmail</h4>
+
+              <p>
+                Official school email and communication.
+              </p>
+
+              <span class="tool-open">
+                Open Gmail ↗
+              </span>
+
+            </a>
+
+          </div>
+
+        </section>
+
+
+        <!-- SCHOOL OPERATIONS -->
+
+        <section id="operationsView" class="app-view hidden">
+
+          <div class="coming-panel">
+
+            <div class="coming-icon">🚧</div>
+
+            <h2>Coming Soon</h2>
+
+            <p>
+              School Operations modules are currently under
+              development. New features will be introduced in phases.
+            </p>
+
+          </div>
+
+        </section>
+
+
+        <!-- PROFILE -->
+
+        <section id="profileView" class="app-view hidden">
+
+          <h2 class="view-title">My Profile</h2>
+
+          <p class="view-description">
+            Your currently authenticated school account.
+          </p>
+
+          <div class="profile-panel">
+
+            <div class="profile-top">
+
+              <div id="profileInitial" class="avatar">T</div>
+
+              <div>
+                <h3 id="profileName">Teacher</h3>
+                <p id="profileEmail"></p>
+              </div>
+
+            </div>
+
+            <div class="profile-meta">
+
+              <div>
+                <div class="eyebrow">Account status</div>
+                <strong style="color:var(--green)">
+                  Authenticated
+                </strong>
+              </div>
+
+              <div>
+                <div class="eyebrow">Allowed email domain</div>
+                <strong>@baljyoti.com</strong>
+              </div>
+
+            </div>
+
+            <button id="profileSignOutBtn"
+                    class="primary-btn"
+                    type="button"
+                    style="max-width:190px">
+              Sign out
+            </button>
+
+          </div>
+
+        </section>
+
+
+        <footer class="footer">
+          <span>
+            © <span id="yearNow"></span> Bal Jyoti Public School
+          </span>
+
+          <span>Teacher ERP Portal</span>
+        </footer>
+
+      </div>
+
+    </main>
+
+  </div>
+
+
+  <!-- MOBILE BOTTOM NAVIGATION -->
+
+  <nav class="bottom-nav" aria-label="Quick navigation">
+
+    <button class="nav-btn active" data-view="dashboardView">
+      <span class="nav-symbol">▦</span>
+      Home
+    </button>
+
+    <button class="nav-btn" data-view="teachingView">
+      <span class="nav-symbol">▤</span>
+      Teaching
+    </button>
+
+    <button class="nav-btn" data-view="operationsView">
+      <span class="nav-symbol">☷</span>
+      Operations
+    </button>
+
+    <button class="nav-btn" data-view="profileView">
+      <span class="nav-symbol">◎</span>
+      Profile
+    </button>
+
+  </nav>
+
+</div>
+
+
+<!-- FIREBASE AUTHENTICATION -->
+
+<script>
+
+// Firebase configuration
+
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyB2SGgV_zUFOyOGIIM27H5HNQYlO5WdFEY",
+  authDomain: "baljyoti-erp.firebaseapp.com",
+  projectId: "baljyoti-erp",
+  storageBucket: "baljyoti-erp.firebasestorage.app",
+  messagingSenderId: "422855577454",
+  appId: "1:422855577454:web:9bccb80cc472d02275bb7f",
+  measurementId: "G-CS6FSBHL0D"
+};
+
+const ALLOWED_EMAIL_DOMAIN = "baljyoti.com";
+
+const TOOLS = [
+  {
+    name:"Google Classroom",
+    description:"Assignments, classwork and student communication.",
+    icon:"📚",
+    url:"https://classroom.google.com/"
+  },
+  {
+    name:"Gmail",
+    description:"Official school email and communication.",
+    icon:"✉️",
+    url:"https://mail.google.com/"
+  }
+];
+
+let auth = null;
+let redirectInProgress = false;
+
+const $ = id => document.getElementById(id);
+
+
+// Detect mobile devices
+
+const isMobileDevice = () =>
+  /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+
+// Show login messages
+
+function setMessage(text, kind="error") {
+
+  const box = $("loginMessage");
+
+  box.textContent = text;
+  box.className = "message " + kind;
+
+}
+
+function clearMessage() {
+
+  $("loginMessage").textContent = "";
+  $("loginMessage").className = "message hidden";
+
+}
+
+
+// Verify school email domain
+
+function schoolEmail(email) {
+
+  return typeof email === "string" &&
+    email.trim().toLowerCase().endsWith("@"+ALLOWED_EMAIL_DOMAIN);
+
+}
+
+
+// Display name
+
+function displayName(user) {
+
+  return user.displayName ||
+    (user.email ? user.email.split("@")[0] : "Teacher");
+
+}
+
+
+// Show login screen
+
+function showLogin() {
+
+  $("appScreen").classList.add("hidden");
+  $("loginScreen").classList.remove("hidden");
+
+}
+
+
+// Show application dashboard
+
+function showApp(user) {
+
+  const name = displayName(user);
+  const email = user.email || "";
+
+  $("loginScreen").classList.add("hidden");
+  $("appScreen").classList.remove("hidden");
+
+  $("welcomeName").textContent =
+    name.trim().split(/\s+/)[0] || "Teacher";
+
+  $("sidebarUserName").textContent = name;
+  $("sidebarUserEmail").textContent = email;
+
+  $("headerUserName").textContent = name;
+
+  $("headerDate").textContent =
+    new Date().toLocaleDateString("en-IN", {
+      weekday:"long",
+      day:"numeric",
+      month:"long",
+      year:"numeric"
+    });
+
+  $("profileName").textContent = name;
+  $("profileEmail").textContent = email;
+
+  const initial = (name.trim()[0] || "T").toUpperCase();
+
+  $("profileInitial").textContent = initial;
+
+  renderQuickLinks();
+
+  showView("dashboardView");
+
+}
+
+
+// Create quick access cards
+
+function makeToolCard(tool) {
+
+  const a = document.createElement("a");
+
+  a.className = "tool-card";
+  a.href = tool.url;
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+
+  const icon = document.createElement("div");
+  icon.className = "tool-icon";
+  icon.textContent = tool.icon;
+
+  const title = document.createElement("h4");
+  title.textContent = tool.name;
+
+  const desc = document.createElement("p");
+  desc.textContent = tool.description;
+
+  const action = document.createElement("span");
+  action.className = "tool-open";
+  action.textContent = "Open tool ↗";
+
+  a.append(icon,title,desc,action);
+
+  return a;
+
+}
+
+
+function renderQuickLinks() {
+
+  const grid = $("quickLinksGrid");
+
+  grid.replaceChildren(...TOOLS.map(makeToolCard));
+
+}
+
+
+// Navigation
+
+function showView(id) {
+
+  document.querySelectorAll(".app-view").forEach(v => {
+    v.classList.toggle("hidden",v.id !== id);
+  });
+
+  const headings = {
+    dashboardView:"Teacher Dashboard",
+    teachingView:"Teaching Tools",
+    operationsView:"School Operations",
+    profileView:"My Profile"
+  };
+
+  $("pageHeading").textContent =
+    headings[id] || "Teacher Dashboard";
+
+  document.querySelectorAll("[data-view]").forEach(btn => {
+    btn.classList.toggle("active",btn.dataset.view === id);
+  });
+
+  $("mobileDrawer").classList.remove("open");
+
+  $("mobileMenuBtn").setAttribute("aria-expanded","false");
+
+  window.scrollTo({top:0,behavior:"auto"});
+
+}
+
+
+// Friendly authentication errors
+
+function friendlyAuthError(error) {
+
+  const code = error && error.code;
+
+  const messages = {
+
+    "auth/unauthorized-domain":
+      "This website address is not authorised in Firebase. Add baljyoti.com and www.baljyoti.com under Firebase Authentication → Settings → Authorised domains.",
+
+    "auth/operation-not-allowed":
+      "Google sign-in is not enabled for this Firebase project.",
+
+    "auth/network-request-failed":
+      "Network connection failed. Check your internet connection and try again.",
+
+    "auth/popup-blocked":
+      "Your browser blocked the sign-in window. Please allow pop-ups or use the mobile sign-in flow.",
+
+    "auth/popup-closed-by-user":
+      "The sign-in window was closed before completion. Please try again.",
+
+    "auth/invalid-credential":
+      "Google sign-in could not be completed. Please contact the portal administrator.",
+
+    "auth/redirect-cancelled-by-user":
+      "The Google sign-in process was cancelled. Please try again.",
+
+    "auth/unauthorized-continue-uri":
+      "The sign-in return address is not authorised in Firebase."
+
+  };
+
+  return messages[code] ||
+    (error && error.message) ||
+    "Sign-in failed. Please try again or contact the school administrator.";
+
+}
+
+
+// Process Google redirect response
+
+async function handleRedirectResult() {
+
+  if (!auth) return;
+
+  try {
+
+    const result = await auth.getRedirectResult();
+
+    if (result && result.user && !schoolEmail(result.user.email)) {
+
+      await auth.signOut();
+
+      showLogin();
+
+      setMessage(
+        "Access denied. Please use your official @baljyoti.com Google account."
+      );
+
+    }
+
+  } catch (error) {
+
+    console.error("Google redirect sign-in error:",error);
+
+    showLogin();
+
+    setMessage(friendlyAuthError(error));
+
+  }
+
+}
+
+
+// Google sign-in
+
+async function signInWithGoogle() {
+
+  clearMessage();
+
+  if (!auth) {
+
+    setMessage(
+      "The sign-in service is still loading. Please wait a moment and try again.",
+      "info"
+    );
+
+    return;
+
+  }
+
+  const btn = $("googleSignInBtn");
+  const label = $("signInButtonText");
+
+  btn.disabled = true;
+
+  label.textContent = isMobileDevice()
+    ? "Opening secure Google sign-in…"
+    : "Connecting…";
+
+  try {
+
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    provider.setCustomParameters({
+      prompt:"select_account"
+    });
+
+    // Mobile uses redirect authentication.
+    // Desktop retains popup authentication.
+
+    if (isMobileDevice()) {
+
+      redirectInProgress = true;
+
+      await auth.setPersistence(
+        firebase.auth.Auth.Persistence.LOCAL
+      );
+
+      await auth.signInWithRedirect(provider);
+
+      return;
+
+    }
+
+    await auth.setPersistence(
+      firebase.auth.Auth.Persistence.LOCAL
+    );
+
+    const result = await auth.signInWithPopup(provider);
+
+    if (result && result.user && !schoolEmail(result.user.email)) {
+
+      await auth.signOut();
+
+      setMessage(
+        "This Google account is not authorised. Please use your official @baljyoti.com account."
+      );
+
+    }
+
+  } catch (error) {
+
+    console.error("Google sign-in error:",error);
+
+    setMessage(friendlyAuthError(error));
+
+  } finally {
+
+    if (!redirectInProgress) {
+
+      btn.disabled = false;
+
+      label.textContent = "Continue with Google";
+
+    }
+
+  }
+
+}
+
+
+// Sign out
+
+async function signOutUser() {
+
+  if (!auth) return;
+
+  try {
+
+    await auth.signOut();
+
+    showLogin();
+
+    clearMessage();
+
+  } catch (error) {
+
+    console.error("Sign-out error:",error);
+
+    alert(
+      "Unable to sign out. Please refresh the page and try again."
+    );
+
+  }
+
+}
+
+
+// Initialise Firebase
+
+function initialiseFirebase() {
+
+  try {
+
+    if (!firebase.apps.length) {
+
+      firebase.initializeApp(FIREBASE_CONFIG);
+
+    }
+
+    auth = firebase.auth();
+
+    auth.setPersistence(
+      firebase.auth.Auth.Persistence.LOCAL
+    ).catch(err => console.warn("Auth persistence:",err));
+
+
+    auth.onAuthStateChanged(async user => {
+
+      if (user) {
+
+        if (!schoolEmail(user.email)) {
+
+          await auth.signOut();
+
+          showLogin();
+
+          setMessage(
+            "Access denied. Please sign in with your official @baljyoti.com Google account."
+          );
+
+          return;
+
+        }
+
+        showApp(user);
+
+      } else if (!redirectInProgress) {
+
+        showLogin();
+
+      }
+
+    });
+
+
+    // Resolve OAuth redirect response.
+
+    handleRedirectResult();
+
+  } catch (error) {
+
+    console.error("Firebase initialisation error:",error);
+
+    showLogin();
+
+    setMessage(
+      "Unable to start secure sign-in. Please contact the portal administrator."
+    );
+
+    $("googleSignInBtn").disabled = true;
+
+  }
+
+}
+
+
+// Event listeners
+
+document.querySelectorAll("[data-view]").forEach(btn => {
+
+  btn.addEventListener("click",() => {
+    showView(btn.dataset.view);
+  });
+
+});
+
+
+document.querySelectorAll("[data-go]").forEach(btn => {
+
+  btn.addEventListener("click",() => {
+    showView(btn.dataset.go);
+  });
+
+});
+
+
+$("googleSignInBtn").addEventListener(
+  "click",
+  signInWithGoogle
+);
+
+
+["signOutBtn","mobileSignOutBtn","profileSignOutBtn"].forEach(id => {
+
+  $(id).addEventListener("click",signOutUser);
+
+});
+
+
+$("mobileMenuBtn").addEventListener("click",() => {
+
+  const open = $("mobileDrawer").classList.toggle("open");
+
+  $("mobileMenuBtn").setAttribute(
+    "aria-expanded",
+    String(open)
+  );
+
+});
+
+
+$("yearNow").textContent = new Date().getFullYear();
+
+
+// Start application
+
+initialiseFirebase();
+
+</script>
+
+</body>
+</html>
