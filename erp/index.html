@@ -6,7 +6,6 @@
   <meta name="theme-color" content="#b5121b" />
   <title>Bal Jyoti Public School | ERP Portal</title>
 
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -25,50 +24,80 @@
     };
   </script>
 
-  <!-- Firebase compat SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
   <style>
     html { scroll-behavior: smooth; }
-    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    .nav-link.active { background: #fff1f2; color: #b5121b; font-weight: 700; }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+      BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .nav-link.active {
+      background: #fff1f2;
+      color: #b5121b;
+      font-weight: 700;
+    }
     .nav-link { transition: background .15s ease, color .15s ease; }
-    .card-hover { transition: transform .18s ease, box-shadow .18s ease; }
-    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(15,23,42,.10); }
+    .card-hover {
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(15,23,42,.10);
+    }
     .hidden-view { display: none !important; }
-    button:focus-visible, a:focus-visible { outline: 3px solid rgba(181,18,27,.35); outline-offset: 2px; }
+    button:focus-visible, a:focus-visible {
+      outline: 3px solid rgba(181,18,27,.35);
+      outline-offset: 2px;
+    }
   </style>
 </head>
 
 <body class="min-h-screen bg-slate-50 text-slate-800">
+
   <!-- LOGIN SCREEN -->
-  <main id="loginScreen" class="min-h-screen flex items-center justify-center px-4 py-10 bg-gradient-to-br from-red-50 via-white to-slate-100">
+  <main id="loginScreen"
+    class="min-h-screen flex items-center justify-center px-4 py-10 bg-gradient-to-br from-red-50 via-white to-slate-100">
+
     <section class="w-full max-w-md bg-white rounded-3xl shadow-soft border border-slate-100 overflow-hidden">
+
       <div class="bg-bjred px-8 py-8 text-center text-white">
         <div class="mx-auto mb-4 h-20 w-20 rounded-2xl bg-white flex items-center justify-center text-bjred text-3xl font-black shadow">
           BJ
         </div>
-        <h1 class="text-2xl font-extrabold tracking-tight">Bal Jyoti Public School</h1>
-        <p class="mt-2 text-sm text-red-100">Teacher ERP & Workspace Portal</p>
+
+        <h1 class="text-2xl font-extrabold tracking-tight">
+          Bal Jyoti Public School
+        </h1>
+
+        <p class="mt-2 text-sm text-red-100">
+          Teacher ERP Portal
+        </p>
       </div>
 
       <div class="p-8">
         <h2 class="text-xl font-bold text-slate-900">Welcome</h2>
+
         <p class="mt-2 text-sm leading-6 text-slate-500">
           Sign in using your official Bal Jyoti school Google account.
         </p>
 
-        <div id="loginMessage" class="hidden mt-5 rounded-xl border px-4 py-3 text-sm" role="alert"></div>
+        <div id="loginMessage"
+          class="hidden mt-5 rounded-xl border px-4 py-3 text-sm"
+          role="alert">
+        </div>
 
         <button id="googleSignInBtn" type="button"
           class="mt-6 w-full inline-flex items-center justify-center gap-3 rounded-xl bg-bjred px-5 py-3.5 text-white font-semibold hover:bg-bjdark transition disabled:opacity-60 disabled:cursor-not-allowed">
+
           <svg aria-hidden="true" viewBox="0 0 48 48" class="h-5 w-5">
             <path fill="#FFC107" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11c-.5 2.5-1.9 4.6-4 6v5h6.5c3.8-3.5 6.1-8.6 6.1-14.7z"/>
             <path fill="#FF3D00" d="M24 44c5.4 0 9.9-1.8 13.2-4.8l-6.5-5c-1.8 1.2-4 1.9-6.7 1.9-5.2 0-9.6-3.5-11.2-8.2H6.1v5.2C9.4 39.6 16.2 44 24 44z"/>
             <path fill="#4CAF50" d="M12.8 27.9a12 12 0 0 1 0-7.8v-5.2H6.1a20 20 0 0 0 0 18.2l6.7-5.2z"/>
             <path fill="#1976D2" d="M24 11.9c2.9 0 5.5 1 7.5 3l5.7-5.7C33.9 6 29.4 4 24 4 16.2 4 9.4 8.4 6.1 14.9l6.7 5.2c1.6-4.7 6-8.2 11.2-8.2z"/>
           </svg>
+
           <span id="signInButtonText">Continue with Google</span>
         </button>
 
@@ -79,197 +108,468 @@
     </section>
   </main>
 
+
   <!-- APPLICATION -->
   <div id="appScreen" class="hidden-view min-h-screen">
+
     <div class="min-h-screen md:flex">
+
       <!-- MOBILE TOP BAR -->
       <header class="md:hidden sticky top-0 z-30 bg-bjred text-white px-4 py-3 flex items-center justify-between shadow">
         <div>
           <div class="font-bold">Bal Jyoti ERP</div>
           <div class="text-xs text-red-100">Teacher Portal</div>
         </div>
-        <button id="mobileMenuBtn" class="rounded-lg border border-red-300 px-3 py-2 text-sm" aria-label="Toggle navigation">Menu</button>
+
+        <button id="mobileMenuBtn"
+          class="rounded-lg border border-red-300 px-3 py-2 text-sm"
+          aria-label="Toggle navigation">
+          Menu
+        </button>
       </header>
 
+
       <!-- SIDEBAR -->
-      <aside id="sidebar" class="hidden md:flex md:w-64 md:flex-col bg-white border-r border-slate-200 md:min-h-screen">
+      <aside id="sidebar"
+        class="hidden md:flex md:w-64 md:flex-col bg-white border-r border-slate-200 md:min-h-screen">
+
         <div class="bg-bjred text-white px-6 py-6">
           <div class="flex items-center gap-3">
-            <div class="h-12 w-12 rounded-xl bg-white text-bjred flex items-center justify-center font-black text-xl">BJ</div>
+
+            <div class="h-12 w-12 rounded-xl bg-white text-bjred flex items-center justify-center font-black text-xl">
+              BJ
+            </div>
+
             <div>
               <div class="font-extrabold leading-tight">Bal Jyoti</div>
               <div class="text-xs text-red-100">Public School ERP</div>
             </div>
+
           </div>
         </div>
 
+
+        <!-- DESKTOP NAVIGATION -->
         <nav class="flex-1 p-4 space-y-1">
-          <button class="nav-link active w-full text-left rounded-xl px-4 py-3 text-sm" data-view="dashboardView">▦ &nbsp; Dashboard</button>
-          <button class="nav-link w-full text-left rounded-xl px-4 py-3 text-sm text-slate-600 hover:bg-slate-50" data-view="workspaceView">▣ &nbsp; Google Workspace</button>
-          <button class="nav-link w-full text-left rounded-xl px-4 py-3 text-sm text-slate-600 hover:bg-slate-50" data-view="teachingView">▤ &nbsp; Teaching Tools</button>
-          <button class="nav-link w-full text-left rounded-xl px-4 py-3 text-sm text-slate-600 hover:bg-slate-50" data-view="operationsView">☷ &nbsp; School Operations</button>
-          <button class="nav-link w-full text-left rounded-xl px-4 py-3 text-sm text-slate-600 hover:bg-slate-50" data-view="profileView">◎ &nbsp; My Profile</button>
+
+          <button class="nav-link active w-full text-left rounded-xl px-4 py-3 text-sm"
+            data-view="dashboardView">
+            ▦ &nbsp; Dashboard
+          </button>
+
+          <button class="nav-link w-full text-left rounded-xl px-4 py-3 text-sm text-slate-600 hover:bg-slate-50"
+            data-view="teachingView">
+            ▤ &nbsp; Teaching Tools
+          </button>
+
+          <button class="nav-link w-full text-left rounded-xl px-4 py-3 text-sm text-slate-600 hover:bg-slate-50"
+            data-view="operationsView">
+            ☷ &nbsp; School Operations
+          </button>
+
+          <button class="nav-link w-full text-left rounded-xl px-4 py-3 text-sm text-slate-600 hover:bg-slate-50"
+            data-view="profileView">
+            ◎ &nbsp; My Profile
+          </button>
+
         </nav>
 
+
+        <!-- USER INFORMATION -->
         <div class="p-4 border-t border-slate-100">
-          <div class="text-xs text-slate-400 mb-2">SIGNED IN AS</div>
-          <div id="sidebarUserName" class="text-sm font-semibold truncate">Teacher</div>
-          <div id="sidebarUserEmail" class="text-xs text-slate-500 truncate mt-1"></div>
-          <button id="signOutBtn" class="mt-4 w-full rounded-xl border border-red-200 text-bjred px-4 py-2.5 text-sm font-semibold hover:bg-red-50">Sign out</button>
+
+          <div class="text-xs text-slate-400 mb-2">
+            SIGNED IN AS
+          </div>
+
+          <div id="sidebarUserName"
+            class="text-sm font-semibold truncate">
+            Teacher
+          </div>
+
+          <div id="sidebarUserEmail"
+            class="text-xs text-slate-500 truncate mt-1">
+          </div>
+
+          <button id="signOutBtn"
+            class="mt-4 w-full rounded-xl border border-red-200 text-bjred px-4 py-2.5 text-sm font-semibold hover:bg-red-50">
+            Sign out
+          </button>
+
         </div>
       </aside>
 
-      <!-- MOBILE NAV -->
-      <div id="mobileNav" class="hidden md:hidden bg-white border-b border-slate-200 p-3 space-y-1">
-        <button class="nav-link active w-full text-left rounded-lg px-3 py-2 text-sm" data-view="dashboardView">Dashboard</button>
-        <button class="nav-link w-full text-left rounded-lg px-3 py-2 text-sm" data-view="workspaceView">Google Workspace</button>
-        <button class="nav-link w-full text-left rounded-lg px-3 py-2 text-sm" data-view="teachingView">Teaching Tools</button>
-        <button class="nav-link w-full text-left rounded-lg px-3 py-2 text-sm" data-view="operationsView">School Operations</button>
-        <button class="nav-link w-full text-left rounded-lg px-3 py-2 text-sm" data-view="profileView">My Profile</button>
-        <button id="mobileSignOutBtn" class="w-full text-left rounded-lg px-3 py-2 text-sm text-bjred font-semibold">Sign out</button>
+
+      <!-- MOBILE NAVIGATION -->
+      <div id="mobileNav"
+        class="hidden md:hidden bg-white border-b border-slate-200 p-3 space-y-1">
+
+        <button class="nav-link active w-full text-left rounded-lg px-3 py-2 text-sm"
+          data-view="dashboardView">
+          Dashboard
+        </button>
+
+        <button class="nav-link w-full text-left rounded-lg px-3 py-2 text-sm"
+          data-view="teachingView">
+          Teaching Tools
+        </button>
+
+        <button class="nav-link w-full text-left rounded-lg px-3 py-2 text-sm"
+          data-view="operationsView">
+          School Operations
+        </button>
+
+        <button class="nav-link w-full text-left rounded-lg px-3 py-2 text-sm"
+          data-view="profileView">
+          My Profile
+        </button>
+
+        <button id="mobileSignOutBtn"
+          class="w-full text-left rounded-lg px-3 py-2 text-sm text-bjred font-semibold">
+          Sign out
+        </button>
+
       </div>
+
 
       <!-- MAIN CONTENT -->
       <main class="flex-1 min-w-0">
+
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7">
+
           <!-- TOP HEADER -->
           <div class="hidden md:flex items-center justify-between mb-8">
+
             <div>
-              <p class="text-sm text-slate-500">Bal Jyoti Public School</p>
-              <h1 id="pageHeading" class="text-2xl font-extrabold text-slate-900">Teacher Dashboard</h1>
+              <p class="text-sm text-slate-500">
+                Bal Jyoti Public School
+              </p>
+
+              <h1 id="pageHeading"
+                class="text-2xl font-extrabold text-slate-900">
+                Teacher Dashboard
+              </h1>
             </div>
+
             <div class="flex items-center gap-3">
+
               <div class="text-right">
                 <div id="headerUserName" class="text-sm font-bold"></div>
                 <div id="headerDate" class="text-xs text-slate-500"></div>
               </div>
-              <div id="userInitial" class="h-11 w-11 rounded-full bg-red-100 text-bjred flex items-center justify-center font-bold">T</div>
+
+              <div id="userInitial"
+                class="h-11 w-11 rounded-full bg-red-100 text-bjred flex items-center justify-center font-bold">
+                T
+              </div>
+
             </div>
           </div>
 
+
           <!-- DASHBOARD VIEW -->
           <section id="dashboardView" class="app-view">
+
             <div class="rounded-2xl bg-gradient-to-r from-bjred to-bjdark text-white p-6 sm:p-8 shadow-soft">
-              <p class="text-sm text-red-100">Teacher workspace</p>
-              <h2 class="mt-2 text-2xl sm:text-3xl font-extrabold">Welcome, <span id="welcomeName">Teacher</span></h2>
-              <p class="mt-2 max-w-2xl text-sm sm:text-base text-red-50">Your central access point for Gmail, Google Classroom and school activities.</p>
+
+              <p class="text-sm text-red-100">
+                Teacher workspace
+              </p>
+
+              <h2 class="mt-2 text-2xl sm:text-3xl font-extrabold">
+                Welcome, <span id="welcomeName">Teacher</span>
+              </h2>
+
+              <p class="mt-2 max-w-2xl text-sm sm:text-base text-red-50">
+                Your central access point for teaching tools and school activities.
+              </p>
+
             </div>
 
+
+            <!-- DASHBOARD SUMMARY -->
             <div class="mt-7 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+
               <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft">
-                <div class="text-xs uppercase tracking-wide text-slate-400">Portal access</div>
-                <div class="mt-2 text-xl font-bold text-slate-900">Active</div>
-                <div class="mt-1 text-xs text-green-600">Signed in successfully</div>
+                <div class="text-xs uppercase tracking-wide text-slate-400">
+                  Portal access
+                </div>
+                <div class="mt-2 text-xl font-bold text-slate-900">
+                  Active
+                </div>
+                <div class="mt-1 text-xs text-green-600">
+                  Signed in successfully
+                </div>
               </div>
+
               <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft">
-                <div class="text-xs uppercase tracking-wide text-slate-400">School tools</div>
-                <div class="mt-2 text-xl font-bold text-slate-900">2</div>
-                <div class="mt-1 text-xs text-slate-500">Approved Google Workspace tools</div>
+                <div class="text-xs uppercase tracking-wide text-slate-400">
+                  School tools
+                </div>
+                <div class="mt-2 text-xl font-bold text-slate-900">
+                  2
+                </div>
+                <div class="mt-1 text-xs text-slate-500">
+                  Available teaching tools
+                </div>
               </div>
+
               <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft">
-                <div class="text-xs uppercase tracking-wide text-slate-400">Teaching resources</div>
-                <div class="mt-2 text-xl font-bold text-slate-900">Available</div>
-                <div class="mt-1 text-xs text-slate-500">Classroom and learning tools</div>
+                <div class="text-xs uppercase tracking-wide text-slate-400">
+                  Teaching resources
+                </div>
+                <div class="mt-2 text-xl font-bold text-slate-900">
+                  Available
+                </div>
+                <div class="mt-1 text-xs text-slate-500">
+                  Classroom and learning tools
+                </div>
               </div>
+
               <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft">
-                <div class="text-xs uppercase tracking-wide text-slate-400">ERP modules</div>
-                <div class="mt-2 text-xl font-bold text-slate-900">Coming soon</div>
-                <div class="mt-1 text-xs text-slate-500">School workflows will be added</div>
+                <div class="text-xs uppercase tracking-wide text-slate-400">
+                  ERP modules
+                </div>
+                <div class="mt-2 text-xl font-bold text-slate-900">
+                  Coming soon
+                </div>
+                <div class="mt-1 text-xs text-slate-500">
+                  School workflows will be added
+                </div>
               </div>
+
             </div>
 
+
+            <!-- QUICK ACCESS -->
             <div class="mt-8 flex items-center justify-between gap-3">
+
               <div>
-                <h3 class="text-lg font-bold text-slate-900">Quick access</h3>
-                <p class="text-sm text-slate-500 mt-1">Open the two approved school tools.</p>
+                <h3 class="text-lg font-bold text-slate-900">
+                  Quick access
+                </h3>
+
+                <p class="text-sm text-slate-500 mt-1">
+                  Open the available teaching tools.
+                </p>
               </div>
-              <button class="text-sm font-semibold text-bjred hover:underline" data-go="workspaceView">View all tools →</button>
-            </div>
-            <div id="quickLinksGrid" class="mt-4 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4"></div>
 
+              <button
+                class="text-sm font-semibold text-bjred hover:underline"
+                data-go="teachingView">
+                View teaching tools →
+              </button>
+
+            </div>
+
+            <div id="quickLinksGrid"
+              class="mt-4 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
+            </div>
+
+
+            <!-- INFORMATION -->
             <div class="mt-8 bg-white border border-slate-100 rounded-2xl p-6 shadow-soft">
-              <h3 class="font-bold text-slate-900">Important information</h3>
-              <p class="mt-2 text-sm leading-6 text-slate-600">Please use your official school Google account for all school-related communication and documents. Follow the reporting timelines and instructions shared by the school administration.</p>
+
+              <h3 class="font-bold text-slate-900">
+                Important information
+              </h3>
+
+              <p class="mt-2 text-sm leading-6 text-slate-600">
+                Please use your official school Google account for all school-related communication and documents. Follow the reporting timelines and instructions shared by the school administration.
+              </p>
+
             </div>
+
           </section>
 
-          <!-- WORKSPACE VIEW -->
-          <section id="workspaceView" class="app-view hidden-view">
-            <div class="mb-6">
-              <h2 class="text-xl font-extrabold text-slate-900">Google Workspace</h2>
-              <p class="text-sm text-slate-500 mt-1">Access your school productivity and communication tools.</p>
-            </div>
-            <div id="workspaceGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-          </section>
 
-          <!-- TEACHING VIEW -->
+          <!-- TEACHING TOOLS VIEW -->
           <section id="teachingView" class="app-view hidden-view">
+
             <div class="mb-6">
-              <h2 class="text-xl font-extrabold text-slate-900">Teaching Tools</h2>
-              <p class="text-sm text-slate-500 mt-1">Tools to support classroom teaching and learning.</p>
+
+              <h2 class="text-xl font-extrabold text-slate-900">
+                Teaching Tools
+              </h2>
+
+              <p class="text-sm text-slate-500 mt-1">
+                Tools to support classroom teaching and learning.
+              </p>
+
             </div>
+
+
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              <a class="card-hover bg-white rounded-2xl p-5 border border-slate-100 shadow-soft" href="https://classroom.google.com/" target="_blank" rel="noopener noreferrer">
-                <div class="text-2xl">📚</div><h3 class="mt-3 font-bold">Google Classroom</h3><p class="mt-1 text-sm text-slate-500">Assignments, classwork and student communication.</p><span class="mt-4 inline-block text-sm text-bjred font-semibold">Open tool →</span>
+
+              <!-- GOOGLE CLASSROOM -->
+              <a class="card-hover bg-white rounded-2xl p-5 border border-slate-100 shadow-soft"
+                href="https://classroom.google.com/"
+                target="_blank"
+                rel="noopener noreferrer">
+
+                <div class="text-2xl">📚</div>
+
+                <h3 class="mt-3 font-bold">
+                  Google Classroom
+                </h3>
+
+                <p class="mt-1 text-sm text-slate-500">
+                  Assignments, classwork and student communication.
+                </p>
+
+                <span class="mt-4 inline-block text-sm text-bjred font-semibold">
+                  Open tool →
+                </span>
+
               </a>
-              <a class="card-hover bg-white rounded-2xl p-5 border border-slate-100 shadow-soft" href="https://mail.google.com/" target="_blank" rel="noopener noreferrer">
-                <div class="text-2xl">✉️</div><h3 class="mt-3 font-bold">Gmail</h3><p class="mt-1 text-sm text-slate-500">Official school email and communication.</p><span class="mt-4 inline-block text-sm text-bjred font-semibold">Open tool →</span>
+
+
+              <!-- GMAIL -->
+              <a class="card-hover bg-white rounded-2xl p-5 border border-slate-100 shadow-soft"
+                href="https://mail.google.com/"
+                target="_blank"
+                rel="noopener noreferrer">
+
+                <div class="text-2xl">✉️</div>
+
+                <h3 class="mt-3 font-bold">
+                  Gmail
+                </h3>
+
+                <p class="mt-1 text-sm text-slate-500">
+                  Official school email and communication.
+                </p>
+
+                <span class="mt-4 inline-block text-sm text-bjred font-semibold">
+                  Open tool →
+                </span>
+
               </a>
+
             </div>
+
           </section>
 
-          <!-- OPERATIONS VIEW -->
+
+          <!-- SCHOOL OPERATIONS VIEW -->
           <section id="operationsView" class="app-view hidden-view">
-            <div class="mb-6">
-              <h2 class="text-xl font-extrabold text-slate-900">School Operations</h2>
-              <p class="text-sm text-slate-500 mt-1">School ERP modules planned for phased rollout.</p>
+
+            <div class="rounded-2xl border border-dashed border-red-200 bg-white px-6 py-14 text-center shadow-soft">
+
+              <div class="mx-auto h-16 w-16 rounded-2xl bg-red-50 flex items-center justify-center text-3xl">
+                🚧
+              </div>
+
+              <h2 class="mt-5 text-2xl font-extrabold text-slate-900">
+                Coming Soon
+              </h2>
+
+              <p class="mt-2 max-w-lg mx-auto text-sm leading-6 text-slate-500">
+                School Operations modules are currently under development. New features will be introduced in phases.
+              </p>
+
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft"><div class="text-2xl">📅</div><h3 class="mt-3 font-bold">Timetable</h3><p class="mt-1 text-sm text-slate-500">Class and teacher timetable management.</p><span class="mt-3 inline-block text-xs rounded-full bg-amber-50 text-amber-700 px-3 py-1">Planned</span></div>
-              <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft"><div class="text-2xl">✅</div><h3 class="mt-3 font-bold">Attendance</h3><p class="mt-1 text-sm text-slate-500">Staff and student attendance workflows.</p><span class="mt-3 inline-block text-xs rounded-full bg-amber-50 text-amber-700 px-3 py-1">Planned</span></div>
-              <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft"><div class="text-2xl">📖</div><h3 class="mt-3 font-bold">Lesson Plans</h3><p class="mt-1 text-sm text-slate-500">Lesson planning and syllabus progress.</p><span class="mt-3 inline-block text-xs rounded-full bg-amber-50 text-amber-700 px-3 py-1">Planned</span></div>
-              <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft"><div class="text-2xl">📋</div><h3 class="mt-3 font-bold">Daily Reports</h3><p class="mt-1 text-sm text-slate-500">Slot-wise submission and compliance tracking.</p><span class="mt-3 inline-block text-xs rounded-full bg-amber-50 text-amber-700 px-3 py-1">Planned</span></div>
-              <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft"><div class="text-2xl">✉️</div><h3 class="mt-3 font-bold">Leave Applications</h3><p class="mt-1 text-sm text-slate-500">Staff leave requests and approval workflow.</p><span class="mt-3 inline-block text-xs rounded-full bg-amber-50 text-amber-700 px-3 py-1">Planned</span></div>
-              <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-soft"><div class="text-2xl">📚</div><h3 class="mt-3 font-bold">Homework</h3><p class="mt-1 text-sm text-slate-500">Homework publishing and tracking.</p><span class="mt-3 inline-block text-xs rounded-full bg-amber-50 text-amber-700 px-3 py-1">Planned</span></div>
-            </div>
-            <div class="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">These are navigation placeholders only. No attendance, report, leave or student records are being saved by this starter page yet.</div>
+
           </section>
+
 
           <!-- PROFILE VIEW -->
           <section id="profileView" class="app-view hidden-view">
+
             <div class="mb-6">
-              <h2 class="text-xl font-extrabold text-slate-900">My Profile</h2>
-              <p class="text-sm text-slate-500 mt-1">Your currently authenticated school account.</p>
+
+              <h2 class="text-xl font-extrabold text-slate-900">
+                My Profile
+              </h2>
+
+              <p class="text-sm text-slate-500 mt-1">
+                Your currently authenticated school account.
+              </p>
+
             </div>
+
+
             <div class="max-w-2xl bg-white rounded-2xl border border-slate-100 shadow-soft p-6">
+
               <div class="flex items-center gap-4">
-                <div id="profileInitial" class="h-14 w-14 rounded-full bg-red-100 text-bjred flex items-center justify-center text-xl font-bold">T</div>
-                <div><h3 id="profileName" class="font-bold text-lg">Teacher</h3><p id="profileEmail" class="text-sm text-slate-500"></p></div>
+
+                <div id="profileInitial"
+                  class="h-14 w-14 rounded-full bg-red-100 text-bjred flex items-center justify-center text-xl font-bold">
+                  T
+                </div>
+
+                <div>
+                  <h3 id="profileName" class="font-bold text-lg">
+                    Teacher
+                  </h3>
+
+                  <p id="profileEmail" class="text-sm text-slate-500"></p>
+                </div>
+
               </div>
+
+
               <div class="mt-6 border-t border-slate-100 pt-5 grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div><div class="text-xs text-slate-400 uppercase">Account status</div><div class="mt-1 font-semibold text-green-700">Authenticated</div></div>
-                <div><div class="text-xs text-slate-400 uppercase">Allowed email domain</div><div class="mt-1 font-semibold">@baljyoti.com</div></div>
+
+                <div>
+                  <div class="text-xs text-slate-400 uppercase">
+                    Account status
+                  </div>
+
+                  <div class="mt-1 font-semibold text-green-700">
+                    Authenticated
+                  </div>
+                </div>
+
+                <div>
+                  <div class="text-xs text-slate-400 uppercase">
+                    Allowed email domain
+                  </div>
+
+                  <div class="mt-1 font-semibold">
+                    @baljyoti.com
+                  </div>
+                </div>
+
               </div>
-              <button id="profileSignOutBtn" class="mt-7 rounded-xl bg-bjred px-5 py-3 text-white text-sm font-semibold hover:bg-bjdark">Sign out</button>
+
+
+              <button id="profileSignOutBtn"
+                class="mt-7 rounded-xl bg-bjred px-5 py-3 text-white text-sm font-semibold hover:bg-bjdark">
+                Sign out
+              </button>
+
             </div>
+
           </section>
 
+
+          <!-- FOOTER -->
           <footer class="mt-12 border-t border-slate-200 pt-5 text-xs text-slate-400 flex flex-col sm:flex-row justify-between gap-2">
-            <span>© <span id="yearNow"></span> Bal Jyoti Public School. All rights reserved.</span>
-            <span>Teacher ERP Portal · Initial release</span>
+
+            <span>
+              © <span id="yearNow"></span> Bal Jyoti Public School. All rights reserved.
+            </span>
+
+            <span>
+              Teacher ERP Portal · Initial release
+            </span>
+
           </footer>
+
         </div>
       </main>
     </div>
   </div>
 
+
+  <!-- FIREBASE AND PORTAL JAVASCRIPT -->
   <script>
-    /************************************************************
+
+    /****************************************************
      * 1. FIREBASE CONFIGURATION
-     * These values belong to your Firebase web app.
-     * Firebase web config is designed to be public; never place
-     * service-account private keys or admin credentials in HTML.
-     ************************************************************/
+     ****************************************************/
+
     const FIREBASE_CONFIG = {
       apiKey: "AIzaSyB2SGgV_zUFOyOGIIM27H5HNQYlO5WdFEY",
       authDomain: "baljyoti-erp.firebaseapp.com",
@@ -282,35 +582,71 @@
 
     const ALLOWED_EMAIL_DOMAIN = "baljyoti.com";
 
-    /************************************************************
-     * 2. GOOGLE WORKSPACE LINKS
-     ************************************************************/
+
+    /****************************************************
+     * 2. APPROVED TEACHING TOOLS
+     ****************************************************/
+
     const WORKSPACE_TOOLS = [
-      { name: "Gmail", description: "Official school email and communication", icon: "✉️", url: "https://mail.google.com/" },
-      { name: "Google Classroom", description: "Classes, assignments and learning", icon: "📚", url: "https://classroom.google.com/" }
+
+      {
+        name: "Gmail",
+        description: "Official school email and communication",
+        icon: "✉️",
+        url: "https://mail.google.com/"
+      },
+
+      {
+        name: "Google Classroom",
+        description: "Classes, assignments and learning",
+        icon: "📚",
+        url: "https://classroom.google.com/"
+      }
+
     ];
+
 
     let auth = null;
     let currentUser = null;
 
     const $ = (id) => document.getElementById(id);
 
+
+    /****************************************************
+     * 3. LOGIN MESSAGES
+     ****************************************************/
+
     function showLoginMessage(message, type = "error") {
+
       const box = $("loginMessage");
+
       box.textContent = message;
+
       box.className = "mt-5 rounded-xl border px-4 py-3 text-sm " +
         (type === "success"
           ? "border-green-200 bg-green-50 text-green-800"
           : "border-red-200 bg-red-50 text-red-800");
+
     }
+
 
     function clearLoginMessage() {
+
       const box = $("loginMessage");
+
       box.textContent = "";
+
       box.className = "hidden mt-5 rounded-xl border px-4 py-3 text-sm";
+
     }
 
+
+    /****************************************************
+     * 4. FIREBASE CONFIGURATION CHECK
+     ****************************************************/
+
     function isFirebaseConfigured() {
+
       return Boolean(
         FIREBASE_CONFIG.apiKey &&
         FIREBASE_CONFIG.authDomain &&
@@ -319,22 +655,51 @@
         ALLOWED_EMAIL_DOMAIN &&
         ALLOWED_EMAIL_DOMAIN !== "YOUR_SCHOOL_DOMAIN"
       );
+
     }
+
+
+    /****************************************************
+     * 5. USER INFORMATION
+     ****************************************************/
 
     function getDisplayName(user) {
-      if (user && user.displayName) return user.displayName;
-      if (user && user.email) return user.email.split("@")[0];
+
+      if (user && user.displayName) {
+        return user.displayName;
+      }
+
+      if (user && user.email) {
+        return user.email.split("@")[0];
+      }
+
       return "Teacher";
+
     }
+
 
     function isSchoolEmail(email) {
-      if (!email || typeof email !== "string") return false;
+
+      if (!email || typeof email !== "string") {
+        return false;
+      }
+
       const parts = email.trim().toLowerCase().split("@");
-      return parts.length === 2 && parts[1] === ALLOWED_EMAIL_DOMAIN.toLowerCase();
+
+      return parts.length === 2 &&
+        parts[1] === ALLOWED_EMAIL_DOMAIN.toLowerCase();
+
     }
 
+
+    /****************************************************
+     * 6. SHOW DASHBOARD AFTER LOGIN
+     ****************************************************/
+
     function showApplication(user) {
+
       currentUser = user;
+
       const name = getDisplayName(user);
       const email = user.email || "";
 
@@ -342,191 +707,398 @@
       $("appScreen").classList.remove("hidden-view");
 
       $("welcomeName").textContent = name.split(" ")[0];
+
       $("sidebarUserName").textContent = name;
       $("sidebarUserEmail").textContent = email;
+
       $("headerUserName").textContent = name;
-      $("headerDate").textContent = new Date().toLocaleDateString("en-IN", {
-        weekday: "long", day: "numeric", month: "long", year: "numeric"
-      });
+
+      $("headerDate").textContent =
+        new Date().toLocaleDateString("en-IN", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        });
+
       $("profileName").textContent = name;
       $("profileEmail").textContent = email;
-      $("userInitial").textContent = name.charAt(0).toUpperCase();
-      $("profileInitial").textContent = name.charAt(0).toUpperCase();
 
-      renderWorkspaceCards();
+      $("userInitial").textContent =
+        name.charAt(0).toUpperCase();
+
+      $("profileInitial").textContent =
+        name.charAt(0).toUpperCase();
+
       renderQuickLinks();
+
       showView("dashboardView");
+
     }
+
+
+    /****************************************************
+     * 7. SHOW LOGIN SCREEN
+     ****************************************************/
 
     function showLogin() {
+
       currentUser = null;
+
       $("appScreen").classList.add("hidden-view");
       $("loginScreen").classList.remove("hidden-view");
+
     }
 
-    function renderWorkspaceCards() {
-      const grid = $("workspaceGrid");
-      grid.innerHTML = "";
-      WORKSPACE_TOOLS.forEach((tool) => {
-        const card = document.createElement("a");
-        card.href = tool.url;
-        card.target = "_blank";
-        card.rel = "noopener noreferrer";
-        card.className = "card-hover bg-white rounded-2xl p-5 border border-slate-100 shadow-soft block";
-        card.innerHTML = `
-          <div class="flex items-start justify-between">
-            <span class="text-3xl">${tool.icon}</span>
-            <span class="text-bjred text-sm">↗</span>
-          </div>
-          <h3 class="mt-4 font-bold text-slate-900"></h3>
-          <p class="mt-1 text-sm text-slate-500"></p>
-          <span class="mt-4 inline-block text-sm text-bjred font-semibold">Open tool →</span>`;
-        card.querySelector("h3").textContent = tool.name;
-        card.querySelector("p").textContent = tool.description;
-        grid.appendChild(card);
-      });
-    }
+
+    /****************************************************
+     * 8. DASHBOARD QUICK LINKS
+     ****************************************************/
 
     function renderQuickLinks() {
+
       const grid = $("quickLinksGrid");
+
       grid.innerHTML = "";
-      WORKSPACE_TOOLS.slice(0, 5).forEach((tool) => {
+
+      WORKSPACE_TOOLS.forEach((tool) => {
+
         const card = document.createElement("a");
+
         card.href = tool.url;
         card.target = "_blank";
         card.rel = "noopener noreferrer";
-        card.className = "card-hover bg-white rounded-2xl p-4 border border-slate-100 shadow-soft";
-        card.innerHTML = `<div class="text-2xl">${tool.icon}</div><div class="mt-3 text-sm font-bold text-slate-800"></div><div class="mt-1 text-xs text-slate-500">Open workspace tool ↗</div>`;
+
+        card.className =
+          "card-hover bg-white rounded-2xl p-4 border border-slate-100 shadow-soft";
+
+        card.innerHTML = `
+          <div class="text-2xl">${tool.icon}</div>
+          <div class="mt-3 text-sm font-bold text-slate-800"></div>
+          <div class="mt-1 text-xs text-slate-500">
+            Open teaching tool ↗
+          </div>
+        `;
+
         card.querySelector("div:nth-child(2)").textContent = tool.name;
+
         grid.appendChild(card);
+
       });
+
     }
 
+
+    /****************************************************
+     * 9. PAGE NAVIGATION
+     ****************************************************/
+
     function showView(viewId) {
-      document.querySelectorAll(".app-view").forEach((view) => view.classList.add("hidden-view"));
+
+      document.querySelectorAll(".app-view").forEach((view) => {
+        view.classList.add("hidden-view");
+      });
+
       const target = $(viewId);
-      if (target) target.classList.remove("hidden-view");
+
+      if (target) {
+        target.classList.remove("hidden-view");
+      }
 
       const headings = {
+
         dashboardView: "Teacher Dashboard",
-        workspaceView: "Google Workspace",
         teachingView: "Teaching Tools",
         operationsView: "School Operations",
         profileView: "My Profile"
+
       };
-      $("pageHeading").textContent = headings[viewId] || "Teacher Dashboard";
+
+      $("pageHeading").textContent =
+        headings[viewId] || "Teacher Dashboard";
+
 
       document.querySelectorAll("[data-view]").forEach((button) => {
-        const active = button.getAttribute("data-view") === viewId;
+
+        const active =
+          button.getAttribute("data-view") === viewId;
+
         button.classList.toggle("active", active);
+
         if (active) {
           button.classList.remove("text-slate-600");
         } else {
           button.classList.add("text-slate-600");
         }
+
       });
+
       $("mobileNav").classList.add("hidden");
+
     }
 
+
+    /****************************************************
+     * 10. INITIALISE FIREBASE
+     ****************************************************/
+
     function initialiseFirebase() {
+
       if (!isFirebaseConfigured()) {
-        showLoginMessage("Firebase settings are incomplete. Please check the FIREBASE_CONFIG section in index.html.");
+
+        showLoginMessage(
+          "Firebase settings are incomplete. Please check the FIREBASE_CONFIG section in index.html."
+        );
+
         $("googleSignInBtn").disabled = true;
+
         return;
+
       }
 
       try {
-        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+
+        if (!firebase.apps.length) {
+          firebase.initializeApp(FIREBASE_CONFIG);
+        }
+
         auth = firebase.auth();
 
         auth.onAuthStateChanged((user) => {
+
           if (user) {
+
             if (!isSchoolEmail(user.email)) {
+
               auth.signOut().finally(() => {
+
                 showLogin();
-                showLoginMessage("Access denied. Please sign in with your official @baljyoti.com Google account.");
+
+                showLoginMessage(
+                  "Access denied. Please sign in with your official @baljyoti.com Google account."
+                );
+
               });
+
               return;
+
             }
+
             showApplication(user);
+
           } else {
+
             showLogin();
+
           }
+
         });
+
       } catch (error) {
+
         console.error("Firebase initialisation error:", error);
-        showLoginMessage("Unable to initialise Firebase. Check the browser console and Firebase project settings.");
+
+        showLoginMessage(
+          "Unable to initialise Firebase. Check the browser console and Firebase project settings."
+        );
+
       }
+
     }
 
+
+    /****************************************************
+     * 11. GOOGLE SIGN-IN
+     ****************************************************/
+
     async function signInWithGoogle() {
+
       clearLoginMessage();
 
       if (!auth) {
-        showLoginMessage("Firebase is not ready. Refresh the page or check your Firebase configuration.");
+
+        showLoginMessage(
+          "Firebase is not ready. Refresh the page or check your Firebase configuration."
+        );
+
         return;
+
       }
 
       const button = $("googleSignInBtn");
       const buttonText = $("signInButtonText");
+
       button.disabled = true;
       buttonText.textContent = "Connecting...";
 
       try {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: "select_account" });
-        const result = await auth.signInWithPopup(provider);
+
+        const provider =
+          new firebase.auth.GoogleAuthProvider();
+
+        provider.setCustomParameters({
+          prompt: "select_account"
+        });
+
+        const result =
+          await auth.signInWithPopup(provider);
+
 
         if (!isSchoolEmail(result.user.email)) {
+
           await auth.signOut();
-          showLoginMessage("This Google account is not authorised. Please use your official @baljyoti.com account.");
+
+          showLoginMessage(
+            "This Google account is not authorised. Please use your official @baljyoti.com account."
+          );
+
         }
+
       } catch (error) {
+
         console.error("Google sign-in error:", error);
+
         let message = "Sign-in failed. Please try again.";
-        if (error.code === "auth/popup-closed-by-user") message = "The sign-in window was closed before completion. Please try again.";
-        else if (error.code === "auth/popup-blocked") message = "Your browser blocked the sign-in popup. Allow popups for this website and try again.";
-        else if (error.code === "auth/unauthorized-domain") message = "This website domain is not authorised in Firebase Authentication. Add your website hostname in Firebase Console → Authentication → Settings → Authorized domains.";
-        else if (error.code === "auth/operation-not-allowed") message = "Google sign-in is not enabled. Enable the Google provider in Firebase Console → Authentication → Sign-in method.";
-        else if (error.code === "auth/network-request-failed") message = "Network connection failed. Check your internet connection and try again.";
-        else if (error.code === "auth/account-exists-with-different-credential") message = "This email is already registered using a different sign-in method. Contact the portal administrator.";
-        else if (error.message) message = error.message;
+
+        if (error.code === "auth/popup-closed-by-user") {
+
+          message =
+            "The sign-in window was closed before completion. Please try again.";
+
+        } else if (error.code === "auth/popup-blocked") {
+
+          message =
+            "Your browser blocked the sign-in popup. Allow popups for this website and try again.";
+
+        } else if (error.code === "auth/unauthorized-domain") {
+
+          message =
+            "This website domain is not authorised in Firebase Authentication. Add your website hostname in Firebase Console → Authentication → Settings → Authorized domains.";
+
+        } else if (error.code === "auth/operation-not-allowed") {
+
+          message =
+            "Google sign-in is not enabled. Enable the Google provider in Firebase Console → Authentication → Sign-in method.";
+
+        } else if (error.code === "auth/network-request-failed") {
+
+          message =
+            "Network connection failed. Check your internet connection and try again.";
+
+        } else if (error.code === "auth/account-exists-with-different-credential") {
+
+          message =
+            "This email is already registered using a different sign-in method. Contact the portal administrator.";
+
+        } else if (error.message) {
+
+          message = error.message;
+
+        }
+
         showLoginMessage(message);
+
       } finally {
+
         button.disabled = false;
         buttonText.textContent = "Continue with Google";
+
       }
+
     }
+
+
+    /****************************************************
+     * 12. SIGN OUT
+     ****************************************************/
 
     async function signOutUser() {
+
       if (!auth) return;
+
       try {
+
         await auth.signOut();
+
         showLogin();
+
         clearLoginMessage();
+
       } catch (error) {
+
         console.error("Sign-out error:", error);
-        alert("Unable to sign out. Please refresh the page and try again.");
+
+        alert(
+          "Unable to sign out. Please refresh the page and try again."
+        );
+
       }
+
     }
 
-    // Navigation events
+
+    /****************************************************
+     * 13. EVENT LISTENERS
+     ****************************************************/
+
     document.querySelectorAll("[data-view]").forEach((button) => {
-      button.addEventListener("click", () => showView(button.getAttribute("data-view")));
+
+      button.addEventListener("click", () => {
+
+        showView(button.getAttribute("data-view"));
+
+      });
+
     });
+
 
     document.querySelectorAll("[data-go]").forEach((button) => {
-      button.addEventListener("click", () => showView(button.getAttribute("data-go")));
+
+      button.addEventListener("click", () => {
+
+        showView(button.getAttribute("data-go"));
+
+      });
+
     });
 
-    $("googleSignInBtn").addEventListener("click", signInWithGoogle);
-    $("signOutBtn").addEventListener("click", signOutUser);
-    $("mobileSignOutBtn").addEventListener("click", signOutUser);
-    $("profileSignOutBtn").addEventListener("click", signOutUser);
-    $("mobileMenuBtn").addEventListener("click", () => $("mobileNav").classList.toggle("hidden"));
+
+    $("googleSignInBtn").addEventListener(
+      "click",
+      signInWithGoogle
+    );
+
+    $("signOutBtn").addEventListener(
+      "click",
+      signOutUser
+    );
+
+    $("mobileSignOutBtn").addEventListener(
+      "click",
+      signOutUser
+    );
+
+    $("profileSignOutBtn").addEventListener(
+      "click",
+      signOutUser
+    );
+
+    $("mobileMenuBtn").addEventListener("click", () => {
+
+      $("mobileNav").classList.toggle("hidden");
+
+    });
+
+
+    /****************************************************
+     * 14. START PORTAL
+     ****************************************************/
 
     $("yearNow").textContent = new Date().getFullYear();
+
     initialiseFirebase();
+
   </script>
+
 </body>
 </html>
