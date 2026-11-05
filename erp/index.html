@@ -1,201 +1,312 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-100">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign In - Bal Jyoti Public School</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#991b1b" />
+  <title>Bal Jyoti | School ERP</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              50: '#fef2f2',
-              100: '#ffe1e1',
-              500: '#ef4444',
-              600: '#dc2626',
-              700: '#b91c1c',
-              800: '#991b1b',
-              900: '#7f1d1d'
-            }
-          }
-        }
-      }
+      theme: { extend: {
+        colors: { brand: { 50:'#fef2f2',100:'#fee2e2',200:'#fecaca',500:'#ef4444',600:'#dc2626',700:'#b91c1c',800:'#991b1b',900:'#7f1d1d' } },
+        boxShadow: { soft: '0 8px 30px rgba(15,23,42,.06)' }
+      }}
     }
   </script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Devanagari:wght@600;700&display=swap');
-    body { font-family: 'Inter', sans-serif; }
-    .devanagari { font-family: 'Noto Sans Devanagari', serif; }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <style>
+    * { font-family: Inter, system-ui, sans-serif; }
+    html { scroll-behavior: smooth; }
+    .nav-active { background:#fef2f2; color:#991b1b; border-left:3px solid #b91c1c; }
+    .workspace-card:hover,.module-card:hover { transform:translateY(-2px); box-shadow:0 12px 28px rgba(15,23,42,.09); }
+    .workspace-card,.module-card { transition:all .18s ease; }
+    .sidebar-scroll { scrollbar-width:thin; }
+    .toast { animation: slideIn .2s ease-out; }
+    @keyframes slideIn { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+  </style>
 </head>
-<body class="h-full flex flex-col justify-between items-center bg-slate-100 text-slate-800 p-4 sm:p-6">
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+  <!--
+    BAL JYOTI ERP - FRONT-END STARTER
+    Before deployment:
+    1. Replace FIREBASE_CONFIG values below with your Firebase web-app config.
+    2. Replace ALLOWED_EMAIL_DOMAIN with the school's actual Google Workspace domain.
+    3. Enable Google provider in Firebase Authentication.
+    4. Add the deployed domain to Firebase Authentication > Settings > Authorized domains.
+    5. Enforce domain and role checks on a trusted backend before exposing private school data.
+  -->
 
-  <div class="w-full max-w-md my-auto">
-    <div class="h-2.5 bg-gradient-to-r from-brand-800 via-brand-600 to-red-500 rounded-t-2xl"></div>
-
-    <div class="bg-white rounded-b-2xl shadow-xl shadow-slate-200/80 border-x border-b border-slate-200 p-6 sm:p-8 space-y-6">
-      <div class="text-center space-y-3">
-        <div class="inline-flex items-center justify-center relative">
-          <div class="w-24 h-24 rounded-full bg-white border-2 border-brand-100 shadow-md p-1.5 flex items-center justify-center relative group">
-            <img 
-              id="schoolLogo" 
-              src="logo.png" 
-              alt="Bal Jyoti Public School Crest" 
-              class="w-full h-full object-contain rounded-full"
-            >
-            <span class="absolute -bottom-1 bg-brand-700 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow">
-              ESTD 1987
-            </span>
-          </div>
+  <div id="loginScreen" class="hidden min-h-screen bg-gradient-to-br from-brand-900 via-brand-800 to-brand-700 p-5">
+    <div class="max-w-md mx-auto min-h-[90vh] flex items-center">
+      <div class="w-full bg-white rounded-3xl shadow-2xl p-8">
+        <div class="flex items-center gap-3 mb-8">
+          <div class="w-14 h-14 rounded-2xl bg-brand-800 text-white grid place-items-center text-xl font-extrabold">BJ</div>
+          <div><div class="font-extrabold text-slate-900 tracking-wide">BAL JYOTI</div><div class="text-xs text-slate-500">PUBLIC SCHOOL · ERP PORTAL</div></div>
         </div>
-
-        <div>
-          <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight" id="schoolName">
-            Bal Jyoti Public School
-          </h1>
-          <p class="text-xs devanagari font-bold text-brand-700 tracking-wide mt-0.5">
-            विद्या ददाति विनयम
-          </p>
-          <p class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">
-            Executive ERP & Workspace Portal
-          </p>
-        </div>
-      </div>
-
-      <div class="bg-brand-50 border-l-4 border-brand-600 p-4 rounded-r-xl space-y-1">
-        <div class="flex items-center space-x-2 text-brand-800 font-bold text-xs uppercase tracking-wider">
-          <svg class="w-4 h-4 text-brand-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-          </svg>
-          <span>Domain Verification Active</span>
-        </div>
-        <p class="text-xs text-slate-700 leading-relaxed">
-          Sign in using your assigned institutional ID ending with <span class="font-mono text-brand-700 font-bold">@baljyoti.com</span>. Personal accounts are restricted.
-        </p>
-      </div>
-
-      <div class="space-y-4 pt-1">
-        <button 
-          type="button" 
-          id="signInBtn"
-          onclick="handleGoogleSignIn()"
-          class="w-full bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm py-3.5 px-4 rounded-xl border-2 border-slate-200 hover:border-brand-600 transition-all duration-150 flex items-center justify-center space-x-3 shadow-sm hover:shadow active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2"
-        >
-          <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-          </svg>
-          <span id="signInBtnText">Sign in with @baljyoti.com</span>
+        <p class="text-xs font-bold uppercase tracking-widest text-brand-700">Teacher workspace</p>
+        <h1 class="text-3xl font-extrabold mt-2 text-slate-900">Welcome back</h1>
+        <p class="text-sm text-slate-500 mt-2 mb-7">Sign in using your authorised school Google account.</p>
+        <button id="googleSignInBtn" class="w-full border border-slate-200 hover:bg-slate-50 rounded-xl py-3 px-4 flex items-center justify-center gap-3 font-semibold text-sm">
+          <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.06 13.22l7.98 6.19C11.97 13.72 17.46 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.76 7.18l7.73 6C44.42 37.98 46.98 31.86 46.98 24.55z"/><path fill="#FBBC05" d="M10.04 28.59A14.4 14.4 0 0 1 9.25 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.54 2.58 10.78l7.46-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.14 1.44-4.88 2.3-8.18 2.3-6.54 0-12.03-4.22-14-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+          Continue with Google
         </button>
-
-        <div id="errorMessage" class="hidden text-xs text-center text-red-600 font-semibold bg-red-50 p-2.5 rounded-lg border border-red-200"></div>
-      </div>
-
-      <div class="pt-4 border-t border-slate-100 text-center space-y-3">
-        <p class="text-xs text-slate-500 font-medium">Need access or provisioning help?</p>
-        
-        <a 
-          href="https://wa.me/919910363101" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          class="w-full inline-flex items-center justify-center space-x-2 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow-sm active:scale-[0.99]"
-        >
-          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-            <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.762.459 3.48 1.332 5.001l-1.416 5.171 5.292-1.388c1.464.798 3.115 1.218 4.777 1.219h.005c5.504 0 9.988-4.478 9.989-9.985 0-2.668-1.039-5.176-2.927-7.062a9.927 9.927 0 0 0-7.062-2.94zm5.82 14.184c-.244.688-1.427 1.313-1.97 1.362-.511.045-1.166.216-3.805-.87-3.328-1.367-5.46-4.757-5.626-4.978-.166-.221-1.353-1.802-1.353-3.437 0-1.636.852-2.438 1.155-2.771.244-.266.649-.387.872-.387.221 0 .442.002.634.011.204.01.477-.078.746.568.277.663.947 2.31.103 2.518.083.208-.083.333-.208.487-.125.155-.262.327-.374.439-.125.125-.255.26-.11.51.145.249.646 1.066 1.388 1.727.954.851 1.76 1.116 2.01 1.241.25.125.395.104.54-.063.146-.166.624-.728.79-1.02.166-.29.332-.243.561-.16.229.083 1.456.686 1.706.81.25.125.416.187.478.291.062.104.062.604-.182 1.292z"/>
-          </svg>
-          <span>Connect via WhatsApp Support</span>
-        </a>
-
-        <div>
-          <a href="mailto:info@baljyoti.com" class="inline-flex items-center text-xs font-bold text-brand-600 hover:text-brand-800 transition">
-            <svg class="w-3.5 h-3.5 mr-1 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-            </svg>
-            Email Support (info@baljyoti.com)
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="mt-6 text-center space-y-1">
-      <div class="flex items-center justify-center space-x-1.5 text-xs text-slate-500 font-medium">
-        <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-        </svg>
-        <span>Bal Jyoti Public School • Google Education Security</span>
+        <p id="loginError" class="hidden text-sm text-red-600 mt-4"></p>
+        <div class="mt-8 pt-5 border-t border-slate-100 text-center text-xs text-slate-400">Secure access for authorised Bal Jyoti school staff</div>
       </div>
     </div>
   </div>
 
+  <div id="appShell" class="hidden min-h-screen">
+    <div id="mobileOverlay" class="fixed inset-0 bg-slate-900/40 z-30 hidden lg:hidden"></div>
+    <aside id="sidebar" class="fixed z-40 inset-y-0 left-0 w-72 bg-white border-r border-slate-200 -translate-x-full lg:translate-x-0 transition-transform duration-200 flex flex-col">
+      <div class="h-20 px-5 flex items-center gap-3 border-b border-slate-100">
+        <div class="w-11 h-11 rounded-xl bg-brand-800 text-white grid place-items-center font-extrabold text-lg">BJ</div>
+        <div class="min-w-0"><div class="font-extrabold text-slate-900 tracking-wide">BAL JYOTI</div><div class="text-[10px] text-slate-500 tracking-wider">PUBLIC SCHOOL ERP</div></div>
+        <button id="closeSidebar" class="ml-auto lg:hidden text-slate-500" aria-label="Close menu">✕</button>
+      </div>
+      <div class="px-4 py-5">
+        <div class="rounded-xl bg-brand-50 border border-brand-100 p-3">
+          <div class="text-[10px] font-bold uppercase tracking-widest text-brand-700">Teacher workspace</div>
+          <div class="text-sm font-semibold text-slate-800 mt-1">Your school, connected.</div>
+        </div>
+      </div>
+      <nav class="px-3 space-y-1 flex-1 sidebar-scroll overflow-y-auto">
+        <a href="#overview" class="nav-link nav-active flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold"><span>▦</span> Overview</a>
+        <a href="#workspace" class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50"><span>◫</span> Google Workspace</a>
+        <a href="#teaching" class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50"><span>▤</span> Teaching tools</a>
+        <a href="#operations" class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50"><span>✓</span> School operations</a>
+        <a href="#notices" class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50"><span>♧</span> Notices & support</a>
+      </nav>
+      <div class="p-4 border-t border-slate-100">
+        <div class="flex items-center gap-3 min-w-0">
+          <img id="sideAvatar" class="w-9 h-9 rounded-full bg-slate-100 object-cover" alt="" src="https://www.gravatar.com/avatar/?d=mp">
+          <div class="min-w-0 flex-1"><div id="sideName" class="text-sm font-semibold truncate">Teacher</div><div id="sideEmail" class="text-xs text-slate-500 truncate">School account</div></div>
+          <button id="signOutBtn" title="Sign out" class="text-slate-400 hover:text-brand-700 text-lg">↪</button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="lg:pl-72 min-h-screen flex flex-col">
+      <header class="h-20 bg-white border-b border-slate-200 sticky top-0 z-20 px-4 sm:px-7 flex items-center gap-4">
+        <button id="openSidebar" class="lg:hidden p-2 rounded-lg hover:bg-slate-100" aria-label="Open menu">☰</button>
+        <div class="flex-1 min-w-0">
+          <div class="text-xs text-slate-500">Bal Jyoti Public School / <span class="text-brand-700 font-semibold">Teacher Portal</span></div>
+          <div class="font-bold text-slate-900 text-lg">School ERP Dashboard</div>
+        </div>
+        <div class="hidden sm:flex items-center gap-2 text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2"><span class="w-2 h-2 rounded-full bg-green-500"></span> Workspace access</div>
+        <button id="headerSignOut" class="text-sm font-semibold text-slate-600 hover:text-brand-700">Sign out</button>
+      </header>
+
+      <main id="overview" class="w-full max-w-7xl mx-auto px-4 sm:px-7 py-7 sm:py-9 flex-1">
+        <section class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-7">
+          <div><p id="todayLabel" class="text-xs font-semibold uppercase tracking-wider text-brand-700"></p><h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">Welcome, <span id="welcomeName">Teacher</span></h1><p class="text-sm text-slate-500 mt-1">Everything you need for your school day, in one place.</p></div>
+          <div class="flex gap-2"><a href="https://classroom.google.com/" target="_blank" rel="noopener" class="bg-brand-800 hover:bg-brand-900 text-white rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm">Open Classroom ↗</a><a href="https://drive.google.com/" target="_blank" rel="noopener" class="bg-white border border-slate-200 hover:bg-slate-50 rounded-xl px-4 py-2.5 text-sm font-semibold">My Drive ↗</a></div>
+        </section>
+
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-soft"><div class="flex justify-between"><span class="text-sm text-slate-500">My digital workspace</span><span class="text-brand-700">▦</span></div><div class="text-2xl font-extrabold mt-2">10 <span class="text-sm font-medium text-slate-400">tools</span></div><div class="text-xs text-slate-500 mt-1">Google for Education shortcuts</div></div>
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-soft"><div class="flex justify-between"><span class="text-sm text-slate-500">Teaching resources</span><span class="text-brand-700">▤</span></div><div class="text-2xl font-extrabold mt-2">Quick <span class="text-sm font-medium text-slate-400">access</span></div><div class="text-xs text-slate-500 mt-1">Classroom, Forms, Docs and more</div></div>
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-soft"><div class="flex justify-between"><span class="text-sm text-slate-500">Portal status</span><span class="text-green-600">●</span></div><div class="text-2xl font-extrabold mt-2">Active</div><div class="text-xs text-slate-500 mt-1">Signed in with school account</div></div>
+        </section>
+
+        <section id="workspace" class="mb-9 scroll-mt-24">
+          <div class="flex items-end justify-between gap-3 mb-4"><div><h2 class="text-lg font-bold text-slate-900">Google Workspace for Education</h2><p class="text-sm text-slate-500 mt-1">Open your school productivity tools with one click.</p></div><span class="hidden sm:inline text-xs text-slate-400">Opens in a new tab ↗</span></div>
+          <div id="workspaceGrid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3"></div>
+        </section>
+
+        <section id="teaching" class="mb-9 scroll-mt-24">
+          <div class="mb-4"><h2 class="text-lg font-bold text-slate-900">Teaching tools</h2><p class="text-sm text-slate-500 mt-1">Useful links for everyday classroom work.</p></div>
+          <div id="teachingGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3"></div>
+        </section>
+
+        <section id="operations" class="mb-9 scroll-mt-24">
+          <div class="mb-4"><h2 class="text-lg font-bold text-slate-900">School operations</h2><p class="text-sm text-slate-500 mt-1">The next modules planned for the Bal Jyoti ERP.</p></div>
+          <div id="operationsGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3"></div>
+        </section>
+
+        <section id="notices" class="grid grid-cols-1 lg:grid-cols-2 gap-4 scroll-mt-24">
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-soft"><h3 class="font-bold text-slate-900">School notices</h3><p class="text-sm text-slate-500 mt-2">School circulars and announcements will be published here.</p><div class="mt-4 rounded-xl bg-brand-50 border border-brand-100 p-3 text-sm text-brand-900">Please check your official school email and Google Classroom regularly for updates.</div></div>
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-soft"><h3 class="font-bold text-slate-900">Need help?</h3><p class="text-sm text-slate-500 mt-2">For login, access or technical support, contact the school ERP administrator.</p><a id="supportEmailLink" href="mailto:YOUR_ADMIN_EMAIL" class="inline-flex mt-4 text-sm font-semibold text-brand-700 hover:underline">Contact ERP administrator ↗</a><p class="text-xs text-slate-400 mt-2">Update the support email in the configuration before publishing.</p></div>
+        </section>
+      </main>
+      <footer class="px-4 sm:px-7 py-5 border-t border-slate-200 bg-white text-center text-xs text-slate-400">© <span id="year"></span> Bal Jyoti Public School · School ERP Portal</footer>
+    </div>
+  </div>
+
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden max-w-sm rounded-xl bg-slate-900 text-white text-sm px-4 py-3 shadow-xl toast" role="status"></div>
+
   <script>
-    const SUPER_ADMIN = "info@baljyoti.com";
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhSwScGcBlRSqrkyT-bfog22RL3z_YGMY8vwriNRNP5q4P7DqWhh-TKnz40L_BwCVp8w/exec";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyB0q4FwgnTHLgfvllSyi7unGDCIGLkqpJI",
-      authDomain: "baljyoti-portal.firebaseapp.com",
-      projectId: "baljyoti-portal",
-      storageBucket: "baljyoti-portal.firebasestorage.app",
-      messagingSenderId: "420727507952",
-      appId: "1:420727507952:web:de5bdbb73521b9fae4eb35"
+    // ===== SCHOOL CONFIGURATION: update these values before deployment =====
+    const FIREBASE_CONFIG = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      appId: "YOUR_APP_ID"
     };
-    firebase.initializeApp(firebaseConfig);
+    const ALLOWED_EMAIL_DOMAIN = "YOUR_SCHOOL_DOMAIN"; // e.g. schooldomain.edu.in (without @)
+    const SUPPORT_EMAIL = "YOUR_ADMIN_EMAIL";
 
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user && user.email.endsWith("@baljyoti.com")) {
-        window.location.href = "dashboard.html";
+    const WORKSPACE_TOOLS = [
+      { name:"Gmail", desc:"Official school email", url:"https://mail.google.com/", icon:"✉", tint:"bg-red-50 text-red-700" },
+      { name:"Classroom", desc:"Classes & assignments", url:"https://classroom.google.com/", icon:"▣", tint:"bg-green-50 text-green-700" },
+      { name:"Google Drive", desc:"Files & shared folders", url:"https://drive.google.com/", icon:"◈", tint:"bg-yellow-50 text-yellow-700" },
+      { name:"Google Meet", desc:"Online meetings", url:"https://meet.google.com/", icon:"▰", tint:"bg-blue-50 text-blue-700" },
+      { name:"Google Calendar", desc:"Timetable & events", url:"https://calendar.google.com/", icon:"▦", tint:"bg-blue-50 text-blue-700" },
+      { name:"Google Forms", desc:"Quizzes & forms", url:"https://forms.google.com/", icon:"☷", tint:"bg-purple-50 text-purple-700" },
+      { name:"Google Docs", desc:"Documents", url:"https://docs.google.com/", icon:"▤", tint:"bg-blue-50 text-blue-700" },
+      { name:"Google Sheets", desc:"Spreadsheets", url:"https://sheets.google.com/", icon:"▦", tint:"bg-green-50 text-green-700" },
+      { name:"Google Slides", desc:"Presentations", url:"https://slides.google.com/", icon:"▧", tint:"bg-orange-50 text-orange-700" },
+      { name:"Google Gemini", desc:"AI learning assistant", url:"https://gemini.google.com/", icon:"✧", tint:"bg-indigo-50 text-indigo-700" }
+    ];
+
+    const TEACHING_TOOLS = [
+      { name:"Google Classroom", desc:"Manage classes, assignments and student communication.", url:"https://classroom.google.com/", icon:"▣" },
+      { name:"Create a Google Form", desc:"Prepare quizzes, surveys and classroom assessments.", url:"https://forms.google.com/", icon:"☷" },
+      { name:"Shared school resources", desc:"Access lesson plans, templates and shared documents in Drive.", url:"https://drive.google.com/", icon:"◈" }
+    ];
+
+    const PLANNED_MODULES = [
+      { name:"Daily Attendance", desc:"Record and review class attendance.", status:"Planned", icon:"✓" },
+      { name:"Timetable", desc:"View teaching periods and substitution schedule.", status:"Planned", icon:"▦" },
+      { name:"Lesson Plans", desc:"Submit lesson plans and track syllabus coverage.", status:"Planned", icon:"▤" },
+      { name:"Homework & Classwork", desc:"Record homework and classroom activities.", status:"Planned", icon:"✎" },
+      { name:"Daily Reports", desc:"Submit reports by school time slot.", status:"Planned", icon:"▣" },
+      { name:"Leave Applications", desc:"Apply for leave and view approval status.", status:"Planned", icon:"◷" }
+    ];
+
+    const $ = (id) => document.getElementById(id);
+    let auth = null;
+
+    function showToast(message) {
+      const el = $("toast"); el.textContent = message; el.classList.remove("hidden");
+      clearTimeout(window.__toastTimer); window.__toastTimer = setTimeout(() => el.classList.add("hidden"), 3200);
+    }
+
+    function renderCards() {
+      $("workspaceGrid").innerHTML = WORKSPACE_TOOLS.map(tool => `
+        <a class="workspace-card bg-white border border-slate-200 rounded-2xl p-4 shadow-soft flex flex-col min-h-36" href="${tool.url}" target="_blank" rel="noopener noreferrer">
+          <div class="w-10 h-10 rounded-xl ${tool.tint} grid place-items-center text-xl font-bold">${tool.icon}</div>
+          <div class="mt-3 font-bold text-sm text-slate-900">${tool.name}<span class="text-slate-400 ml-1">↗</span></div>
+          <div class="text-xs text-slate-500 mt-1">${tool.desc}</div>
+        </a>`).join("");
+
+      $("teachingGrid").innerHTML = TEACHING_TOOLS.map(tool => `
+        <a class="module-card bg-white border border-slate-200 rounded-2xl p-4 shadow-soft flex items-start gap-3" href="${tool.url}" target="_blank" rel="noopener noreferrer">
+          <div class="w-10 h-10 shrink-0 rounded-xl bg-brand-50 text-brand-800 grid place-items-center text-xl">${tool.icon}</div>
+          <div><div class="font-bold text-sm">${tool.name} <span class="text-slate-400">↗</span></div><p class="text-xs text-slate-500 mt-1">${tool.desc}</p></div>
+        </a>`).join("");
+
+      $("operationsGrid").innerHTML = PLANNED_MODULES.map(module => `
+        <div class="module-card bg-white border border-slate-200 rounded-2xl p-4 shadow-soft flex items-start gap-3">
+          <div class="w-10 h-10 shrink-0 rounded-xl bg-slate-100 text-slate-600 grid place-items-center text-xl">${module.icon}</div>
+          <div class="min-w-0 flex-1"><div class="flex items-center justify-between gap-2"><div class="font-bold text-sm">${module.name}</div><span class="text-[10px] rounded-full bg-amber-50 text-amber-700 px-2 py-1">${module.status}</span></div><p class="text-xs text-slate-500 mt-1">${module.desc}</p></div>
+        </div>`).join("");
+    }
+
+    function setUser(user) {
+      const name = user.displayName || (user.email ? user.email.split("@")[0] : "Teacher");
+      $("welcomeName").textContent = name.split(" ")[0];
+      $("sideName").textContent = name;
+      $("sideEmail").textContent = user.email || "School account";
+      if (user.photoURL) $("sideAvatar").src = user.photoURL;
+    }
+
+    function showLogin(errorMessage = "") {
+      $("appShell").classList.add("hidden");
+      $("loginScreen").classList.remove("hidden");
+      if (errorMessage) { $("loginError").textContent = errorMessage; $("loginError").classList.remove("hidden"); }
+    }
+
+    function showApp(user) {
+      $("loginScreen").classList.add("hidden");
+      $("appShell").classList.remove("hidden");
+      setUser(user);
+    }
+
+    function isFirebaseConfigured() {
+      return FIREBASE_CONFIG.apiKey !== "YOUR_API_KEY" &&
+             FIREBASE_CONFIG.projectId !== "YOUR_PROJECT_ID" &&
+             ALLOWED_EMAIL_DOMAIN !== "YOUR_SCHOOL_DOMAIN";
+    }
+
+    async function signIn() {
+      if (!isFirebaseConfigured()) {
+        $("loginError").textContent = "Portal setup is incomplete. The administrator must add Firebase settings and the school email domain.";
+        $("loginError").classList.remove("hidden");
+        return;
       }
-    });
+      try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ hd: ALLOWED_EMAIL_DOMAIN, prompt: "select_account" });
+        await auth.signInWithPopup(provider);
+      } catch (error) {
+        console.error(error);
+        $("loginError").textContent = error.code === "auth/popup-blocked"
+          ? "The sign-in window was blocked. Please allow pop-ups and try again."
+          : "Google sign-in failed. Please try again or contact the ERP administrator.";
+        $("loginError").classList.remove("hidden");
+      }
+    }
 
-    function handleGoogleSignIn() {
-      const btn = document.getElementById("signInBtn");
-      const btnText = document.getElementById("signInBtnText");
-      const errDiv = document.getElementById("errorMessage");
+    async function signOut() {
+      if (auth) await auth.signOut();
+      showLogin();
+    }
 
-      errDiv.classList.add("hidden");
-      btn.disabled = true;
-      btnText.innerText = "Authenticating...";
-
-      const provider = new firebase.auth.GoogleAuthProvider();
-      provider.setCustomParameters({ hd: 'baljyoti.com', prompt: 'select_account' });
-
-      firebase.auth().signInWithPopup(provider)
-        .then((result) => {
-          const email = result.user.email;
-          if (!email.endsWith("@baljyoti.com")) {
-            firebase.auth().signOut();
-            showError("Access restricted. Only @baljyoti.com accounts are permitted.");
-            resetButton();
+    function initFirebase() {
+      if (!isFirebaseConfigured()) {
+        showLogin();
+        $("loginError").textContent = "Administrator setup required: add Firebase configuration and the authorised school email domain in this file.";
+        $("loginError").classList.remove("hidden");
+        return;
+      }
+      try {
+        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+        auth = firebase.auth();
+        auth.onAuthStateChanged(async user => {
+          if (!user) { showLogin(); return; }
+          const email = (user.email || "").toLowerCase();
+          const domain = email.split("@")[1] || "";
+          if (domain !== ALLOWED_EMAIL_DOMAIN.toLowerCase()) {
+            await auth.signOut();
+            showLogin("Access denied. Please sign in with your authorised school email account.");
             return;
           }
-          window.location.href = "dashboard.html";
-        })
-        .catch((error) => {
-          resetButton();
-          if (error.code !== "auth/popup-closed-by-user") {
-            showError(error.message || "Authentication failed. Please try again.");
-          }
+          showApp(user);
         });
+      } catch (error) {
+        console.error(error);
+        showLogin("Authentication could not be initialised. Please contact the ERP administrator.");
+      }
     }
 
-    function showError(msg) {
-      const errDiv = document.getElementById("errorMessage");
-      errDiv.innerText = msg;
-      errDiv.classList.remove("hidden");
+    function setupNavigation() {
+      $("openSidebar").addEventListener("click", () => { $("sidebar").classList.remove("-translate-x-full"); $("mobileOverlay").classList.remove("hidden"); });
+      const close = () => { $("sidebar").classList.add("-translate-x-full"); $("mobileOverlay").classList.add("hidden"); };
+      $("closeSidebar").addEventListener("click", close);
+      $("mobileOverlay").addEventListener("click", close);
+      document.querySelectorAll(".nav-link").forEach(link => link.addEventListener("click", () => {
+        document.querySelectorAll(".nav-link").forEach(item => item.classList.remove("nav-active"));
+        link.classList.add("nav-active"); close();
+      }));
+      $("googleSignInBtn").addEventListener("click", signIn);
+      $("signOutBtn").addEventListener("click", signOut);
+      $("headerSignOut").addEventListener("click", signOut);
     }
 
-    function resetButton() {
-      const btn = document.getElementById("signInBtn");
-      const btnText = document.getElementById("signInBtnText");
-      btn.disabled = false;
-      btnText.innerText = "Sign in with @baljyoti.com";
-    }
+    document.addEventListener("DOMContentLoaded", () => {
+      $("todayLabel").textContent = new Intl.DateTimeFormat("en-IN", { weekday:"long", day:"numeric", month:"long", year:"numeric" }).format(new Date());
+      $("year").textContent = new Date().getFullYear();
+      if (SUPPORT_EMAIL !== "YOUR_ADMIN_EMAIL") $("supportEmailLink").href = "mailto:" + SUPPORT_EMAIL;
+      renderCards();
+      setupNavigation();
+      initFirebase();
+    });
   </script>
 </body>
 </html>
