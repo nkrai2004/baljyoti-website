@@ -131,8 +131,7 @@ function showApplication(user,p){
  $("profileName").textContent=name;$("profileEmail").textContent=user.email||"";$("profileRole").textContent=role;$("profileStatus").textContent="Active";
  renderNavigation();renderModules();showView("dashboardView","Dashboard");
 }
-function openModule(id){const m=MODULES.find(x=>x.id===id);if(!m||!currentProfile||!m.roles.includes(currentProfile.role)){message("You do not have permission to open this module.");return;}$("moduleTitle").textContent=m.label;$("moduleDescription").textContent=m.description;showView("moduleView",m.label);}
-async function signOut(){if(auth)try{await auth.signOut();showLogin();clearMessage();}catch(e){console.error(e);alert("Unable to sign out. Please refresh and try again.");}}
+function openModule(id){const m=MODULES.find(x=>x.id===id);if(!m||!currentProfile||!m.roles.includes(currentProfile.role)){message("You do not have permission to open this module.");return;}if(id==="user_management"){window.location.href="user-management.html";return;}$("moduleTitle").textContent=m.label;$("moduleDescription").textContent=m.description;showView("moduleView",m.label);}async function signOut(){if(auth)try{await auth.signOut();showLogin();clearMessage();}catch(e){console.error(e);alert("Unable to sign out. Please refresh and try again.");}}
 async function onAuthChanged(user){
  if(!user){showLogin();return;}
  if(!schoolEmail(user.email)){await auth.signOut();showLogin();message("Access denied. Please use your official @baljyoti.com account.");return;}
