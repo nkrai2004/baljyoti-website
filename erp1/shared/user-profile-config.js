@@ -1,13 +1,7 @@
 
-/* =========================================
-   BAL JYOTI ERP
-   USER PROFILE CONFIGURATION
-   Version: 1.0
-   ========================================= */
-
 window.BJ_ERP_USER_CONFIG = {
-
   collection: "users",
+  version: "1.1",
 
   profileFields: [
     "uid",
@@ -29,16 +23,40 @@ window.BJ_ERP_USER_CONFIG = {
     PENDING: "pending"
   },
 
-  // User-management authority
-  authority: {
+  roles: {
+    SUPER_ADMIN: "super_admin",
+    DIRECTOR: "director",
+    PRINCIPAL: "principal",
+    ADMIN: "administrator",
+    ACADEMIC_COORDINATOR: "academic_coordinator",
+    ADMISSION_COORDINATOR: "admission_coordinator",
+    ACTIVITY_COORDINATOR: "activity_coordinator",
+    SPORTS_DISCIPLINE_COORDINATOR: "sports_discipline_coordinator",
+    TEACHER: "teacher",
+    ACCOUNTANT: "accountant",
+    HR_MANAGER: "hr_manager",
+    STAFF: "staff"
+  },
 
-    director: {
+  authority: {
+    super_admin: {
       createUser: true,
       editProfile: true,
       assignRole: true,
       changePermissions: true,
       activateUser: true,
-      deactivateUser: true
+      deactivateUser: true,
+      requestAccessChange: false
+    },
+
+    director: {
+      createUser: true,
+      editProfile: true,
+      assignRole: false,
+      changePermissions: false,
+      activateUser: false,
+      deactivateUser: false,
+      requestAccessChange: false
     },
 
     administrator: {
@@ -47,7 +65,8 @@ window.BJ_ERP_USER_CONFIG = {
       assignRole: false,
       changePermissions: false,
       activateUser: false,
-      deactivateUser: false
+      deactivateUser: false,
+      requestAccessChange: false
     },
 
     principal: {
@@ -66,7 +85,38 @@ window.BJ_ERP_USER_CONFIG = {
       assignRole: false,
       changePermissions: false,
       activateUser: false,
-      deactivateUser: false
+      deactivateUser: false,
+      requestAccessChange: false
+    },
+
+    admission_coordinator: {
+      createUser: false,
+      editProfile: false,
+      assignRole: false,
+      changePermissions: false,
+      activateUser: false,
+      deactivateUser: false,
+      requestAccessChange: false
+    },
+
+    activity_coordinator: {
+      createUser: false,
+      editProfile: false,
+      assignRole: false,
+      changePermissions: false,
+      activateUser: false,
+      deactivateUser: false,
+      requestAccessChange: false
+    },
+
+    sports_discipline_coordinator: {
+      createUser: false,
+      editProfile: false,
+      assignRole: false,
+      changePermissions: false,
+      activateUser: false,
+      deactivateUser: false,
+      requestAccessChange: false
     },
 
     teacher: {
@@ -75,7 +125,8 @@ window.BJ_ERP_USER_CONFIG = {
       assignRole: false,
       changePermissions: false,
       activateUser: false,
-      deactivateUser: false
+      deactivateUser: false,
+      requestAccessChange: false
     },
 
     accountant: {
@@ -84,7 +135,8 @@ window.BJ_ERP_USER_CONFIG = {
       assignRole: false,
       changePermissions: false,
       activateUser: false,
-      deactivateUser: false
+      deactivateUser: false,
+      requestAccessChange: false
     },
 
     hr_manager: {
@@ -93,9 +145,18 @@ window.BJ_ERP_USER_CONFIG = {
       assignRole: false,
       changePermissions: false,
       activateUser: false,
-      deactivateUser: false
+      deactivateUser: false,
+      requestAccessChange: false
+    },
+
+    staff: {
+      createUser: false,
+      editProfile: false,
+      assignRole: false,
+      changePermissions: false,
+      activateUser: false,
+      deactivateUser: false,
+      requestAccessChange: false
     }
-
   }
-
 };
