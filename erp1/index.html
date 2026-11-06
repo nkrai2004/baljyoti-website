@@ -47,7 +47,44 @@ button:focus-visible,a:focus-visible{outline:3px solid rgba(181,18,27,.35);outli
 </div>
 </section>
 </main>
+<!-- Pending Staff Approval Screen -->
+<div id="pendingScreen" class="hidden-view min-h-screen flex items-center justify-center p-6 bg-gray-50">
+  <div class="bg-white rounded-2xl shadow-lg p-8 max-w-lg w-full text-center">
 
+    <div class="text-5xl mb-4">⏳</div>
+
+    <h2 class="text-2xl font-bold text-gray-800 mb-3">
+      Account Pending Approval
+    </h2>
+
+    <p class="text-gray-600 mb-5">
+      Your official Bal Jyoti account has been registered successfully.
+      Your ERP access is currently awaiting approval from the Super Admin.
+    </p>
+
+    <div class="bg-blue-50 rounded-lg p-4 mb-6 text-left">
+      <p class="text-sm text-gray-700">
+        <strong>Account:</strong>
+        <span id="pendingUserEmail">—</span>
+      </p>
+      <p class="text-sm text-gray-700 mt-2">
+        <strong>Status:</strong> Pending Approval
+      </p>
+    </div>
+
+    <p class="text-sm text-gray-500 mb-6">
+      Please contact the school administrator if you need assistance.
+    </p>
+
+    <button
+      id="pendingSignOutBtn"
+      class="bg-blue-900 hover:bg-blue-800 text-white font-semibold px-6 py-3 rounded-lg">
+      Sign Out
+    </button>
+
+  </div>
+</div>
+<!-- End Pending Staff Approval Screen -->
 <div id="appScreen" class="hidden-view min-h-screen">
 <div class="min-h-screen md:flex">
 <header class="md:hidden sticky top-0 z-30 bg-bjred text-white px-4 py-3 flex items-center justify-between shadow">
