@@ -1,112 +1,855 @@
+
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#b5121b"><title>Bal Jyoti ERP | User Management</title>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#b5121b">
+<title>Bal Jyoti ERP | User Management</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<style>body{font-family:Inter,system-ui,sans-serif}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #fecaca;outline-offset:2px}</style></head>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+<style>
+body{font-family:Inter,system-ui,sans-serif}
+button:focus-visible,input:focus-visible,select:focus-visible{
+outline:3px solid #fecaca;
+outline-offset:2px
+}
+</style>
+</head>
+
 <body class="bg-slate-50 text-slate-800 min-h-screen">
-<header class="bg-[#b5121b] text-white"><div class="max-w-7xl mx-auto p-4 flex justify-between items-center"><div class="flex items-center gap-3"><div class="bg-white text-[#b5121b] rounded-xl p-3 font-black">BJ</div><div><b>Bal Jyoti Public School</b><div class="text-xs text-red-100">ERP · User Management</div></div></div><div class="text-right text-sm"><div id="adminName">Checking access…</div><div id="adminEmail" class="text-xs text-red-100"></div></div></div></header>
-<main class="max-w-7xl mx-auto p-4 sm:p-7"><div class="flex flex-wrap justify-between items-end gap-3 mb-6"><div><p class="text-sm text-slate-500">Administration</p><h1 class="text-3xl font-extrabold">User Management</h1><p class="text-sm text-slate-500 mt-1">Create and maintain approved staff ERP profiles.</p></div><a href="./index.html" class="border bg-white rounded-xl px-4 py-2 text-sm font-semibold">← Back to ERP dashboard</a></div>
+
+<header class="bg-[#b5121b] text-white">
+<div class="max-w-7xl mx-auto p-4 flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="bg-white text-[#b5121b] rounded-xl p-3 font-black">BJ</div>
+<div>
+<b>Bal Jyoti Public School</b>
+<div class="text-xs text-red-100">ERP · User Management</div>
+</div>
+</div>
+<div class="text-right text-sm">
+<div id="adminName">Checking access…</div>
+<div id="adminEmail" class="text-xs text-red-100"></div>
+</div>
+</div>
+</header>
+
+<main class="max-w-7xl mx-auto p-4 sm:p-7">
+
+<div class="flex flex-wrap justify-between items-end gap-3 mb-6">
+<div>
+<p class="text-sm text-slate-500">Administration</p>
+<h1 class="text-3xl font-extrabold">User Management</h1>
+<p class="text-sm text-slate-500 mt-1">
+Manage staff accounts, roles and access approvals.
+</p>
+</div>
+<a href="./index.html"
+class="border bg-white rounded-xl px-4 py-2 text-sm font-semibold">
+← Back to ERP dashboard
+</a>
+</div>
+
 <div id="notice" class="hidden mb-5 rounded-xl border p-3 text-sm"></div>
-<section id="loginBox" class="hidden bg-white border rounded-2xl p-6 max-w-lg"><h2 class="font-bold text-lg">Super Admin sign-in required</h2><p class="text-sm text-slate-500 mt-2">Sign in using the designated Super Admin Google account.</p><button id="loginBtn" class="mt-4 bg-[#b5121b] text-white rounded-xl px-5 py-3 font-semibold">Continue with Google</button></section>
-<section id="deniedBox" class="hidden bg-white border border-red-200 rounded-2xl p-6"><b class="text-red-700">Access not authorised</b><p class="text-sm mt-2">Only the designated Super Admin can manage profiles.</p><button id="logoutDenied" class="mt-4 border rounded-lg px-4 py-2">Sign out</button></section>
+
+<section id="loginBox" class="hidden bg-white border rounded-2xl p-6 max-w-lg">
+<h2 class="font-bold text-lg">Super Admin sign-in required</h2>
+<p class="text-sm text-slate-500 mt-2">
+Sign in using the designated Super Admin Google account.
+</p>
+<button id="loginBtn"
+class="mt-4 bg-[#b5121b] text-white rounded-xl px-5 py-3 font-semibold">
+Continue with Google
+</button>
+</section>
+
+<section id="deniedBox"
+class="hidden bg-white border border-red-200 rounded-2xl p-6">
+<b class="text-red-700">Access not authorised</b>
+<p class="text-sm mt-2">
+Only the designated Super Admin can manage profiles.
+</p>
+<button id="logoutDenied" class="mt-4 border rounded-lg px-4 py-2">
+Sign out
+</button>
+</section>
+
 <div id="workspace" class="hidden">
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6"><div class="bg-white border rounded-xl p-4"><div class="text-xs text-slate-500">Total profiles</div><b id="total" class="text-2xl">0</b></div><div class="bg-white border rounded-xl p-4"><div class="text-xs text-slate-500">Active</div><b id="active" class="text-2xl text-green-700">0</b></div><div class="bg-white border rounded-xl p-4"><div class="text-xs text-slate-500">Inactive</div><b id="inactive" class="text-2xl text-red-700">0</b></div><div class="bg-white border rounded-xl p-4"><div class="text-xs text-slate-500">Pending</div><b id="pending" class="text-2xl text-amber-700">0</b></div></div>
+
+<!-- DASHBOARD COUNTS -->
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+
+<div class="bg-white border rounded-xl p-4">
+<div class="text-xs text-slate-500">Total profiles</div>
+<b id="total" class="text-2xl">0</b>
+</div>
+
+<div class="bg-white border rounded-xl p-4">
+<div class="text-xs text-slate-500">Active</div>
+<b id="active" class="text-2xl text-green-700">0</b>
+</div>
+
+<div class="bg-white border rounded-xl p-4">
+<div class="text-xs text-slate-500">Inactive</div>
+<b id="inactive" class="text-2xl text-red-700">0</b>
+</div>
+
+<div class="bg-white border rounded-xl p-4">
+<div class="text-xs text-slate-500">Pending Approval</div>
+<b id="pending" class="text-2xl text-amber-700">0</b>
+</div>
+
+</div>
+
 <div class="grid xl:grid-cols-3 gap-6">
-<section class="bg-white border rounded-2xl p-5 h-fit"><div class="flex justify-between"><h2 id="formHeading" class="font-bold text-lg">Add staff profile</h2><button id="clearBtn" class="text-xs underline text-slate-500">Clear</button></div><p class="text-xs text-slate-500 mt-1">Firebase Authentication account must already exist.</p>
-<form id="userForm" class="mt-4 space-y-3"><input id="editUid" type="hidden">
-<label class="block text-sm">Firebase UID *<input id="uid" required class="mt-1 w-full border rounded-lg p-2.5 text-sm" placeholder="Copy exact UID from Authentication"></label>
-<label class="block text-sm">Full name *<input id="fullName" required maxlength="100" class="mt-1 w-full border rounded-lg p-2.5 text-sm"></label>
-<label class="block text-sm">Official email *<input id="email" required type="email" class="mt-1 w-full border rounded-lg p-2.5 text-sm" placeholder="name@baljyoti.com"></label>
-<label class="block text-sm">Role *<select id="role" required class="mt-1 w-full border rounded-lg p-2.5 text-sm bg-white"></select></label>
-<label class="block text-sm">Account status<select id="status" class="mt-1 w-full border rounded-lg p-2.5 text-sm bg-white"><option value="active">Active</option><option value="inactive">Inactive</option><option value="pending">Pending</option></select></label>
-<label class="block text-sm">Employee ID<input id="employeeId" class="mt-1 w-full border rounded-lg p-2.5 text-sm"></label>
-<label class="block text-sm">Department<input id="department" class="mt-1 w-full border rounded-lg p-2.5 text-sm"></label>
-<p class="text-xs bg-amber-50 border border-amber-200 rounded-lg p-3 text-amber-900">This form saves the Firestore profile only. It does not create a Google or Firebase login account.</p>
-<div class="flex gap-2"><button id="saveBtn" class="flex-1 bg-[#b5121b] text-white rounded-xl p-3 text-sm font-semibold">Save profile</button><button id="cancelBtn" type="button" class="hidden border rounded-xl px-4">Cancel</button></div></form></section>
-<section class="xl:col-span-2 bg-white border rounded-2xl p-5"><div class="flex justify-between items-center gap-3 flex-wrap"><div><h2 class="font-bold text-lg">Staff directory</h2><p class="text-xs text-slate-500">Records from Firestore collection: users</p></div><button id="refreshBtn" class="border rounded-lg px-4 py-2 text-sm">↻ Refresh</button></div>
-<div class="grid sm:grid-cols-2 gap-2 mt-4"><input id="search" class="border rounded-lg p-2.5 text-sm" placeholder="Search name, email, employee ID"><select id="roleFilter" class="border rounded-lg p-2.5 text-sm bg-white"><option value="">All roles</option></select></div>
-<div class="overflow-x-auto mt-4"><table class="w-full text-sm text-left"><thead class="bg-slate-50 text-xs text-slate-500"><tr><th class="p-3">Staff member</th><th class="p-3">Role</th><th class="p-3">Status</th><th class="p-3 text-right">Action</th></tr></thead><tbody id="rows"><tr><td colspan="4" class="p-6 text-center text-slate-400">Loading…</td></tr></tbody></table></div><p id="count" class="text-xs text-slate-400 mt-3"></p></section></div></div>
-<p class="text-xs text-slate-400 mt-8">Bal Jyoti ERP · Staging release</p></main>
+
+<!-- ADD / EDIT STAFF FORM -->
+
+<section class="bg-white border rounded-2xl p-5 h-fit">
+
+<div class="flex justify-between">
+<h2 id="formHeading" class="font-bold text-lg">Add staff profile</h2>
+<button id="clearBtn" class="text-xs underline text-slate-500">
+Clear
+</button>
+</div>
+
+<p class="text-xs text-slate-500 mt-1">
+Firebase Authentication account must already exist.
+</p>
+
+<form id="userForm" class="mt-4 space-y-3">
+
+<input id="editUid" type="hidden">
+
+<label class="block text-sm">
+Firebase UID *
+<input id="uid" required
+class="mt-1 w-full border rounded-lg p-2.5 text-sm"
+placeholder="Copy exact UID from Authentication">
+</label>
+
+<label class="block text-sm">
+Full name *
+<input id="fullName" required maxlength="100"
+class="mt-1 w-full border rounded-lg p-2.5 text-sm">
+</label>
+
+<label class="block text-sm">
+Official email *
+<input id="email" required type="email"
+class="mt-1 w-full border rounded-lg p-2.5 text-sm"
+placeholder="name@baljyoti.com">
+</label>
+
+<label class="block text-sm">
+Role *
+<select id="role" required
+class="mt-1 w-full border rounded-lg p-2.5 text-sm bg-white">
+</select>
+</label>
+
+<label class="block text-sm">
+Account status
+<select id="status"
+class="mt-1 w-full border rounded-lg p-2.5 text-sm bg-white">
+<option value="active">Active</option>
+<option value="inactive">Inactive</option>
+<option value="pending">Pending</option>
+</select>
+</label>
+
+<label class="block text-sm">
+Employee ID
+<input id="employeeId"
+class="mt-1 w-full border rounded-lg p-2.5 text-sm">
+</label>
+
+<label class="block text-sm">
+Department
+<input id="department"
+class="mt-1 w-full border rounded-lg p-2.5 text-sm">
+</label>
+
+<p class="text-xs bg-amber-50 border border-amber-200 rounded-lg p-3 text-amber-900">
+This form saves the Firestore profile only. It does not create a Google or Firebase login account.
+</p>
+
+<div class="flex gap-2">
+<button id="saveBtn"
+class="flex-1 bg-[#b5121b] text-white rounded-xl p-3 text-sm font-semibold">
+Save profile
+</button>
+
+<button id="cancelBtn" type="button"
+class="hidden border rounded-xl px-4">
+Cancel
+</button>
+</div>
+
+</form>
+</section>
+
+<!-- STAFF DIRECTORY -->
+
+<section class="xl:col-span-2 bg-white border rounded-2xl p-5">
+
+<div class="flex justify-between items-center gap-3 flex-wrap">
+<div>
+<h2 class="font-bold text-lg">Staff Directory</h2>
+<p class="text-xs text-slate-500">
+Records from Firestore collection: users
+</p>
+</div>
+
+<button id="refreshBtn"
+class="border rounded-lg px-4 py-2 text-sm">
+↻ Refresh
+</button>
+</div>
+
+<div class="grid sm:grid-cols-2 gap-2 mt-4">
+
+<input id="search"
+class="border rounded-lg p-2.5 text-sm"
+placeholder="Search name, email, employee ID">
+
+<select id="roleFilter"
+class="border rounded-lg p-2.5 text-sm bg-white">
+<option value="">All roles</option>
+</select>
+
+</div>
+
+<div class="overflow-x-auto mt-4">
+
+<table class="w-full text-sm text-left">
+
+<thead class="bg-slate-50 text-xs text-slate-500">
+<tr>
+<th class="p-3">Staff member</th>
+<th class="p-3">Role</th>
+<th class="p-3">Status</th>
+<th class="p-3 text-right">Action</th>
+</tr>
+</thead>
+
+<tbody id="rows">
+<tr>
+<td colspan="4" class="p-6 text-center text-slate-400">
+Loading…
+</td>
+</tr>
+</tbody>
+
+</table>
+</div>
+
+<p id="count" class="text-xs text-slate-400 mt-3"></p>
+
+</section>
+</div>
+</div>
+
+<p class="text-xs text-slate-400 mt-8">
+Bal Jyoti ERP · Staging release
+</p>
+
+</main>
+
 <script>
 "use strict";
-const CFG={apiKey:"AIzaSyB2SGgV_zUFOyOGIIM27H5HNQYlO5WdFEY",authDomain:"baljyoti-erp.firebaseapp.com",projectId:"baljyoti-erp",storageBucket:"baljyoti-erp.firebasestorage.app",messagingSenderId:"422855577454",appId:"1:422855577454:web:9bccb80cc472d02275bb7f",measurementId:"G-CS6FSBHL0D"};
-const ADMIN="JmisdIYS0XTHzb8hGV3Bndgohou1";
-const ROLES={super_admin:"Super Admin",director:"Director",principal:"Principal",administrator:"Administrator",academic_coordinator:"Academic Coordinator",admission_coordinator:"Admission Coordinator",activity_coordinator:"Activity Coordinator",sports_discipline_coordinator:"Sports & Discipline Coordinator",teacher:"Teacher",accountant:"Accountant",hr_manager:"HR Manager",staff:"Staff"};
-let auth,db,users=[];
-const $=id=>document.getElementById(id), val=(d,a,b)=>d[a]??d[b]??"", norm=x=>String(x??"").trim();
-function note(t,kind="error"){let n=$("notice");n.textContent=t;n.className="mb-5 rounded-xl border p-3 text-sm "+(kind==="ok"?"bg-green-50 border-green-200 text-green-800":"bg-red-50 border-red-200 text-red-800")}
-function hideNote(){$("notice").className="hidden mb-5 rounded-xl border p-3 text-sm"}
-function setupRoles(){Object.entries(ROLES).forEach(([k,v])=>{let a=new Option(v,k),b=new Option(v,k);$("role").add(a);$("roleFilter").add(b)})}
-function resetForm(){$("userForm").reset();$("editUid").value="";$("uid").disabled=false;$("formHeading").textContent="Add staff profile";$("saveBtn").textContent="Save profile";$("cancelBtn").classList.add("hidden")}
-function editUser(u){$("editUid").value=u.uid;$("uid").value=u.uid;$("uid").disabled=true;$("fullName").value=val(u,"fullName","Full name");$("email").value=val(u,"email","Email");$("role").value=norm(val(u,"role","Role")).toLowerCase().replace(/[ -]+/g,"_");$("status").value=norm(val(u,"status","Status")).toLowerCase()||"active";$("employeeId").value=val(u,"employeeId","Employee ID");$("department").value=val(u,"department","Department");$("formHeading").textContent="Edit staff profile";$("saveBtn").textContent="Update profile";$("cancelBtn").classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"})}
-function render(){let q=norm($("search").value).toLowerCase(),rf=$("roleFilter").value;let list=users.filter(u=>{let r=norm(val(u,"role","Role")).toLowerCase().replace(/[ -]+/g,"_");return(!rf||r===rf)&&(!q||[val(u,"fullName","Full name"),val(u,"email","Email"),val(u,"employeeId","Employee ID"),u.uid].join(" ").toLowerCase().includes(q))});$("total").textContent=users.length;$("active").textContent=users.filter(u=>norm(val(u,"status","Status")).toLowerCase()==="active").length;$("inactive").textContent=users.filter(u=>norm(val(u,"status","Status")).toLowerCase()==="inactive").length;$("pending").textContent=users.filter(u=>norm(val(u,"status","Status")).toLowerCase()==="pending").length;$("count").textContent=`Showing ${list.length} of ${users.length} profiles`;
-$("rows").innerHTML="";if(!list.length){$("rows").innerHTML='<tr><td colspan="4" class="p-6 text-center text-slate-400">No matching profiles found.</td></tr>';return}
-list.sort((a,b)=>norm(val(a,"fullName","Full name")).localeCompare(norm(val(b,"fullName","Full name")))).forEach(u=>{let tr=document.createElement("tr");tr.className="border-t";let td=document.createElement("td");td.className="p-3";let b=document.createElement("b");b.textContent=val(u,"fullName","Full name")||"Unnamed user";let small=document.createElement("div");small.className="text-xs text-slate-500 mt-1";small.textContent=val(u,"email","Email");td.append(b,small);let role=document.createElement("td");role.className="p-3";let rk=norm(val(u,"role","Role")).toLowerCase().replace(/[ -]+/g,"_");role.textContent=ROLES[rk]||rk;let st=document.createElement("td");st.className="p-3";let badge=document.createElement("span"),s=norm(val(u,"status","Status")).toLowerCase();badge.className="rounded-full px-2 py-1 text-xs "+(s==="active"?"bg-green-50 text-green-700":s==="inactive"?"bg-red-50 text-red-700":"bg-amber-50 text-amber-700");badge.textContent=s||"unknown";st.append(badge);let act=document.createElement("td");
+
+/* FIREBASE CONFIGURATION */
+
+const CFG = {
+apiKey:"AIzaSyB2SGgV_zUFOyOGIIM27H5HNQYlO5WdFEY",
+authDomain:"baljyoti-erp.firebaseapp.com",
+projectId:"baljyoti-erp",
+storageBucket:"baljyoti-erp.firebasestorage.app",
+messagingSenderId:"422855577454",
+appId:"1:422855577454:web:9bccb80cc472d02275bb7f",
+measurementId:"G-CS6FSBHL0D"
+};
+
+/* SUPER ADMIN UID */
+
+const ADMIN = "JmisdIYS0XTHzb8hGV3Bndgohou1";
+
+/* AVAILABLE ERP ROLES */
+
+const ROLES = {
+super_admin:"Super Admin",
+director:"Director",
+principal:"Principal",
+administrator:"Administrator",
+academic_coordinator:"Academic Coordinator",
+admission_coordinator:"Admission Coordinator",
+activity_coordinator:"Activity Coordinator",
+sports_discipline_coordinator:"Sports & Discipline Coordinator",
+teacher:"Teacher",
+accountant:"Accountant",
+hr_manager:"HR Manager",
+staff:"Staff"
+};
+
+let auth, db, users = [];
+
+const $ = id => document.getElementById(id);
+
+const val = (d,a,b) => d[a] ?? d[b] ?? "";
+
+const norm = x => String(x ?? "").trim();
+
+/* NOTIFICATION */
+
+function note(t,kind="error"){
+const n=$("notice");
+n.textContent=t;
+n.className="mb-5 rounded-xl border p-3 text-sm "+
+(kind==="ok"
+?"bg-green-50 border-green-200 text-green-800"
+:"bg-red-50 border-red-200 text-red-800");
+}
+
+function hideNote(){
+$("notice").className="hidden mb-5 rounded-xl border p-3 text-sm";
+}
+
+/* ROLE DROPDOWNS */
+
+function setupRoles(){
+
+Object.entries(ROLES).forEach(([k,v])=>{
+
+$("role").add(new Option(v,k));
+
+if(k!=="super_admin"){
+$("roleFilter").add(new Option(v,k));
+}
+
+});
+
+}
+
+/* RESET FORM */
+
+function resetForm(){
+
+$("userForm").reset();
+$("editUid").value="";
+$("uid").disabled=false;
+
+$("formHeading").textContent="Add staff profile";
+$("saveBtn").textContent="Save profile";
+
+$("cancelBtn").classList.add("hidden");
+
+}
+
+/* EDIT STAFF */
+
+function editUser(u){
+
+$("editUid").value=u.uid;
+
+$("uid").value=u.uid;
+$("uid").disabled=true;
+
+$("fullName").value=val(u,"fullName","Full name");
+$("email").value=val(u,"email","Email");
+
+$("role").value=norm(
+val(u,"role","Role")
+).toLowerCase().replace(/[ -]+/g,"_");
+
+$("status").value=norm(
+val(u,"status","Status")
+).toLowerCase()||"active";
+
+$("employeeId").value=val(u,"employeeId","Employee ID");
+$("department").value=val(u,"department","Department");
+
+$("formHeading").textContent="Edit staff profile";
+$("saveBtn").textContent="Update profile";
+
+$("cancelBtn").classList.remove("hidden");
+
+window.scrollTo({top:0,behavior:"smooth"});
+
+}
+
+/* STAFF DIRECTORY RENDER */
+
+function render(){
+
+let q=norm($("search").value).toLowerCase();
+let rf=$("roleFilter").value;
+
+let list=users.filter(u=>{
+
+let r=norm(val(u,"role","Role"))
+.toLowerCase().replace(/[ -]+/g,"_");
+
+return (!rf||r===rf) &&
+(!q||[
+val(u,"fullName","Full name"),
+val(u,"email","Email"),
+val(u,"employeeId","Employee ID"),
+u.uid
+].join(" ").toLowerCase().includes(q));
+
+});
+
+/* UPDATE COUNTS */
+
+$("total").textContent=users.length;
+
+$("active").textContent=users.filter(u=>
+norm(val(u,"status","Status")).toLowerCase()==="active"
+).length;
+
+$("inactive").textContent=users.filter(u=>
+norm(val(u,"status","Status")).toLowerCase()==="inactive"
+).length;
+
+$("pending").textContent=users.filter(u=>
+norm(val(u,"status","Status")).toLowerCase()==="pending"
+).length;
+
+$("count").textContent=
+`Showing ${list.length} of ${users.length} profiles`;
+
+$("rows").innerHTML="";
+
+if(!list.length){
+
+$("rows").innerHTML=
+'<tr><td colspan="4" class="p-6 text-center text-slate-400">No matching profiles found.</td></tr>';
+
+return;
+}
+
+/* SORT STAFF */
+
+list.sort((a,b)=>
+norm(val(a,"fullName","Full name"))
+.localeCompare(norm(val(b,"fullName","Full name")))
+);
+
+/* CREATE ROWS */
+
+list.forEach(u=>{
+
+let tr=document.createElement("tr");
+tr.className="border-t";
+
+/* NAME AND EMAIL */
+
+let td=document.createElement("td");
+td.className="p-3";
+
+let b=document.createElement("b");
+b.textContent=val(u,"fullName","Full name")||"Unnamed user";
+
+let small=document.createElement("div");
+small.className="text-xs text-slate-500 mt-1";
+small.textContent=val(u,"email","Email");
+
+td.append(b,small);
+
+/* ROLE */
+
+let role=document.createElement("td");
+role.className="p-3";
+
+let rk=norm(val(u,"role","Role"))
+.toLowerCase().replace(/[ -]+/g,"_");
+
+role.textContent=ROLES[rk]||rk;
+
+/* STATUS */
+
+let st=document.createElement("td");
+st.className="p-3";
+
+let badge=document.createElement("span");
+
+let s=norm(val(u,"status","Status")).toLowerCase();
+
+badge.className=
+"rounded-full px-2 py-1 text-xs "+
+(s==="active"
+?"bg-green-50 text-green-700"
+:s==="inactive"
+?"bg-red-50 text-red-700"
+:"bg-amber-50 text-amber-700");
+
+badge.textContent=s||"unknown";
+
+st.append(badge);
+
+/* ACTIONS */
+
+let act=document.createElement("td");
 act.className="p-3 text-right";
 
+/* EDIT BUTTON */
+
 let edit=document.createElement("button");
+
 edit.className="text-[#b5121b] font-semibold mr-3";
 edit.textContent="Edit";
 edit.onclick=()=>editUser(u);
+
 act.append(edit);
+
+/* APPROVAL CONTROLS */
 
 if(s==="pending" && u.uid!==ADMIN){
 
-  let approveRole=document.createElement("select");
-  approveRole.className="border rounded-lg p-2 text-xs mr-2";
+let approveRole=document.createElement("select");
 
-  Object.entries(ROLES).forEach(([key,label])=>{
-    if(key!=="super_admin"){
-      approveRole.add(new Option(label,key));
-    }
-  });
+approveRole.className="border rounded-lg p-2 text-xs mr-2";
 
-  approveRole.value="staff";
+Object.entries(ROLES).forEach(([key,label])=>{
 
-  let approve=document.createElement("button");
-  approve.className="bg-green-700 text-white rounded-lg px-3 py-2 text-xs font-semibold";
-  approve.textContent="Approve";
+if(key!=="super_admin"){
+approveRole.add(new Option(label,key));
+}
 
-  approve.onclick=async()=>{
-    if(!confirm("Approve "+(val(u,"fullName","Full name")||u.email)+" as "+ROLES[approveRole.value]+"?"))return;
+});
 
-    approve.disabled=true;
+approveRole.value="staff";
 
-    try{
-      await db.collection("users").doc(u.uid).update({
-        role:approveRole.value,
-        status:"active",
-        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
-      });
+/* APPROVE BUTTON */
 
-      note("Staff account approved and activated successfully.","ok");
-      await load();
+let approve=document.createElement("button");
 
-    }catch(e){
-      console.error(e);
-      note("Approval failed: "+(e.message||e.code));
-      approve.disabled=false;
-    }
-  };
+approve.className=
+"bg-green-700 text-white rounded-lg px-3 py-2 text-xs font-semibold";
 
-  act.append(approveRole,approve);
+approve.textContent="Approve";
+
+approve.onclick=async()=>{
+
+if(!confirm(
+"Approve "+
+(val(u,"fullName","Full name")||u.email)+
+" as "+ROLES[approveRole.value]+"?"
+))return;
+
+approve.disabled=true;
+
+try{
+
+await db.collection("users").doc(u.uid).update({
+
+role:approveRole.value,
+status:"active",
+
+updatedAt:
+firebase.firestore.FieldValue.serverTimestamp()
+
+});
+
+note(
+"Staff account approved and activated successfully.",
+"ok"
+);
+
+await load();
+
+}catch(e){
+
+console.error(e);
+
+note("Approval failed: "+(e.message||e.code));
+
+approve.disabled=false;
+
+}
+
+};
+
+act.append(approveRole,approve);
+
 }
 
 tr.append(td,role,st,act);
+
 $("rows").append(tr);
-async function save(e){e.preventDefault();hideNote();let old=norm($("editUid").value),uid=norm($("uid").value),name=norm($("fullName").value),email=norm($("email").value).toLowerCase(),role=$("role").value,status=$("status").value;if(!uid||!name||!email||!role){note("Complete all required fields.");return}if(!/^[A-Za-z0-9_-]{10,128}$/.test(uid)){note("Please copy the exact Firebase UID from Authentication → Users.");return}if(!email.endsWith("@baljyoti.com")){note("Use an official @baljyoti.com email address.");return}if(role==="super_admin" && uid!==ADMIN){
-  note("The Super Admin role is reserved for the designated account.");
-  return;
+
+});
+
+}
+
+/* LOAD STAFF FROM FIRESTORE */
+
+async function load(){
+
+try{
+
+let snap=await db.collection("users").get();
+
+users=snap.docs.map(d=>({
+uid:d.id,
+...d.data()
+}));
+
+render();
+
+}catch(e){
+
+console.error(e);
+
+note("Unable to read user profiles: "+(e.message||e.code));
+
+}
+
+}
+
+/* SAVE OR UPDATE STAFF */
+
+async function save(e){
+
+e.preventDefault();
+hideNote();
+
+let old=norm($("editUid").value);
+let uid=norm($("uid").value);
+let name=norm($("fullName").value);
+let email=norm($("email").value).toLowerCase();
+
+let role=$("role").value;
+let status=$("status").value;
+
+if(!uid||!name||!email||!role){
+
+note("Complete all required fields.");
+return;
+
+}
+
+if(!/^[A-Za-z0-9_-]{10,128}$/.test(uid)){
+
+note("Please copy the exact Firebase UID from Authentication → Users.");
+return;
+
+}
+
+if(!email.endsWith("@baljyoti.com")){
+
+note("Use an official @baljyoti.com email address.");
+return;
+
+}
+
+/* SUPER ADMIN PROTECTION */
+
+if(role==="super_admin" && uid!==ADMIN){
+
+note("The Super Admin role is reserved for the designated account.");
+return;
+
 }
 
 if(uid===ADMIN && role!=="super_admin"){
-  note("The designated Super Admin role cannot be changed.");
-  return;
+
+note("The designated Super Admin role cannot be changed.");
+return;
+
 }
-let p={uid,fullName:name,email,role,status,employeeId:norm($("employeeId").value),department:norm($("department").value),updatedAt:firebase.firestore.FieldValue.serverTimestamp()};if(!old)p.createdAt=firebase.firestore.FieldValue.serverTimestamp();$("saveBtn").disabled=true;
-try{if(old)await db.collection("users").doc(old).update(p);else await db.collection("users").doc(uid).set(p);note(old?"Profile updated.":"Profile created. The Firebase Authentication account must already exist for this person to sign in.","ok");resetForm();await load()}catch(err){console.error(err);note(err.code==="permission-denied"?"Firestore denied this operation. Confirm you are signed in as the designated Super Admin and the existing security rules are published.":(err.message||"Could not save profile."))}finally{$("saveBtn").disabled=false;$("saveBtn").textContent=old?"Update profile":"Save profile"}}
-async function login(){try{let p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});await auth.signInWithPopup(p)}catch(e){note(e.message||"Google sign-in failed.")}}
-async function authChanged(user){if(!user){$("workspace").classList.add("hidden");$("deniedBox").classList.add("hidden");$("loginBox").classList.remove("hidden");$("adminName").textContent="Not signed in";$("adminEmail").textContent="";return}if(user.uid!==ADMIN){$("workspace").classList.add("hidden");$("loginBox").classList.add("hidden");$("deniedBox").classList.remove("hidden");$("adminName").textContent="Unauthorised account";$("adminEmail").textContent=user.email||"";note("This account is not the designated Super Admin.");return}hideNote();$("loginBox").classList.add("hidden");$("deniedBox").classList.add("hidden");$("workspace").classList.remove("hidden");$("adminName").textContent=user.displayName||"Bal Jyoti Super Admin";$("adminEmail").textContent=user.email||"";await load()}
-try{if(!firebase.apps.length)firebase.initializeApp(CFG);auth=firebase.auth();db=firebase.firestore();setupRoles();auth.onAuthStateChanged(authChanged)}catch(e){note("Firebase initialisation failed: "+e.message)}
-$("loginBtn").onclick=login;$("logoutDenied").onclick=()=>auth.signOut();$("userForm").onsubmit=save;$("clearBtn").onclick=resetForm;$("cancelBtn").onclick=resetForm;$("refreshBtn").onclick=load;$("search").oninput=render;$("roleFilter").onchange=render;
-</script></body></html>
+
+/* PROFILE DATA */
+
+let p={
+
+uid,
+fullName:name,
+email,
+role,
+status,
+
+employeeId:norm($("employeeId").value),
+department:norm($("department").value),
+
+updatedAt:
+firebase.firestore.FieldValue.serverTimestamp()
+
+};
+
+if(!old){
+
+p.createdAt=
+firebase.firestore.FieldValue.serverTimestamp();
+
+}
+
+$("saveBtn").disabled=true;
+
+try{
+
+if(old){
+
+await db.collection("users").doc(old).update(p);
+
+note("Profile updated successfully.","ok");
+
+}else{
+
+await db.collection("users").doc(uid).set(p);
+
+note(
+"Profile created. The Firebase Authentication account must already exist for this person to sign in.",
+"ok"
+);
+
+}
+
+resetForm();
+
+await load();
+
+}catch(err){
+
+console.error(err);
+
+note(
+err.code==="permission-denied"
+?"Firestore denied this operation. Confirm you are signed in as the designated Super Admin and the security rules are published."
+:(err.message||"Could not save profile.")
+);
+
+}finally{
+
+$("saveBtn").disabled=false;
+
+if(!$("editUid").value){
+$("saveBtn").textContent="Save profile";
+}else{
+$("saveBtn").textContent="Update profile";
+}
+
+}
+
+}
+
+/* GOOGLE SIGN-IN */
+
+async function login(){
+
+try{
+
+let p=new firebase.auth.GoogleAuthProvider();
+
+p.setCustomParameters({
+prompt:"select_account"
+});
+
+await auth.signInWithPopup(p);
+
+}catch(e){
+
+note(e.message||"Google sign-in failed.");
+
+}
+
+}
+
+/* AUTHORISE SUPER ADMIN */
+
+async function authChanged(user){
+
+if(!user){
+
+$("workspace").classList.add("hidden");
+$("deniedBox").classList.add("hidden");
+$("loginBox").classList.remove("hidden");
+
+$("adminName").textContent="Not signed in";
+$("adminEmail").textContent="";
+
+return;
+
+}
+
+if(user.uid!==ADMIN){
+
+$("workspace").classList.add("hidden");
+$("loginBox").classList.add("hidden");
+$("deniedBox").classList.remove("hidden");
+
+$("adminName").textContent="Unauthorised account";
+$("adminEmail").textContent=user.email||"";
+
+note("This account is not the designated Super Admin.");
+
+return;
+
+}
+
+hideNote();
+
+$("loginBox").classList.add("hidden");
+$("deniedBox").classList.add("hidden");
+$("workspace").classList.remove("hidden");
+
+$("adminName").textContent=
+user.displayName||"Bal Jyoti Super Admin";
+
+$("adminEmail").textContent=user.email||"";
+
+await load();
+
+}
+
+/* FIREBASE INITIALISATION */
+
+try{
+
+if(!firebase.apps.length){
+firebase.initializeApp(CFG);
+}
+
+auth=firebase.auth();
+db=firebase.firestore();
+
+setupRoles();
+
+auth.onAuthStateChanged(authChanged);
+
+}catch(e){
+
+note("Firebase initialisation failed: "+e.message);
+
+}
+
+/* EVENT LISTENERS */
+
+$("loginBtn").onclick=login;
+
+$("logoutDenied").onclick=()=>auth.signOut();
+
+$("userForm").onsubmit=save;
+
+$("clearBtn").onclick=resetForm;
+
+$("cancelBtn").onclick=resetForm;
+
+$("refreshBtn").onclick=load;
+
+$("search").oninput=render;
+
+$("roleFilter").onchange=render;
+
+</script>
+
+</body>
+</html>
