@@ -54,9 +54,9 @@ window.BJ_ERP_USER_CONFIG = {
       editProfile: true,
       assignRole: false,
       changePermissions: false,
-      activateUser: false,
-      deactivateUser: false,
-      requestAccessChange: false
+     assignRole: true,
+activateUser: true,
+deactivateUser: true,
     },
 
     administrator: {
