@@ -458,17 +458,49 @@ async function signOut(){
 }
 
 async function onAuthChanged(user){
- if(!user){
-  showLogin();
-  return;
- }
+  if(!user){
+    showLogin();
+    return;
+  }
 
- if(!schoolEmail(user.email)){
-  await auth.signOut();
-  showLogin();
-  message("Access denied. Please use your official @baljyoti.com account.");
-  return;
- }
+  if(!schoolEmail(user.email)){
+    await auth.signOut();
+    showLogin();
+    message("Access denied. Please use your official @baljyoti.com account.");
+    return;
+  }
+
+  try{
+    const p = await getStaffProfile(user);
+
+    clearMessage();
+
+    // New staff members must wait for approval
+    if(p.status === "pending"){
+      showPending(user);
+      return;
+    }
+
+    // Only active staff members can enter the ERP
+    if(p.status !== "active"){
+      throw new Error("Your account is inactive. Please contact the Super Admin.");
+    }
+
+    showApplication(user,p);
+
+  }catch(e){
+    console.error("Profile authorisation failed:",e);
+
+    await auth.signOut();
+    showLogin();
+
+    message(
+      e.code === "permission-denied"
+        ? "The portal cannot read your staff profile because of a Firestore permission issue. Contact the Super Admin."
+        : (e.message || "Your account could not be authorised.")
+    );
+  }
+}
 
  try{
   const p=await getStaffProfile(user);
