@@ -52,7 +52,7 @@ window.BJ_ERP_USER_CONFIG = {
     director: {
       createUser: true,
       editProfile: true,
-      changePermissions: false,
+      changePermissions: true,
      assignRole: true,
 activateUser: true,
 deactivateUser: true,
