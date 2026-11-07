@@ -236,6 +236,10 @@ function openModule(id){
  if(!m||!currentProfile||!allowedModules().some(item=>item.id===id)){message("You do not have permission to open this module.");return;}
  if(id==="user_management"){window.location.assign("/erp1/user-management.html");return;}
  $("moduleTitle").textContent=m.label;$("moduleDescription").textContent=m.description;showView("moduleView",m.label);
+ if(id==="hr"){
+  window.location.assign("/erp1/staff-management.html");
+  return;
+}
 }
 async function signOut(){if(auth)try{await auth.signOut();showLogin();clearMessage();}catch(e){console.error(e);alert("Unable to sign out. Please refresh and try again.");}}
 async function onAuthChanged(user) {
