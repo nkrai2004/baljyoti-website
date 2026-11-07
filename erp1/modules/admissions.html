@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#b5121b"><title>Bal Jyoti ERP | Admissions</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<style>body{font-family:Inter,system-ui,sans-serif}.field{width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:10px;background:white}.btn{border-radius:9px;padding:10px 15px;font-weight:600}.primary{background:#b5121b;color:white}.label{display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:5px}</style></head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+<header class="bg-[#b5121b] text-white p-4"><div class="max-w-7xl mx-auto flex items-center justify-between gap-3"><div><div class="font-bold">Bal Jyoti Public School</div><div class="text-xs text-red-100">ERP · Admissions</div></div><a href="/erp1/" class="text-sm underline">Back to Dashboard</a></div></header>
+<main class="max-w-7xl mx-auto p-4 sm:p-6">
+<div id="login" class="hidden bg-white rounded-xl border p-6 max-w-lg mx-auto mt-10"><h1 class="text-xl font-bold">Sign in required</h1><p class="text-sm text-slate-500 mt-2">Sign in with your active official school account from the ERP dashboard.</p><button id="loginBtn" class="btn primary mt-4">Continue with Google</button></div>
+<div id="denied" class="hidden bg-white rounded-xl border p-6 max-w-lg mx-auto mt-10"><h1 class="text-xl font-bold">Access not available</h1><p id="deniedMsg" class="text-sm text-slate-600 mt-2"></p><a href="/erp1/" class="btn primary inline-block mt-4">Return to dashboard</a></div>
+<div id="app" class="hidden">
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-5"><div><h1 class="text-2xl font-extrabold">Admissions</h1><p class="text-sm text-slate-500 mt-1">Admission enquiries, applications and follow-up</p></div><div class="flex gap-2"><button id="refresh" class="btn border bg-white">Refresh</button><button id="add" class="btn primary">+ Add Record</button></div></div>
+<div id="notice" class="hidden rounded-lg p-3 mb-4 text-sm"></div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5"><div class="bg-white border rounded-xl p-4"><div class="text-xs text-slate-500">Total records</div><div id="total" class="text-2xl font-bold mt-1">0</div></div><div class="bg-white border rounded-xl p-4"><div class="text-xs text-slate-500">Active / Completed</div><div id="active" class="text-2xl font-bold mt-1">0</div></div><div class="bg-white border rounded-xl p-4"><div class="text-xs text-slate-500">Pending / Other</div><div id="pending" class="text-2xl font-bold mt-1">0</div></div></div>
+<div class="bg-white border rounded-xl p-4"><div class="flex flex-col sm:flex-row gap-3 mb-4"><input id="search" class="field" placeholder="Search records…"><select id="statusFilter" class="field sm:max-w-xs"><option value="">All statuses</option><option>Active</option><option>Pending</option><option>Completed</option><option>Inactive</option><option>Paid</option><option>Unpaid</option><option>Present</option><option>Absent</option></select></div>
+<div class="overflow-x-auto"><table class="w-full text-sm"><thead id="head" class="bg-slate-50 text-left"></thead><tbody id="rows"></tbody></table></div><p id="empty" class="hidden p-8 text-center text-slate-400">No records found. Use Add Record to create the first record.</p></div>
+</div></main>
+<div id="modal" class="hidden fixed inset-0 bg-black/40 z-50 p-3 overflow-y-auto"><div class="bg-white rounded-xl max-w-3xl mx-auto my-8 p-5"><div class="flex justify-between items-center"><h2 id="modalTitle" class="font-bold text-lg">Add Record</h2><button id="close" class="text-2xl">×</button></div><form id="recordForm" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4"><input id="recordId" type="hidden"><div id="formFields" class="contents"></div><div class="sm:col-span-2 flex gap-2 justify-end"><button type="button" id="cancel" class="btn border">Cancel</button><button id="save" class="btn primary" type="submit">Save Record</button></div></form></div></div>
+<script>
+"use strict";
+const CFG={"apiKey":"AIzaSyB2SGgV_zUFOyOGIIM27H5HNQYlO5WdFEY","authDomain":"baljyoti-erp.firebaseapp.com","projectId":"baljyoti-erp","storageBucket":"baljyoti-erp.firebasestorage.app","messagingSenderId":"422855577454","appId":"1:422855577454:web:9bccb80cc472d02275bb7f","measurementId":"G-CS6FSBHL0D"};
+const MODULE="admissions", FIELDS=[{"label": "Enquiry ID", "key": "enquiryId"}, {"label": "Student Name", "key": "studentName"}, {"label": "Parent Name", "key": "parentName"}, {"label": "Class Applied", "key": "classApplied"}, {"label": "Phone", "key": "phone"}, {"label": "Source", "key": "source"}, {"label": "Enquiry Date", "key": "enquiryDate"}, {"label": "Status", "key": "status"}], $=id=>document.getElementById(id);
+let auth,db,user=null,profile=null,records=[];
+function note(t,ok=false){$("notice").textContent=t;$("notice").className="rounded-lg p-3 mb-4 text-sm "+(ok?"bg-green-50 text-green-800":"bg-red-50 text-red-800");}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function stamp(){return firebase.firestore.FieldValue.serverTimestamp();}
+function norm(v){return String(v??"").trim();}
+async function allowed(u){
+ if(!u||!String(u.email||"").toLowerCase().endsWith("@baljyoti.com"))return false;
+ const p=await db.collection("users").doc(u.uid).get();if(!p.exists||p.data().status!=="active")return false;profile=p.data();
+ const role=String(profile.role||"").toLowerCase().replace(/[ -]+/g,"_");
+ const [rr,mr,ar]=await Promise.all(["roleRegistry","moduleRegistry","roleModuleAccess"].map(x=>db.collection("system").doc(x).get()));
+ if(!rr.exists||!mr.exists||!ar.exists)return false;
+ const roles=rr.data().roles||{},mods=mr.data().modules||[],access=(ar.data().access||{})[role]||[];
+ return !!roles[role]&&mods.some(m=>m.id===MODULE&&m.active!==false)&&(role==="super_admin"||access.includes("*")||access.includes(MODULE));
+}
+function showDenied(t){$("deniedMsg").textContent=t;$("denied").classList.remove("hidden");$("app").classList.add("hidden");$("login").classList.add("hidden");}
+function buildForm(data={}){$("formFields").innerHTML=FIELDS.map(f=>`<label><span class="label">${esc(f.label)}</span><input class="field" name="${esc(f.key)}" value="${esc(data[f.key]||"")}" ${["date","effectiveFrom","enquiryDate"].includes(f.key)?"type=date":""}></label>`).join("");}
+function draw(){
+ const q=norm($("search").value).toLowerCase(),st=$("statusFilter").value;
+ const list=records.filter(r=>(!st||String(r.details.status||r.details.attendanceStatus||"")===st)&&(!q||FIELDS.some(f=>String(r.details[f.key]||"").toLowerCase().includes(q))));
+ $("total").textContent=records.length;$("active").textContent=records.filter(r=>/active|completed|paid|present/i.test(String(r.details.status||r.details.attendanceStatus||""))).length;$("pending").textContent=records.length-Number($("active").textContent);
+ $("head").innerHTML="<tr>"+FIELDS.slice(0,5).map(f=>`<th class="p-3">${esc(f.label)}</th>`).join("")+"<th class='p-3 text-right'>Action</th></tr>";
+ $("rows").innerHTML=list.map(r=>`<tr class="border-t"><td class="p-3">${FIELDS.slice(0,5).map(f=>`<div>${esc(r.details[f.key]||"—")}</div>`).join("</td><td class='p-3'>")}</td><td class="p-3 text-right whitespace-nowrap"><button data-edit="${r.id}" class="text-[#b5121b] font-semibold">Edit</button></td></tr>`).join("");
+ $("empty").classList.toggle("hidden",list.length>0);
+}
+async function load(){const s=await db.collection("schoolData").where("module","==",MODULE).limit(500).get();records=s.docs.map(d=>({id:d.id,...d.data()}));draw();}
+function openForm(r=null){$("recordForm").reset();$("recordId").value=r?.id||"";$("modalTitle").textContent=r?"Edit Record":"Add Record";buildForm(r?.details||{});$("modal").classList.remove("hidden");}
+async function save(e){e.preventDefault();const id=$("recordId").value,details={};FIELDS.forEach(f=>details[f.key]=norm(new FormData($("recordForm")).get(f.key)));if(!FIELDS.some(f=>details[f.key])){note("Enter at least one field.");return;}
+ const existing=id?records.find(x=>x.id===id):null;const payload={module:MODULE,title:details[FIELDS[0].key]||FIELDS[1]?.key||MODULE,details,status:details.status||details.attendanceStatus||"Open",createdBy:existing?.createdBy||user.uid,updatedBy:user.uid,updatedAt:stamp()};
+ $("save").disabled=true;try{if(id)await db.collection("schoolData").doc(id).update(payload);else await db.collection("schoolData").add({...payload,createdAt:stamp()});$("modal").classList.add("hidden");await load();note(id?"Record updated.":"Record saved.",true);}catch(e){note("Save failed: "+e.message);}finally{$("save").disabled=false;}
+}
+async function signIn(){try{const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});await auth.signInWithPopup(p);}catch(e){showDenied(e.message);}}
+async function authChanged(u){user=u;if(!u){$("login").classList.remove("hidden");$("denied").classList.add("hidden");$("app").classList.add("hidden");return;}try{if(await allowed(u)){$("app").classList.remove("hidden");$("login").classList.add("hidden");$("denied").classList.add("hidden");await load();}else showDenied("Your account is inactive or does not have permission for this module.");}catch(e){showDenied("Unable to verify access: "+e.message);}}
+try{if(!firebase.apps.length)firebase.initializeApp(CFG);auth=firebase.auth();db=firebase.firestore();auth.onAuthStateChanged(authChanged);}catch(e){showDenied(e.message);}
+$("loginBtn").onclick=signIn;$("add").onclick=()=>openForm();$("close").onclick=$("cancel").onclick=()=>$("modal").classList.add("hidden");$("refresh").onclick=()=>load().catch(e=>note(e.message));$("search").oninput=draw;$("statusFilter").onchange=draw;$("recordForm").onsubmit=save;
+$("rows").onclick=e=>{const b=e.target.closest("[data-edit]");if(b){const r=records.find(x=>x.id===b.dataset.edit);if(r)openForm(r);}};
+</script></body></html>
