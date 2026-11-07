@@ -87,15 +87,60 @@ function clearMessage(){$("loginMessage").textContent="";$("loginMessage").class
 function schoolEmail(email){return typeof email==="string"&&email.trim().toLowerCase().endsWith("@"+DOMAIN);}
 function roleKey(role){return String(role||"").trim().toLowerCase().replace(/[ -]+/g,"_");}
 function displayName(user,p){return valueOf(p,"fullName","Full name")||valueOf(p,"name","Name")||user.displayName||(user.email||"Staff").split("@")[0];}
-async function getStaffProfile(user){
- const doc=await db.collection("users").doc(user.uid).get();
- if(!doc.exists)throw new Error("No staff profile was found for this account. Please contact the Super Admin.");
- const p=doc.data()||{};
- const email=valueOf(p,"email","Email"),role=roleKey(valueOf(p,"role","Role"));
- const status=String(valueOf(p,"status","Status")||"").trim().toLowerCase();
- if(email&&String(email).trim().toLowerCase()!==user.email.toLowerCase())throw new Error("The email in your staff profile does not match your Google account. Contact the Super Admin.");
- if(status!=="active")throw new Error("Your ERP account is not active. Please contact the Super Admin.");
- return {...p,role,status};
+async function getStaffProfile(user) {
+  const userRef = db.collection("users").doc(user.uid);
+  const doc = await userRef.get();
+
+  // Automatically register a new official school account.
+  if (!doc.exists) {
+    const email = String(user.email || "").trim().toLowerCase();
+
+    if (!schoolEmail(email)) {
+      throw new Error("Please use your official @baljyoti.com account.");
+    }
+
+    const fullName =
+      user.displayName ||
+      email.split("@")[0];
+
+    // IMPORTANT: Keep these exact six fields.
+    // This matches the current Firestore security rules.
+    const newProfile = {
+      uid: user.uid,
+      fullName: fullName,
+      email: email,
+      role: "staff",
+      status: "pending",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    await userRef.set(newProfile);
+
+    return newProfile;
+  }
+
+  const p = doc.data() || {};
+  const email = valueOf(p, "email", "Email");
+  const role = roleKey(valueOf(p, "role", "Role"));
+  const status = String(
+    valueOf(p, "status", "Status") || ""
+  ).trim().toLowerCase();
+
+  if (
+    email &&
+    String(email).trim().toLowerCase() !==
+    user.email.toLowerCase()
+  ) {
+    throw new Error(
+      "The email in your staff profile does not match your Google account. Contact the Super Admin."
+    );
+  }
+
+  return {
+    ...p,
+    role,
+    status
+  };
 }
 
 /* LOAD LIVE ROLE, MODULE AND PERMISSION SETTINGS FROM FIRESTORE */
@@ -193,11 +238,61 @@ function openModule(id){
  $("moduleTitle").textContent=m.label;$("moduleDescription").textContent=m.description;showView("moduleView",m.label);
 }
 async function signOut(){if(auth)try{await auth.signOut();showLogin();clearMessage();}catch(e){console.error(e);alert("Unable to sign out. Please refresh and try again.");}}
-async function onAuthChanged(user){
- if(!user){showLogin();return;}
- if(!schoolEmail(user.email)){await auth.signOut();showLogin();message("Access denied. Please use your official @baljyoti.com account.");return;}
- try{const p=await getStaffProfile(user);await loadUserRBAC(p);clearMessage();showApplication(user,p);}
- catch(e){console.error("Profile authorisation failed:",e);await auth.signOut();showLogin();message(e.code==="permission-denied"?"The portal cannot read your staff profile because of a Firestore permission issue. Contact the Super Admin.":(e.message||"Your account could not be authorised."));}
+async function onAuthChanged(user) {
+  if (!user) {
+    showLogin();
+    return;
+  }
+
+  if (!schoolEmail(user.email)) {
+    await auth.signOut();
+    showLogin();
+    message(
+      "Access denied. Please use your official @baljyoti.com account."
+    );
+    return;
+  }
+
+  try {
+    const p = await getStaffProfile(user);
+
+    // Newly registered or awaiting approval.
+    if (p.status !== "active") {
+      await auth.signOut();
+      showLogin();
+
+      if (p.status === "pending") {
+        message(
+          "Your staff profile has been created successfully and is awaiting Super Admin approval. Please try again after your account is activated.",
+          "success"
+        );
+      } else {
+        message(
+          "Your ERP account is inactive. Please contact the Super Admin."
+        );
+      }
+
+      return;
+    }
+
+    // Load role-based permissions only for active users.
+    await loadUserRBAC(p);
+
+    clearMessage();
+    showApplication(user, p);
+
+  } catch (e) {
+    console.error("Profile authorisation failed:", e);
+
+    await auth.signOut();
+    showLogin();
+
+    message(
+      e.code === "permission-denied"
+        ? "The portal cannot access your staff profile. Please contact the Super Admin."
+        : (e.message || "Your account could not be authorised.")
+    );
+  }
 }
 async function signIn(){
  clearMessage();if(!auth||!db){message("Firebase is not ready. Refresh the page and try again.");return;}
