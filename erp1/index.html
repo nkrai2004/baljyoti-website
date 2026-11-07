@@ -233,13 +233,19 @@ function showApplication(user,p){
 }
 function openModule(id){
  const m=MODULES.find(x=>x.id===id);
- if(!m||!currentProfile||!allowedModules().some(item=>item.id===id)){message("You do not have permission to open this module.");return;}
+ if(!m||!currentProfile||!allowedModules().some(item=>item.id===id)){
+   message("You do not have permission to open this module."); return;
+ }
+ const routes={
+  admissions:"admissions", academics:"academics", students:"students",
+  attendance:"attendance", examinations:"examinations", activities:"activities",
+  sports_discipline:"sports_discipline", staff_tasks:"staff_tasks",
+  finance:"finance", operations:"operations", reports:"reports", settings:"settings"
+ };
  if(id==="user_management"){window.location.assign("/erp1/user-management.html");return;}
- $("moduleTitle").textContent=m.label;$("moduleDescription").textContent=m.description;showView("moduleView",m.label);
- if(id==="hr"){
-  window.location.assign("/erp1/staff-management.html");
-  return;
-}
+ if(id==="hr"){window.location.assign("/erp1/staff-management.html");return;}
+ if(routes[id]){window.location.assign("/erp1/modules/"+routes[id]+".html");return;}
+ message("This module page is not available yet.");
 }
 async function signOut(){if(auth)try{await auth.signOut();showLogin();clearMessage();}catch(e){console.error(e);alert("Unable to sign out. Please refresh and try again.");}}
 async function onAuthChanged(user) {
