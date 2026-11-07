@@ -29,6 +29,12 @@
 <div class="flex gap-2"><button id="saveBtn" class="flex-1 bg-[#b5121b] text-white rounded-xl p-3">Save profile</button><button id="cancelBtn" type="button" class="hidden border rounded-xl px-4">Cancel</button></div></form></div>
 <div class="xl:col-span-2 bg-white border rounded-2xl p-5"><div class="flex justify-between items-center"><div><h2 class="font-bold text-lg">User Directory</h2><p class="text-xs text-slate-500">Firestore collection: users</p></div><button id="refreshBtn" class="border rounded-lg px-4 py-2">Refresh</button></div>
 <div class="grid sm:grid-cols-3 gap-2 mt-4"><input id="search" class="border rounded-lg p-2.5 text-sm" placeholder="Search name, email, ID"><select id="roleFilter" class="border rounded-lg p-2.5"><option value="">All roles</option></select><select id="typeFilter" class="border rounded-lg p-2.5"><option value="">All account types</option><option value="staff">Staff</option><option value="parent">Parent</option><option value="student">Student</option></select></div>
+<div class="mt-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4">
+<div class="flex flex-wrap items-center justify-between gap-3">
+<div><b class="text-sm">Bulk upload users (CSV)</b><p class="text-xs text-slate-500 mt-1">Import multiple user profiles with account category, role and status. Existing UIDs are skipped.</p></div>
+<div class="flex flex-wrap gap-2"><a href="./sample-users-upload.csv" download class="border bg-white rounded-lg px-3 py-2 text-xs">Download sample CSV</a><button id="bulkUploadBtn" type="button" class="bg-[#b5121b] text-white rounded-lg px-3 py-2 text-xs">Choose CSV file</button><input id="bulkFile" type="file" accept=".csv,text/csv" class="hidden"></div>
+</div><p class="text-xs text-amber-800 mt-3">Important: CSV upload creates Firestore profiles only. Each person must already have a Firebase Authentication account and a valid Firebase UID. It does not create login IDs, passwords or send invitations.</p><div id="bulkResult" class="hidden mt-3 text-sm rounded-lg p-3"></div>
+</div>
 <div class="overflow-x-auto mt-4"><table class="w-full text-sm text-left"><thead class="bg-slate-50 text-xs"><tr><th class="p-3">User</th><th class="p-3">Type / Role</th><th class="p-3">Status</th><th class="p-3 text-right">Action</th></tr></thead><tbody id="rows"></tbody></table></div><p id="count" class="text-xs text-slate-400 mt-3"></p></div></div></section>
 <section id="rolesTab" class="panel hidden"><div class="grid lg:grid-cols-2 gap-6"><div class="bg-white border rounded-2xl p-5"><h2 class="font-bold text-lg">Add a role</h2><form id="roleForm" class="mt-4 flex gap-2"><input id="newRole" required maxlength="60" class="flex-1 border rounded-lg p-3" placeholder="e.g. Transport Coordinator"><button class="bg-[#b5121b] text-white rounded-lg px-4">Add role</button></form></div><div class="bg-white border rounded-2xl p-5"><h2 class="font-bold text-lg mb-3">Role directory</h2><div id="roleList" class="space-y-2"></div></div></div></section>
 <section id="accessTab" class="panel hidden"><div class="grid lg:grid-cols-3 gap-6"><div class="bg-white border rounded-2xl p-5"><h2 class="font-bold text-lg">Module Registry</h2><form id="moduleForm" class="mt-4 space-y-2"><input id="moduleName" required class="w-full border rounded-lg p-3" placeholder="New module name"><input id="moduleDesc" class="w-full border rounded-lg p-3" placeholder="Description"><button class="w-full bg-[#b5121b] text-white rounded-lg p-3">Add module</button></form><div id="moduleList" class="mt-5 space-y-2"></div></div><div class="lg:col-span-2 bg-white border rounded-2xl p-5"><h2 class="font-bold text-lg">Role-to-Module Mapping</h2><label class="block text-sm font-semibold mt-4">Select role<select id="accessRole" class="mt-1 w-full border rounded-lg p-3"></select></label><div id="moduleChecks" class="grid sm:grid-cols-2 gap-3 mt-4"></div><div class="flex flex-wrap gap-2 mt-5"><button id="saveAccess" class="bg-[#b5121b] text-white rounded-xl px-5 py-3">Save module access</button><button id="allModules" type="button" class="border rounded-xl px-4 py-3">Select all</button><button id="noModules" type="button" class="border rounded-xl px-4 py-3">Clear</button></div></div></div></section>
@@ -78,9 +84,61 @@ function resetForm(){$("userForm").reset();$("editUid").value="";$("uid").disabl
 async function saveUser(e){e.preventDefault();const old=norm($("editUid").value),uid=norm($("uid").value),name=norm($("fullName").value),email=norm($("email").value).toLowerCase(),role=$("role").value,type=$("accountType").value,status=$("status").value;if(!/^[A-Za-z0-9_-]{10,128}$/.test(uid)||!name||!role){msg("Enter a valid Firebase UID, full name and role.");return;}if(uid===ADMIN&&role!=="super_admin"){msg("The designated Super Admin role is protected.");return;}if(role==="super_admin"&&uid!==ADMIN){msg("Super Admin role is reserved for the designated account.");return;}if(type==="parent"&&role!=="parent"||type==="student"&&role!=="student"||type==="staff"&&["parent","student"].includes(role)){msg("Account category and role must match.");return;}if(type==="staff"&&email&&!email.endsWith("@baljyoti.com")){msg("Staff email must use @baljyoti.com.");return;}
  const p={uid,fullName:name,email,role,status,accountType:type,mobile:norm($("mobile").value),admissionNumber:norm($("admission").value),linkedAdmissionNumbers:norm($("children").value).split(",").map(x=>x.trim()).filter(Boolean),updatedAt:stamp()};if(!old)p.createdAt=stamp();$("saveBtn").disabled=true;
  try{if(old)await db.collection("users").doc(old).update(p);else await db.collection("users").doc(uid).set(p);resetForm();await loadUsers();msg("Profile saved. Authentication account must separately exist.",true);}catch(e){msg(e.code==="permission-denied"?"Firestore denied this operation. Check Super Admin sign-in and security rules.":e.message);}finally{$("saveBtn").disabled=false;}}
+
+// CSV parser supporting quoted fields, commas and escaped double quotes.
+function parseCSV(text){
+ const rows=[];let row=[],field="",quoted=false;
+ for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];
+  if(quoted){if(c==='"'&&n==='"'){field+='"';i++;}else if(c==='"'){quoted=false;}else{field+=c;}}
+  else if(c==='"'){quoted=true;}else if(c===","){row.push(field);field="";}else if(c==="\n"){row.push(field);if(row.some(v=>v.trim()!==""))rows.push(row);row=[];field="";}else if(c!=="\r"){field+=c;}
+ }
+ if(quoted)throw new Error("CSV contains an unclosed quotation mark.");
+ row.push(field);if(row.some(v=>v.trim()!==""))rows.push(row);
+ if(rows.length<2)throw new Error("CSV must contain a header and at least one user row.");
+ const headers=rows.shift().map(h=>h.trim().replace(/^\uFEFF/,""));
+ return rows.map((values,index)=>{const obj={};headers.forEach((h,i)=>obj[h]=String(values[i]??"").trim());obj.__row=index+2;return obj;});
+}
+async function bulkImport(file){
+ const result=$("bulkResult");result.classList.remove("hidden");result.className="mt-3 text-sm rounded-lg p-3 bg-blue-50 text-blue-800";result.textContent="Reading CSV…";
+ try{
+  const text=await file.text(),records=parseCSV(text);
+  const required=["uid","fullName","role","accountType","status"];
+  const headers=Object.keys(records[0]||{}).filter(k=>k!=="__row");
+  const missing=required.filter(h=>!headers.includes(h));if(missing.length)throw new Error("Missing required columns: "+missing.join(", "));
+  const seen=new Set(),valid=[],errors=[];
+  records.forEach(r=>{
+   const uid=norm(r.uid),name=norm(r.fullName),role=key(r.role),type=norm(r.accountType).toLowerCase(),status=norm(r.status).toLowerCase();
+   let problem="";
+   if(!/^[A-Za-z0-9_-]{10,128}$/.test(uid))problem="Invalid Firebase UID";
+   else if(!name)problem="Full name is required";
+   else if(!roles[role])problem="Unknown role: "+r.role;
+   else if(!["staff","parent","student"].includes(type))problem="accountType must be staff, parent or student";
+   else if(!["active","inactive","pending"].includes(status))problem="status must be active, inactive or pending";
+   else if(type==="parent"&&role!=="parent"||type==="student"&&role!=="student"||type==="staff"&&["parent","student"].includes(role))problem="Account category and role do not match";
+   else if(role==="super_admin"&&uid!==ADMIN)problem="Super Admin role is reserved";
+   else if(uid===ADMIN&&role!=="super_admin")problem="Super Admin account cannot be reassigned";
+   else if(type==="staff"&&r.email&&!r.email.toLowerCase().endsWith("@baljyoti.com"))problem="Staff email must use @baljyoti.com";
+   else if(seen.has(uid))problem="Duplicate UID in CSV";
+   if(problem){errors.push("Row "+r.__row+": "+problem);return;}seen.add(uid);
+   valid.push({uid,fullName:name,email:norm(r.email).toLowerCase(),role,status,accountType:type,mobile:norm(r.mobile),admissionNumber:norm(r.admissionNumber),linkedAdmissionNumbers:norm(r.linkedAdmissionNumbers).split("|").map(x=>x.trim()).filter(Boolean)});
+  });
+  if(errors.length)throw new Error("Please correct these CSV errors and upload again:\n"+errors.slice(0,12).join("\n")+(errors.length>12?"\n…and "+(errors.length-12)+" more.":""));
+  if(!valid.length)throw new Error("No valid user rows found.");
+  result.textContent="Checking existing profiles…";
+  const refs=valid.map(u=>db.collection("users").doc(u.uid)),existing=new Set();
+  for(let i=0;i<refs.length;i+=10){const group=refs.slice(i,i+10);const docs=await Promise.all(group.map(ref=>ref.get()));docs.forEach((d,j)=>{if(d.exists)existing.add(group[j].id);});}
+  const fresh=valid.filter(u=>!existing.has(u.uid));
+  if(!fresh.length){result.className="mt-3 text-sm rounded-lg p-3 bg-amber-50 text-amber-800";result.textContent="No new profiles imported. All "+valid.length+" UIDs already exist; existing profiles were left unchanged.";return;}
+  if(!confirm("Import "+fresh.length+" new profiles? Existing profiles ("+existing.size+") will be skipped."))return;
+  let imported=0;
+  for(let i=0;i<fresh.length;i+=400){const batch=db.batch();fresh.slice(i,i+400).forEach(u=>{const ref=db.collection("users").doc(u.uid);batch.set(ref,{...u,createdAt:stamp(),updatedAt:stamp()});});await batch.commit();imported+=Math.min(400,fresh.length-i);}
+  await loadUsers();result.className="mt-3 text-sm rounded-lg p-3 bg-green-50 text-green-800";result.textContent="Import completed. "+imported+" profiles added; "+existing.size+" existing profiles skipped. Authentication accounts and passwords were not created.";
+ }catch(e){result.className="mt-3 text-sm rounded-lg p-3 bg-red-50 text-red-800";result.textContent=e.message;}
+}
 async function authLogin(){try{const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});await auth.signInWithPopup(p);}catch(e){msg(e.message);}}
 async function authChanged(user){if(!user){$("workspace").classList.add("hidden");$("deniedBox").classList.add("hidden");$("loginBox").classList.remove("hidden");$("adminName").textContent="Not signed in";$("adminEmail").textContent="";return;}if(user.uid!==ADMIN){$("workspace").classList.add("hidden");$("loginBox").classList.add("hidden");$("deniedBox").classList.remove("hidden");$("adminName").textContent="Unauthorised account";$("adminEmail").textContent=user.email||"";msg("Only designated Super Admin can access this page.");return;}$("loginBox").classList.add("hidden");$("deniedBox").classList.add("hidden");$("workspace").classList.remove("hidden");$("adminName").textContent=user.displayName||"Super Admin";$("adminEmail").textContent=user.email||"";try{await configLoad();await loadUsers();}catch(e){msg("Could not load RBAC settings. Check Firestore rules: "+e.message);}}
 try{if(!firebase.apps.length)firebase.initializeApp(CFG);auth=firebase.auth();db=firebase.firestore();auth.onAuthStateChanged(authChanged);}catch(e){msg("Firebase initialisation failed: "+e.message);}
+$("bulkUploadBtn").onclick=()=>$("bulkFile").click();$("bulkFile").onchange=e=>{const f=e.target.files&&e.target.files[0];if(f)bulkImport(f);e.target.value="";};
 $("loginBtn").onclick=authLogin;$("logoutDenied").onclick=()=>auth.signOut();$("userForm").onsubmit=saveUser;$("clearBtn").onclick=resetForm;$("cancelBtn").onclick=resetForm;$("refreshBtn").onclick=()=>loadUsers().catch(e=>msg(e.message));$("search").oninput=drawUsers;$("roleFilter").onchange=drawUsers;$("typeFilter").onchange=drawUsers;
 $("roleForm").onsubmit=async e=>{e.preventDefault();const name=norm($("newRole").value),id=key(name);if(!id||roles[id]){msg("Role name is invalid or already exists.");return;}roles[id]=name;access[id]=[];try{await saveConfig("roleRegistry",{roles});await saveConfig("roleModuleAccess",{access});$("roleForm").reset();roleOptions();drawRoles();drawChecks();msg("Role added. Assign its modules in Module Access.",true);}catch(err){msg(err.message);}};
 $("moduleForm").onsubmit=async e=>{e.preventDefault();const label=norm($("moduleName").value),id=key(label);if(!id||modules.some(m=>m.id===id)){msg("Module name is invalid or already exists.");return;}modules.push({id,label,description:norm($("moduleDesc").value),active:true});try{await saveConfig("moduleRegistry",{modules});$("moduleForm").reset();drawModules();drawChecks();msg("Module added. Assign it to roles.",true);}catch(err){msg(err.message);}};
