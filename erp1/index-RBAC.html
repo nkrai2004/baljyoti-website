@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#b5121b">
+<title>Bal Jyoti Public School | ERP Portal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{bjred:"#b5121b",bjdark:"#8f0d15"},boxShadow:{soft:"0 8px 28px rgba(15,23,42,.08)"}}}};</script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<style>
+html{scroll-behavior:smooth}body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.nav-link.active{background:#fff1f2;color:#b5121b;font-weight:700}.hidden-view{display:none!important}
+.card-hover{transition:transform .18s ease,box-shadow .18s ease}.card-hover:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(15,23,42,.1)}
+button:focus-visible,a:focus-visible{outline:3px solid rgba(181,18,27,.35);outline-offset:2px}
+</style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-800">
+<main id="loginScreen" class="min-h-screen flex items-center justify-center px-4 py-10 bg-gradient-to-br from-red-50 via-white to-slate-100">
+<section class="w-full max-w-md bg-white rounded-3xl shadow-soft border border-slate-100 overflow-hidden">
+<div class="bg-bjred px-8 py-8 text-center text-white"><div class="mx-auto mb-4 h-20 w-20 rounded-2xl bg-white flex items-center justify-center text-bjred text-3xl font-black shadow">BJ</div><h1 class="text-2xl font-extrabold">Bal Jyoti Public School</h1><p class="mt-2 text-sm text-red-100">Staff ERP Portal</p></div>
+<div class="p-8"><h2 class="text-xl font-bold text-slate-900">Welcome</h2><p class="mt-2 text-sm leading-6 text-slate-500">Sign in using your official Bal Jyoti school Google account.</p>
+<div id="loginMessage" class="hidden mt-5 rounded-xl border px-4 py-3 text-sm" role="alert"></div>
+<button id="googleSignInBtn" type="button" class="mt-6 w-full flex items-center justify-center gap-3 rounded-xl bg-bjred px-5 py-3.5 text-white font-semibold hover:bg-bjdark disabled:opacity-60">
+<svg aria-hidden="true" viewBox="0 0 48 48" class="h-5 w-5"><path fill="#FFC107" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11c-.5 2.5-1.9 4.6-4 6v5h6.5c3.8-3.5 6.1-8.6 6.1-14.7z"/><path fill="#FF3D00" d="M24 44c5.4 0 9.9-1.8 13.2-4.8l-6.5-5c-1.8 1.2-4 1.9-6.7 1.9-5.2 0-9.6-3.5-11.2-8.2H6.1v5.2C9.4 39.6 16.2 44 24 44z"/><path fill="#4CAF50" d="M12.8 27.9a12 12 0 0 1 0-7.8v-5.2H6.1a20 20 0 0 0 0 18.2l6.7-5.2z"/><path fill="#1976D2" d="M24 11.9c2.9 0 5.5 1 7.5 3l5.7-5.7C33.9 6 29.4 4 24 4 16.2 4 9.4 8.4 6.1 14.9l6.7 5.2c1.6-4.7 6-8.2 11.2-8.2z"/></svg>
+<span id="signInButtonText">Continue with Google</span></button><p class="mt-5 text-xs text-slate-400 text-center">Access is restricted to authorised and active staff profiles.</p></div>
+</section></main>
+
+<div id="appScreen" class="hidden-view min-h-screen"><div class="min-h-screen md:flex">
+<header class="md:hidden sticky top-0 z-30 bg-bjred text-white px-4 py-3 flex items-center justify-between shadow"><div><div class="font-bold">Bal Jyoti ERP</div><div class="text-xs text-red-100">Staff Portal</div></div><button id="mobileMenuBtn" class="rounded-lg border border-red-300 px-3 py-2 text-sm">Menu</button></header>
+<aside class="hidden md:flex md:w-64 md:flex-col bg-white border-r border-slate-200 md:min-h-screen">
+<div class="bg-bjred text-white px-6 py-6"><div class="flex items-center gap-3"><div class="h-12 w-12 rounded-xl bg-white text-bjred flex items-center justify-center font-black text-xl">BJ</div><div><div class="font-extrabold">Bal Jyoti</div><div class="text-xs text-red-100">Public School ERP</div></div></div></div>
+<nav id="desktopNav" class="flex-1 p-4 space-y-1"></nav>
+<div class="p-4 border-t border-slate-100"><div class="text-xs text-slate-400 mb-2">SIGNED IN AS</div><div id="sidebarUserName" class="text-sm font-semibold truncate"></div><div id="sidebarUserRole" class="text-xs text-slate-500 mt-1"></div><div id="sidebarUserEmail" class="text-xs text-slate-500 truncate mt-1"></div><button id="signOutBtn" class="mt-4 w-full rounded-xl border border-red-200 text-bjred px-4 py-2.5 text-sm font-semibold">Sign out</button></div>
+</aside>
+<div id="mobileNav" class="hidden md:hidden bg-white border-b border-slate-200 p-3 space-y-1"></div>
+<main class="flex-1 min-w-0"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7">
+<div class="hidden md:flex items-center justify-between mb-8"><div><p class="text-sm text-slate-500">Bal Jyoti Public School</p><h1 id="pageHeading" class="text-2xl font-extrabold">Dashboard</h1></div><div class="flex items-center gap-3"><div class="text-right"><div id="headerUserName" class="text-sm font-bold"></div><div id="headerDate" class="text-xs text-slate-500"></div></div><div id="userInitial" class="h-11 w-11 rounded-full bg-red-100 text-bjred flex items-center justify-center font-bold">S</div></div></div>
+<section id="dashboardView" class="app-view"><div class="rounded-2xl bg-gradient-to-r from-bjred to-bjdark text-white p-6 sm:p-8 shadow-soft"><p id="welcomeRole" class="text-sm text-red-100">Staff workspace</p><h2 class="mt-2 text-2xl sm:text-3xl font-extrabold">Welcome, <span id="welcomeName">Staff</span></h2><p class="mt-2 text-sm sm:text-base text-red-50">Your role-based access point for Bal Jyoti Public School operations.</p></div><div class="mt-8"><h3 class="text-lg font-bold">Your workspace</h3><p class="text-sm text-slate-500 mt-1">Modules available for your assigned role.</p></div><div id="moduleGrid" class="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"></div><div class="mt-8 bg-white border border-slate-100 rounded-2xl p-6 shadow-soft"><h3 class="font-bold">Important information</h3><p class="mt-2 text-sm leading-6 text-slate-600">Use your official school Google account for school-related communication and documents. ERP access is based on your approved staff profile.</p></div></section>
+<section id="moduleView" class="app-view hidden-view"><div class="bg-white border rounded-2xl p-7 shadow-soft"><h2 id="moduleTitle" class="text-xl font-extrabold">Module</h2><p id="moduleDescription" class="mt-2 text-sm text-slate-500"></p><div class="mt-6 rounded-xl border border-dashed border-red-200 bg-red-50 p-5 text-sm text-slate-600">Access to this module is enabled for your role. Module functionality will be introduced in the next development phase.</div><button id="backDashboardBtn" class="mt-6 rounded-xl bg-bjred px-5 py-3 text-white text-sm font-semibold">Back to dashboard</button></div></section>
+<section id="profileView" class="app-view hidden-view"><div class="mb-6"><h2 class="text-xl font-extrabold">My Profile</h2><p class="text-sm text-slate-500 mt-1">Your authorised ERP account information.</p></div><div class="max-w-2xl bg-white rounded-2xl border shadow-soft p-6"><div class="flex items-center gap-4"><div id="profileInitial" class="h-14 w-14 rounded-full bg-red-100 text-bjred flex items-center justify-center text-xl font-bold">S</div><div><h3 id="profileName" class="font-bold text-lg"></h3><p id="profileEmail" class="text-sm text-slate-500"></p></div></div><div class="mt-6 border-t pt-5 grid grid-cols-1 sm:grid-cols-2 gap-5"><div><div class="text-xs text-slate-400 uppercase">Assigned role</div><div id="profileRole" class="mt-1 font-semibold"></div></div><div><div class="text-xs text-slate-400 uppercase">Account status</div><div id="profileStatus" class="mt-1 font-semibold text-green-700"></div></div></div><button id="profileSignOutBtn" class="mt-7 rounded-xl bg-bjred px-5 py-3 text-white text-sm font-semibold">Sign out</button></div></section>
+<footer class="mt-12 border-t pt-5 text-xs text-slate-400 flex flex-col sm:flex-row justify-between gap-2"><span>© <span id="yearNow"></span> Bal Jyoti Public School. All rights reserved.</span><span>Bal Jyoti ERP · Staging release</span></footer>
+</div></main></div></div>
+
+<script>
+"use strict";
+const FIREBASE_CONFIG={
+ apiKey:"AIzaSyB2SGgV_zUFOyOGIIM27H5HNQYlO5WdFEY",
+ authDomain:"baljyoti-erp.firebaseapp.com",
+ projectId:"baljyoti-erp",
+ storageBucket:"baljyoti-erp.firebasestorage.app",
+ messagingSenderId:"422855577454",
+ appId:"1:422855577454:web:9bccb80cc472d02275bb7f",
+ measurementId:"G-CS6FSBHL0D"
+};
+const DOMAIN="baljyoti.com";
+const ROLE_LABELS={
+ super_admin:"Super Admin",director:"Director",principal:"Principal",administrator:"Administrator",
+ academic_coordinator:"Academic Coordinator",admission_coordinator:"Admission Coordinator",
+ activity_coordinator:"Activity Coordinator",sports_discipline_coordinator:"Sports & Discipline Coordinator",
+ teacher:"Teacher",accountant:"Accountant",hr_manager:"HR Manager",staff:"Staff",
+ parent:"Parent",student:"Student"
+};
+const MODULES=[
+ {id:"admissions",label:"Admissions",icon:"▣",description:"Admission enquiries and applications",roles:["super_admin","director","principal","administrator","admission_coordinator"]},
+ {id:"academics",label:"Academics",icon:"▤",description:"Academic planning and coordination",roles:["super_admin","director","principal","administrator","academic_coordinator","teacher"]},
+ {id:"students",label:"Students",icon:"♙",description:"Student information and records",roles:["super_admin","director","principal","administrator","academic_coordinator","teacher","admission_coordinator"]},
+ {id:"attendance",label:"Attendance",icon:"✓",description:"Staff and student attendance",roles:["super_admin","director","principal","administrator","academic_coordinator","teacher","hr_manager","staff"]},
+ {id:"examinations",label:"Examinations",icon:"✎",description:"Examination planning and records",roles:["super_admin","director","principal","academic_coordinator","teacher"]},
+ {id:"activities",label:"Activities",icon:"★",description:"School activities and events",roles:["super_admin","director","principal","activity_coordinator","teacher"]},
+ {id:"sports_discipline",label:"Sports & Discipline",icon:"⚑",description:"Sports and discipline coordination",roles:["super_admin","director","principal","sports_discipline_coordinator","teacher"]},
+ {id:"hr",label:"Human Resources",icon:"♧",description:"Staff and HR administration",roles:["super_admin","director","administrator","hr_manager"]},
+ {id:"staff_tasks",label:"Staff Tasks",icon:"☷",description:"Staff task allocation and tracking",roles:["super_admin","director","administrator","hr_manager","staff"]},
+ {id:"finance",label:"Finance",icon:"₹",description:"Accounts and financial operations",roles:["super_admin","director","administrator","accountant"]},
+ {id:"operations",label:"Operations",icon:"⚙",description:"School operations and coordination",roles:["super_admin","director","principal","administrator","academic_coordinator","activity_coordinator","sports_discipline_coordinator","staff"]},
+ {id:"reports",label:"Reports",icon:"▥",description:"School reports and summaries",roles:["super_admin","director","principal","administrator","academic_coordinator","admission_coordinator","accountant","hr_manager"]},
+ {id:"settings",label:"System Settings",icon:"⚙",description:"System configuration",roles:["super_admin"]},
+ {id:"user_management",label:"User Management",icon:"♙",description:"Create and maintain approved staff ERP profiles",roles:["super_admin"]}
+];
+let auth=null,db=null,currentProfile=null,currentUser=null;
+const $=id=>document.getElementById(id);
+function valueOf(data,lower,title){return data[lower]!==undefined?data[lower]:data[title];}
+function message(text,kind="error"){const el=$("loginMessage");el.textContent=text;el.className="mt-5 rounded-xl border px-4 py-3 text-sm "+(kind==="success"?"border-green-200 bg-green-50 text-green-800":"border-red-200 bg-red-50 text-red-800");}
+function clearMessage(){$("loginMessage").textContent="";$("loginMessage").className="hidden mt-5 rounded-xl border px-4 py-3 text-sm";}
+function schoolEmail(email){return typeof email==="string"&&email.trim().toLowerCase().endsWith("@"+DOMAIN);}
+function roleKey(role){return String(role||"").trim().toLowerCase().replace(/[ -]+/g,"_");}
+function displayName(user,p){return valueOf(p,"fullName","Full name")||valueOf(p,"name","Name")||user.displayName||(user.email||"Staff").split("@")[0];}
+async function getStaffProfile(user){
+ const doc=await db.collection("users").doc(user.uid).get();
+ if(!doc.exists)throw new Error("No staff profile was found for this account. Please contact the Super Admin.");
+ const p=doc.data()||{};
+ const email=valueOf(p,"email","Email"),role=roleKey(valueOf(p,"role","Role"));
+ const status=String(valueOf(p,"status","Status")||"").trim().toLowerCase();
+ if(email&&String(email).trim().toLowerCase()!==user.email.toLowerCase())throw new Error("The email in your staff profile does not match your Google account. Contact the Super Admin.");
+ if(status!=="active")throw new Error("Your ERP account is not active. Please contact the Super Admin.");
+ return {...p,role,status};
+}
+
+/* LOAD LIVE ROLE, MODULE AND PERMISSION SETTINGS FROM FIRESTORE */
+async function loadUserRBAC(profile){
+ const system=db.collection("system");
+ const docs=await Promise.all([
+  system.doc("roleRegistry").get(),
+  system.doc("moduleRegistry").get(),
+  system.doc("roleModuleAccess").get()
+ ]);
+ if(!docs[0].exists||!docs[1].exists||!docs[2].exists){
+  throw new Error("RBAC settings are incomplete. Ask the Super Admin to open User Management and save the role, module and access settings.");
+ }
+ const roleData=docs[0].data()||{};
+ const moduleData=docs[1].data()||{};
+ const accessData=docs[2].data()||{};
+ const labels=roleData.roles||{};
+ const registry=Array.isArray(moduleData.modules)?moduleData.modules:[];
+ const access=accessData.access||{};
+ const role=roleKey(profile.role);
+ if(!Object.prototype.hasOwnProperty.call(labels,role)){
+  throw new Error("Your assigned role is not present in the role registry. Contact the Super Admin.");
+ }
+ let permissions=access[role];
+ if(role==="super_admin")permissions=["*"];
+ if(!Array.isArray(permissions))permissions=[];
+ ROLE_LABELS=labels;
+ MODULES=registry.filter(m=>m&&typeof m.id==="string"&&m.id.trim()).map(m=>({
+  id:m.id,label:m.label||m.id,icon:m.icon||"▣",description:m.description||"",active:m.active!==false
+ }));
+ profile.role=role;
+ profile.allowedModules=permissions.slice();
+ if(!profile.allowedModules.includes("*")){
+  profile.allowedModules=profile.allowedModules.filter(id=>MODULES.some(m=>m.id===id&&m.active!==false));
+ }
+}
+
+function allowedModules(){
+ if(!currentProfile||!Array.isArray(currentProfile.allowedModules))return [];
+ return MODULES.filter(m=>m.active!==false&&(currentProfile.allowedModules.includes("*")||currentProfile.allowedModules.includes(m.id)));
+}
+function showLogin(){currentUser=null;currentProfile=null;$("appScreen").classList.add("hidden-view");$("loginScreen").classList.remove("hidden-view");}
+function showView(id,title){document.querySelectorAll(".app-view").forEach(x=>x.classList.add("hidden-view"));$(id).classList.remove("hidden-view");$("pageHeading").textContent=title||"Dashboard";$("mobileNav").classList.add("hidden");}
+
+/* Direct links are used for User Management so the browser navigates to its own page. */
+function makeNavButton(module){
+ const isUserManagement=module.id==="user_management";
+ const b=document.createElement(isUserManagement?"a":"button");
+ if(isUserManagement){
+  b.href="/erp1/user-management.html";
+  b.setAttribute("aria-label","Open User Management");
+ }else{
+  b.type="button";
+  b.addEventListener("click",()=>openModule(module.id));
+ }
+ b.className="nav-link w-full text-left rounded-xl px-4 py-3 text-sm text-slate-600 hover:bg-slate-50";
+ b.textContent=module.icon+"  "+module.label;
+ b.dataset.module=module.id;
+ return b;
+}
+function renderNavigation(){
+ const allowed=allowedModules();
+ const desktop=$("desktopNav"),mobile=$("mobileNav");desktop.innerHTML="";mobile.innerHTML="";
+ allowed.forEach(m=>{desktop.appendChild(makeNavButton(m));const b=makeNavButton(m);b.className="nav-link w-full text-left rounded-lg px-3 py-2 text-sm";mobile.appendChild(b);});
+ const addProfile=(parent,cls)=>{const b=document.createElement("button");b.className=cls;b.textContent="◎  My Profile";b.addEventListener("click",()=>showView("profileView","My Profile"));parent.appendChild(b);};
+ addProfile(desktop,"nav-link w-full text-left rounded-xl px-4 py-3 text-sm text-slate-600");
+ addProfile(mobile,"nav-link w-full text-left rounded-lg px-3 py-2 text-sm");
+ const out=document.createElement("button");out.className="w-full text-left rounded-lg px-3 py-2 text-sm text-bjred font-semibold";out.textContent="Sign out";out.addEventListener("click",signOut);mobile.appendChild(out);
+}
+function renderModules(){
+ const grid=$("moduleGrid");grid.innerHTML="";
+ allowedModules().forEach(m=>{
+  const b=document.createElement("button");b.type="button";b.className="card-hover text-left bg-white rounded-2xl p-5 border border-slate-100 shadow-soft";
+  const icon=document.createElement("div");icon.className="text-2xl text-bjred";icon.textContent=m.icon;
+  const title=document.createElement("h3");title.className="mt-3 font-bold";title.textContent=m.label;
+  const desc=document.createElement("p");desc.className="mt-1 text-sm text-slate-500";desc.textContent=m.description;
+  const link=document.createElement("span");link.className="mt-4 inline-block text-sm text-bjred font-semibold";link.textContent="Open module →";
+  b.append(icon,title,desc,link);b.addEventListener("click",()=>openModule(m.id));grid.appendChild(b);
+ });
+}
+function showApplication(user,p){
+ currentUser=user;currentProfile=p;const name=displayName(user,p),role=ROLE_LABELS[p.role]||p.role;
+ $("loginScreen").classList.add("hidden-view");$("appScreen").classList.remove("hidden-view");
+ $("welcomeName").textContent=name.split(" ")[0];$("welcomeRole").textContent=role+" workspace";
+ $("sidebarUserName").textContent=name;$("sidebarUserRole").textContent=role;$("sidebarUserEmail").textContent=user.email||"";
+ $("headerUserName").textContent=name;$("headerDate").textContent=new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+ $("userInitial").textContent=name.charAt(0).toUpperCase();$("profileInitial").textContent=name.charAt(0).toUpperCase();
+ $("profileName").textContent=name;$("profileEmail").textContent=user.email||"";$("profileRole").textContent=role;$("profileStatus").textContent="Active";
+ renderNavigation();renderModules();showView("dashboardView","Dashboard");
+}
+function openModule(id){
+ const m=MODULES.find(x=>x.id===id);
+ if(!m||!currentProfile||!allowedModules().some(item=>item.id===id)){message("You do not have permission to open this module.");return;}
+ if(id==="user_management"){window.location.assign("/erp1/user-management.html");return;}
+ $("moduleTitle").textContent=m.label;$("moduleDescription").textContent=m.description;showView("moduleView",m.label);
+}
+async function signOut(){if(auth)try{await auth.signOut();showLogin();clearMessage();}catch(e){console.error(e);alert("Unable to sign out. Please refresh and try again.");}}
+async function onAuthChanged(user){
+ if(!user){showLogin();return;}
+ if(!schoolEmail(user.email)){await auth.signOut();showLogin();message("Access denied. Please use your official @baljyoti.com account.");return;}
+ try{const p=await getStaffProfile(user);await loadUserRBAC(p);clearMessage();showApplication(user,p);}
+ catch(e){console.error("Profile authorisation failed:",e);await auth.signOut();showLogin();message(e.code==="permission-denied"?"The portal cannot read your staff profile because of a Firestore permission issue. Contact the Super Admin.":(e.message||"Your account could not be authorised."));}
+}
+async function signIn(){
+ clearMessage();if(!auth||!db){message("Firebase is not ready. Refresh the page and try again.");return;}
+ const btn=$("googleSignInBtn"),label=$("signInButtonText");btn.disabled=true;label.textContent="Connecting...";
+ try{const provider=new firebase.auth.GoogleAuthProvider();provider.setCustomParameters({prompt:"select_account"});await auth.signInWithPopup(provider);}
+ catch(e){console.error("Google sign-in error:",e);let msg="Sign-in failed. Please try again.";if(e.code==="auth/popup-closed-by-user")msg="The sign-in window was closed. Please try again.";else if(e.code==="auth/popup-blocked")msg="Your browser blocked the sign-in popup. Allow popups for this website.";else if(e.code==="auth/unauthorized-domain")msg="This website domain is not authorised in Firebase Authentication.";else if(e.code==="auth/operation-not-allowed")msg="Google sign-in is not enabled in Firebase Authentication.";else if(e.code==="auth/network-request-failed")msg="Network connection failed. Check your internet connection.";else if(e.message)msg=e.message;message(msg);}
+ finally{btn.disabled=false;label.textContent="Continue with Google";}
+}
+function start(){
+ try{if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CONFIG);auth=firebase.auth();db=firebase.firestore();auth.onAuthStateChanged(onAuthChanged);}
+ catch(e){console.error("Firebase initialisation error:",e);message("Unable to initialise Firebase. Check Firebase settings and browser console.");$("googleSignInBtn").disabled=true;}
+}
+$("googleSignInBtn").addEventListener("click",signIn);
+$("signOutBtn").addEventListener("click",signOut);
+$("profileSignOutBtn").addEventListener("click",signOut);
+$("mobileMenuBtn").addEventListener("click",()=>$("mobileNav").classList.toggle("hidden"));
+$("backDashboardBtn").addEventListener("click",()=>showView("dashboardView","Dashboard"));
+$("yearNow").textContent=new Date().getFullYear();
+start();
+</script>
+</body>
+</html>
