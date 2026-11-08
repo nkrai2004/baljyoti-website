@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#b5121b"><title>Bal Jyoti AI Test</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:#172033;background:#f5f6f8}*{box-sizing:border-box}body{margin:0;padding:24px}.wrap{max-width:900px;margin:0 auto}header{background:#b5121b;color:#fff;border-radius:18px;padding:24px}h1{margin:0;font-size:25px}header p{margin:8px 0 0;color:#ffe4e6}.card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:22px;margin-top:18px;box-shadow:0 8px 24px #0f172a0b}.note{font-size:13px;line-height:1.6;color:#596579}button{border:0;border-radius:10px;padding:12px 16px;background:#b5121b;color:#fff;font-weight:700;cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}textarea{width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:12px;font:inherit;min-height:100px;resize:vertical}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.status{margin-top:12px;padding:12px;border-radius:10px;background:#f1f5f9;color:#334155;font-size:14px;white-space:pre-wrap}.status.good{background:#ecfdf5;color:#166534}.status.bad{background:#fef2f2;color:#991b1b}#answer{white-space:pre-wrap;line-height:1.65;overflow-wrap:anywhere}.small{font-size:12px;color:#64748b}.hidden{display:none!important}footer{padding:20px 4px;color:#64748b;font-size:12px}
+</style></head><body><div class="wrap">
+<header><h1>Bal Jyoti AI — Integration Test</h1><p>Private technical test for the school Super Admin</p></header>
+<section class="card"><h2>1. Secure sign-in</h2><p class="note">Sign in using the authorised Super Admin Google account. This test page does not read student, parent, staff, attendance, fee or other school records.</p><div class="row"><button id="loginBtn">Sign in with Google</button><button id="logoutBtn" class="hidden" type="button">Sign out</button></div><div id="authStatus" class="status">Not signed in.</div></section>
+<section id="aiPanel" class="card hidden"><h2>2. Test Gemini response</h2><p class="note">Use fictional or generic school-management questions only. Do not enter real names, phone numbers, student records, marks, medical information, fees or confidential staff information.</p><label for="prompt"><strong>Your test question</strong></label><textarea id="prompt">Create a concise daily school operations summary using this fictional data: 500 students, 35 teachers, 15 support staff, 12 pending class reports, 8 students absent today, and 3 admissions enquiries. Identify priorities for the Principal. Do not invent additional figures.</textarea><div class="row" style="margin-top:12px"><button id="sendBtn">Ask Gemini</button><span id="counter" class="small">Test requests this session: 0 / 10</span></div><div id="aiStatus" class="status">Ready. No request has been sent yet.</div><div class="card" style="margin-top:14px;background:#fafafa"><h3 style="margin-top:0">Gemini response</h3><div id="answer" class="note">Your response will appear here.</div></div></section>
+<section class="card"><h2>Test scope and safeguards</h2><ul class="note"><li>Uses Firebase Authentication, Firebase App Check and Firebase AI Logic.</li><li>Only the Super Admin account <strong>info@baljyoti.com</strong> can use this test page.</li><li>Uses fictional prompt content only; it does not connect Gemini to Firestore school data.</li><li>Does not save prompts or responses in Firestore.</li><li>Does not modify the existing ERP dashboard, login page, modules or Firestore rules.</li><li>Gemini free-tier availability and limits are controlled by Google and can change. Do not assume unlimited free use.</li></ul></section>
+<footer>Bal Jyoti Public School · AI proof of concept · Do not distribute this test URL to students or parents.</footer></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app-check.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-ai.js";
+const firebaseConfig={apiKey:"AIzaSyB2SGgV_zUFOyOGIIM27H5HNQYlO5WdFEY",authDomain:"baljyoti-erp.firebaseapp.com",projectId:"baljyoti-erp",storageBucket:"baljyoti-erp.firebasestorage.app",messagingSenderId:"422855577454",appId:"1:422855577454:web:9bccb80cc472d02275bb7f",measurementId:"G-CS6FSBHL0D"};
+const RECAPTCHA_SITE_KEY="6Lez0RUuAAAAAFZbNpJMIIY5BIPQgcDMFJKRfxcC";
+const SUPER_ADMIN_EMAIL="info@baljyoti.com",MODEL_NAME="gemini-3.8-flash";
+const $=id=>document.getElementById(id),authStatus=$("authStatus"),aiStatus=$("aiStatus");let requestCount=0,activeUser=null,model=null;
+function setStatus(el,msg,kind=""){el.textContent=msg;el.className="status"+(kind?" "+kind:"")}
+function friendlyError(e){return (e?.code?"["+e.code+"] ":"")+(e?.message||"An unexpected error occurred.")}
+try{
+ const app=initializeApp(firebaseConfig);
+ initializeAppCheck(app,{provider:new ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY),isTokenAutoRefreshEnabled:true});
+ const auth=getAuth(app),db=getFirestore(app),ai=getAI(app,{backend:new GoogleAIBackend()});
+ model=getGenerativeModel(ai,{model:MODEL_NAME,generationConfig:{temperature:0.3,maxOutputTokens:900}});
+ $("loginBtn").addEventListener("click",async()=>{$("loginBtn").disabled=true;setStatus(authStatus,"Opening Google sign-in…");try{const p=new GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});await signInWithPopup(auth,p)}catch(e){setStatus(authStatus,friendlyError(e),"bad");$("loginBtn").disabled=false}});
+ $("logoutBtn").addEventListener("click",async()=>{try{await signOut(auth)}catch(e){setStatus(authStatus,friendlyError(e),"bad")}});
+ onAuthStateChanged(auth,async user=>{
+  activeUser=null;$("aiPanel").classList.add("hidden");$("logoutBtn").classList.add("hidden");$("loginBtn").classList.remove("hidden");$("loginBtn").disabled=false;
+  if(!user){setStatus(authStatus,"Not signed in.");return}
+  try{
+   const email=String(user.email||"").toLowerCase();
+   if(email!==SUPER_ADMIN_EMAIL){await signOut(auth);setStatus(authStatus,"Access denied. Please sign in using the authorised Super Admin account.","bad");return}
+   const snap=await getDoc(doc(db,"users",user.uid));
+   if(!snap.exists()){await signOut(auth);setStatus(authStatus,"No approved ERP profile was found for this account.","bad");return}
+   const profile=snap.data(),role=String(profile.role||"").toLowerCase().replace(/[ -]+/g,"_"),status=String(profile.status||"").toLowerCase();
+   if(role!=="super_admin"||status!=="active"){await signOut(auth);setStatus(authStatus,"Access denied. The ERP profile must be active and assigned the Super Admin role.","bad");return}
+   activeUser=user;$("loginBtn").classList.add("hidden");$("logoutBtn").classList.remove("hidden");$("aiPanel").classList.remove("hidden");setStatus(authStatus,"Signed in and authorised as Super Admin: "+email,"good");
+  }catch(e){await signOut(auth).catch(()=>{});setStatus(authStatus,"Could not verify the ERP profile. "+friendlyError(e),"bad")}
+ });
+ $("sendBtn").addEventListener("click",async()=>{
+  if(!activeUser||!model){setStatus(aiStatus,"Please sign in again before sending a test request.","bad");return}
+  if(requestCount>=10){setStatus(aiStatus,"This test session has reached its limit of 10 requests. Refresh the page to start a new test session.","bad");return}
+  const question=$("prompt").value.trim();if(!question){setStatus(aiStatus,"Please enter a test question.","bad");return}if(question.length>1800){setStatus(aiStatus,"Please keep the test question under 1,800 characters.","bad");return}
+  $("sendBtn").disabled=true;$("answer").textContent="Waiting for Gemini…";setStatus(aiStatus,"Sending a request using Firebase AI Logic…");
+  try{
+   const safePrompt=["You are the Bal Jyoti Public School operations assistant in a limited technical demonstration.","Use only the fictional data included in the user's prompt. Do not claim to have accessed school systems, Firestore, student records, staff records, or live data.","Do not ask for or encourage sharing personal or confidential information about students, parents, or employees.","If information is missing, clearly say so. Give concise, practical recommendations.","User question: "+question].join("\n\n");
+   const result=await model.generateContent(safePrompt),responseText=result.response.text();if(!responseText)throw new Error("Gemini returned an empty response.");
+   $("answer").textContent=responseText;requestCount++;$("counter").textContent="Test requests this session: "+requestCount+" / 10";setStatus(aiStatus,"Response received successfully.","good");
+  }catch(e){$("answer").textContent="No response received.";setStatus(aiStatus,friendlyError(e),"bad")}finally{$("sendBtn").disabled=false}
+ });
+}catch(e){setStatus(authStatus,"Firebase setup could not start. "+friendlyError(e),"bad");$("loginBtn").disabled=true}
+</script></body></html>
