@@ -28,12 +28,12 @@ academic_coordinator:["dashboard","academic_master","timetable","teacher_assignm
 admission_coordinator:["dashboard","admissions","student_records","parent_links","communication","tasks","reports"],
 activity_coordinator:["dashboard","activities_events","communication","tasks","reports"],
 sports_discipline_coordinator:["dashboard","activities_events","discipline","communication","tasks","reports"],
-teacher:["dashboard","timetable","attendance","lesson_plans","syllabus_tracker","homework","learning_materials","assessments","marks_results","student_progress","student_records","communication","whatsapp_share","activities_events","leave","tasks"],
+teacher:["dashboard","academic_calendar","timetable","attendance","lesson_plans","syllabus_tracker","homework","learning_materials","assessments","marks_results","student_progress","student_records","communication","whatsapp_share","activities_events","leave","tasks"],
 accountant:["dashboard","fees","accounting","reports","tasks"],
 hr_manager:["dashboard","hr_staff","staff_attendance","leave","tasks","reports"],
-staff:["dashboard","timetable","communication","leave","tasks"],
-student:["dashboard","timetable","attendance","homework","learning_materials","assessments","marks_results","student_progress","activities_events","library","communication"],
-parent:["dashboard","timetable","attendance","homework","marks_results","student_progress","fees","transport","communication","activities_events"]
+staff:["dashboard","academic_calendar","timetable","communication","leave","tasks"],
+student:["dashboard","academic_calendar","timetable","attendance","homework","learning_materials","assessments","marks_results","student_progress","activities_events","library","communication"],
+parent:["dashboard","academic_calendar","timetable","attendance","homework","marks_results","student_progress","fees","transport","communication","activities_events"]
 };
 const $=id=>document.getElementById(id);$("roles").innerHTML=Object.entries(roles).map(([k,v])=>'<div class="role"><b>'+v+'</b><small>'+((access[k]||[]).includes("*")?"All modules":(access[k]||[]).length+" modules")+'</small></div>').join("");
 let db=null,readyUser=null;
