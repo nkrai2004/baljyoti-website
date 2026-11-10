@@ -8,12 +8,12 @@
 - Cloud Functions deployment is currently blocked because Cloud Build / Artifact Registry APIs and billing eligibility have not yet been verified. Do not rerun until project owner has reviewed billing and required APIs.
 
 ## Current code audit (10 Nov 2026)
-The app provides Google sign-in, active-profile gating, Super Admin user management, role-to-module configuration and a role-specific sample dashboard for management, coordinators, teachers, students and parents. Dashboard figures are fictional and are not stored in Firestore. The role/module UI is not a full set of functional modules. No complete student, attendance, timetable, homework, exam, fee, HR, transport or parent workflows are implemented yet.
+The app provides Google sign-in, active-profile gating, Super Admin user management, role-to-module configuration, role-specific dashboards and a common sample-workflow interface for all catalogue modules. The module interface supports in-session demo record search, add, edit, delete and reset with role-specific edit controls. Demo records are fictional and are not stored in Firestore. These are prototype workflows, not production CRUD: no business collection is read or written. Firestore record-level security, approved schemas, persistent CRUD, audit trails and role-specific query scoping remain outstanding.
 
 The existing `schoolData` collection belongs to the earlier ERP1 data model. Do not assume it is a complete or clean source of truth. Audit and map it before migration.
 
 ## Implementation order
-1. Core shell: responsive navigation, role dashboard, route guard, error/loading/empty states.
+1. Core shell: responsive navigation, role dashboard, route guard, error/loading/empty states. (Prototype dashboard and role-guarded sample workspaces are now in main.)
 2. Master data: academic years, classes, sections, subjects, staff, students, parents, teacher assignments.
 3. Academic workflows: timetable, attendance, lesson plans, syllabus, homework, learning materials, assessments, marks/results, progress.
 4. School administration: admissions, parent-child links, communication, activities, discipline.
