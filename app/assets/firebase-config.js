@@ -10,4 +10,4 @@ window.BJ_FIREBASE_CONFIG = {
 };
 // After the designated Super Admin signs into the staging project once,
 // copy that staging Firebase UID here. Never use the production-project UID.
-window.BJ_SUPER_ADMIN_UID = "REPLACE_WITH_STAGING_SUPER_ADMIN_UID";
+window.BJ_SUPER_ADMIN_UID = "iFSF69FAjCVXc80WcMDBEIrhUZ12";
