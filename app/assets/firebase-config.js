@@ -1,6 +1,5 @@
-// Development safety: do not paste production Firebase credentials here.
-// Create a separate Firebase staging project, enable Google sign-in, configure
-// authorised domains, and then replace these placeholders with staging values.
+// Development safety: configure ONLY a separate Firebase staging project here.
+// Never paste the production baljyoti-erp configuration into this file.
 window.BJ_FIREBASE_CONFIG = {
   apiKey: "REPLACE_WITH_STAGING_API_KEY",
   authDomain: "REPLACE_WITH_STAGING_AUTH_DOMAIN",
@@ -9,3 +8,6 @@ window.BJ_FIREBASE_CONFIG = {
   messagingSenderId: "REPLACE_WITH_STAGING_SENDER_ID",
   appId: "REPLACE_WITH_STAGING_APP_ID"
 };
+// After the designated Super Admin signs into the staging project once,
+// copy that staging Firebase UID here. Never use the production-project UID.
+window.BJ_SUPER_ADMIN_UID = "REPLACE_WITH_STAGING_SUPER_ADMIN_UID";
