@@ -72,6 +72,7 @@ In the existing `match /users/{userId}` rule, add a narrowly scoped `allow creat
 allow create: if request.auth != null
   && request.auth.uid == userId
   && request.resource.data.uid == userId
+  && request.auth.token.email_verified == true
   && request.resource.data.email == request.auth.token.email
   && request.auth.token.email.matches('^[^@]+@baljyoti\\.com$')
   && request.resource.data.role == 'staff'
