@@ -1,14 +1,14 @@
 # ERP implementation and staging release plan
 
 ## Repository and release safety
-- Development branch: `school-os-staging`.
-- Production branch `main` and existing `/erp1/` are protected from this work.
+- All School OS code changes are committed directly to the `main` branch, as requested.
+- Deployment target: `https://baljyoti.com/app/`. Preserve the existing `/erp1/` application and unrelated website files.
 - Firebase target: `baljyoti-school-os-staging` only.
 - GitHub Actions workflow is manually triggered and targets only `approveStaffUser` and `deleteSchoolUser` today. It is not a full ERP deployment pipeline.
 - Cloud Functions deployment is currently blocked because Cloud Build / Artifact Registry APIs and billing eligibility have not yet been verified. Do not rerun until project owner has reviewed billing and required APIs.
 
 ## Current code audit (10 Nov 2026)
-The current app provides Google sign-in, user profile gating, a Super Admin user directory, role-to-module configuration UI and a static dashboard concept preview. The login page renders module cards from Firestore. The role/module UI is not a full set of functional modules. No complete student, attendance, timetable, homework, exam, fee, HR, transport or parent workflows are implemented yet.
+The app provides Google sign-in, active-profile gating, Super Admin user management, role-to-module configuration and a role-specific sample dashboard for management, coordinators, teachers, students and parents. Dashboard figures are fictional and are not stored in Firestore. The role/module UI is not a full set of functional modules. No complete student, attendance, timetable, homework, exam, fee, HR, transport or parent workflows are implemented yet.
 
 The existing `schoolData` collection belongs to the earlier ERP1 data model. Do not assume it is a complete or clean source of truth. Audit and map it before migration.
 
