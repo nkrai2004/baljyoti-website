@@ -163,3 +163,112 @@ exports.sendStaffApprovalEmail = onDocumentUpdated(
     }
   }
 );
+
+
+// Secure School OS user administration (staging-first deployment).
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { getAuth } = require("firebase-admin/auth");
+
+const ADMIN_ROLES = {
+  director: "Director",
+  principal: "Principal",
+  administrator: "Administrator",
+  academic_coordinator: "Academic Coordinator",
+  admission_coordinator: "Admission Coordinator",
+  activity_coordinator: "Activity Coordinator",
+  sports_discipline_coordinator: "Sports & Discipline Coordinator",
+  teacher: "Teacher",
+  accountant: "Accountant",
+  hr_manager: "HR Manager",
+  staff: "Staff"
+};
+
+async function requireSuperAdmin(request) {
+  if (!request.auth || !request.auth.uid) {
+    throw new HttpsError("unauthenticated", "Please sign in as Super Admin.");
+  }
+  const db = getFirestore();
+  const snap = await db.collection("users").doc(request.auth.uid).get();
+  if (!snap.exists || snap.data().role !== "super_admin" || snap.data().status !== "active") {
+    throw new HttpsError("permission-denied", "Only an active Super Admin can perform this action.");
+  }
+  return { uid: request.auth.uid, email: request.auth.token.email || "" };
+}
+
+exports.approveStaffUser = onCall({ region: "asia-south1" }, async request => {
+  const admin = await requireSuperAdmin(request);
+  const targetUid = String(request.data && request.data.userId || "").trim();
+  const role = String(request.data && request.data.role || "").trim().toLowerCase();
+  if (!targetUid || !ADMIN_ROLES[role]) {
+    throw new HttpsError("invalid-argument", "Select a valid staff account and approved role.");
+  }
+  const db = getFirestore();
+  const userRef = db.collection("users").doc(targetUid);
+  const roleRef = db.doc("system/roleRegistry");
+  const accessRef = db.doc("system/roleModuleAccess");
+  await db.runTransaction(async tx => {
+    const [userSnap, roleSnap, accessSnap] = await Promise.all([
+      tx.get(userRef), tx.get(roleRef), tx.get(accessRef)
+    ]);
+    if (!userSnap.exists) throw new HttpsError("not-found", "Staff profile was not found.");
+    const user = userSnap.data();
+    if (user.status !== "pending" || (user.accountType || "staff") !== "staff") {
+      throw new HttpsError("failed-precondition", "Only pending staff profiles can be approved here.");
+    }
+    if (!String(user.email || "").toLowerCase().endsWith("@baljyoti.com")) {
+      throw new HttpsError("failed-precondition", "Staff approval requires an official @baljyoti.com email.");
+    }
+    const roles = roleSnap.exists ? (roleSnap.data().roles || {}) : {};
+    const access = accessSnap.exists ? (accessSnap.data().access || {}) : {};
+    if (!roles[role]) roles[role] = { label: ADMIN_ROLES[role], active: true };
+    if (!Array.isArray(access[role])) access[role] = [];
+    tx.set(roleRef, { roles, updatedAt: FieldValue.serverTimestamp(), updatedBy: admin.uid }, { merge: true });
+    tx.set(accessRef, { access, updatedAt: FieldValue.serverTimestamp(), updatedBy: admin.uid }, { merge: true });
+    tx.update(userRef, {
+      role, accountType: "staff", status: "active",
+      approvedBy: admin.uid, approvedByEmail: admin.email,
+      approvedAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp()
+    });
+    const auditRef = db.collection("auditLogs").doc();
+    tx.set(auditRef, {
+      action: "staff_approved", targetUserId: targetUid, targetEmail: user.email || "",
+      assignedRole: role, performedBy: admin.uid, performedAt: FieldValue.serverTimestamp()
+    });
+  });
+  return { success: true, role, roleLabel: ADMIN_ROLES[role] };
+});
+
+exports.deleteSchoolUser = onCall({ region: "asia-south1" }, async request => {
+  const admin = await requireSuperAdmin(request);
+  const targetUid = String(request.data && request.data.userId || "").trim();
+  if (!targetUid || targetUid === admin.uid) {
+    throw new HttpsError("failed-precondition", "You cannot delete your own Super Admin account.");
+  }
+  const db = getFirestore();
+  const userRef = db.collection("users").doc(targetUid);
+  const snap = await userRef.get();
+  if (!snap.exists) throw new HttpsError("not-found", "User profile was not found.");
+  const profile = snap.data();
+  if (profile.role === "super_admin") {
+    throw new HttpsError("failed-precondition", "A Super Admin account cannot be deleted from User Management.");
+  }
+  try {
+    await getAuth().deleteUser(targetUid);
+  } catch (error) {
+    if (error.code !== "auth/user-not-found") throw error;
+  }
+  const auditRef = db.collection("auditLogs").doc();
+  await db.runTransaction(async tx => {
+    const current = await tx.get(userRef);
+    if (!current.exists) throw new HttpsError("not-found", "User profile was already removed.");
+    tx.set(auditRef, {
+      action: "user_deleted", targetUserId: targetUid,
+      targetEmail: profile.email || "", targetRole: profile.role || "",
+      performedBy: admin.uid, performedAt: FieldValue.serverTimestamp(),
+      historicalRecordsRetained: true
+    });
+    tx.delete(userRef);
+  });
+  return { success: true, historicalRecordsRetained: true };
+});
