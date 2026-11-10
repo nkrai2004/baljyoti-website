@@ -58,3 +58,36 @@ The live assignment service should use stable IDs rather than display names:
 Server-side validation must repeat all clash checks in a Firestore transaction or trusted backend. Client-side checks are usability aids only and cannot enforce school-wide uniqueness. Workload policy (maximum teaching periods, activity sessions, class duties and coordinator time) must be configured and approved by school management before any automatic overload warning becomes a formal restriction.
 
 The Employee Directory is the current central profile editor for login-linked staff identity and employment/teaching summary fields. Do not duplicate employee records in each module. Once security rules are reviewed, synchronise approved staff profile data into staffRecords/{employeeId}; reference employeeId and userUid from academic, HR, activity and timetable assignments. Salary, bank, government ID and medical records must remain in separately secured HR-only data.
+
+## Complete master-data database structure (v1.1)
+The machine-readable logical schema is maintained in `app/assets/school-database-schema.js`. It is a blueprint only; it does not create Firestore collections or enable operational writes.
+
+### Master entities
+- **Academic:** academicYears, classes, sections, subjects, classSubjectOfferings.
+- **People:** users (authentication/profile link), staffRecords (employees), students, parents, parentStudentLinks.
+- **Responsibilities:** employeeResponsibilities, including responsibility type, scope, coordinator, assigning manager, effective dates and status.
+- **Activities & allocation:** activities, teacherAssignments, activityAssignments, timetables, workloadRules.
+- **School operations:** academicCalendar, attendance, auditLogs.
+- **Restricted data:** student private records and HR-sensitive records are separated from ordinary profiles.
+
+### Relationship rules
+- EmployeeID is the stable employee key. User UID links the employee to Google sign-in. Do not create a separate employee copy in each module.
+- StudentID, ParentID, ClassID, SectionID, SubjectID, ActivityID and AcademicYearID are stable references.
+- A teacher may have multiple teacherAssignments and activityAssignments; a functional responsibility does not change the primary login role.
+- Parent access requires a verified parentStudentLinks relationship.
+- Approved timetable entries must not overlap for the same teacher or class/section.
+- Every operational change must carry actor, timestamp and audit metadata.
+
+### Google Sheets workflow
+A blank workbook named **Bal Jyoti School Master Data Template** is supplied separately. It has tabs for Academic Years, Classes & Sections, Subjects, Employees, Employee Responsibilities, Students, Parents, Parent-Student Links, Activities, Class Subject Offerings, Teacher Assignments, Activity Assignments, Timetable, Workload Rules and Data Dictionary.
+
+Recommended use:
+1. Upload the workbook to the school's authorised Google Drive and open it with Google Sheets.
+2. Give access only to designated data owners; avoid public or link-wide sharing.
+3. Assign unique stable IDs and validate records before approval.
+4. Use separate tabs for employee master data and each employee's subject/activity/responsibility assignments.
+5. Keep restricted health, discipline, salary, bank, government ID and medical data out of the workbook.
+6. Treat the sheet as a controlled staging/import-export tool. Firestore remains the system of record once operational security rules and import validation are approved.
+7. Do not import bulk records into production until staging tests, role-based access tests, duplicate checks and audit logging are signed off.
+
+No live Google Sheet has been created or connected from this environment. The supplied workbook is compatible with Google Sheets and can be uploaded by an authorised school administrator.
