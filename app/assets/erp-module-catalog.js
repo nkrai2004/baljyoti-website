@@ -9,6 +9,7 @@ window.BJ_ERP_MODULES = [
   {id:"academic_master",label:"Academic Setup",workspace:"coordinator",group:"Academics",description:"Academic years, classes, sections and subjects",route:"academic-master"},
   {id:"timetable",label:"Timetable",workspace:"teacher_student",group:"Academics",description:"Daily class schedule and teacher timetable",route:"timetable"},
   {id:"academic_calendar",label:"Academic Calendar",workspace:"all",group:"Academics",description:"Annual school calendar, events and academic milestones",route:"academic-calendar"},
+  {id:"school_master_data",label:"School Master Data",workspace:"management",group:"Governance",description:"Student, employee, class, section and responsibility master data",route:"master-data"},
   {id:"teacher_assignments",label:"Teacher Assignments",workspace:"coordinator",group:"Academics",description:"Class, section and subject allocation",route:"teacher-assignments"},
   {id:"attendance",label:"Student Attendance",workspace:"teacher_student_parent",group:"Academics",description:"Daily attendance and authorised views",route:"attendance"},
   {id:"staff_attendance",label:"Staff Attendance",workspace:"management",group:"People",description:"Staff attendance and leave records",route:"staff-attendance"},
