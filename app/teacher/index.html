@@ -69,7 +69,8 @@ if(!rr.exists||!ar.exists||!Object.prototype.hasOwnProperty.call((rr.data().role
 const grants=(ar.data().access||{})[role]||[],allowed=new Set(grants.includes("*")?catalog.map(m=>m.id):grants);
 $("greeting").textContent="Welcome, "+(p.fullName||user.displayName||"Teacher");
 $("tiles").innerHTML=tiles.filter(t=>allowed.has(t[3])).map(t=>'<a class="tile" href="../modules/index.html?module='+encodeURIComponent(t[3])+'"><span class="ico">'+t[0]+'</span><b>'+t[1]+'</b><small>'+t[2]+'</small></a>').join("");
-document.querySelectorAll(".tile").forEach(a=>{if(a.textContent.includes("My Classes"))a.href="class-register.html"});\nif(!$("tiles").children.length){deny("No teacher modules have been assigned yet. Please contact the Super Admin.");return}
+document.querySelectorAll(".tile").forEach(a=>{if(a.textContent.includes("My Classes"))a.href="class-register.html"});
+if(!$("tiles").children.length){deny("No teacher modules have been assigned yet. Please contact the Super Admin.");return}
 $("workspace").hidden=false;
 }catch(e){deny(e.message||"Unable to verify teacher access.")}
 });
