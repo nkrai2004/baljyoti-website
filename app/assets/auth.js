@@ -9,8 +9,32 @@ function roleKey(v){return String(v||"").trim().toLowerCase().replace(/[ -]+/g,"
 async function checkUser(user){
  const email=String(user.email||"").trim().toLowerCase();
  if(!user.emailVerified)throw Error("Please use a verified Google account.");
- const snap=await db.collection("users").doc(user.uid).get();
- if(!snap.exists)throw Error("Your school profile has not been created. Please contact the school administrator.");
+ const userRef=db.collection("users").doc(user.uid);
+ let snap=await userRef.get();
+ if(!snap.exists){
+  if(!email.endsWith("@baljyoti.com"))throw Error("Your school profile has not been created. Please contact the school administrator.");
+  const pendingProfile={
+   uid:user.uid,
+   fullName:String(user.displayName||email.split("@")[0]).trim(),
+   email,
+   role:"staff",
+   accountType:"staff",
+   status:"pending",
+   mobile:"",
+   admissionNumber:"",
+   linkedAdmissionNumbers:[],
+   registrationSource:"google_self_registration",
+   createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+   updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+  };
+  try{
+   await userRef.set(pendingProfile);
+  }catch(writeError){
+   if(writeError.code==="permission-denied")throw Error("Your sign-in worked, but the school has not enabled pending staff registration in Firestore Rules. Ask the Super Admin to enable the approved self-registration rule.");
+   throw writeError;
+  }
+  throw Error("Your staff registration request has been submitted and is awaiting Super Admin approval. You can sign in after your school profile is approved.");
+ }
  const p=snap.data()||{},role=roleKey(p.role);
  if(String(p.email||"").trim().toLowerCase()!==email)throw Error("Your Google email does not match your school profile.");
  if(p.status!=="active")throw Error("Your school account is not active. Please contact the school administrator.");
