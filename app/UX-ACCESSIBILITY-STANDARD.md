@@ -78,3 +78,21 @@ The shared stylesheet `assets/design-system.css` is linked from:
 - Repository source check confirms all nine listed pages link to the shared stylesheet on `main`.
 - Responsive rules, focus states, touch-control sizing and reduced-motion support are present in the shared CSS.
 - Not yet verified: rendered screenshots at each viewport, browser/device behaviour, keyboard/screen-reader journeys, automated WCAG scan, contrast measurement for every state, and end-to-end role workflows. These require running the deployed site and real browser/device testing; do not represent the current code review as a pass.
+
+## Dashboard redesign — 10 November 2026
+- Rebuilt `dashboard.html` as a mobile-first, role-aware landing page.
+- One consistent page model: school identity, greeting and role, quick actions, permitted workspace modules, role-specific guidance.
+- Removed illustrative attendance, fee, enrolment and academic KPI figures from the dashboard. No operational metrics are presented until connected to verified live data.
+- Quick actions are selected from each role's approved module grants; the Super Admin sees system administration shortcuts through the role catalogue.
+- Added a compact mobile bottom navigation, responsive action cards, semantic headings, skip link, live loading status, explicit access/error state, and reduced-motion support.
+- Brand use: Bal Jyoti red `#A71920` for primary actions and active emphasis; white surfaces; dark ink `#20232B`; neutral background `#F5F6F8`. Existing official logo is referenced from the root asset.
+
+### Dashboard QA still required
+- Render and test at 320, 360, 390, 768, 1024 and desktop widths.
+- Confirm the deployed root logo path and dashboard links under GitHub Pages.
+- Test each role account and verify quick actions exactly match Firestore grants.
+- Test keyboard-only, screen reader, 200% zoom, high contrast and reduced motion.
+- Confirm sign-out, expired session, offline, permission-denied and missing-role states.
+- Validate all linked module routes and Firestore rules before real school data is enabled.
+
+Source changes do not constitute a completed device or WCAG audit. The dashboard is a role-aware navigation surface; operational metrics and pending-work feeds remain to be connected to secure live data.
