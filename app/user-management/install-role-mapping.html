@@ -5,7 +5,7 @@
 </style><link rel="stylesheet" href="../assets/design-system.css"></head><body>
 <header class="top">BAL JYOTI PUBLIC SCHOOL · Role Mapping Setup</header>
 <main class="wrap">
-<section class="panel"><h1>Install all roles and module permissions</h1><p class="muted">This one-time setup writes the approved 14-role and 34-module mapping into the School OS staging Firestore database. No coding or Firebase document editing is required.</p>
+<section class="panel"><h1>Install all roles and module permissions</h1><p class="muted">This one-time setup writes the approved 14-role and 35-module mapping into the School OS staging Firestore database. No coding or Firebase document editing is required.</p>
 <div class="warning"><b>Important:</b> Confirm the Firebase project shown below is <b>baljyoti-school-os-staging</b>. This tool does not touch production ERP data. It replaces the three School OS configuration documents: <code>system/roleRegistry</code>, <code>system/moduleRegistry</code> and <code>system/roleModuleAccess</code>. Existing user profiles are not changed.</div>
 <div id="project" class="role">Checking project…</div><div id="account" class="role">Checking sign-in…</div>
 <h2>Roles to be installed</h2><div id="roles"></div>
@@ -42,7 +42,7 @@ if(!cfg.apiKey||cfg.projectId!=="baljyoti-school-os-staging"){$("project").textC
 $("project").textContent="Firebase project: "+cfg.projectId;
 try{if(!firebase.apps.length)firebase.initializeApp(cfg);const auth=firebase.auth();db=firebase.firestore();auth.onAuthStateChanged(async user=>{readyUser=null;$("install").disabled=true;if(!user){$("account").textContent="Not signed in. Please sign in through School OS first.";return}try{const snap=await db.collection("users").doc(user.uid).get(),p=snap.exists?snap.data():{};const isAdmin=user.uid===adminUid&&p.role==="super_admin"&&p.status==="active";$("account").textContent="Signed in: "+(user.email||"")+(isAdmin?" · Verified Super Admin":" · Not authorised");if(isAdmin){readyUser=user;$("install").disabled=false}else status("Only the designated active Super Admin can install this mapping. No changes made.",false)}catch(e){$("account").textContent="Could not verify account: "+e.message}});
 }catch(e){status("Firebase could not start: "+e.message,false)}
-$("install").onclick=async()=>{if(!readyUser||!db)return;if(!confirm("Install all 14 roles and 34 modules in baljyoti-school-os-staging? The three system configuration documents will be replaced. User profiles will not change."))return;
+$("install").onclick=async()=>{if(!readyUser||!db)return;if(!confirm("Install all 14 roles and 35 modules in baljyoti-school-os-staging? The three system configuration documents will be replaced. User profiles will not change."))return;
 $("install").disabled=true;status("Installing role and module mapping…",false);
 try{
 const batch=db.batch(),now=firebase.firestore.FieldValue.serverTimestamp();
