@@ -14,14 +14,14 @@ Teacher, Student, Coordinator, Management and Parent.
 - `index.html`: routes to secure Google sign-in.
 - `login.html`: Google sign-in and authorised workspace shell.
 - `assets/auth.js`: profile/status check and role/module permission loading.
-- `assets/firebase-config.js`: placeholders for a separate staging Firebase project and staging Super Admin UID.
+- `assets/firebase-config.js`: separate staging Firebase web-app configuration; staging Super Admin UID remains to be added after first Google sign-in.
 - `user-management/index.html`: Super Admin-only user profile directory and editor.
 - `preview.html`: static dashboard concept preview.
 - `DECISIONS-V1.md`: locked product decisions.
 - `STAGING-FIREBASE-SETUP.md`: setup and security testing guide.
 
 ## Critical staging safeguard
-The existing ERP1 uses the school's live Firebase project `baljyoti-erp`. The new app is intentionally disconnected from it. The config file contains placeholders only. Create a separate Firebase staging project, enable Google sign-in, configure authorised domains and staging Firestore rules before replacing the placeholders.
+The existing ERP1 uses the school's live Firebase project `baljyoti-erp`. The new app is connected only to the separate `baljyoti-school-os-staging` Firebase project. Google sign-in is enabled, `baljyoti.com` and `www.baljyoti.com` are authorised, and initial deny-by-default Firestore rules with Super Admin profile access have been published. The staging Super Admin UID is still a placeholder and must be configured after the first Google sign-in.
 
 ## Account provisioning
 - No automatic Firestore profile creation at login.
@@ -36,7 +36,7 @@ The existing ERP1 uses the school's live Firebase project `baljyoti-erp`. The ne
 - UI role checks only control navigation; they are not a security boundary.
 - Firestore rules must enforce record-level permissions for all reads and writes.
 - Do not expose student, parent, fee, health or discipline records until those rules are implemented and tested.
-- No Firebase security rules are changed by this branch.
+- No production Firebase security rules are changed by this branch. Staging Firebase rules were configured separately in the staging console.
 - Gmail API, Google Classroom API and WhatsApp API are not connected.
 - Dashboard modules remain placeholders, not live workflows.
 
