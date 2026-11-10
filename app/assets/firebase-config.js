@@ -1,7 +1,7 @@
 // Development safety: configure ONLY a separate Firebase staging project here.
 // Never paste the production baljyoti-erp configuration into this file.
 window.BJ_FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDtsCkDDfG_W8NBzt5Hug_aHBlzwtwsiP",
+  apiKey: "AIzaSyDtsCkDDfG_W8NBzt5Hug_aHBlzwtwsiPE",
   authDomain: "baljyoti-school-os-staging.firebaseapp.com",
   projectId: "baljyoti-school-os-staging",
   storageBucket: "baljyoti-school-os-staging.firebasestorage.app",
