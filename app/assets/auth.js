@@ -1,6 +1,6 @@
 "use strict";
 (function(){
-const CFG={apiKey:"AIzaSyB2SGgV_zUFOyOGIIM27H5HNQYlO5WdFEY",authDomain:"baljyoti-erp.firebaseapp.com",projectId:"baljyoti-erp",storageBucket:"baljyoti-erp.firebasestorage.app",messagingSenderId:"422855577454",appId:"1:422855577454:web:9bccb80cc472d02275bb7f"};
+const CFG=window.BJ_FIREBASE_CONFIG||null;
 const $=id=>document.getElementById(id);
 const labels={super_admin:"Super Admin",director:"Director",principal:"Principal",administrator:"Administrator",academic_coordinator:"Academic Coordinator",admission_coordinator:"Admission Coordinator",activity_coordinator:"Activity Coordinator",sports_discipline_coordinator:"Sports & Discipline Coordinator",teacher:"Teacher",accountant:"Accountant",hr_manager:"HR Manager",staff:"Staff",student:"Student",parent:"Parent"};
 let auth,db;
@@ -34,6 +34,7 @@ async function checkUser(user){
 }
 async function authState(user){if(!user){$("loginView").hidden=false;$("appView").hidden=true;return}try{await checkUser(user)}catch(e){await auth.signOut();$("loginView").hidden=false;$("appView").hidden=true;showMessage(e.message)}}
 document.addEventListener("DOMContentLoaded",()=>{
+ if(!CFG||!CFG.apiKey||CFG.projectId==="REPLACE_WITH_STAGING_PROJECT"){showMessage("Staging Firebase is not configured. This development build is intentionally disconnected from the live school database.");return;}
  firebase.initializeApp(CFG);auth=firebase.auth();db=firebase.firestore();
  $("googleBtn").onclick=async()=>{try{const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});await auth.signInWithPopup(p)}catch(e){showMessage(e.message)}};
  $("signOut").onclick=()=>auth.signOut();auth.onAuthStateChanged(authState);
