@@ -30,3 +30,13 @@ An employee has one primary authentication role in `users/{uid}.role` and may ho
 
 ## Admission workflow
 Dedicated Admissions workspace: enquiry capture, class applied for, source, assigned counsellor, follow-up date, status, campus visit, document checklist, application and admission outcome. Admission Team Coordinator allocates and reviews counsellors; Admission Counsellor handles assigned family follow-ups; Academic Counsellor or a teacher with an approved assignment supports class/academic fit conversations. The current admissions screen is a synthetic local-browser prototype only; no live parent/student data is stored.
+
+## Teacher–class–subject–activity allocation
+The academic allocation model must preserve these relationships:
+- Class subject offerings define which subjects apply to each class/section and academic year, including core/elective status and weekly periods.
+- Teacher assignments link an employee and optional user UID to the academic year, class, section, subject, weekly period count, actual period slots, primary/co-teacher status, class-teacher status, coordinator and approval dates.
+- Activity assignments separately map teachers/in-charges to co-curricular activities (Art & Craft, Music, Dance, Sports/Physical Education, Yoga, Library/Reading, Life Skills, Assembly, House Activities) by class/section and sessions per week.
+- Workload rules track assigned teaching periods plus non-teaching duties, so multiple roles do not hide workload or create timetable conflicts.
+- Academic Coordinator oversees subject and timetable allocations; Activity Coordinator oversees co-curricular activity allocations; Principal approves the final timetable and any exceptions.
+- A teacher can have multiple class/subject assignments and activity duties while retaining the Teacher primary role. Additional assignments (Class In-charge, Exam In-charge, Academic Counsellor, Admission Counsellor, etc.) remain separate from primary system role.
+The Academic Planner now includes a demo allocation form. Its entries remain in local browser storage and are not operational Firestore records. Firestore security rules currently deny operational collections; do not enter real data until rules and record-level tests are approved.
