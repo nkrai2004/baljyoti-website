@@ -12,7 +12,7 @@ This guide is required before Google sign-in or User Management can be tested. T
 7. Create a Firestore database in staging. Do not import real student/parent data yet.
 
 ## B. Configure the development branch
-1. Open `app/assets/firebase-config.js` on branch `baljyoti-school-os-v1`.
+1. Open `app/assets/firebase-config.js` on branch `main`.
 2. Replace the Firebase config placeholders with the new staging project's Web App values.
 3. Sign in once with the designated school Super Admin Google account on the staging app.
 4. In Firebase Authentication, copy the newly created staging UID for that Google account.
@@ -49,3 +49,49 @@ This guide is required before Google sign-in or User Management can be tested. T
 - Do not paste production Firebase configuration or production Super Admin UID into this branch.
 - Do not change production Firestore rules, ERP1 files, or the `main` branch.
 - Firebase web configuration values identify the project; Firestore Security Rules and Authentication configuration provide the actual protection.
+
+
+## E. Automatic pending staff registration (V1)
+New staff can now register themselves using Google sign-in. The app will create a Firestore `users/{uid}` profile only when:
+- the Google email is verified;
+- the email ends in `@baljyoti.com`; and
+- no school profile already exists for that UID.
+
+The app sets a fixed, non-editable-by-the-user initial profile:
+- `role: "staff"`
+- `accountType: "staff"`
+- `status: "pending"`
+- `registrationSource: "google_self_registration"`
+
+The pending user is signed out and shown an approval message. They cannot enter the school workspace until a Super Admin changes the profile to an approved role and sets `status: "active"`.
+
+### Required Firestore rule
+In the existing `match /users/{userId}` rule, add a narrowly scoped `allow create` condition for self-registration. Do not replace the full rules file blindly; merge this condition with the current Super Admin rules and test it in the Rules Playground:
+
+```javascript
+allow create: if request.auth != null
+  && request.auth.uid == userId
+  && request.resource.data.uid == userId
+  && request.resource.data.email == request.auth.token.email
+  && request.auth.token.email.matches('^[^@]+@baljyoti\\.com$')
+  && request.resource.data.role == 'staff'
+  && request.resource.data.accountType == 'staff'
+  && request.resource.data.status == 'pending'
+  && request.resource.data.registrationSource == 'google_self_registration'
+  && request.resource.data.keys().hasOnly([
+    'uid', 'fullName', 'email', 'role', 'accountType', 'status',
+    'mobile', 'admissionNumber', 'linkedAdmissionNumbers',
+    'registrationSource', 'createdAt', 'updatedAt'
+  ]);
+```
+
+Keep user-profile reads restricted to the user's own document and Super Admin access. Keep updates/deletes restricted to Super Admin. The rule above only permits a verified-domain user to create their own pending staff profile; it does not permit role changes or activation.
+
+### Super Admin approval
+1. Open User Management.
+2. The list defaults to **Pending approvals**.
+3. Select **Edit** for the new staff profile.
+4. Change the role to the approved role (for example Director) and set Status to **Active**.
+5. Save. The staff member can then sign in again.
+
+Students and parents are not self-registered by this workflow. Continue to create their profiles only after school verification.
