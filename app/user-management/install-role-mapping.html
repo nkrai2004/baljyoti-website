@@ -5,7 +5,7 @@
 </style><link rel="stylesheet" href="../assets/design-system.css"></head><body>
 <header class="top">BAL JYOTI PUBLIC SCHOOL · Role Mapping Setup</header>
 <main class="wrap">
-<section class="panel"><h1>Install all roles and module permissions</h1><p class="muted">This one-time setup writes the approved 14-role and 33-module mapping into the School OS staging Firestore database. No coding or Firebase document editing is required.</p>
+<section class="panel"><h1>Install all roles and module permissions</h1><p class="muted">This one-time setup writes the approved 14-role and 34-module mapping into the School OS staging Firestore database. No coding or Firebase document editing is required.</p>
 <div class="warning"><b>Important:</b> Confirm the Firebase project shown below is <b>baljyoti-school-os-staging</b>. This tool does not touch production ERP data. It replaces the three School OS configuration documents: <code>system/roleRegistry</code>, <code>system/moduleRegistry</code> and <code>system/roleModuleAccess</code>. Existing user profiles are not changed.</div>
 <div id="project" class="role">Checking project…</div><div id="account" class="role">Checking sign-in…</div>
 <h2>Roles to be installed</h2><div id="roles"></div>
@@ -21,9 +21,9 @@ const cfg=window.BJ_FIREBASE_CONFIG||{},adminUid=window.BJ_SUPER_ADMIN_UID||"",m
 const roles={super_admin:"Super Admin",director:"Director",principal:"Principal",administrator:"Administrator",academic_coordinator:"Academic Coordinator",admission_coordinator:"Admission Coordinator",activity_coordinator:"Activity Coordinator",sports_discipline_coordinator:"Sports & Discipline Coordinator",teacher:"Teacher",accountant:"Accountant",hr_manager:"HR Manager",staff:"Staff",student:"Student",parent:"Parent"};
 const access={
 super_admin:["*"],
-director:["dashboard","reports","audit_logs","academic_master","admissions","student_records","fees","accounting","hr_staff","staff_attendance","activities_events","discipline","transport","inventory","tasks","settings"],
-principal:["dashboard","academic_master","timetable","teacher_assignments","attendance","staff_attendance","lesson_plans","syllabus_tracker","homework","learning_materials","assessments","marks_results","student_progress","student_records","admissions","communication","activities_events","discipline","reports","tasks"],
-administrator:["dashboard","academic_master","student_records","admissions","parent_links","staff_attendance","communication","activities_events","transport","library","inventory","tasks","reports"],
+director:["dashboard","reports","audit_logs","academic_master","academic_calendar","admissions","student_records","fees","accounting","hr_staff","staff_attendance","activities_events","discipline","transport","inventory","tasks","settings"],
+principal:["dashboard","academic_master","academic_calendar","timetable","teacher_assignments","attendance","staff_attendance","lesson_plans","syllabus_tracker","homework","learning_materials","assessments","marks_results","student_progress","student_records","admissions","communication","activities_events","discipline","reports","tasks"],
+administrator:["dashboard","academic_master","academic_calendar","student_records","admissions","parent_links","staff_attendance","communication","activities_events","transport","library","inventory","tasks","reports"],
 academic_coordinator:["dashboard","academic_master","timetable","teacher_assignments","attendance","lesson_plans","syllabus_tracker","homework","learning_materials","assessments","marks_results","student_progress","activities_events","tasks","reports"],
 admission_coordinator:["dashboard","admissions","student_records","parent_links","communication","tasks","reports"],
 activity_coordinator:["dashboard","activities_events","communication","tasks","reports"],
@@ -42,7 +42,7 @@ if(!cfg.apiKey||cfg.projectId!=="baljyoti-school-os-staging"){$("project").textC
 $("project").textContent="Firebase project: "+cfg.projectId;
 try{if(!firebase.apps.length)firebase.initializeApp(cfg);const auth=firebase.auth();db=firebase.firestore();auth.onAuthStateChanged(async user=>{readyUser=null;$("install").disabled=true;if(!user){$("account").textContent="Not signed in. Please sign in through School OS first.";return}try{const snap=await db.collection("users").doc(user.uid).get(),p=snap.exists?snap.data():{};const isAdmin=user.uid===adminUid&&p.role==="super_admin"&&p.status==="active";$("account").textContent="Signed in: "+(user.email||"")+(isAdmin?" · Verified Super Admin":" · Not authorised");if(isAdmin){readyUser=user;$("install").disabled=false}else status("Only the designated active Super Admin can install this mapping. No changes made.",false)}catch(e){$("account").textContent="Could not verify account: "+e.message}});
 }catch(e){status("Firebase could not start: "+e.message,false)}
-$("install").onclick=async()=>{if(!readyUser||!db)return;if(!confirm("Install all 14 roles and 33 modules in baljyoti-school-os-staging? The three system configuration documents will be replaced. User profiles will not change."))return;
+$("install").onclick=async()=>{if(!readyUser||!db)return;if(!confirm("Install all 14 roles and 34 modules in baljyoti-school-os-staging? The three system configuration documents will be replaced. User profiles will not change."))return;
 $("install").disabled=true;status("Installing role and module mapping…",false);
 try{
 const batch=db.batch(),now=firebase.firestore.FieldValue.serverTimestamp();
