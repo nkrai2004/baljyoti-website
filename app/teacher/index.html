@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#a71920">
+<title>Teacher Workspace | Bal Jyoti Public School</title>
+<style>
+:root{--red:#a71920;--red2:#82151b;--ink:#22252c;--muted:#68717d;--line:#e7e9ed;--bg:#f5f6f8;--green:#18794e;--amber:#8a5b08}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px Arial,sans-serif}[hidden]{display:none!important}
+header{background:#fff;border-bottom:1px solid var(--line);padding:13px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:0;z-index:5}
+.brand{font-weight:800}.brand small{display:block;color:var(--muted);font-weight:400;margin-top:3px}
+button,a{font:inherit}.btn{border:0;border-radius:8px;padding:10px 13px;background:var(--red);color:#fff;text-decoration:none;font-weight:700;cursor:pointer}.btn.light{background:#f0f1f3;color:var(--ink)}
+.wrap{max-width:1160px;margin:22px auto;padding:0 15px}.welcome,.panel,.stat{background:#fff;border:1px solid var(--line);border-radius:13px}
+.welcome{padding:21px;margin-bottom:14px}.eyebrow{font-size:11px;color:var(--red);font-weight:800;letter-spacing:.8px;text-transform:uppercase}
+h1{font-size:25px;margin:8px 0}.muted{color:var(--muted);line-height:1.5}.demo{display:inline-block;padding:6px 9px;border-radius:20px;background:#fff1d9;color:var(--amber);font-size:11px;font-weight:800}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin:14px 0}.stat{padding:15px}.stat small{display:block;color:var(--muted);margin-bottom:8px}.stat strong{font-size:24px}
+.quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}.tile{background:#fff;border:1px solid var(--line);border-radius:11px;padding:14px;text-decoration:none;color:var(--ink);display:block}.tile b{display:block;margin:7px 0 4px}.tile small{color:var(--muted);line-height:1.4}.ico{font-size:20px}
+.columns{display:grid;grid-template-columns:1.25fr .75fr;gap:13px}.panel{padding:16px;margin-bottom:13px}.panel h2{font-size:17px;margin:0 0 12px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:450px}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);font-size:13px}th{font-size:11px;text-transform:uppercase;color:var(--muted)}
+.status{display:inline-block;border-radius:20px;padding:5px 8px;background:#eaf6ef;color:var(--green);font-size:11px}.task{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}.task:last-child{border:0}.task b{display:block;margin-bottom:4px}.task small{color:var(--muted)}
+.links{display:grid;gap:8px}.links a{color:var(--red);text-decoration:none;font-weight:700;padding:9px 0;border-bottom:1px solid var(--line)}
+.note{font-size:11px;color:var(--muted);margin:14px 2px;line-height:1.5}
+#denied{max-width:650px;margin:40px auto;background:#fff;padding:22px;border:1px solid var(--line);border-radius:12px}
+@media(max-width:780px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.quick{grid-template-columns:repeat(2,minmax(0,1fr))}.columns{grid-template-columns:1fr}}
+@media(max-width:390px){h1{font-size:21px}.stat strong{font-size:21px}}
+</style></head>
+<body>
+<header><div class="brand">BAL JYOTI PUBLIC SCHOOL<small>Teacher Workspace · School OS</small></div><button class="btn" id="signOut">Sign out</button></header>
+<main class="wrap" id="workspace" hidden>
+<section class="welcome"><div class="eyebrow">My teaching day</div><h1 id="greeting">Welcome, Teacher</h1><p class="muted">Your daily workspace for teaching, class records and student support.</p><span class="demo">SAMPLE DATA · NOT LIVE SCHOOL RECORDS</span></section>
+<section class="stats">
+<div class="stat"><small>My classes</small><strong>3</strong></div><div class="stat"><small>Assigned students</small><strong>96</strong></div><div class="stat"><small>Attendance to submit</small><strong>1</strong></div><div class="stat"><small>Homework to review</small><strong>8</strong></div>
+</section>
+<h2>My workspaces</h2><section class="quick" id="tiles"></section>
+<div class="columns">
+<section class="panel"><h2>Today's timetable</h2><div class="tablewrap"><table><thead><tr><th>Period</th><th>Time</th><th>Class</th><th>Subject</th></tr></thead><tbody>
+<tr><td>1</td><td>8:00–8:40</td><td>V-A</td><td>English</td></tr><tr><td>2</td><td>8:40–9:20</td><td>VI-A</td><td>English</td></tr><tr><td>3</td><td>9:20–10:00</td><td>VII-B</td><td>English</td></tr><tr><td>4</td><td>10:20–11:00</td><td>V-A</td><td>Library</td></tr>
+</tbody></table></div></section>
+<aside class="panel"><h2>Today's checklist</h2>
+<div class="task"><div><b>Mark attendance</b><small>Class V-A · First period</small></div><span class="status">Pending</span></div>
+<div class="task"><div><b>Submit lesson plan</b><small>English · Class VI-A</small></div><span class="status">Due today</span></div>
+<div class="task"><div><b>Review homework</b><small>8 submissions</small></div><span class="status">Pending</span></div>
+<div class="task"><div><b>Update syllabus progress</b><small>English · November</small></div><span class="status">This week</span></div>
+</aside>
+</div>
+<div class="columns">
+<section class="panel"><h2>My classes</h2><div class="tablewrap"><table><thead><tr><th>Class</th><th>Subject</th><th>Students</th><th>Class teacher</th></tr></thead><tbody><tr><td>V-A</td><td>English</td><td>38</td><td>Yes</td></tr><tr><td>VI-A</td><td>English</td><td>32</td><td>No</td></tr><tr><td>VII-B</td><td>English</td><td>26</td><td>No</td></tr></tbody></table></div></section>
+<aside class="panel"><h2>Teacher support</h2><div class="links"><a href="../modules/index.html?module=communication">School notices & communication →</a><a href="../modules/index.html?module=leave">Apply for leave →</a><a href="../modules/index.html?module=tasks">My assigned tasks →</a><a href="../dashboard.html">View role dashboard →</a></div></aside>
+</div>
+<p class="note">This is the first teacher-interface prototype. All timetable, class, student and task figures are fictional examples. No operational student data is accessed or saved. Assigned-class filtering and database actions will be enabled only after Firestore rules and teacher-assignment data are tested.</p>
+</main>
+<section id="denied" hidden><h2>Teacher access not available</h2><p id="reason" class="muted"></p><a class="btn" href="../login.html">Return to sign in</a></section>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script><script src="../assets/firebase-config.js"></script><script src="../assets/erp-module-catalog.js"></script>
+<script>
+"use strict";
+(async function(){
+const $=id=>document.getElementById(id),cfg=window.BJ_FIREBASE_CONFIG||{},catalog=window.BJ_ERP_MODULES||[];
+const tiles=[["📅","Timetable","View your assigned periods","timetable"],["📝","Attendance","Mark attendance for assigned classes","attendance"],["📚","Lesson planner","Prepare and submit lesson plans","lesson_plans"],["📖","Syllabus tracker","Update topic-wise coverage","syllabus_tracker"],["✏️","Homework","Create homework and review submissions","homework"],["📊","Marks & results","Enter and review authorised marks","marks_results"],["🎯","Student progress","Record learning observations","student_progress"],["📎","Learning materials","Share class learning resources","learning_materials"]];
+function deny(message){$("workspace").hidden=true;$("denied").hidden=false;$("reason").textContent=message}
+if(!cfg.apiKey){deny("Staging sign-in is not configured.");return}
+try{if(!firebase.apps.length)firebase.initializeApp(cfg);const auth=firebase.auth(),db=firebase.firestore();
+$("signOut").onclick=()=>auth.signOut().then(()=>location.href="../login.html");
+auth.onAuthStateChanged(async user=>{if(!user){deny("Please sign in with your authorised school account.");return}
+try{
+const [profile,rr,ar]=await Promise.all([db.collection("users").doc(user.uid).get(),db.doc("system/roleRegistry").get(),db.doc("system/roleModuleAccess").get()]);
+if(!profile.exists){deny("Your school profile was not found.");return}
+const p=profile.data()||{},email=String(user.email||"").trim().toLowerCase(),role=String(p.role||"").toLowerCase().replace(/[ -]+/g,"_");
+if(p.status!=="active"||String(p.email||"").trim().toLowerCase()!==email){deny("Your school profile is inactive or does not match your Google account.");return}
+if(role!=="teacher"){deny("This workspace is reserved for the Teacher role. Your current role is "+(p.role||"not assigned")+".");return}
+if(!rr.exists||!ar.exists||!Object.prototype.hasOwnProperty.call((rr.data().roles||{}),role)){deny("Your Teacher role is not configured by the Super Admin.");return}
+const grants=(ar.data().access||{})[role]||[],allowed=new Set(grants.includes("*")?catalog.map(m=>m.id):grants);
+$("greeting").textContent="Welcome, "+(p.fullName||user.displayName||"Teacher");
+$("tiles").innerHTML=tiles.filter(t=>allowed.has(t[3])).map(t=>'<a class="tile" href="../modules/index.html?module='+encodeURIComponent(t[3])+'"><span class="ico">'+t[0]+'</span><b>'+t[1]+'</b><small>'+t[2]+'</small></a>').join("");
+if(!$("tiles").children.length){deny("No teacher modules have been assigned yet. Please contact the Super Admin.");return}
+$("workspace").hidden=false;
+}catch(e){deny(e.message||"Unable to verify teacher access.")}
+});
+}catch(e){deny(e.message||"Unable to initialise Teacher Workspace.")}
+})();
+</script></body></html>
