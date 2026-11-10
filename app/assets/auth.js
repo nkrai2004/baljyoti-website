@@ -35,17 +35,14 @@ async function checkUser(user){
   }
   throw Error("Your staff registration request has been submitted and is awaiting Super Admin approval. You can sign in after your school profile is approved.");
  }
- const p=snap.data()||{},role=roleKey(p.role);
+ const p=snap.data()||{};let role=roleKey(p.role);if(window.BJ_SUPER_ADMIN_UID&&user.uid===window.BJ_SUPER_ADMIN_UID)role="super_admin";
  if(String(p.email||"").trim().toLowerCase()!==email)throw Error("Your Google email does not match your school profile.");
  if(p.status!=="active")throw Error("Your school account is not active. Please contact the school administrator.");
  if(!labels[role])throw Error("Your assigned role is not recognised.");
  const type=p.accountType||(["student","parent"].includes(role)?role:"staff");
  if(type==="staff"&&!email.endsWith("@baljyoti.com"))throw Error("Staff must sign in using their official @baljyoti.com account.");
- const s=db.collection("system"),docs=await Promise.all([s.doc("roleRegistry").get(),s.doc("moduleRegistry").get(),s.doc("roleModuleAccess").get()]);
- if(docs.some(d=>!d.exists))throw Error("Role and module settings are incomplete. Ask the Super Admin to configure access.");
- const roles=docs[0].data().roles||{},modules=docs[1].data().modules||[],access=docs[2].data().access||{};
- if(!Object.prototype.hasOwnProperty.call(roles,role))throw Error("Your role is not configured.");
- const grants=role==="super_admin"?["*"]:(Array.isArray(access[role])?access[role]:[]);
+ const s=db.collection("system");let grants=["*"];
+ if(role!=="super_admin"){const docs=await Promise.all([s.doc("roleRegistry").get(),s.doc("moduleRegistry").get(),s.doc("roleModuleAccess").get()]);if(docs.some(d=>!d.exists))throw Error("Role and module settings are incomplete. Ask the Super Admin to configure access.");const roles=docs[0].data().roles||{},access=docs[2].data().access||{};if(!Object.prototype.hasOwnProperty.call(roles,role))throw Error("Your role is not configured.");grants=Array.isArray(access[role])?access[role]:[];}
  const catalogue=Array.isArray(window.BJ_ERP_MODULES)?window.BJ_ERP_MODULES:[];
  const allowed=catalogue.filter(m=>m&&m.id&&(role==="super_admin"||grants.includes("*")||grants.includes(m.id)));
  $("loginView").hidden=true;$("appView").hidden=false;
