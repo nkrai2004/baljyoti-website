@@ -10,7 +10,7 @@ Teacher, Student, Coordinator, Management and Parent.
 - WhatsApp: manual FOC-first sharing only; no paid API automation or unofficial bots in V1.
 - Parent workspace included in V1.
 
-## Development branch implementation
+## Main-branch implementation
 - `index.html`: routes to secure Google sign-in.
 - `login.html`: Google sign-in and authorised workspace shell.
 - `assets/auth.js`: profile/status check and role/module permission loading.
@@ -38,13 +38,14 @@ The existing ERP1 uses the school's live Firebase project `baljyoti-erp`. The ne
 - Do not expose student, parent, fee, health or discipline records until those rules are implemented and tested.
 - No production Firebase security rules are changed by this branch. Staging Firebase rules were configured separately in the staging console.
 - Gmail API, Google Classroom API and WhatsApp API are not connected.
-- Dashboard modules remain placeholders, not live workflows.
+- Role-specific sample dashboards and a common in-session sample workflow are implemented for the module catalogue. Demo changes are not persisted. Operational Firestore collections remain denied by the repository rules baseline until collection-specific record-level policies are approved and deployed.
 
 ## Deployment
 Repository: `nkrai2004/baljyoti-website`
-Branch: `baljyoti-school-os-v1`
+Branch: `main` (all School OS updates are committed here by user instruction)
 Path: `app/`
-Target after deployment approval: `https://baljyoti.com/app/`
+Target: `https://baljyoti.com/app/`
+GitHub Pages publication and live Firebase rules deployment must be verified separately.
 
 ## Production safety
-Do not merge to `main`, deploy to production, modify `/erp1/`, or change production Firebase rules until staging tests, record-level access tests, backups and rollback steps are approved.
+Do not modify `/erp1/` or change production Firebase rules. The repository contains a deny-by-default `firestore.rules` baseline registered in `firebase.json`; it has not been deployed. Operational collections must remain unavailable until their rules and role tests are complete.
