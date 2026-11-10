@@ -122,3 +122,51 @@ When a staff profile changes from `pending` to `active`, the backend sends an ap
 - Delivery status is recorded in `users/{uid}.approvalEmailStatus` and `mailNotifications/{uid}_approval`.
 - Test with a staging staff account first. Confirm the email arrives, sender identity is accepted, and the approved user can sign in. Do not activate real staff accounts until the test passes.
 - SMTP delivery is at-least-once in failure/retry edge cases; check the notification log if a test appears delayed or duplicated.
+
+
+## G. User Management: role provisioning, module mapping and deletion
+
+The User Management V1 upgrade adds:
+- **Role & Module Access** page at `/app/user-management/access.html`.
+- A role-to-module assignment matrix backed by `system/moduleRegistry` and `system/roleModuleAccess`.
+- Automatic RBAC role registration and a default empty module grant when a pending staff member is approved.
+- Secure callable backend functions for staff approval and permanent login/profile deletion.
+- Audit entries in `auditLogs` for approvals and deletions.
+
+### Deploy the two administration functions to staging
+
+The functions are in `functions/index.js`. Deploy only these callable functions first; do not deploy the email function as part of this step:
+
+```bash
+firebase deploy --only functions:approveStaffUser,functions:deleteSchoolUser --project baljyoti-school-os-staging
+```
+
+Cloud Functions deployment requires the Firebase project to use the Blaze (pay-as-you-go) plan. Review billing and set a budget alert before deployment. The functions run in `asia-south1`.
+
+### Approval workflow
+
+1. Sign in as the designated Super Admin.
+2. Open User Management and select a pending staff profile.
+3. Choose the staff role and set Status to Active.
+4. Save. The page calls `approveStaffUser`.
+5. The backend verifies the caller's active Super Admin profile, validates the pending official staff account, ensures the role exists in `system/roleRegistry`, creates an empty role grant if missing in `system/roleModuleAccess`, activates the profile and writes an audit record.
+6. Open **Role & Module Access**, choose the role, select its modules and save.
+7. Ask the staff member to sign in again. The login reads the role's current module grants.
+
+A newly provisioned role intentionally receives an empty module list. Super Admin must explicitly assign modules; no broad access is granted automatically.
+
+### Deletion workflow
+
+1. Use Delete beside a user in User Management.
+2. Confirm the exact user identity in the browser prompt.
+3. The page calls `deleteSchoolUser`.
+4. The backend verifies active Super Admin status, blocks deletion of any Super Admin, deletes the Firebase Authentication identity and the matching `users/{uid}` profile, and writes an `auditLogs` record.
+5. Academic and other historical records are retained. This function does not cascade-delete student, attendance, fee, examination or other school records.
+
+### Important security and rollout notes
+
+- These callable functions use the Firebase Admin SDK and bypass Firestore client rules only after validating the caller's active Super Admin profile.
+- Keep the existing default-deny Firestore rules. Do not grant browser clients permission to delete user profiles.
+- The module matrix controls workspace/module visibility. It does not replace record-level rules for teacher-class, student-self or parent-child data access.
+- Test approval, role mapping, sign-in, deletion, protected Super Admin deletion and historical-record retention using staging accounts before production use.
+- The browser changes may appear after GitHub Pages deploys the latest `main` commit. Callable functions are not live until the staging deploy command succeeds.
