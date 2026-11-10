@@ -40,3 +40,21 @@ The academic allocation model must preserve these relationships:
 - Academic Coordinator oversees subject and timetable allocations; Activity Coordinator oversees co-curricular activity allocations; Principal approves the final timetable and any exceptions.
 - A teacher can have multiple class/subject assignments and activity duties while retaining the Teacher primary role. Additional assignments (Class In-charge, Exam In-charge, Academic Counsellor, Admission Counsellor, etc.) remain separate from primary system role.
 The Academic Planner now includes a demo allocation form. Its entries remain in local browser storage and are not operational Firestore records. Firestore security rules currently deny operational collections; do not enter real data until rules and record-level tests are approved.
+
+## Assignment and workload validation (prototype stage)
+The Academic Planner now captures a proposed weekday and period slot for each demo allocation. Before adding a slot it checks:
+1. The same employee is not assigned to two different activities/subjects in the same weekday and period.
+2. The same class/section is not assigned two different subjects/activities in the same weekday and period.
+3. Weekly workload is summarised by allocated teacher and total weekly periods/sessions.
+4. An allocation can be removed from the local demo list; all changes remain browser-local.
+
+The live assignment service should use stable IDs rather than display names:
+- employeeId and userUid for the assigned teacher;
+- academicYearId, classId, sectionId and subjectId/activityId;
+- dayOfWeek and periodId (or a start/end time range);
+- weeklyPeriods or weeklySessions;
+- assignmentType, coordinatorEmployeeId, approvalStatus, effective dates and audit fields.
+
+Server-side validation must repeat all clash checks in a Firestore transaction or trusted backend. Client-side checks are usability aids only and cannot enforce school-wide uniqueness. Workload policy (maximum teaching periods, activity sessions, class duties and coordinator time) must be configured and approved by school management before any automatic overload warning becomes a formal restriction.
+
+The Employee Directory is the current central profile editor for login-linked staff identity and employment/teaching summary fields. Do not duplicate employee records in each module. Once security rules are reviewed, synchronise approved staff profile data into staffRecords/{employeeId}; reference employeeId and userUid from academic, HR, activity and timetable assignments. Salary, bank, government ID and medical records must remain in separately secured HR-only data.
