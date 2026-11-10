@@ -49,3 +49,9 @@ GitHub Pages publication and live Firebase rules deployment must be verified sep
 
 ## Production safety
 Do not modify `/erp1/` or change production Firebase rules. The repository contains a deny-by-default `firestore.rules` baseline registered in `firebase.json`; it has not been deployed. Operational collections must remain unavailable until their rules and role tests are complete.
+
+## User-first functional build (10 November 2026)
+- `USER-FIRST-ERP-IMPLEMENTATION.md`: role-based user journeys, shared UX standards, security requirements and definition of done.
+- `demo/sample-data.js`: synthetic cross-module demo records (not automatically seeded to Firestore).
+- `demo/README.md`: safe staging demo-account setup; Firebase Authentication identities must be created in the staging console before profiles can be assigned.
+- Current status remains prototype: module edits are not persistent, operational Firestore collections remain denied, and demo Auth accounts have not been provisioned. Do not use real school data yet.
