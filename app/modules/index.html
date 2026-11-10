@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#a71920"><title>School OS Module | Bal Jyoti Public School</title>
+<style>
+:root{--red:#a71920;--line:#e8eaee;--muted:#737b86;--ink:#20232b}*{box-sizing:border-box}body{margin:0;background:#f7f8fa;color:var(--ink);font:14px Arial,sans-serif}[hidden]{display:none!important}.top{background:#fff;border-bottom:1px solid var(--line);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}.top a{color:var(--red);text-decoration:none;font-weight:bold}.wrap{max-width:900px;margin:28px auto;padding:0 16px}.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:14px}.eyebrow{color:var(--red);font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:.8px}.panel h1{font-size:25px;margin:9px 0}.muted{color:var(--muted);line-height:1.6}.status{display:inline-block;border-radius:20px;padding:6px 10px;background:#fff4e4;color:#8a5b12;font-size:11px;font-weight:bold}.list{padding-left:18px;line-height:1.9}.btn{display:inline-block;background:var(--red);color:white;text-decoration:none;padding:11px 15px;border-radius:8px;font-weight:bold}.notice{background:#fff8ee;border:1px solid #f0dfc1;border-radius:9px;padding:13px;color:#74531e;line-height:1.5;font-size:12px}
+</style></head><body>
+<header class="top"><b>Bal Jyoti Public School · School OS</b><a href="../login.html">← Back to workspace</a></header>
+<main class="wrap">
+<section class="panel"><div class="eyebrow" id="group">School workspace</div><h1 id="title">Loading module…</h1><p class="muted" id="description">Checking your authorised access.</p><span class="status" id="state">Access check</span></section>
+<section class="panel" id="content" hidden><h2>Module implementation</h2><p class="muted">This module is included in the School OS architecture. Its live data workflow is not enabled yet. We are building and testing modules in stages before using actual student or staff records.</p><div class="notice">Data protection: no live student, parent, fee, health, examination or discipline records should be entered here until record-level access controls and role tests are complete.</div><h3>Build and release checklist</h3><ul class="list"><li>Confirm fields and school workflow</li><li>Connect the approved Firestore data model</li><li>Apply role and record-level permissions</li><li>Test with sample accounts and synthetic records</li><li>Obtain school approval before production use</li></ul><a class="btn" href="../login.html">Return to School OS</a></section>
+<section class="panel" id="denied" hidden><h2>Access not available</h2><p class="muted" id="reason">Please sign in again from the School OS.</p><a class="btn" href="../login.html">Go to sign in</a></section>
+</main>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script><script src="../assets/firebase-config.js"></script><script src="../assets/erp-module-catalog.js"></script>
+<script>
+"use strict";
+(async function(){
+const $=id=>document.getElementById(id),cfg=window.BJ_FIREBASE_CONFIG||{},catalog=window.BJ_ERP_MODULES||[],id=new URLSearchParams(location.search).get("module"),mod=catalog.find(x=>x.id===id);
+function deny(msg){$("state").textContent="Restricted";$("reason").textContent=msg;$("denied").hidden=false}
+if(!mod){deny("The requested module was not found.");return}
+$("title").textContent=mod.label;$("group").textContent=mod.group||"School workspace";$("description").textContent=mod.description||"Authorised School OS module";
+if(!cfg.apiKey){deny("Staging sign-in is not configured.");return}
+try{
+ if(!firebase.apps.length)firebase.initializeApp(cfg);
+ const auth=firebase.auth(),db=firebase.firestore();
+ auth.onAuthStateChanged(async user=>{
+  if(!user){deny("Please sign in to continue.");return}
+  try{
+   const profile=await db.collection("users").doc(user.uid).get();
+   if(!profile.exists||profile.data().status!=="active"){deny("Your school profile is not active.");return}
+   const role=String(profile.data().role||"").toLowerCase().replace(/[ -]+/g,"_");
+   const [rr,ar]=await Promise.all([db.doc("system/roleRegistry").get(),db.doc("system/roleModuleAccess").get()]);
+   if(!rr.exists||!ar.exists){deny("Role permissions are not configured.");return}
+   if(!Object.prototype.hasOwnProperty.call(rr.data().roles||{},role)){deny("Your role is not configured.");return}
+   const grants=(ar.data().access||{})[role]||[];
+   if(role!=="super_admin"&&!grants.includes("*")&&!grants.includes(id)){deny("Your role does not have access to this module.");return}
+   $("state").textContent="Authorised module · Workflow in development";$("content").hidden=false;
+  }catch(e){deny(e.message||"Unable to verify access.")}
+ });
+}catch(e){deny(e.message||"Unable to initialise School OS.")}
+})();
+</script></body></html>
