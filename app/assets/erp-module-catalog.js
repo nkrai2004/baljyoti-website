@@ -20,7 +20,7 @@ window.BJ_ERP_MODULES = [
   {id:"assessments",label:"Assessments",workspace:"teacher_student",group:"Examinations",description:"Assessment planning and schedules",route:"assessments"},
   {id:"marks_results",label:"Marks & Results",workspace:"teacher_student_parent",group:"Examinations",description:"Marks entry, moderation and results",route:"marks-results"},
   {id:"student_progress",label:"Student Progress",workspace:"teacher_student_parent",group:"Examinations",description:"Individual progress and learning support",route:"student-progress"},
-  {id:"admissions",label:"Admissions",workspace:"management",group:"Administration",description:"Enquiries, applications and enrolment",route:"admissions"},
+  {id:"admissions",label:"Admissions",workspace:"all",group:"Administration",description:"Admission enquiries, counselling, follow-ups and enrolment",route:"admissions"},
   {id:"student_records",label:"Student Records",workspace:"management_teacher_parent",group:"Student Services",description:"Authorised student profile and records",route:"student-records"},
   {id:"parent_links",label:"Parent & Child Links",workspace:"management",group:"Student Services",description:"Verified parent identity and child mapping",route:"parent-links"},
   {id:"fees",label:"Fee Management",workspace:"management_parent",group:"Finance",description:"Fee structure, invoices, receipts and dues",route:"fees"},
