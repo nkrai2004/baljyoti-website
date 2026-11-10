@@ -106,7 +106,7 @@ a{color:inherit}.skip-link{z-index:30}.app-header{position:sticky;top:0;z-index:
   let shown=0;for(const group of order){const arr=grouped.get(group);if(!arr||!arr.length)continue;const h=document.createElement("div");h.className="section-kicker";h.style.gridColumn="1/-1";h.style.margin="8px 0 0";h.textContent=group;host.append(h);arr.slice(0,6).forEach(m=>{if(shown>=18)return;const a=document.createElement("a");a.className="group-link";a.href=m.id==="user_management"?"user-management/index.html":m.id==="role_access"?"user-management/access.html":moduleUrl(m.id);const s=document.createElement("span");s.textContent=m.label;const ar=document.createElement("span");ar.setAttribute("aria-hidden","true");ar.textContent="›";a.append(s,ar);host.append(a);shown++})}
   if(!shown){const e=document.createElement("div");e.className="empty-state";e.textContent="Your permitted modules will appear here when access is assigned.";host.append(e)}
   const guide=$("guidance");guide.replaceChildren();d.guidance.forEach((x,i)=>guide.append(makeRow(["✓","i","↗"][i]||"•",x[0],x[1])));
-  if(role==="super_admin"&&viewRole==="super_admin")$("workIntro").textContent="System administration and school-wide configuration.";else if(role==="super_admin")$("workIntro").textContent="Read-only preview of the "+d.label+" navigation and module access.";else $("workIntro").textContent="Only modules assigned to your approved role are shown.";
+  if(role==="super_admin"&&viewRole==="super_admin")$("workIntro").textContent="System administration and school-wide configuration.";else if(role==="super_admin")$("workIntro").textContent="Preview of the "+d.label+" navigation and assigned modules. Opening a module still uses your Super Admin permissions.";else $("workIntro").textContent="Only modules assigned to your approved role are shown.";
   $("signOut").addEventListener("click",()=>firebase.auth().signOut().then(()=>location.replace("login.html")));
   const help=()=>alert("For login, access or data issues, contact the Bal Jyoti School administrator.");$("helpBtn").addEventListener("click",help);$("mobileHelp").addEventListener("click",e=>{e.preventDefault();help()});
  }
@@ -123,7 +123,7 @@ a{color:inherit}.skip-link{z-index:30}.app-header{position:sticky;top:0;z-index:
     if(role==="superadmin"||role==="super-admin")role="super_admin";
     if(p.status!=="active"||String(p.email||"").trim().toLowerCase()!==email){setError("Your school profile is not active or does not match this Google account.");return}
     let grants=["*"];
-    if(role==="super_admin"){const accessSnap=await db.doc("system/roleModuleAccess").get();window.BJ_ADMIN_VIEW_ACCESS=accessSnap.exists?(accessSnap.data().access||{}):{};}
+    if(role==="super_admin"){try{const accessSnap=await db.doc("system/roleModuleAccess").get();window.BJ_ADMIN_VIEW_ACCESS=accessSnap.exists?(accessSnap.data().access||{}):{};}catch(accessError){window.BJ_ADMIN_VIEW_ACCESS={};}}
     else{const docs=await Promise.all([db.doc("system/roleRegistry").get(),db.doc("system/roleModuleAccess").get()]);if(docs.some(x=>!x.exists)){setError("Role settings are not configured. Please contact the Super Admin.");return}const roles=docs[0].data().roles||{},access=docs[1].data().access||{};if(!Object.prototype.hasOwnProperty.call(roles,role)){setError("Your role is not configured. Please contact the Super Admin.");return}grants=Array.isArray(access[role])?access[role]:[]}
     render(user,p,role,grants);
    }catch(e){setError(e.message||"We could not verify your school access. Please try again.")}
