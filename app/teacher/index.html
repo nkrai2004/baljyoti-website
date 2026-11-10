@@ -24,6 +24,7 @@ h1{font-size:25px;margin:8px 0}.muted{color:var(--muted);line-height:1.5}.demo{d
 </style></head>
 <body>
 <header><div class="brand">BAL JYOTI PUBLIC SCHOOL<small>Teacher Workspace · School OS</small></div><button class="btn" id="signOut">Sign out</button></header>
+<section class="wrap" id="loading"><section class="welcome"><b>Checking your teacher access…</b><p class="muted">Please wait while School OS verifies your account.</p></section></section>
 <main class="wrap" id="workspace" hidden>
 <section class="welcome"><div class="eyebrow">My teaching day</div><h1 id="greeting">Welcome, Teacher</h1><p class="muted">Your daily workspace for teaching, class records and student support.</p><span class="demo">SAMPLE DATA · NOT LIVE SCHOOL RECORDS</span></section>
 <section class="stats">
@@ -54,7 +55,7 @@ h1{font-size:25px;margin:8px 0}.muted{color:var(--muted);line-height:1.5}.demo{d
 (async function(){
 const $=id=>document.getElementById(id),cfg=window.BJ_FIREBASE_CONFIG||{},catalog=window.BJ_ERP_MODULES||[];
 const tiles=[["👩‍🎓","My Classes","Open class register and student list","class_register"],["📅","Timetable","View your assigned periods","timetable"],["📝","Attendance","Mark attendance for assigned classes","attendance"],["📚","Lesson planner","Prepare and submit lesson plans","lesson_plans"],["📖","Syllabus tracker","Update topic-wise coverage","syllabus_tracker"],["✏️","Homework","Create homework and review submissions","homework"],["📊","Marks & results","Enter and review authorised marks","marks_results"],["🎯","Student progress","Record learning observations","student_progress"],["📎","Learning materials","Share class learning resources","learning_materials"]];
-function deny(message){$("workspace").hidden=true;$("denied").hidden=false;$("reason").textContent=message}
+function deny(message){$("loading").hidden=true;$("workspace").hidden=true;$("denied").hidden=false;$("reason").textContent=message}
 if(!cfg.apiKey){deny("Staging sign-in is not configured.");return}
 try{if(!firebase.apps.length)firebase.initializeApp(cfg);const auth=firebase.auth(),db=firebase.firestore();
 $("signOut").onclick=()=>auth.signOut().then(()=>location.href="../login.html");
@@ -66,12 +67,12 @@ const p=profile.data()||{},email=String(user.email||"").trim().toLowerCase(),rol
 if(p.status!=="active"||String(p.email||"").trim().toLowerCase()!==email){deny("Your school profile is inactive or does not match your Google account.");return}
 if(role!=="teacher"){deny("This workspace is reserved for the Teacher role. Your current role is "+(p.role||"not assigned")+".");return}
 if(!rr.exists||!ar.exists||!Object.prototype.hasOwnProperty.call((rr.data().roles||{}),role)){deny("Your Teacher role is not configured by the Super Admin.");return}
-const grants=(ar.data().access||{})[role]||[],allowed=new Set(grants.includes("*")?catalog.map(m=>m.id):grants);
+const grants=(ar.data().access||{})[role]||[],allowed=new Set(grants.includes("*")?catalog.map(m=>m.id):grants);allowed.add("class_register");
 $("greeting").textContent="Welcome, "+(p.fullName||user.displayName||"Teacher");
 $("tiles").innerHTML=tiles.filter(t=>allowed.has(t[3])).map(t=>'<a class="tile" href="../modules/index.html?module='+encodeURIComponent(t[3])+'"><span class="ico">'+t[0]+'</span><b>'+t[1]+'</b><small>'+t[2]+'</small></a>').join("");
 document.querySelectorAll(".tile").forEach(a=>{if(a.textContent.includes("My Classes"))a.href="class-register.html"});
 if(!$("tiles").children.length){deny("No teacher modules have been assigned yet. Please contact the Super Admin.");return}
-$("workspace").hidden=false;
+$("loading").hidden=true;$("workspace").hidden=false;
 }catch(e){deny(e.message||"Unable to verify teacher access.")}
 });
 }catch(e){deny(e.message||"Unable to initialise Teacher Workspace.")}
