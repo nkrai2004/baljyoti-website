@@ -54,3 +54,27 @@ A user-first school operating system. Each person should know: where am I, what 
 
 ## Current implementation note
 The shared stylesheet establishes a baseline and improves the existing screens. It does not prove WCAG conformance or make prototype modules operational. Formal conformance requires manual and automated accessibility testing plus task-based usability testing with representative school users.
+
+## Applied screen coverage (10 November 2026)
+The shared stylesheet `assets/design-system.css` is linked from:
+- `login.html`
+- `dashboard.html` (all role dashboards, including Super Admin)
+- `teacher/index.html`
+- `teacher/class-register.html`
+- `modules/index.html` (shared module workflow)
+- `user-management/index.html`
+- `user-management/access.html`
+- `user-management/install-role-mapping.html`
+- `preview.html`
+
+## Bal Jyoti brand application
+- Primary school red: `#A71920` (existing School OS brand token).
+- White: `#FFFFFF` for primary surfaces and controls.
+- Ink: `#20232B`; neutral background: `#F5F6F8`.
+- Keep the existing official school logo asset; do not redraw or replace it.
+- Use red selectively for primary actions, active states and school identity; retain white/neutral surfaces for readability.
+
+## Verification record
+- Repository source check confirms all nine listed pages link to the shared stylesheet on `main`.
+- Responsive rules, focus states, touch-control sizing and reduced-motion support are present in the shared CSS.
+- Not yet verified: rendered screenshots at each viewport, browser/device behaviour, keyboard/screen-reader journeys, automated WCAG scan, contrast measurement for every state, and end-to-end role workflows. These require running the deployed site and real browser/device testing; do not represent the current code review as a pass.
