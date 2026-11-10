@@ -52,7 +52,7 @@ async function checkUser(user){
  $("personName").textContent=p.fullName||user.displayName||email;$("email").textContent=email;$("personRole").textContent=labels[role];
  $("welcomeTitle").textContent="Welcome, "+(p.fullName||user.displayName||"User");
  const list=$("moduleList");list.replaceChildren();
- allowed.forEach(m=>{const card=document.createElement("a");card.className="module";card.href=m.id==="dashboard"?"dashboard.html":"modules/index.html?module="+encodeURIComponent(m.id);card.style.textDecoration="none";const b=document.createElement("b");b.textContent=m.label||m.id;const d=document.createElement("small");d.textContent=m.description||"Authorised module";card.append(b,d);list.append(card)});
+ allowed.forEach(m=>{const card=document.createElement("a");card.className="module";card.href=m.id==="dashboard"?(role==="teacher"?"teacher/index.html":"dashboard.html"):"modules/index.html?module="+encodeURIComponent(m.id);card.style.textDecoration="none";const b=document.createElement("b");b.textContent=m.label||m.id;const d=document.createElement("small");d.textContent=m.description||"Authorised module";card.append(b,d);list.append(card)});
  if(role==="super_admin"||grants.includes("*")||grants.includes("user_management")){const a=document.createElement("a");a.className="module admin";a.href="user-management/index.html";a.innerHTML="<b>User Management</b><small>Manage school profiles and roles</small>";list.prepend(a)}
  if(role==="parent")$("parentNote").hidden=false;
  if(role==="student")$("studentNote").hidden=false;
