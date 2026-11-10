@@ -24,7 +24,7 @@
 "use strict";
 const CFG=window.BJ_FIREBASE_CONFIG||null;
 const ADMIN_UID=window.BJ_SUPER_ADMIN_UID||"REPLACE_WITH_STAGING_SUPER_ADMIN_UID";
-const ROLES={super_admin:"Super Admin",director:"Director",principal:"Principal",administrator:"Administrator",academic_coordinator:"Academic Coordinator",admission_coordinator:"Admission Coordinator",activity_coordinator:"Activity Coordinator",sports_discipline_coordinator:"Sports & Discipline Coordinator",teacher:"Teacher",accountant:"Accountant",hr_manager:"HR Manager",staff:"Staff",parent:"Parent",student:"Student"};
+const ROLES={super_admin:"Super Admin",director:"Director",principal:"Principal",administrator:"Administrator",academic_coordinator:"Academic Coordinator",admission_coordinator:"Admission Coordinator",activity_coordinator:"Activity Coordinator",sports_discipline_coordinator:"Sports & Discipline Coordinator",admission_team_coordinator:"Admission Team Coordinator",admission_counsellor:"Admission Counsellor",teacher:"Teacher",accountant:"Accountant",hr_manager:"HR Manager",staff:"Staff",parent:"Parent",student:"Student"};
 const $=id=>document.getElementById(id),norm=v=>String(v??"").trim(),key=v=>norm(v).toLowerCase().replace(/[ -]+/g,"_");let auth,db,functions,users=[];
 function msg(t,ok=false){const el=$("noticeMain");el.textContent=t;el.className="notice"+(ok?" ok":"");el.hidden=false}
 function roles(){ $("role").replaceChildren(...Object.entries(ROLES).map(([k,v])=>new Option(v,k)));$("roleFilter").replaceChildren(new Option("All roles",""),...Object.entries(ROLES).map(([k,v])=>new Option(v,k)))}
