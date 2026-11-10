@@ -1,40 +1,64 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#a71920"><title>School OS Module | Bal Jyoti Public School</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#a71920"><title>School OS Workspace | Bal Jyoti Public School</title>
 <style>
-:root{--red:#a71920;--line:#e8eaee;--muted:#737b86;--ink:#20232b}*{box-sizing:border-box}body{margin:0;background:#f7f8fa;color:var(--ink);font:14px Arial,sans-serif}[hidden]{display:none!important}.top{background:#fff;border-bottom:1px solid var(--line);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}.top a{color:var(--red);text-decoration:none;font-weight:bold}.wrap{max-width:900px;margin:28px auto;padding:0 16px}.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:14px}.eyebrow{color:var(--red);font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:.8px}.panel h1{font-size:25px;margin:9px 0}.muted{color:var(--muted);line-height:1.6}.status{display:inline-block;border-radius:20px;padding:6px 10px;background:#fff4e4;color:#8a5b12;font-size:11px;font-weight:bold}.list{padding-left:18px;line-height:1.9}.btn{display:inline-block;background:var(--red);color:white;text-decoration:none;padding:11px 15px;border-radius:8px;font-weight:bold}.notice{background:#fff8ee;border:1px solid #f0dfc1;border-radius:9px;padding:13px;color:#74531e;line-height:1.5;font-size:12px}
+:root{--red:#a71920;--ink:#20232b;--muted:#68717d;--line:#e6e8ec;--bg:#f5f6f8}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px Arial,sans-serif}[hidden]{display:none!important}.top{background:#fff;border-bottom:1px solid var(--line);padding:13px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px}.top a{color:var(--red);text-decoration:none;font-weight:700}.wrap{max-width:1100px;margin:22px auto;padding:0 15px}.hero,.panel{background:#fff;border:1px solid var(--line);border-radius:13px;padding:19px;margin-bottom:14px}.eyebrow{color:var(--red);font-size:11px;text-transform:uppercase;letter-spacing:.8px;font-weight:700}.hero h1{font-size:25px;margin:8px 0}.muted{color:var(--muted);line-height:1.5}.tag{display:inline-block;padding:6px 9px;border-radius:18px;background:#fff1d9;color:#76500b;font-size:11px;font-weight:700}.notice{padding:12px;border-radius:9px;background:#fff8e9;border:1px solid #f1dfbd;color:#72521b;font-size:12px;line-height:1.5;margin-top:12px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.btn{border:0;border-radius:8px;background:var(--red);color:#fff;padding:10px 13px;font-weight:700;cursor:pointer}.btn.secondary{background:#f0f1f3;color:#333}.btn.danger{background:#8b2025}.layout{display:grid;grid-template-columns:1fr 320px;gap:14px}.panel h2{font-size:17px;margin:0 0 12px}.toolbar{display:flex;gap:8px;margin-bottom:12px}.toolbar input{flex:1}.field input,.toolbar input{width:100%;padding:10px;border:1px solid #d9dce1;border-radius:8px;font:inherit}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:500px}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--muted);font-size:11px;text-transform:uppercase}.rowactions{display:flex;gap:5px}.rowactions button{border:0;border-radius:6px;padding:6px 8px;cursor:pointer}.formgrid{display:grid;gap:10px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px}.field input{font-size:13px}.empty{padding:25px;text-align:center;color:var(--muted)}.small{font-size:11px;color:var(--muted)}@media(max-width:800px){.layout{grid-template-columns:1fr}.hero h1{font-size:22px}}@media(max-width:480px){.top{align-items:flex-start}.top b{font-size:12px}.toolbar{flex-direction:column}}
 </style></head><body>
 <header class="top"><b>Bal Jyoti Public School · School OS</b><a href="../login.html">← Back to workspace</a></header>
-<main class="wrap">
-<section class="panel"><div class="eyebrow" id="group">School workspace</div><h1 id="title">Loading module…</h1><p class="muted" id="description">Checking your authorised access.</p><span class="status" id="state">Access check</span></section>
-<section class="panel" id="content" hidden><h2>Module implementation</h2><p class="muted">This module is included in the School OS architecture. Its live data workflow is not enabled yet. We are building and testing modules in stages before using actual student or staff records.</p><div class="notice">Data protection: no live student, parent, fee, health, examination or discipline records should be entered here until record-level access controls and role tests are complete.</div><h3>Build and release checklist</h3><ul class="list"><li>Confirm fields and school workflow</li><li>Connect the approved Firestore data model</li><li>Apply role and record-level permissions</li><li>Test with sample accounts and synthetic records</li><li>Obtain school approval before production use</li></ul><a class="btn" href="../login.html">Return to School OS</a></section>
-<section class="panel" id="denied" hidden><h2>Access not available</h2><p class="muted" id="reason">Please sign in again from the School OS.</p><a class="btn" href="../login.html">Go to sign in</a></section>
+<main class="wrap" id="workspace" hidden>
+<section class="hero"><div class="eyebrow" id="group">School workspace</div><h1 id="title">Loading…</h1><p class="muted" id="description"></p><span class="tag" id="roleTag"></span><div class="notice"><b>Sample workspace:</b> records shown here are fictional and changes remain in this browser session only. No real school records are read or changed. Database connection will be enabled after Firestore record-level rules and role tests are approved.</div></section>
+<div class="layout"><section class="panel"><h2 id="recordsTitle">Sample records</h2><div class="toolbar"><input id="search" placeholder="Search sample records…"><button class="btn secondary" id="reset">Reset demo</button></div><div class="tablewrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div><div class="empty" id="empty" hidden>No sample records found.</div></section>
+<aside class="panel"><h2 id="formTitle">Add sample record</h2><form id="recordForm"><div class="formgrid" id="fields"></div><div class="actions"><button class="btn" id="save" type="submit">Add sample record</button><button class="btn secondary" id="cancel" type="button">Clear</button></div></form><p class="small" id="formNote">Demo-only. Not saved to the school database.</p></aside></div>
 </main>
+<section class="wrap hero" id="denied" hidden><h2>Access not available</h2><p class="muted" id="reason">Please sign in using your authorised school account.</p><a class="btn" href="../login.html">Go to sign in</a></section>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script><script src="../assets/firebase-config.js"></script><script src="../assets/erp-module-catalog.js"></script>
 <script>
 "use strict";
 (async function(){
 const $=id=>document.getElementById(id),cfg=window.BJ_FIREBASE_CONFIG||{},catalog=window.BJ_ERP_MODULES||[],id=new URLSearchParams(location.search).get("module"),mod=catalog.find(x=>x.id===id);
-function deny(msg){$("state").textContent="Restricted";$("reason").textContent=msg;$("denied").hidden=false}
-if(!mod){deny("The requested module was not found.");return}
-$("title").textContent=mod.label;$("group").textContent=mod.group||"School workspace";$("description").textContent=mod.description||"Authorised School OS module";
-if(!cfg.apiKey){deny("Staging sign-in is not configured.");return}
-try{
- if(!firebase.apps.length)firebase.initializeApp(cfg);
- const auth=firebase.auth(),db=firebase.firestore();
- auth.onAuthStateChanged(async user=>{
-  if(!user){deny("Please sign in to continue.");return}
-  try{
-   const profile=await db.collection("users").doc(user.uid).get();
-   if(!profile.exists||profile.data().status!=="active"){deny("Your school profile is not active.");return}
-   const role=String(profile.data().role||"").toLowerCase().replace(/[ -]+/g,"_");
-   const [rr,ar]=await Promise.all([db.doc("system/roleRegistry").get(),db.doc("system/roleModuleAccess").get()]);
-   if(!rr.exists||!ar.exists){deny("Role permissions are not configured.");return}
-   if(!Object.prototype.hasOwnProperty.call(rr.data().roles||{},role)){deny("Your role is not configured.");return}
-   const grants=(ar.data().access||{})[role]||[];
-   if(role!=="super_admin"&&!grants.includes("*")&&!grants.includes(id)){deny("Your role does not have access to this module.");return}
-   $("state").textContent="Authorised module · Workflow in development";$("content").hidden=false;
-  }catch(e){deny(e.message||"Unable to verify access.")}
- });
-}catch(e){deny(e.message||"Unable to initialise School OS.")}
+const definitions={
+ academic_master:{fields:["Academic year","Class","Section","Subject"],rows:[["2026-27","Class V","A","English"],["2026-27","Class VI","A","Mathematics"]]},
+ timetable:{fields:["Day","Period","Class / Section","Subject","Teacher"],rows:[["Monday","1","V-A","English","Ms. A. Sharma"],["Monday","2","VI-A","Mathematics","Mr. R. Kumar"]]},
+ teacher_assignments:{fields:["Teacher","Class / Section","Subject","Academic year"],rows:[["Ms. A. Sharma","V-A","English","2026-27"]]},
+ attendance:{fields:["Date","Class / Section","Present","Absent"],rows:[["10 Nov 2026","V-A","38","2"]]},
+ staff_attendance:{fields:["Date","Staff member","Status","Remarks"],rows:[["10 Nov 2026","Demo Teacher","Present","On time"]]},
+ lesson_plans:{fields:["Date","Class","Subject","Topic","Status"],rows:[["10 Nov 2026","V-A","English","Reading skills","Submitted"]]},
+ syllabus_tracker:{fields:["Class","Subject","Unit","Progress"],rows:[["V-A","English","Reading","68%"]]},
+ homework:{fields:["Class","Subject","Homework","Due date"],rows:[["V-A","English","Reading worksheet","12 Nov 2026"]]},
+ learning_materials:{fields:["Title","Class","Subject","Type"],rows:[["Reading practice","V-A","English","PDF link"]]},
+ assessments:{fields:["Assessment","Class","Subject","Date"],rows:[["Unit Test 2","V-A","English","18 Nov 2026"]]},
+ marks_results:{fields:["Student ID","Assessment","Subject","Marks"],rows:[["DEMO-001","Unit Test 2","English","41/50"]]},
+ student_progress:{fields:["Student ID","Area","Observation","Status"],rows:[["DEMO-001","Reading","Improving fluency","On track"]]},
+ admissions:{fields:["Enquiry ID","Applicant","Class applied","Status"],rows:[["ENQ-DEMO-01","Sample Applicant","Class I","Follow-up"]]},
+ student_records:{fields:["Admission no.","Student","Class","Status"],rows:[["DEMO-001","Sample Student","V-A","Active"]]},
+ parent_links:{fields:["Parent ID","Parent name","Student ID","Verification"],rows:[["PAR-DEMO-01","Sample Parent","DEMO-001","Pending"]]},
+ fees:{fields:["Receipt / Invoice","Student ID","Fee head","Amount"],rows:[["INV-DEMO-01","DEMO-001","Tuition","2500"]]},
+ accounting:{fields:["Date","Entry type","Description","Amount"],rows:[["10 Nov 2026","Expense","Stationery demo","1200"]]},
+ hr_staff:{fields:["Staff ID","Name","Department","Status"],rows:[["STF-DEMO-01","Sample Teacher","Teaching","Active"]]},
+ leave:{fields:["Applicant","Leave type","From","To","Status"],rows:[["Sample Teacher","Casual","12 Nov 2026","12 Nov 2026","Pending"]]},
+ communication:{fields:["Date","Audience","Message","Status"],rows:[["10 Nov 2026","Class V parents","Sample school update","Draft"]]},
+ whatsapp_share:{fields:["Audience","Message purpose","Prepared by","Status"],rows:[["Class V parents","Homework reminder","Class Teacher","Draft"]]},
+ activities_events:{fields:["Event","Date","Coordinator","Status"],rows:[["Reading Week","20 Nov 2026","Activity Team","Planned"]]},
+ discipline:{fields:["Case ID","Student ID","Category","Status"],rows:[["CASE-DEMO-01","DEMO-001","Counselling follow-up","Restricted demo"]]},
+ transport:{fields:["Route","Vehicle","Driver","Status"],rows:[["Route Demo A","BUS-DEMO-01","Sample Driver","Active"]]},
+ library:{fields:["Accession no.","Book","Availability","Issued to"],rows:[["LIB-DEMO-01","Sample Reader","Available","—"]]},
+ inventory:{fields:["Asset ID","Item","Quantity","Location"],rows:[["AST-DEMO-01","Whiteboard marker","50","Store"]]},
+ tasks:{fields:["Task","Owner","Due date","Status"],rows:[["Review lesson plans","Coordinator","13 Nov 2026","Open"]]},
+ reports:{fields:["Report","Period","Owner","Status"],rows:[["Attendance summary","Nov 2026","Coordinator","Demo"]]},
+ audit_logs:{fields:["Date","Action","Actor","Module"],rows:[["10 Nov 2026","Demo access","System","Dashboard"]]},
+ settings:{fields:["Setting","Value","Updated by"],rows:[["Academic year","2026-27","Super Admin"]]},
+ user_management:{fields:["User ID","Name","Role","Status"],rows:[["USR-DEMO-01","Sample Staff","Teacher","Pending"]]},
+ role_access:{fields:["Role","Module","Permission"],rows:[["Teacher","Attendance","Assigned classes"]]}
+};
+const readOnly=["student","parent"].includes(""),roleLabels={super_admin:"Super Admin",director:"Director",principal:"Principal",administrator:"Administrator",academic_coordinator:"Academic Coordinator",admission_coordinator:"Admission Coordinator",activity_coordinator:"Activity Coordinator",sports_discipline_coordinator:"Sports & Discipline Coordinator",teacher:"Teacher",accountant:"Accountant",hr_manager:"HR Manager",staff:"Staff",student:"Student",parent:"Parent"};
+let rows=[],schema,editing=-1,canEdit=false;
+const safe=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function deny(msg){$("workspace").hidden=true;$("denied").hidden=false;$("reason").textContent=msg}
+function render(){const query=$("search").value.toLowerCase();const visible=rows.map((r,i)=>({r,i})).filter(x=>x.r.some(v=>String(v).toLowerCase().includes(query)));$("tbody").innerHTML=visible.map(({r,i})=>"<tr>"+r.map(v=>"<td>"+safe(v)+"</td>").join("")+"<td>"+(canEdit?'<div class="rowactions"><button data-edit="'+i+'">Edit</button><button data-delete="'+i+'">Delete</button></div>':'<span class="small">View only</span>')+"</td></tr>").join("");$("empty").hidden=visible.length>0;$("thead").innerHTML="<tr>"+schema.fields.map(x=>"<th>"+safe(x)+"</th>").join("")+"<th>Action</th></tr>";}
+function clearForm(){editing=-1;$("recordForm").reset();$("formTitle").textContent="Add sample record";$("save").textContent="Add sample record"}
+function edit(i){editing=i;$("formTitle").textContent="Edit sample record";$("save").textContent="Update sample record";schema.fields.forEach((_,n)=>$("field"+n).value=rows[i][n]||"")}
+function build(){ $("fields").innerHTML=schema.fields.map((f,i)=>'<div class="field"><label for="field'+i+'">'+safe(f)+'</label><input id="field'+i+'" name="field'+i+'" required maxlength="160" autocomplete="off"></div>').join("");$("recordsTitle").textContent=mod.label+" · Sample records";rows=schema.rows.map(r=>r.slice());render()}
+if(!mod){deny("The requested module was not found.");return}if(!cfg.apiKey){deny("Staging Firebase is not configured.");return}
+try{if(!firebase.apps.length)firebase.initializeApp(cfg);const auth=firebase.auth(),db=firebase.firestore();auth.onAuthStateChanged(async user=>{if(!user){deny("Please sign in to continue.");return}try{const [profile,rr,ar]=await Promise.all([db.collection("users").doc(user.uid).get(),db.doc("system/roleRegistry").get(),db.doc("system/roleModuleAccess").get()]);if(!profile.exists||profile.data().status!=="active"){deny("Your school profile is not active.");return}const p=profile.data(),email=String(user.email||"").toLowerCase(),role=String(p.role||"").toLowerCase().replace(/[ -]+/g,"_");if(String(p.email||"").toLowerCase()!==email){deny("Your account does not match the school profile.");return}if(!rr.exists||!ar.exists||!Object.prototype.hasOwnProperty.call(rr.data().roles||{},role)){deny("Your role is not configured.");return}const grants=(ar.data().access||{})[role]||[];if(role!=="super_admin"&&!grants.includes("*")&&!grants.includes(id)){deny("Your role does not have access to this module.");return}canEdit=!["student","parent"].includes(role)&&!["reports","audit_logs"].includes(id);$("group").textContent=mod.group||"School workspace";$("title").textContent=mod.label;$("description").textContent=mod.description;$("roleTag").textContent=roleLabels[role]||role;if(!canEdit){$("formTitle").textContent="View-only workspace";$("recordForm").hidden=true;$("formNote").textContent="This role can view authorised sample information only."}schema=definitions[id]||{fields:["Record name","Description","Owner","Status"],rows:[["Sample record","Illustrative information","Demo user","Open"]]};build();$("workspace").hidden=false}catch(e){deny(e.message||"Unable to verify role access.")}})}catch(e){deny(e.message||"Unable to initialise School OS.")}
+$("search").addEventListener("input",render);$("reset").onclick=()=>{rows=schema.rows.map(r=>r.slice());clearForm();render()};$("cancel").onclick=clearForm;$("recordForm").onsubmit=e=>{e.preventDefault();if(!canEdit)return;const record=schema.fields.map((_,i)=>$("field"+i).value.trim());if(record.some(x=>!x))return;if(editing<0)rows.push(record);else rows[editing]=record;clearForm();render()};$("tbody").onclick=e=>{const editBtn=e.target.closest("[data-edit]"),delBtn=e.target.closest("[data-delete]");if(editBtn)edit(Number(editBtn.dataset.edit));if(delBtn&&canEdit){const i=Number(delBtn.dataset.delete);if(confirm("Delete this sample row from the current demo session?")){rows.splice(i,1);render()}}};
 })();
 </script></body></html>
