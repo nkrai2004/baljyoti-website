@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function activeUser() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && userDoc().status == 'active'
+        && userDoc().email == request.auth.token.email;
+    }
+    function superAdmin() {
+      return activeUser() && userDoc().role == 'super_admin';
+    }
+
+    // User profiles: users may read their own profile; only Super Admin
+    // may list or administer other profiles. Self-registration is pending only.
+    match /users/{uid} {
+      allow get: if signedIn() && (request.auth.uid == uid || superAdmin());
+      allow list: if superAdmin();
+      allow create: if signedIn()
+        && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && request.resource.data.email == request.auth.token.email
+        && request.auth.token.email.matches('.*@baljyoti[.]com')
+        && request.resource.data.role == 'staff'
+        && request.resource.data.accountType == 'staff'
+        && request.resource.data.status == 'pending';
+      allow update, delete: if superAdmin();
+    }
+
+    // Role and module configuration is readable only by active users.
+    // Only Super Admin can change it.
+    match /system/{document} {
+      allow get, list: if activeUser();
+      allow create, update, delete: if superAdmin();
+    }
+
+    // All operational collections remain closed until each collection has
+    // approved schema-specific and record-level rules plus role tests.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
