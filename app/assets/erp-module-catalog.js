@@ -1,0 +1,39 @@
+/* Bal Jyoti School OS module catalogue.
+ * Navigation metadata only. Firestore Security Rules remain the authority.
+ */
+"use strict";
+window.BJ_ERP_MODULES = [
+  {id:"dashboard",label:"Dashboard",workspace:"shared",group:"Overview",description:"Role-specific school overview",route:"dashboard"},
+  {id:"user_management",label:"User Management",workspace:"management",group:"Administration",description:"Staff, student and parent profiles",route:"user-management"},
+  {id:"role_access",label:"Role & Module Access",workspace:"management",group:"Administration",description:"Role permissions and module grants",route:"role-access"},
+  {id:"academic_master",label:"Academic Setup",workspace:"coordinator",group:"Academics",description:"Academic years, classes, sections and subjects",route:"academic-master"},
+  {id:"timetable",label:"Timetable",workspace:"teacher_student",group:"Academics",description:"Class and teacher timetables",route:"timetable"},
+  {id:"teacher_assignments",label:"Teacher Assignments",workspace:"coordinator",group:"Academics",description:"Class, section and subject allocation",route:"teacher-assignments"},
+  {id:"attendance",label:"Student Attendance",workspace:"teacher_student_parent",group:"Academics",description:"Daily attendance and authorised views",route:"attendance"},
+  {id:"staff_attendance",label:"Staff Attendance",workspace:"management",group:"People",description:"Staff attendance and leave records",route:"staff-attendance"},
+  {id:"lesson_plans",label:"Lesson Planner",workspace:"teacher_coordinator",group:"Teaching & Learning",description:"Lesson planning and review",route:"lesson-plans"},
+  {id:"syllabus_tracker",label:"Syllabus Tracker",workspace:"teacher_coordinator",group:"Teaching & Learning",description:"Coverage and completion monitoring",route:"syllabus-tracker"},
+  {id:"homework",label:"Homework",workspace:"teacher_student_parent",group:"Teaching & Learning",description:"Homework publishing and submissions",route:"homework"},
+  {id:"learning_materials",label:"Learning Materials",workspace:"teacher_student",group:"Teaching & Learning",description:"Class resources and study material",route:"learning-materials"},
+  {id:"assessments",label:"Assessments",workspace:"teacher_student",group:"Examinations",description:"Assessment planning and schedules",route:"assessments"},
+  {id:"marks_results",label:"Marks & Results",workspace:"teacher_student_parent",group:"Examinations",description:"Marks entry, moderation and results",route:"marks-results"},
+  {id:"student_progress",label:"Student Progress",workspace:"teacher_student_parent",group:"Examinations",description:"Individual progress and learning support",route:"student-progress"},
+  {id:"admissions",label:"Admissions",workspace:"management",group:"Administration",description:"Enquiries, applications and enrolment",route:"admissions"},
+  {id:"student_records",label:"Student Records",workspace:"management_teacher_parent",group:"Student Services",description:"Authorised student profile and records",route:"student-records"},
+  {id:"parent_links",label:"Parent & Child Links",workspace:"management",group:"Student Services",description:"Verified parent identity and child mapping",route:"parent-links"},
+  {id:"fees",label:"Fee Management",workspace:"management_parent",group:"Finance",description:"Fee structure, invoices, receipts and dues",route:"fees"},
+  {id:"accounting",label:"Accounts & Expenses",workspace:"management",group:"Finance",description:"School receipts, expenses and summaries",route:"accounting"},
+  {id:"hr_staff",label:"HR & Staff",workspace:"management",group:"People",description:"Staff directory, documents and service records",route:"hr-staff"},
+  {id:"leave",label:"Leave Management",workspace:"teacher_management",group:"People",description:"Leave requests, approvals and balances",route:"leave"},
+  {id:"communication",label:"Communication Centre",workspace:"all",group:"Communication",description:"Notices and approved school communication",route:"communication"},
+  {id:"whatsapp_share",label:"WhatsApp Sharing",workspace:"teacher_management",group:"Communication",description:"Prepare and manually share approved messages",route:"whatsapp-share"},
+  {id:"activities_events",label:"Activities & Events",workspace:"all",group:"School Life",description:"Activities, events and participation",route:"activities-events"},
+  {id:"discipline",label:"Discipline",workspace:"management_coordinator",group:"School Life",description:"Restricted incident records and follow-up",route:"discipline"},
+  {id:"transport",label:"Transport",workspace:"management_parent",group:"Operations",description:"Routes, vehicles and authorised student mapping",route:"transport"},
+  {id:"library",label:"Library",workspace:"teacher_student_management",group:"Operations",description:"Catalogue, issue and return records",route:"library"},
+  {id:"inventory",label:"Inventory & Assets",workspace:"management",group:"Operations",description:"School stock, assets and issue records",route:"inventory"},
+  {id:"tasks",label:"Tasks & Follow-ups",workspace:"all",group:"Operations",description:"Assigned actions, owners and due dates",route:"tasks"},
+  {id:"reports",label:"Reports & Analytics",workspace:"management_coordinator",group:"Insights",description:"Authorised academic and operational reports",route:"reports"},
+  {id:"audit_logs",label:"Audit Logs",workspace:"management",group:"Governance",description:"Administrative actions and access history",route:"audit-logs"},
+  {id:"settings",label:"School Settings",workspace:"management",group:"Governance",description:"School configuration and academic calendar",route:"settings"}
+];
