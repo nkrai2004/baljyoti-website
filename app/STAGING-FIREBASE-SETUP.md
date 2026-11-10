@@ -96,3 +96,29 @@ Keep user-profile reads restricted to the user's own document and Super Admin ac
 5. Save. The staff member can then sign in again.
 
 Students and parents are not self-registered by this workflow. Continue to create their profiles only after school verification.
+
+
+## F. Staff approval email (Firebase Cloud Function)
+
+When a staff profile changes from `pending` to `active`, the backend sends an approval email from **Bal Jyoti Public School <info@baljyoti.com>** to the approved staff member. The email includes the assigned role and the School OS login instructions. It is not sent for student/parent profiles or for ordinary edits to an already active profile.
+
+### Deployment requirements
+- Deploy this function only to the staging Firebase project first.
+- Firebase Cloud Functions deployment requires the Firebase project to be on the Blaze (pay-as-you-go) plan. Review current Firebase pricing and set a budget alert before deployment.
+- Configure an SMTP service/mailbox that is authorised to send as `info@baljyoti.com`. The SMTP provider must permit that sender address. Do not put SMTP credentials in GitHub or browser JavaScript.
+- In the Firebase project, set these four secrets using Firebase CLI prompts (never paste secret values into chat or source files):
+  - `SMTP_HOST`
+  - `SMTP_PORT` (usually 587 for STARTTLS or 465 for implicit TLS)
+  - `SMTP_USER`
+  - `SMTP_PASS`
+- From the repository root, deploy with Firebase CLI: `firebase deploy --only functions:sendStaffApprovalEmail --project baljyoti-school-os-staging`.
+- Verify the function is deployed in region `asia-south1`.
+
+### Email behaviour and verification
+- Trigger: a staff user's profile changes from `pending` to `active`.
+- Recipient: the approved profile's verified `@baljyoti.com` address.
+- Sender: `Bal Jyoti Public School <info@baljyoti.com>`.
+- The email states the assigned role and directs the user to `https://baljyoti.com/app/login.html`, using Google sign-in.
+- Delivery status is recorded in `users/{uid}.approvalEmailStatus` and `mailNotifications/{uid}_approval`.
+- Test with a staging staff account first. Confirm the email arrives, sender identity is accepted, and the approved user can sign in. Do not activate real staff accounts until the test passes.
+- SMTP delivery is at-least-once in failure/retry edge cases; check the notification log if a test appears delayed or duplicated.
