@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Timetable | Bal Jyoti Public School</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<style>
+:root{--red:#b5121b}body{font-family:Inter,system-ui,sans-serif}.brand{background:var(--red)}.tab.active{background:#fff1f2;color:var(--red);border-color:#fecaca}.period{border-left:4px solid var(--red)}.muted{color:#64748b}
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+<header class="brand text-white"><div class="max-w-7xl mx-auto px-4 py-5 flex flex-wrap items-center justify-between gap-3"><div><p class="text-xs text-red-100">BAL JYOTI PUBLIC SCHOOL · SCHOOL OPERATIONS</p><h1 class="text-2xl font-bold">Class Timetable</h1><p class="text-sm text-red-100">Academic Session 2026–27</p></div><a href="../index.html" class="rounded-lg border border-white/50 px-4 py-2 text-sm">← ERP Home</a></div></header>
+<main class="max-w-7xl mx-auto px-4 py-6">
+<div id="authMsg" class="hidden mb-4 rounded-xl border bg-white p-4 text-sm"></div>
+<section class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+<div class="bg-white rounded-xl border p-4"><p class="text-xs muted">SESSION</p><p class="font-bold text-lg">2026–27</p></div>
+<div class="bg-white rounded-xl border p-4"><p class="text-xs muted">CLASSES IN SOURCE</p><p class="font-bold text-lg">I to XII</p></div>
+<div class="bg-white rounded-xl border p-4"><p class="text-xs muted">SOURCE</p><p class="font-bold text-lg">Amendment timetable.xlsx</p></div>
+</section>
+<section class="bg-white rounded-2xl border p-4 sm:p-5 mb-5">
+<div class="flex flex-wrap gap-3 items-end justify-between"><div><h2 class="font-bold text-lg">View class timetable</h2><p class="text-sm muted">Choose a class and weekday. Saturday follows the source timetable where specified.</p></div><div class="flex flex-wrap gap-2"><label class="text-sm">Class<select id="classSelect" class="block mt-1 border rounded-lg px-3 py-2 min-w-36"></select></label><label class="text-sm">Day<select id="daySelect" class="block mt-1 border rounded-lg px-3 py-2 min-w-36"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option></select></label></div></div>
+<div id="classTeacher" class="mt-4 rounded-xl bg-red-50 text-red-900 px-4 py-3 text-sm"></div><div id="schedule" class="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3"></div>
+</section>
+<section class="bg-white rounded-2xl border p-4 sm:p-5">
+<div class="flex flex-wrap justify-between gap-3 items-center"><div><h2 class="font-bold text-lg">Teacher workload reference</h2><p class="text-sm muted">Summary transcribed from the uploaded workbook. Dashes mean no workload value was supplied.</p></div><input id="teacherSearch" placeholder="Search teacher or subject…" class="border rounded-lg px-3 py-2 text-sm w-full sm:w-64"></div>
+<div class="overflow-x-auto mt-4"><table class="w-full text-sm text-left"><thead class="bg-slate-50 text-slate-600"><tr><th class="p-3">Teacher</th><th class="p-3">Daily</th><th class="p-3">Weekly</th><th class="p-3">Subjects / responsibility</th></tr></thead><tbody id="workloadRows"></tbody></table></div>
+<p class="text-xs muted mt-3">This is a reference view only. No edits are saved from this page.</p>
+</section>
+<footer class="py-6 text-xs muted">Internal staff reference · Verify any timetable change with the school office before implementation.</footer>
+</main>
+<script>
+const firebaseConfig={apiKey:"AIzaSyB2SGgV_zUFOyOGIIM27H5HNQYlO5WdFEY",authDomain:"baljyoti-erp.firebaseapp.com",projectId:"baljyoti-erp",appId:"1:422855577454:web:9bccb80cc472d02275bb7f"};
+const classes=["I","II","III","IV","V","VI","VII","VIII","IX","XA","XB","XI SCI","XI COM","XI HUM","XII COM","XII HUM","XII SCI"];
+const teachers=["SHAZIA ALI","SONAM YADAV","SONIA JAIN","RINKI SHARMA","NEELAM","KAPILA","VIPRA","SHIVANGI","RAJNI TIWARI","POONAM TIWARI","ARTI SHARMA","SONALI YADAV","PREETI SINGH","DEVENDRA MISHRA","SAPNA MISHRA","ANKUR SINGH"];
+const periods=[
+["1st Period","8:25–9:00",["ENGLISH · SHAZIA ALI","ENGLISH · SONAM YADAV","HINDI · SONIA JAIN","MATHS · RINKI SHARMA","EVS · NEELAM","HINDI · KAPILA","SST · VIPRA MALIK","SCIENCE · SAPNA","SCIENCE · RAJNI TIWARI","COMPUTER · SHRESTH GUPTA","MATHS · POONAM","MATHS / BIOLOGY · ANKUR / SONALI","ENGLISH · PREETI SINGH","PHYSICAL EDUCATION · RAHUL SINGH"]],
+["2nd Period","9:00–9:35",["HINDI · SHAZIA ALI","HINDI · SONIA JAIN","MATHS · VIPRA MALIK","EVS · NEELAM","ENGLISH · SONAM YADAV","ENGLISH · PREETI SINGH","HINDI · KAPILA","MATHS · RAJNI TIWARI","COMPUTER · SHRESTH GUPTA","MATHS · POONAM TIWARI","HINDI · ARTI SHARMA","ENGLISH · AYUSH SINGH","ECONOMICS · RINKI","ECONOMICS · RINKI"]],
+["3rd Period","9:35–10:10",["EVS · SHAZIA ALI","MATHS · VIPRA MALIK","ENGLISH · SONAM YADAV","HINDI · SONIA JAIN","MATHS · RINKI SHARMA","MATHS · RAJNI TIWARI","ENGLISH · SHIVANGI SHARMA","HINDI · KAPILA","MATHS · ANKUR SINGH","SST · ARTI SHARMA","ENGLISH · PREETI SINGH","CHEMISTRY · SAPNA MISHRA","BST · ADITI","HISTORY · DEVENDRA SIR"]],
+["4th Period","10:30–11:05",["MATHS · RINKI SHARMA","EVS · NEELAM","GK/ART · RENU (Mon–Wed); COMPUTER · POONAM (Thu–Sat)","ENGLISH · SONAM YADAV","HINDI · KAPILA","SCIENCE · SAPNA","MATHS · RAJNI TIWARI","SST · VIPRA MALIK","ENGLISH · PREETI SINGH","SCIENCE · SONALI YADAV","SST · DEVENDRA MISHRA","COMPUTER · SHRESTH","MATHS · ANKUR","HINDI · ARTI SHARMA"]],
+["5th Period","11:05–11:40",["GAMES","GAMES · SONALI YADAV","EVS · NEELAM","GK/ART or COMPUTER · RENU / POONAM","COMPUTER / SANSKRIT / GK-ART · POONAM / SUSHMA / RENU","SST · VIPRA MALIK","SCIENCE · SAPNA","ENGLISH · SHIVANGI SHARMA","HINDI · SONIA JAIN","HINDI · ARTI SHARMA","COMPUTER · SHRESTH GUPTA","PHYSICAL EDUCATION · ANKIT KUMAR","PHYSICAL EDUCATION · RAHUL SINGH","POLITICAL SCIENCE · DEVENDRA SIR"]],
+["6th Period","11:40–12:15",["GK/ART or COMPUTER · SHAZIA ALI","GK/ART or COMPUTER · SONAM YADAV","GAMES · KAPILA","READING / TRANSLATION / GAMES · RAJNI / RAHUL","GAMES / READING / TRANSLATION · RAHUL / RAJNI","SANSKRIT / GK-ART / COMPUTER · SONIA / RENU / POONAM","COMPUTER / SANSKRIT / GK-ART · POONAM / SONIA / RENU","GK-ART / COMPUTER / SANSKRIT · RENU / POONAM / SONIA","SST · DEVENDRA MISHRA","ENGLISH · PREETI SINGH","SCIENCE · SONALI YADAV","PHYSICS · VIPIN SIR","ACCOUNT · ADITI","ENGLISH · AYUSH SINGH"]]
+];
+const workload=[
+["ARTI MISHRA","6","30","Mother Teacher"],["MEENAKSHI JAIN","6","30","Mother Teacher"],["PARVITA SAINI","6","30","Mother Teacher"],["SHAZIA ALI","4","24","English, Hindi, EVS, Art, GK"],["SONAM YADAV","5","30","English"],["SONIA JAIN","4","24","Hindi"],["RINKI SHARMA","5","30","Maths; Economics (XI–XII)"],["SUSHMA SHARMA","—","—","—"],["KAPILA","5","30","Hindi; Games"],["PREETI SINGH","5","24","English"],["SHIVANGI","2","12","English"],["RAJNI TIWARI","5","30","Science and Maths"],["POONAM TIWARI","4","24","Maths (XA/XB); Computer (III–VIII)"],["SONALI YADAV","5","30","Biology (XI/XII); Games II; Science XA/XB"],["VIPRA MALIK","—","—","SST"],["DEVENDRA MISHRA","—","—","Humanities subjects"],["SAPNA MISHRA","—","—","Science subjects"],["ANKUR SINGH","—","—","Senior classes"] ];
+const classTeachers=["SHAZIA ALI","SONAM YADAV","SONIA JAIN","RINKI SHARMA","NEELAM","KAPILA","VIPRA","SHIVANGI","RAJNI TIWARI","POONAM TIWARI","ARTI SHARMA","SONALI YADAV","PREETI SINGH","DEVENDRA MISHRA"];
+const $=id=>document.getElementById(id);
+classes.forEach((c,i)=>{const o=document.createElement("option");o.value=i;o.textContent=c;$("classSelect").append(o)});
+function render(){const i=+$("classSelect").value;const day=$("daySelect").value;$("classTeacher").textContent="Class teacher: "+(classTeachers[i]||"Not listed in source")+(i===9?" · Co-teacher: Aditi Rajput":"");$("schedule").innerHTML="";
+periods.forEach((p,n)=>{let value=p[2][i]||"Not listed in source";if(day==="Saturday"&&[3,4,5].includes(n))value+=" · Check day-wise rotation in original timetable";const card=document.createElement("article");card.className="period rounded-xl border bg-white p-4 shadow-sm";card.innerHTML='<div class="flex justify-between gap-2"><b>'+p[0]+'</b><span class="text-xs muted">'+p[1]+'</span></div><p class="mt-3 text-sm">'+value+'</p>';$("schedule").append(card)});
+const lunch=document.createElement("article");lunch.className="rounded-xl border border-amber-200 bg-amber-50 p-4";lunch.innerHTML='<b>Lunch Break</b><p class="text-sm mt-2">10:10–10:30</p>'; $("schedule").insertBefore(lunch,$("schedule").children[3]||null)}
+function renderWorkload(){const q=$("teacherSearch").value.toLowerCase();$("workloadRows").innerHTML="";workload.filter(r=>r.join(" ").toLowerCase().includes(q)).forEach(r=>{const tr=document.createElement("tr");tr.className="border-t";r.forEach(v=>{const td=document.createElement("td");td.className="p-3 align-top";td.textContent=v;tr.append(td)});$("workloadRows").append(tr)})}
+$("classSelect").addEventListener("change",render);$("daySelect").addEventListener("change",render);$("teacherSearch").addEventListener("input",renderWorkload);render();renderWorkload();
+try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);firebase.auth().onAuthStateChanged(user=>{if(!user){$("authMsg").classList.remove("hidden");$("authMsg").textContent="Please sign in through the ERP portal first, then open this module.";return}if(!user.email||!user.email.toLowerCase().endsWith("@baljyoti.com")){firebase.auth().signOut();$("authMsg").classList.remove("hidden");$("authMsg").textContent="Access is restricted to authorised @baljyoti.com accounts.";return}$("authMsg").classList.add("hidden")})}catch(e){$("authMsg").classList.remove("hidden");$("authMsg").textContent="Sign-in verification could not be completed. Open this module through the ERP portal."}
+</script>
+</body></html>
