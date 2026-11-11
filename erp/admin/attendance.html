@@ -1,114 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#b5121b">
-  <title>My Attendance | Bal Jyoti ERP</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <style>
-    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
-    .calendar-cell{min-height:76px}
-    .status-dot{width:8px;height:8px;border-radius:9999px;display:inline-block}
-    button:focus-visible,a:focus-visible{outline:3px solid rgba(181,18,27,.3);outline-offset:2px}
-    @media(max-width:640px){.calendar-cell{min-height:58px}.calendar-cell .day-status{font-size:9px}}
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#b5121b">
+<title>Teacher Attendance | Bal Jyoti ERP</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<style>body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid rgba(181,18,27,.3);outline-offset:2px}</style>
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-800">
-  <header class="bg-[#b5121b] px-4 py-4 text-white shadow">
-    <div class="mx-auto flex max-w-6xl items-center justify-between gap-3">
-      <div><div class="font-extrabold">Bal Jyoti Public School</div><div class="text-xs text-red-100">Teacher ERP · My Attendance</div></div>
-      <a href="../index.html" class="rounded-lg border border-white/50 px-3 py-2 text-sm font-semibold hover:bg-white/10">Dashboard</a>
-    </div>
-  </header>
-  <main class="mx-auto max-w-6xl px-4 py-7 sm:py-8">
-    <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
-      <div><p class="text-sm font-semibold text-[#b5121b]">ADMIN / ATTENDANCE</p><h1 class="mt-1 text-2xl font-extrabold text-slate-900">My Attendance</h1><p class="mt-1 text-sm text-slate-500">Monthly attendance calendar and daily time records.</p></div>
-      <div class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-500">Attendance source: <span class="font-semibold text-slate-700">SalaryBox integration pending</span></div>
-    </div>
-    <div id="accessNotice" class="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">Checking your school account…</div>
-
-    <section class="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-      <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p class="text-xs font-medium text-slate-500">Present</p><p id="presentCount" class="mt-2 text-2xl font-extrabold text-emerald-700">—</p></article>
-      <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p class="text-xs font-medium text-slate-500">Absent</p><p id="absentCount" class="mt-2 text-2xl font-extrabold text-rose-700">—</p></article>
-      <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p class="text-xs font-medium text-slate-500">Half Day</p><p id="halfCount" class="mt-2 text-2xl font-extrabold text-amber-700">—</p></article>
-      <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p class="text-xs font-medium text-slate-500">Attendance</p><p id="attendancePercent" class="mt-2 text-2xl font-extrabold text-slate-800">—</p></article>
-    </section>
-
-    <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-4 py-4 sm:px-5">
-        <div><h2 class="font-bold text-slate-900">Monthly Calendar</h2><p class="mt-1 text-xs text-slate-500">Select a month to view your attendance summary.</p></div>
-        <div class="flex items-center gap-2">
-          <button id="prevMonth" type="button" aria-label="Previous month" class="rounded-lg border border-slate-200 px-3 py-2 text-slate-700 hover:bg-slate-50">‹</button>
-          <div id="monthLabel" class="min-w-32 text-center text-sm font-bold text-slate-800"></div>
-          <button id="nextMonth" type="button" aria-label="Next month" class="rounded-lg border border-slate-200 px-3 py-2 text-slate-700 hover:bg-slate-50">›</button>
-        </div>
-      </div>
-      <div class="p-3 sm:p-5">
-        <div class="mb-3 flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-600">
-          <span class="inline-flex items-center gap-2"><i class="status-dot bg-emerald-500"></i>Present</span>
-          <span class="inline-flex items-center gap-2"><i class="status-dot bg-rose-500"></i>Absent</span>
-          <span class="inline-flex items-center gap-2"><i class="status-dot bg-amber-500"></i>Half Day - Morning</span>
-          <span class="inline-flex items-center gap-2"><i class="status-dot bg-orange-500"></i>Half Day - Evening</span>
-        </div>
-        <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-500">
-          <div class="py-2">Sun</div><div class="py-2">Mon</div><div class="py-2">Tue</div><div class="py-2">Wed</div><div class="py-2">Thu</div><div class="py-2">Fri</div><div class="py-2">Sat</div>
-        </div>
-        <div id="calendarGrid" class="grid grid-cols-7 gap-1"></div>
-        <p class="mt-3 text-xs text-slate-400">Calendar dates are shown for layout preview. Attendance statuses will appear after the SalaryBox connection is configured.</p>
-      </div>
-    </section>
-
-    <section class="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div class="border-b border-slate-100 px-4 py-4 sm:px-5"><h2 class="font-bold text-slate-900">Daily Attendance Details</h2><p class="mt-1 text-xs text-slate-500">Check-in, check-out and attendance status for the selected month.</p></div>
-      <div class="overflow-x-auto">
-        <table class="w-full min-w-[650px] text-left text-sm">
-          <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th class="px-4 py-3">Date</th><th class="px-4 py-3">In Time</th><th class="px-4 py-3">Out Time</th><th class="px-4 py-3">Status</th></tr></thead>
-          <tbody id="attendanceRows"><tr><td colspan="4" class="px-4 py-8 text-center text-sm text-slate-500">Attendance data will appear here after SalaryBox is connected.</td></tr></tbody>
-        </table>
-      </div>
-    </section>
-    <div class="mt-5 rounded-xl border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-600">
-      <p class="font-semibold text-slate-800">SalaryBox connection pending</p>
-      <p class="mt-1">This is the new attendance interface. No attendance figures or timings are being assumed. Once API access is confirmed, the calendar, monthly counts, IN/OUT times and statuses will populate from SalaryBox.</p>
-    </div>
-    <p class="mt-6 text-center text-xs text-slate-400">© 2026 Bal Jyoti Public School</p>
-  </main>
-  <script>
-    const calendarGrid=document.getElementById("calendarGrid");
-    const monthLabel=document.getElementById("monthLabel");
-    let shownMonth=new Date(); shownMonth.setDate(1);
-    function renderCalendar(){
-      const year=shownMonth.getFullYear(),month=shownMonth.getMonth();
-      monthLabel.textContent=shownMonth.toLocaleDateString("en-IN",{month:"long",year:"numeric"});
-      calendarGrid.innerHTML="";
-      const firstDay=new Date(year,month,1).getDay();
-      const days=new Date(year,month+1,0).getDate();
-      for(let i=0;i<firstDay;i++){const blank=document.createElement("div");blank.className="calendar-cell rounded-lg bg-slate-50/60";calendarGrid.appendChild(blank);}
-      for(let day=1;day<=days;day++){
-        const cell=document.createElement("div");
-        cell.className="calendar-cell rounded-lg border border-slate-100 bg-white p-1.5 text-left sm:p-2";
-        const number=document.createElement("div");number.className="text-xs font-semibold text-slate-700";number.textContent=day;
-        const status=document.createElement("div");status.className="day-status mt-2 text-[10px] text-slate-300";status.textContent="—";
-        cell.append(number,status);calendarGrid.appendChild(cell);
-      }
-    }
-    document.getElementById("prevMonth").addEventListener("click",()=>{shownMonth.setMonth(shownMonth.getMonth()-1);renderCalendar();});
-    document.getElementById("nextMonth").addEventListener("click",()=>{shownMonth.setMonth(shownMonth.getMonth()+1);renderCalendar();});
-    renderCalendar();
-    const config={apiKey:"AIzaSyB2SGgV_zUFOyOGIIM27H5HNQYlO5WdFEY",authDomain:"baljyoti-erp.firebaseapp.com",projectId:"baljyoti-erp",appId:"1:422855577454:web:9bccb80cc472d02275bb7f"};
-    const notice=document.getElementById("accessNotice");
-    try{
-      if(!firebase.apps.length) firebase.initializeApp(config);
-      firebase.auth().onAuthStateChanged(user=>{
-        if(!user){notice.textContent="Please sign in through the ERP dashboard using your official @baljyoti.com account.";return;}
-        if(!user.email || !user.email.toLowerCase().endsWith("@baljyoti.com")){notice.textContent="Access is restricted to authorised Bal Jyoti school accounts.";return;}
-        notice.className="mb-5 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-800";
-        notice.textContent="Signed in as "+user.email+".";
-      });
-    }catch(e){notice.textContent="Unable to verify your account. Please return to the ERP dashboard and sign in again.";}
-  </script>
-</body>
-</html>
+<header class="bg-[#b5121b] px-4 py-4 text-white shadow"><div class="mx-auto flex max-w-7xl items-center justify-between gap-3"><div><div class="font-extrabold">Bal Jyoti Public School</div><div class="text-xs text-red-100">ERP · Teacher Attendance</div></div><a href="../index.html" class="rounded-lg border border-white/50 px-3 py-2 text-sm font-semibold">Dashboard</a></div></header>
+<main class="mx-auto max-w-7xl px-4 py-7">
+<div class="mb-5"><p class="text-sm font-semibold text-[#b5121b]">ADMIN / ATTENDANCE</p><h1 class="mt-1 text-2xl font-extrabold text-slate-900">Daily Teacher Attendance</h1><p class="mt-1 text-sm text-slate-500">For Admin and Academic Coordinator · SalaryBox file import supported</p></div>
+<div id="notice" class="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">Checking your authorised ERP access…</div>
+<section id="app" class="hidden">
+<div class="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+<div class="rounded-2xl border bg-white p-4"><p class="text-xs text-slate-500">Present</p><p id="presentCount" class="mt-1 text-2xl font-extrabold text-emerald-700">0</p></div>
+<div class="rounded-2xl border bg-white p-4"><p class="text-xs text-slate-500">Absent</p><p id="absentCount" class="mt-1 text-2xl font-extrabold text-rose-700">0</p></div>
+<div class="rounded-2xl border bg-white p-4"><p class="text-xs text-slate-500">On Leave</p><p id="leaveCount" class="mt-1 text-2xl font-extrabold text-amber-700">0</p></div>
+<div class="rounded-2xl border bg-white p-4"><p class="text-xs text-slate-500">Pending</p><p id="pendingCount" class="mt-1 text-2xl font-extrabold text-slate-800">0</p></div>
+</section>
+<section class="mb-5 grid gap-4 lg:grid-cols-3">
+<div class="rounded-2xl border bg-white p-4 lg:col-span-2"><div class="flex flex-wrap items-end justify-between gap-3"><div><h2 class="font-bold">Daily Register</h2><p class="mt-1 text-xs text-slate-500">Select a date and record each teacher once.</p></div><label class="text-sm font-semibold">Attendance date<input id="attendanceDate" type="date" class="mt-1 block rounded-lg border border-slate-300 px-3 py-2"></label></div>
+<div class="mt-4 flex flex-wrap gap-2"><input id="search" placeholder="Search teacher or email" class="min-w-48 flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm"><select id="statusFilter" class="rounded-lg border border-slate-300 px-3 py-2 text-sm"><option value="">All statuses</option><option>Present</option><option>Absent</option><option>Late</option><option>Half Day</option><option>On Leave</option><option>Pending Verification</option></select><button id="saveAll" class="rounded-lg bg-[#b5121b] px-4 py-2 text-sm font-bold text-white">Save attendance</button></div>
+<div class="mt-4 overflow-x-auto"><table class="w-full min-w-[760px] text-left text-sm"><thead class="bg-slate-50 text-xs uppercase text-slate-500"><tr><th class="p-3">Teacher</th><th class="p-3">ERP status</th><th class="p-3">In</th><th class="p-3">Out</th><th class="p-3">Source</th><th class="p-3">Note</th></tr></thead><tbody id="teacherRows"><tr><td colspan="6" class="p-6 text-center text-slate-500">Loading teacher list…</td></tr></tbody></table></div>
+</div>
+<div class="rounded-2xl border bg-white p-4"><h2 class="font-bold">SalaryBox Import</h2><p class="mt-1 text-xs leading-5 text-slate-500">Download a sample template, paste the SalaryBox report into the same columns, then upload CSV. Import is previewed before saving.</p><button id="templateBtn" class="mt-3 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold">Download CSV template</button><label class="mt-3 block text-sm font-semibold">Upload SalaryBox CSV<input id="csvFile" type="file" accept=".csv,text/csv" class="mt-2 block w-full text-xs file:mr-2 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2"></label><div id="importPreview" class="mt-3 text-xs text-slate-500">Expected columns: employee_id,email,name,check_in,check_out,status</div><button id="applyImport" disabled class="mt-3 w-full rounded-lg bg-slate-300 px-3 py-2 text-sm font-bold text-white">Import reviewed rows</button><p class="mt-3 text-xs text-slate-400">API connection can be added later if your SalaryBox plan supports it.</p></div>
+</section>
+<div class="mt-5 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900"><strong>Data handling:</strong> SalaryBox punch data is kept separate from the ERP attendance decision. Conflicts are marked for verification; imported values do not silently overwrite an existing manual decision.</div>
+</section>
+<p class="mt-8 text-center text-xs text-slate-400">© 2026 Bal Jyoti Public School</p>
+</main>
+<script>
+const firebaseConfig={apiKey:"AIzaSyB2SGgV_zUFOyOGIIM27H5HNQYlO5WdFEY",authDomain:"baljyoti-erp.firebaseapp.com",projectId:"baljyoti-erp",appId:"1:422855577454:web:9bccb80cc472d02275bb7f"};
+const notice=document.getElementById("notice"),app=document.getElementById("app");
+let db=null,currentUser=null,teachers=[],records={},importRows=[];
+const $=id=>document.getElementById(id);
+const today=new Date();$("attendanceDate").value=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function key(email){return email.toLowerCase().replace(/[^a-z0-9]/g,"_");}
+function parseTime(v){return String(v||"").trim();}
+async function loadTeachers(){
+ const [main,bg]=await Promise.all([fetch("./timetable-data-2026-27.json").then(r=>{if(!r.ok)throw Error("Main timetable unavailable");return r.json()}),fetch("./bal-gopal-timetable-2026-27.json").then(r=>{if(!r.ok)throw Error("Bal Gopal timetable unavailable");return r.json()})]);
+ const map=new Map();
+ main.forEach(r=>{const name=String(r[3]||"").trim(),emails=String(r[4]||"").split(";").map(x=>x.trim().toLowerCase());name.split(";").forEach((n,i)=>{const e=emails[i]||emails[0]||"";if(n&&n!=="—"&&e&&e.includes("@"))map.set(e,{name:n.trim(),email:e,employeeId:""});});});
+ bg.forEach(x=>{if(x.classTeacherEmail)map.set(x.classTeacherEmail.toLowerCase(),{name:x.classTeacher,email:x.classTeacherEmail.toLowerCase(),employeeId:""});});
+ teachers=[...map.values()].sort((a,b)=>a.name.localeCompare(b.name));
+}
+function currentRows(){const q=$("search").value.toLowerCase(),f=$("statusFilter").value;return teachers.filter(t=>(t.name+" "+t.email).toLowerCase().includes(q)&&(!f||(records[key(t.email)]?.status||"Pending Verification")===f));}
+function render(){
+ const body=$("teacherRows");const rows=currentRows();
+ body.innerHTML=rows.map(t=>{const r=records[key(t.email)]||{};return '<tr class="border-t border-slate-100" data-email="'+esc(t.email)+'"><td class="p-3"><div class="font-semibold">'+esc(t.name)+'</div><div class="text-xs text-slate-500">'+esc(t.email)+'</div></td><td class="p-3"><select data-field="status" class="w-40 rounded-lg border border-slate-300 px-2 py-2 text-xs">'+["Pending Verification","Present","Absent","Late","Half Day","On Leave"].map(s=>'<option '+((r.status||"Pending Verification")===s?"selected":"")+'>'+s+'</option>').join("")+'</select></td><td class="p-3"><input data-field="checkIn" type="time" value="'+esc(r.checkIn||"")+'" class="rounded border px-2 py-2 text-xs"></td><td class="p-3"><input data-field="checkOut" type="time" value="'+esc(r.checkOut||"")+'" class="rounded border px-2 py-2 text-xs"></td><td class="p-3 text-xs text-slate-600">'+esc(r.source||"ERP")+'</td><td class="p-3"><input data-field="note" value="'+esc(r.note||"")+'" placeholder="Optional note" class="w-36 rounded border px-2 py-2 text-xs"></td></tr>';}).join("")||'<tr><td colspan="6" class="p-6 text-center text-slate-500">No teachers match this search.</td></tr>';
+ updateCounts();
+}
+function updateCounts(){const vals=teachers.map(t=>records[key(t.email)]?.status||"Pending Verification");$("presentCount").textContent=vals.filter(x=>x==="Present"||x==="Late").length;$("absentCount").textContent=vals.filter(x=>x==="Absent").length;$("leaveCount").textContent=vals.filter(x=>x==="On Leave").length;$("pendingCount").textContent=vals.filter(x=>x==="Pending Verification").length;}
+async function loadDate(){records={};const snap=await db.collection("attendanceRecords").where("date","==",$("attendanceDate").value).get();snap.forEach(d=>{const x=d.data();records[key(x.email)]=x;});render();}
+function collectVisible(){document.querySelectorAll("#teacherRows tr[data-email]").forEach(tr=>{const email=tr.dataset.email,entry={...(records[key(email)]||{})};tr.querySelectorAll("[data-field]").forEach(el=>entry[el.dataset.field]=el.value.trim());entry.email=email;entry.name=teachers.find(t=>t.email===email)?.name||"";entry.date=$("attendanceDate").value;entry.source=entry.source||"ERP";entry.updatedAt=firebase.firestore.FieldValue.serverTimestamp();entry.updatedBy=currentUser.email;records[key(email)]=entry;});}
+async function saveAttendance(){collectVisible();$("saveAll").disabled=true;$("saveAll").textContent="Saving…";try{const batch=db.batch();Object.values(records).filter(r=>r.date===$("attendanceDate").value).forEach(r=>batch.set(db.collection("attendanceRecords").doc(r.date+"_"+key(r.email)),r,{merge:true}));await batch.commit();notice.className="mb-5 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-800";notice.textContent="Attendance saved for "+$("attendanceDate").value+". Changes are recorded under your authorised account.";render();}catch(e){notice.className="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800";notice.textContent="Could not save attendance. Check your assigned ERP role and Firestore permissions. "+e.message;}finally{$("saveAll").disabled=false;$("saveAll").textContent="Save attendance";}}
+function downloadTemplate(){const csv="employee_id,email,name,check_in,check_out,status\n,,,,,Present\n";const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="salarybox-attendance-template.csv";a.click();URL.revokeObjectURL(a.href);}
+function csvParse(text){const lines=text.replace(/^\uFEFF/,"").split(/\r?\n/).filter(x=>x.trim());return lines.map(line=>{const out=[];let cur="",quoted=false;for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'&&line[i+1]==='"'&&quoted){cur+='"';i++;}else if(c==='"')quoted=!quoted;else if(c===","&&!quoted){out.push(cur.trim());cur="";}else cur+=c;}out.push(cur.trim());return out;});}
+$("csvFile").addEventListener("change",async e=>{const file=e.target.files[0];if(!file)return;const matrix=csvParse(await file.text()),headers=matrix.shift().map(x=>x.toLowerCase());importRows=matrix.map(row=>Object.fromEntries(headers.map((h,i)=>[h,row[i]||""]))).filter(x=>x.email||x.employee_id);const known=new Set(teachers.map(t=>t.email));const matched=importRows.filter(x=>known.has((x.email||"").toLowerCase()));$("importPreview").innerHTML="Rows found: <strong>"+importRows.length+"</strong><br>Matched to timetable teachers: <strong>"+matched.length+"</strong><br>Unmatched: <strong>"+(importRows.length-matched.length)+"</strong><br><span class='text-amber-700'>Review the file and ensure columns use the template before importing.</span>";$("applyImport").disabled=matched.length===0;$("applyImport").className="mt-3 w-full rounded-lg bg-[#b5121b] px-3 py-2 text-sm font-bold text-white disabled:bg-slate-300";});
+async function applyImport(){collectVisible();let matched=0,conflicts=0;const batch=db.batch(),date=$("attendanceDate").value;importRows.forEach(x=>{const email=(x.email||"").toLowerCase(),teacher=teachers.find(t=>t.email===email);if(!teacher)return;const id=date+"_"+key(email),existing=records[key(email)]||{};const imported={date,email,name:teacher.name,employeeId:x.employee_id||"",salaryBoxCheckIn:parseTime(x.check_in),salaryBoxCheckOut:parseTime(x.check_out),salaryBoxStatus:x.status||"",salaryBoxImportedAt:firebase.firestore.FieldValue.serverTimestamp(),salaryBoxImportedBy:currentUser.email,source:"SalaryBox CSV"};if(existing.status&&existing.status!=="Pending Verification"&&String(existing.status).toLowerCase()!==String(x.status||"").toLowerCase())conflicts++;const merged={...imported,erpStatus:existing.status||"Pending Verification",status:existing.status||"Pending Verification",checkIn:existing.checkIn||imported.salaryBoxCheckIn,checkOut:existing.checkOut||imported.salaryBoxCheckOut,source:existing.status&&existing.status!=="Pending Verification"?"ERP + SalaryBox":"SalaryBox CSV",note:conflicts?"SalaryBox data imported; verify any discrepancy.":existing.note||"",updatedBy:currentUser.email};batch.set(db.collection("attendanceRecords").doc(id),merged,{merge:true});matched++;});try{await batch.commit();await db.collection("attendanceImports").add({date,fileName:$("csvFile").files[0]?.name||"SalaryBox CSV",rows:importRows.length,matched,conflicts,unmatched:importRows.length-matched,uploadedBy:currentUser.email,uploadedAt:firebase.firestore.FieldValue.serverTimestamp()});await loadDate();$("importPreview").textContent="Import saved. Matched "+matched+" teachers; "+conflicts+" possible discrepancies require review."; }catch(e){$("importPreview").textContent="Import failed: "+e.message;}}
+$("templateBtn").addEventListener("click",downloadTemplate);$("saveAll").addEventListener("click",saveAttendance);$("applyImport").addEventListener("click",applyImport);$("search").addEventListener("input",render);$("statusFilter").addEventListener("change",render);$("attendanceDate").addEventListener("change",()=>loadDate().catch(e=>notice.textContent="Could not load date: "+e.message));
+try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);firebase.auth().onAuthStateChanged(async user=>{if(!user){notice.textContent="Please sign in through the ERP dashboard.";return;}currentUser=user;db=firebase.firestore();try{const profile=await db.collection("users").doc(user.uid).get();const role=profile.exists?profile.data().role:"";if(!profile.exists||profile.data().status!=="active"||profile.data().email!==user.email||!["super_admin","admin","academic_coordinator"].includes(role)){notice.textContent="Access denied. This page is restricted to active Admin and Academic Coordinator accounts. Ask the Super Admin to assign your ERP role.";return;}await loadTeachers();await loadDate();app.classList.remove("hidden");notice.className="mb-5 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-800";notice.textContent="Authorised: "+user.email+" · "+role.replace("_"," ");}catch(e){notice.textContent="Could not verify your ERP role. Attendance remains locked. "+e.message;}});}catch(e){notice.textContent="Unable to initialise secure attendance access: "+e.message;}
+</script></body></html>
