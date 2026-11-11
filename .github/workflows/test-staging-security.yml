@@ -31,4 +31,4 @@ jobs:
         working-directory: functions
         run: npm install --include=dev
       - name: Run pure validation and Firestore rules tests
-        run: npx --yes firebase-tools emulators:exec --only firestore --project demo-baljyoti-school-os "npm test --prefix functions"
+        run: npx --yes firebase-tools emulators:exec --only auth,firestore,functions --project demo-baljyoti-school-os "npm test --prefix functions && npm run test:callables --prefix functions"
