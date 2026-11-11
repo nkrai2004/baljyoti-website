@@ -13,7 +13,7 @@ service cloud.firestore {
     function hrAttendanceUser() { return activeUser() && request.auth.token.email == 'hr@baljyoti.com'; }
     match /users/{uid} {
       allow get: if signedIn() && (request.auth.uid == uid || superAdmin());
-      allow list: if superAdmin();
+      allow list: if superAdmin() || hrAttendanceUser();
       allow create: if signedIn() && request.auth.uid == uid
         && request.resource.data.uid == uid
         && request.resource.data.email == request.auth.token.email
