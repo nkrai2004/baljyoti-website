@@ -272,3 +272,61 @@ exports.deleteSchoolUser = onCall({ region: "asia-south1" }, async request => {
   });
   return { success: true, historicalRecordsRetained: true };
 });
+
+
+// Per-user module exceptions. These affect navigation/module access only;
+// record-level Firestore rules remain the authority for school data.
+exports.setUserModuleOverrides = onCall({ region: "asia-south1" }, async request => {
+  const admin = await requireSuperAdmin(request);
+  const targetUid = String(request.data && request.data.userId || "").trim();
+  const allow = request.data && request.data.allow;
+  const deny = request.data && request.data.deny;
+  if (!targetUid || targetUid === admin.uid || !Array.isArray(allow) || !Array.isArray(deny)) {
+    throw new HttpsError("invalid-argument", "Select a non-Super Admin user and provide allow/deny module lists.");
+  }
+  if (allow.length > 100 || deny.length > 100 ||
+      [...allow, ...deny].some(x => typeof x !== "string" || x.length > 100)) {
+    throw new HttpsError("invalid-argument", "The module permission list is invalid.");
+  }
+  const allowSet = [...new Set(allow)];
+  const denySet = [...new Set(deny)];
+  if (allowSet.some(x => denySet.includes(x))) {
+    throw new HttpsError("invalid-argument", "A module cannot be both allowed and denied.");
+  }
+  const db = getFirestore();
+  const userRef = db.collection("users").doc(targetUid);
+  const moduleRef = db.doc("system/moduleRegistry");
+  const overrideRef = db.collection("userModuleOverrides").doc(targetUid);
+  const auditRef = db.collection("auditLogs").doc();
+  await db.runTransaction(async tx => {
+    const [userSnap, moduleSnap] = await Promise.all([tx.get(userRef), tx.get(moduleRef)]);
+    if (!userSnap.exists) throw new HttpsError("not-found", "The selected user was not found.");
+    const user = userSnap.data();
+    if (user.role === "super_admin" || user.status === "deleted") {
+      throw new HttpsError("failed-precondition", "Super Admin or deleted accounts cannot receive custom module overrides.");
+    }
+    if (!moduleSnap.exists) throw new HttpsError("failed-precondition", "The module registry is not configured.");
+    const modules = moduleSnap.data().modules || [];
+    const validIds = new Set(modules.filter(m => m && m.id && m.active !== false).map(m => m.id));
+    if ([...allowSet, ...denySet].some(id => !validIds.has(id))) {
+      throw new HttpsError("invalid-argument", "One or more selected modules are not active in the module registry.");
+    }
+    tx.set(overrideRef, {
+      userId: targetUid,
+      allow: allowSet,
+      deny: denySet,
+      updatedBy: admin.uid,
+      updatedAt: FieldValue.serverTimestamp()
+    });
+    tx.set(auditRef, {
+      action: "user_module_overrides_updated",
+      targetUserId: targetUid,
+      targetEmail: user.email || "",
+      allowedModules: allowSet,
+      deniedModules: denySet,
+      performedBy: admin.uid,
+      performedAt: FieldValue.serverTimestamp()
+    });
+  });
+  return { success: true, allow: allowSet, deny: denySet };
+});
