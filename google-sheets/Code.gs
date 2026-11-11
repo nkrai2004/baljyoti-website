@@ -62,6 +62,7 @@ function route_(body) {
   if (action === "saveStudent") return saveStudent_(body.student || {});
   if (action === "archiveStudent") return archiveStudent_(String(body.recordId || ""));
   if (action === "seedSampleStudents") return seedSampleStudents_();
+  if (action === "appendAudit") return appendAudit_(body.entry || {});
   throw new Error("Unsupported action.");
 }
 
@@ -154,6 +155,15 @@ function seedSampleStudents_() {
     });
     return { created: created, totalSampleCount: samples.length };
   } finally { lock.releaseLock(); }
+}
+
+function appendAudit_(entry) {
+  const sh = sheet_("AuditLog");
+  const row = [Utilities.getUuid(),clean_(entry.actorUid,128),clean_(entry.actorRole,60),
+    clean_(entry.action,100),clean_(entry.entity,80),clean_(entry.entityId,128),
+    new Date().toISOString(),clean_(JSON.stringify(entry.details || {}),1500)];
+  sh.appendRow(row);
+  return { recorded: true };
 }
 
 function sheet_(name) {
