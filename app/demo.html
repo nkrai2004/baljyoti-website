@@ -42,7 +42,7 @@ messages:{label:'Communication log',icon:'💬',fields:[['date','Date'],['from',
 facilities:{label:'Facilities & maintenance',icon:'🏫',fields:[['ticket','Ticket'],['location','Location'],['issue','Issue'],['reportedBy','Reported by'],['priority','Priority'],['status','Status']],rows:[['FM-001','Block B','Fan repair','Office team','Medium','Open'],['FM-002','Library','Light replacement','Librarian','Low','Completed']]}
 };
 const names=Object.keys(definitions);let active='students',records=load(),editing=null;
-function seed(){const d={};for(const id of names){const def=definitions[id];d[id]=def.rows.map((row,i)=>Object.fromEntries(def.fields.map((f,j)=>[f[0],String(row[j]??'')])).concat([]).map(x=>x)[0]||Object.fromEntries(def.fields.map((f,j)=>[f[0],String(row[j]??'')])));d[id]=d[id].map((r,i)=>({...r,_id:id+'-'+(i+1)}));}return d}
+function seed(){const d={};for(const id of names){const def=definitions[id];d[id]=def.rows.map((row,i)=>({...Object.fromEntries(def.fields.map((f,j)=>[f[0],String(row[j]??'')])),_id:id+'-'+(i+1)}));}return d}
 function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(x&&x.version===1&&x.records)return x.records}catch(e){}return seed()}
 function save(){localStorage.setItem(KEY,JSON.stringify({version:1,records}));}
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
