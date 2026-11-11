@@ -86,6 +86,24 @@ Committed to `main`:
 
 **Verification boundary:** source syntax/static checks only. No deployed callable execution, emulator tests, browser tests, accessibility audit or live submission was performed. Changes are committed to GitHub `main`, not confirmed deployed.
 
+
+## Phase 6 — Workflow reliability and validation
+
+Committed to `main`:
+
+- Extracted shared validation helpers for text normalization, strict real-calendar ISO dates, requested audience groups and rejection reasons.
+- Added Node's built-in test coverage for text normalization, leap-year/date boundaries, audience normalization and rejection-reason validation.
+- Updated the Functions lint command to syntax-check the workflow modules and run the validation unit tests.
+- Management rejection now requires a reason of at least three characters; the reason is retained and returned in the author's submission history.
+- Added controlled notice and calendar resubmission callables. Only the original author can resubmit their own rejected item; only rejected records can be resubmitted. Resubmission resets review metadata, returns the record to `pending_approval` and writes an audit event.
+- Added author-facing “Edit and resubmit” actions that prefill the rejected submission and send it through the resubmission callable.
+- Improved server-side date validation to reject impossible calendar dates (for example, 31 April) rather than relying only on JavaScript date parsing.
+- Kept audience values as requested metadata; no audience delivery or published audience read access is enabled.
+
+**Verification performed:** JavaScript syntax parsing passed for the updated service, helper, test file and home-page inline script. The four pure validation tests were executed with Node's test runner and passed. Static checks confirmed the resubmission endpoints, rejection-reason gates and Firestore catch-all deny rule.
+
+**Not verified:** Firebase callable integration, Firestore transaction behavior in an emulator, browser end-to-end flows, accessibility, staging deployment or production deployment. The tests cover pure validation helpers, not role authorization or Firestore data access.
+
 ## Operational status — important
 
 The universal home is a navigation and experience foundation. It does not make unconnected modules operational.
