@@ -34,7 +34,7 @@ test("audience normalization removes duplicates and unsupported values are rejec
 
 test("rejection requires a meaningful reason; approval does not", () => {
   assert.equal(validRejectionReason("approve", ""), true);
-  assert.equal(validRejectionReason("reject", "No"), true);
+  assert.equal(validRejectionReason("reject", "No."), true);
   assert.equal(validRejectionReason("reject", "  "), false);
   assert.equal(validRejectionReason("reject", "OK"), false);
 });
