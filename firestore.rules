@@ -1,62 +1,174 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function signedIn() { return request.auth != null; }
-    function userDoc() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userPath() {
+      return /databases/$(database)/documents/users/$(request.auth.uid);
+    }
+
     function activeUser() {
       return signedIn()
-        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && userDoc().status == 'active'
-        && userDoc().email == request.auth.token.email;
+        && exists(userPath())
+        && get(userPath()).data.status == 'active'
+        && get(userPath()).data.email == request.auth.token.email;
     }
-    function superAdmin() { return activeUser() && userDoc().role == 'super_admin'; }
-    function hrAttendanceUser() { return activeUser() && request.auth.token.email == 'hr@baljyoti.com'; }
-    match /users/{uid} {
-      allow get: if signedIn() && (request.auth.uid == uid || superAdmin());
-      allow list: if superAdmin() || hrAttendanceUser();
-      allow create: if signedIn() && request.auth.uid == uid
-        && request.resource.data.uid == uid
-        && request.resource.data.email == request.auth.token.email
-        && request.auth.token.email.matches('.*@baljyoti[.]com')
-        && request.resource.data.role == 'staff'
-        && request.resource.data.accountType == 'staff'
-        && request.resource.data.status == 'pending';
-      allow update, delete: if superAdmin();
+
+    function userRole() {
+      return get(userPath()).data.role;
     }
-    match /system/{document} {
-      allow get, list: if activeUser();
-      allow create, update, delete: if superAdmin();
+
+    function isSuperAdmin() {
+      return activeUser() && userRole() == 'super_admin';
     }
+
+    function hrAttendanceUser() {
+      return activeUser()
+        && request.auth.token.email == 'hr@baljyoti.com';
+    }
+
+    function canAccess(moduleId) {
+      return activeUser()
+        && exists(/databases/$(database)/documents/system/roleRegistry)
+        && exists(/databases/$(database)/documents/system/moduleRegistry)
+        && exists(/databases/$(database)/documents/system/roleModuleAccess)
+        && get(/databases/$(database)/documents/system/roleRegistry).data.roles.keys().hasAny([userRole()])
+        && (
+          isSuperAdmin()
+          || (
+            get(/databases/$(database)/documents/system/roleModuleAccess).data.access[userRole()] != null
+            && get(/databases/$(database)/documents/system/roleModuleAccess).data.access[userRole()].hasAny(['*', moduleId])
+          )
+        );
+    }
+
+    match /users/{userId} {
+      // Staff can read their own profile. Super Admin and HR can list the directory.
+      allow get: if activeUser() && request.auth.uid == userId || isSuperAdmin();
+      allow list: if isSuperAdmin() || hrAttendanceUser();
+
+      // Preserve the ERP staff self-registration fields, including accountType.
+      allow create: if isSuperAdmin()
+        || (
+          signedIn()
+          && request.auth.uid == userId
+          && request.resource.data.keys().hasOnly(['uid', 'fullName', 'email', 'role', 'status', 'createdAt', 'accountType'])
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.email == request.auth.token.email
+          && request.resource.data.email.matches('.*@baljyoti[.]com')
+          && request.resource.data.role == 'staff'
+          && request.resource.data.accountType == 'staff'
+          && request.resource.data.status == 'pending'
+        );
+
+      allow update, delete: if isSuperAdmin();
+    }
+
+    match /system/{docId} {
+      allow read: if activeUser();
+      allow write: if isSuperAdmin();
+    }
+
     match /userModuleOverrides/{uid} {
-      allow get: if activeUser() && (request.auth.uid == uid || superAdmin());
-      allow list: if superAdmin();
+      allow get: if activeUser() && (request.auth.uid == uid || isSuperAdmin());
+      allow list: if isSuperAdmin();
       allow create, update, delete: if false;
     }
-    // Staff can read only their own attendance. HR alone imports and updates records.
+
+    match /staffRecords/{recordId} {
+      function canManageStaff() {
+        return activeUser()
+          && userRole() in ['super_admin', 'director', 'principal', 'administrator', 'hr_manager'];
+      }
+
+      allow read: if canManageStaff();
+
+      allow create: if canManageStaff()
+        && request.resource.data.employeeId is string
+        && request.resource.data.fullName is string
+        && request.resource.data.department is string
+        && request.resource.data.designation is string
+        && request.resource.data.status in ['Active', 'On Leave', 'Inactive']
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.updatedBy == request.auth.uid;
+
+      allow update: if canManageStaff()
+        && request.resource.data.employeeId is string
+        && request.resource.data.fullName is string
+        && request.resource.data.department is string
+        && request.resource.data.designation is string
+        && request.resource.data.status in ['Active', 'On Leave', 'Inactive']
+        && resource.data.createdBy == request.resource.data.createdBy
+        && request.resource.data.updatedBy == request.auth.uid;
+
+      allow delete: if false;
+    }
+
+    match /schoolData/{recordId} {
+      allow read: if resource.data.module is string
+        && canAccess(resource.data.module);
+
+      allow create: if request.resource.data.module is string
+        && canAccess(request.resource.data.module)
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.details is map;
+
+      allow update: if resource.data.module == request.resource.data.module
+        && canAccess(resource.data.module)
+        && resource.data.createdBy == request.resource.data.createdBy
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.details is map;
+
+      allow delete: if false;
+    }
+
+    // Employees can read only their own attendance. HR and Super Admin can manage records.
     match /attendanceRecords/{recordId} {
-      allow get, list: if activeUser() && (resource.data.email == request.auth.token.email || hrAttendanceUser() || superAdmin());
-      allow create: if (hrAttendanceUser() || superAdmin())
+      allow get, list: if activeUser()
+        && (
+          resource.data.email == request.auth.token.email
+          || hrAttendanceUser()
+          || isSuperAdmin()
+        );
+
+      allow create: if (hrAttendanceUser() || isSuperAdmin())
         && request.resource.data.date is string
         && request.resource.data.email is string
         && request.resource.data.updatedBy == request.auth.token.email;
-      allow update: if (hrAttendanceUser() || superAdmin())
+
+      allow update: if (hrAttendanceUser() || isSuperAdmin())
         && request.resource.data.date == resource.data.date
         && request.resource.data.email == resource.data.email
         && request.resource.data.updatedBy == request.auth.token.email;
+
       allow delete: if false;
     }
+
     match /attendanceImports/{importId} {
-      allow get, list: if hrAttendanceUser() || superAdmin();
-      allow create: if (hrAttendanceUser() || superAdmin())
+      allow get, list: if hrAttendanceUser() || isSuperAdmin();
+
+      allow create: if (hrAttendanceUser() || isSuperAdmin())
         && request.resource.data.uploadedBy == request.auth.token.email;
+
       allow update, delete: if false;
     }
+
     match /attendanceAudit/{auditId} {
-      allow get, list: if hrAttendanceUser() || superAdmin();
-      allow create: if (hrAttendanceUser() || superAdmin())
+      allow get, list: if hrAttendanceUser() || isSuperAdmin();
+
+      allow create: if (hrAttendanceUser() || isSuperAdmin())
         && request.resource.data.changedBy == request.auth.token.email;
+
       allow update, delete: if false;
     }
-    match /{document=**} { allow read, write: if false; }
+
+    // Deny all access to collections not explicitly listed above.
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
 }
