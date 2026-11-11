@@ -151,3 +151,93 @@ exports.reviewSchoolCalendarEvent = onCall({ region: "asia-south1" }, async requ
   });
   return { success: true, eventId, status: decision === "approve" ? "published" : "rejected" };
 });
+
+// Bounded, identity-scoped reads. Audience-based publication reads are deliberately
+// excluded until canonical class/section/responsibility membership is implemented.
+function dateValue(value) {
+  if (!value) return null;
+  if (typeof value.toDate === "function") return value.toDate().toISOString();
+  return null;
+}
+function taskView(doc) {
+  const x = doc.data();
+  return {
+    id: doc.id, title: x.title || "", description: x.description || "",
+    assigneeUid: x.assigneeUid || "", assigneeName: x.assigneeName || "",
+    assignedByUid: x.assignedByUid || "", dueDate: x.dueDate || null,
+    priority: x.priority || "normal", status: x.status || "open",
+    createdAt: dateValue(x.createdAt), updatedAt: dateValue(x.updatedAt)
+  };
+}
+function noticeView(doc) {
+  const x = doc.data();
+  return {
+    id: doc.id, title: x.title || "", body: x.body || "",
+    audience: Array.isArray(x.audience) ? x.audience : [],
+    category: x.category || "general", authorUid: x.authorUid || "",
+    authorRole: x.authorRole || "", status: x.status || "",
+    createdAt: dateValue(x.createdAt), reviewedAt: dateValue(x.reviewedAt)
+  };
+}
+function eventView(doc) {
+  const x = doc.data();
+  return {
+    id: doc.id, title: x.title || "", description: x.description || "",
+    startDate: x.startDate || "", endDate: x.endDate || "",
+    audience: Array.isArray(x.audience) ? x.audience : [],
+    category: x.category || "school", location: x.location || "",
+    createdByUid: x.createdByUid || "", createdByRole: x.createdByRole || "",
+    status: x.status || "", createdAt: dateValue(x.createdAt),
+    reviewedAt: dateValue(x.reviewedAt)
+  };
+}
+
+exports.listMySchoolTasks = onCall({ region: "asia-south1" }, async request => {
+  const actor = await actorFor(request);
+  const snap = await db.collection("schoolTasks")
+    .where("assigneeUid", "==", actor.uid).limit(50).get();
+  const items = snap.docs.map(taskView)
+    .sort((a, b) => String(a.dueDate || "9999-12-31").localeCompare(String(b.dueDate || "9999-12-31")));
+  return { items, limit: 50 };
+});
+
+exports.listMySchoolNoticeSubmissions = onCall({ region: "asia-south1" }, async request => {
+  const actor = await actorFor(request);
+  const snap = await db.collection("schoolNotices")
+    .where("authorUid", "==", actor.uid).limit(50).get();
+  const items = snap.docs.map(noticeView)
+    .sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+  return { items, limit: 50 };
+});
+
+exports.listPendingSchoolNotices = onCall({ region: "asia-south1" }, async request => {
+  const actor = await actorFor(request);
+  requireRole(actor, new Set(["super_admin", "director", "principal"]));
+  const snap = await db.collection("schoolNotices")
+    .where("status", "==", "pending_approval").limit(50).get();
+  const items = snap.docs.map(noticeView)
+    .filter(item => item.authorUid !== actor.uid)
+    .sort((a, b) => String(a.createdAt || "").localeCompare(String(b.createdAt || "")));
+  return { items, limit: 50 };
+});
+
+exports.listMySchoolCalendarSubmissions = onCall({ region: "asia-south1" }, async request => {
+  const actor = await actorFor(request);
+  const snap = await db.collection("schoolCalendarEvents")
+    .where("createdByUid", "==", actor.uid).limit(50).get();
+  const items = snap.docs.map(eventView)
+    .sort((a, b) => String(a.startDate || "").localeCompare(String(b.startDate || "")));
+  return { items, limit: 50 };
+});
+
+exports.listPendingSchoolCalendarEvents = onCall({ region: "asia-south1" }, async request => {
+  const actor = await actorFor(request);
+  requireRole(actor, new Set(["super_admin", "director", "principal"]));
+  const snap = await db.collection("schoolCalendarEvents")
+    .where("status", "==", "pending_approval").limit(50).get();
+  const items = snap.docs.map(eventView)
+    .filter(item => item.createdByUid !== actor.uid)
+    .sort((a, b) => String(a.startDate || "").localeCompare(String(b.startDate || "")));
+  return { items, limit: 50 };
+});
+
