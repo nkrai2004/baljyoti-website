@@ -8,49 +8,145 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <style>body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}</style>
+  <style>
+    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+    button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid rgba(181,18,27,.3);outline-offset:2px}
+    .period-cell{min-width:112px;cursor:pointer}
+    .period-cell.selected{background:#fff1f2;border-color:#b5121b;color:#991b1b}
+    @media(max-width:640px){.period-cell{min-width:96px}}
+  </style>
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-800">
   <header class="bg-[#b5121b] px-4 py-4 text-white shadow">
-    <div class="mx-auto flex max-w-5xl items-center justify-between gap-3">
+    <div class="mx-auto flex max-w-6xl items-center justify-between gap-3">
       <div><div class="font-extrabold">Bal Jyoti Public School</div><div class="text-xs text-red-100">Teacher ERP · My Time Table</div></div>
       <a href="../index.html" class="rounded-lg border border-white/50 px-3 py-2 text-sm font-semibold hover:bg-white/10">Dashboard</a>
     </div>
   </header>
-  <main class="mx-auto max-w-5xl px-4 py-8">
+
+  <main class="mx-auto max-w-6xl px-4 py-7 sm:py-8">
     <div class="mb-6">
-      <p class="text-sm font-semibold text-[#b5121b]">ADMIN</p>
+      <p class="text-sm font-semibold text-[#b5121b]">ADMIN / TIMETABLE</p>
       <h1 class="mt-1 text-2xl font-extrabold text-slate-900">My Time Table</h1>
-      <p class="mt-1 text-sm text-slate-500">Your weekly class and 7-period schedule, Monday to Saturday.</p>
+      <p class="mt-1 text-sm text-slate-500">Choose a date and period to view your class and subject.</p>
     </div>
     <div id="accessNotice" class="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">Checking your school account…</div>
-    <section class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-      
-      <div class="flex items-start gap-3">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-red-50 text-2xl">📅</div>
-        <div><h2 class="font-bold text-slate-900">Weekly timetable</h2><p class="mt-1 text-sm text-slate-500">Your assigned classes and periods will be displayed here.</p></div>
+
+    <section class="mb-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <div class="mb-4"><h2 class="font-bold text-slate-900">Select Date & Period</h2><p class="mt-1 text-xs text-slate-500">The selected date will determine the day and timetable.</p></div>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">Date</span><input id="datePicker" type="date" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm text-slate-800"></label>
+        <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700">Period</span><select id="periodPicker" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm text-slate-800"><option value="1">Period 1</option><option value="2">Period 2</option><option value="3">Period 3</option><option value="4">Period 4</option><option value="5">Period 5</option><option value="6">Period 6</option><option value="7">Period 7</option></select></label>
       </div>
-      <div class="mt-6 overflow-x-auto">
-        <table class="w-full min-w-[620px] border-collapse text-left text-sm">
-          <thead><tr class="bg-slate-50 text-slate-600"><th class="border border-slate-200 p-3">Day</th><th class="border border-slate-200 p-3 whitespace-nowrap">Period 1</th><th class="border border-slate-200 p-3 whitespace-nowrap">Period 2</th><th class="border border-slate-200 p-3 whitespace-nowrap">Period 3</th><th class="border border-slate-200 p-3 whitespace-nowrap">Period 4</th><th class="border border-slate-200 p-3 whitespace-nowrap">Period 5</th><th class="border border-slate-200 p-3 whitespace-nowrap">Period 6</th><th class="border border-slate-200 p-3 whitespace-nowrap">Period 7</th></tr></thead>
-          <tbody><tr><th class="border border-slate-200 bg-slate-50 p-3 font-semibold">Monday</th><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td></tr><tr><th class="border border-slate-200 bg-slate-50 p-3 font-semibold">Tuesday</th><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td></tr><tr><th class="border border-slate-200 bg-slate-50 p-3 font-semibold">Wednesday</th><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td></tr><tr><th class="border border-slate-200 bg-slate-50 p-3 font-semibold">Thursday</th><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td></tr><tr><th class="border border-slate-200 bg-slate-50 p-3 font-semibold">Friday</th><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td></tr><tr><th class="border border-slate-200 bg-slate-50 p-3 font-semibold">Saturday</th><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td><td class="border border-slate-200 p-3 text-slate-400">—</td></tr></tbody>
+      <div class="mt-4 rounded-xl bg-slate-50 px-4 py-3 text-sm"><span class="font-semibold text-slate-700">Selected day:</span> <span id="selectedDay" class="text-slate-600">—</span></div>
+    </section>
+
+    <section class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Class Name</p>
+        <p id="className" class="mt-2 text-xl font-extrabold text-slate-800">Not assigned</p>
+      </article>
+      <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Subject</p>
+        <p id="subjectName" class="mt-2 text-xl font-extrabold text-slate-800">Not assigned</p>
+      </article>
+    </section>
+
+    <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="border-b border-slate-100 px-4 py-4 sm:px-5">
+        <h2 class="font-bold text-slate-900">Weekly Timetable</h2>
+        <p id="weekLabel" class="mt-1 text-xs text-slate-500">Monday to Saturday · 7 periods per day</p>
+      </div>
+      <div class="overflow-x-auto p-3 sm:p-5">
+        <table class="w-full min-w-[850px] border-collapse text-left text-sm">
+          <thead id="timetableHead"></thead>
+          <tbody id="timetableBody"></tbody>
         </table>
       </div>
-      <div class="mt-6 rounded-xl border border-dashed border-slate-300 p-5 text-center">
-        <p class="font-semibold text-slate-800">Timetable data connection pending</p>
-        <p class="mt-2 text-sm text-slate-500">This page is ready. Your weekly timetable will appear here after teacher, class and period schedules are added to the ERP.</p>
-      </div>
+      <div class="border-t border-slate-100 bg-slate-50 px-4 py-3 text-xs text-slate-500">Select any period cell to view its class and subject above.</div>
     </section>
+
+    <div class="mt-5 rounded-xl border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-600">
+      <p class="font-semibold text-slate-800">Timetable data connection pending</p>
+      <p class="mt-1">Date and period selection are ready. Class names and subjects will appear automatically once the school timetable data is connected. No class or subject details have been assumed.</p>
+    </div>
     <p class="mt-6 text-center text-xs text-slate-400">© 2026 Bal Jyoti Public School</p>
   </main>
+
   <script>
+    const datePicker=document.getElementById("datePicker");
+    const periodPicker=document.getElementById("periodPicker");
+    const weekdays=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    const schoolDays=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    const schedule={};
+    let selectedDate=new Date();
+    selectedDate.setHours(12,0,0,0);
+    let selectedPeriod=1;
+
+    function dateKey(date){
+      const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,"0"),d=String(date.getDate()).padStart(2,"0");
+      return y+"-"+m+"-"+d;
+    }
+    function mondayOf(date){
+      const d=new Date(date);d.setHours(12,0,0,0);
+      const offset=(d.getDay()+6)%7;d.setDate(d.getDate()-offset);return d;
+    }
+    function getLesson(date,period){
+      return schedule[dateKey(date)]&&schedule[dateKey(date)][period]||null;
+    }
+    function renderDetails(){
+      const lesson=getLesson(selectedDate,selectedPeriod);
+      document.getElementById("selectedDay").textContent=weekdays[selectedDate.getDay()];
+      document.getElementById("className").textContent=lesson&&lesson.className?lesson.className:"Not assigned";
+      document.getElementById("subjectName").textContent=lesson&&lesson.subject?lesson.subject:"Not assigned";
+    }
+    function renderWeek(){
+      const monday=mondayOf(selectedDate);
+      const head=document.getElementById("timetableHead");
+      const body=document.getElementById("timetableBody");
+      head.innerHTML="<tr class='bg-slate-50 text-slate-600'><th class='border border-slate-200 p-3'>Day</th>"+Array.from({length:7},(_,i)=>"<th class='whitespace-nowrap border border-slate-200 p-3'>Period "+(i+1)+"</th>").join("")+"</tr>";
+      body.innerHTML="";
+      schoolDays.forEach((day,index)=>{
+        const rowDate=new Date(monday);rowDate.setDate(monday.getDate()+index);
+        const row=document.createElement("tr");
+        const dayCell=document.createElement("th");dayCell.className="border border-slate-200 bg-slate-50 p-3 text-left font-semibold";dayCell.textContent=day;row.appendChild(dayCell);
+        for(let p=1;p<=7;p++){
+          const cell=document.createElement("td");
+          cell.className="period-cell border border-slate-200 p-2 text-center text-slate-500 hover:bg-red-50";
+          const lesson=getLesson(rowDate,p);
+          cell.textContent=lesson?(lesson.className||"Class")+(lesson.subject?" · "+lesson.subject:""):"—";
+          if(dateKey(rowDate)===dateKey(selectedDate)&&p===selectedPeriod)cell.classList.add("selected");
+          cell.title="Select "+day+", Period "+p;
+          cell.addEventListener("click",()=>{
+            selectedDate=new Date(rowDate);selectedPeriod=p;
+            datePicker.value=dateKey(selectedDate);periodPicker.value=String(p);
+            render();
+          });
+          row.appendChild(cell);
+        }
+        body.appendChild(row);
+      });
+      const end=new Date(monday);end.setDate(monday.getDate()+5);
+      document.getElementById("weekLabel").textContent=monday.toLocaleDateString("en-IN",{day:"numeric",month:"short"})+" – "+end.toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})+" · Monday to Saturday · 7 periods per day";
+    }
+    function render(){renderDetails();renderWeek();}
+    datePicker.value=dateKey(selectedDate);
+    datePicker.addEventListener("change",()=>{
+      if(!datePicker.value)return;
+      const parts=datePicker.value.split("-").map(Number);
+      selectedDate=new Date(parts[0],parts[1]-1,parts[2],12,0,0);
+      render();
+    });
+    periodPicker.addEventListener("change",()=>{selectedPeriod=Number(periodPicker.value);render();});
+    render();
+
     const config={apiKey:"AIzaSyB2SGgV_zUFOyOGIIM27H5HNQYlO5WdFEY",authDomain:"baljyoti-erp.firebaseapp.com",projectId:"baljyoti-erp",appId:"1:422855577454:web:9bccb80cc472d02275bb7f"};
     const notice=document.getElementById("accessNotice");
     try{
-      if(!firebase.apps.length) firebase.initializeApp(config);
+      if(!firebase.apps.length)firebase.initializeApp(config);
       firebase.auth().onAuthStateChanged(user=>{
         if(!user){notice.textContent="Please sign in through the ERP dashboard using your official @baljyoti.com account.";return;}
-        if(!user.email || !user.email.toLowerCase().endsWith("@baljyoti.com")){notice.textContent="Access is restricted to authorised Bal Jyoti school accounts.";return;}
+        if(!user.email||!user.email.toLowerCase().endsWith("@baljyoti.com")){notice.textContent="Access is restricted to authorised Bal Jyoti school accounts.";return;}
         notice.className="mb-5 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-800";
         notice.textContent="Signed in as "+user.email+".";
       });
