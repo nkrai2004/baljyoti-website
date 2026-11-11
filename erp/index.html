@@ -527,6 +527,12 @@
                 <p class="mt-1 text-sm text-slate-500">View your attendance record and monthly summary.</p>
                 <span class="mt-4 inline-block text-sm font-semibold text-bjred">Open attendance →</span>
               </a>
+              <a id="hrAttendanceCard" href="admin/hr-attendance.html" class="hidden-view card-hover min-h-[220px] rounded-2xl border border-slate-100 bg-white p-6 shadow-soft">
+                <div class="text-3xl">📤</div>
+                <h3 class="mt-4 font-bold text-slate-900">HR Attendance Upload</h3>
+                <p class="mt-1 text-sm text-slate-500">Upload SalaryBox attendance or scan the signed paper register.</p>
+                <span class="mt-4 inline-block text-sm font-semibold text-bjred">Open HR attendance →</span>
+              </a>
               <a href="admin/timetable.html" class="card-hover min-h-[220px] rounded-2xl border border-slate-100 bg-white p-6 shadow-soft">
                 <div class="text-3xl">📅</div>
                 <h3 class="mt-4 font-bold text-slate-900">My Time Table</h3>
@@ -1208,5 +1214,16 @@
 
   </script>
 
+<script>
+  // Reveal the HR upload module only for the dedicated HR account.
+  if (window.firebase && firebase.apps.length) {
+    firebase.auth().onAuthStateChanged(user => {
+      const card = document.getElementById("hrAttendanceCard");
+      if (card && user && (user.email || "").toLowerCase() === "hr@baljyoti.com") {
+        card.classList.remove("hidden-view");
+      }
+    });
+  }
+</script>
 </body>
 </html>

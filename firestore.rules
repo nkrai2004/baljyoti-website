@@ -2,27 +2,19 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
-    function userDoc() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
-    }
+    function userDoc() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
     function activeUser() {
       return signedIn()
         && exists(/databases/$(database)/documents/users/$(request.auth.uid))
         && userDoc().status == 'active'
         && userDoc().email == request.auth.token.email;
     }
-    function superAdmin() {
-      return activeUser() && userDoc().role == 'super_admin';
-    }
-    function attendanceManager() {
-      return activeUser()
-        && userDoc().role in ['super_admin', 'admin', 'academic_coordinator'];
-    }
+    function superAdmin() { return activeUser() && userDoc().role == 'super_admin'; }
+    function hrAttendanceUser() { return activeUser() && request.auth.token.email == 'hr@baljyoti.com'; }
     match /users/{uid} {
       allow get: if signedIn() && (request.auth.uid == uid || superAdmin());
       allow list: if superAdmin();
-      allow create: if signedIn()
-        && request.auth.uid == uid
+      allow create: if signedIn() && request.auth.uid == uid
         && request.resource.data.uid == uid
         && request.resource.data.email == request.auth.token.email
         && request.auth.token.email.matches('.*@baljyoti[.]com')
@@ -40,30 +32,31 @@ service cloud.firestore {
       allow list: if superAdmin();
       allow create, update, delete: if false;
     }
-    // Daily teacher attendance: restricted to active Admin / Academic Coordinator roles.
+    // Staff can read only their own attendance. HR alone imports and updates records.
     match /attendanceRecords/{recordId} {
-      allow get, list: if attendanceManager();
-      allow create, update: if attendanceManager()
+      allow get, list: if activeUser() && (resource.data.email == request.auth.token.email || hrAttendanceUser() || superAdmin());
+      allow create: if (hrAttendanceUser() || superAdmin())
         && request.resource.data.date is string
         && request.resource.data.email is string
+        && request.resource.data.updatedBy == request.auth.token.email;
+      allow update: if (hrAttendanceUser() || superAdmin())
+        && request.resource.data.date == resource.data.date
+        && request.resource.data.email == resource.data.email
         && request.resource.data.updatedBy == request.auth.token.email;
       allow delete: if false;
     }
     match /attendanceImports/{importId} {
-      allow get, list: if attendanceManager();
-      allow create: if attendanceManager()
+      allow get, list: if hrAttendanceUser() || superAdmin();
+      allow create: if (hrAttendanceUser() || superAdmin())
         && request.resource.data.uploadedBy == request.auth.token.email;
       allow update, delete: if false;
     }
     match /attendanceAudit/{auditId} {
-      allow get, list: if attendanceManager();
-      allow create: if attendanceManager()
+      allow get, list: if hrAttendanceUser() || superAdmin();
+      allow create: if (hrAttendanceUser() || superAdmin())
         && request.resource.data.changedBy == request.auth.token.email;
       allow update, delete: if false;
     }
-    // All other operational collections remain closed until separately approved.
-    match /{document=**} {
-      allow read, write: if false;
-    }
+    match /{document=**} { allow read, write: if false; }
   }
 }
