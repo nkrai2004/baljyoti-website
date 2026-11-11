@@ -69,6 +69,23 @@ Committed to `main`:
 
 **Verification boundary:** source-level syntax and static checks only. No callable was deployed or exercised against Firebase, no Firestore emulator/security tests were run, and no browser end-to-end test was performed. The UI is committed but not confirmed deployed at `https://baljyoti.com/app/`.
 
+
+## Phase 5 — Notice and calendar submission workflows
+
+Committed to `main`:
+
+- Added staff-facing notice submission form with title, message, category and requested audience.
+- Added calendar event submission form with title, description, start/end dates, category, location and requested audience.
+- Added author-only submission history panels showing each item's current workflow status.
+- Connected both forms to the existing trusted callable submission endpoints; successful submissions return to the pending-approval workflow.
+- Restricted requested audience labels on the server to the fixed set `all_school`, `staff`, `students` and `parents`. Arbitrary client-supplied audience labels are rejected.
+- Kept audience values as requested metadata only. They do not grant access or trigger publication/delivery. Published audience reads remain disabled until canonical membership and audience enforcement are implemented.
+- Kept all operational Firestore client reads/writes denied by the existing catch-all rule.
+
+**Workflow boundary:** no edit/withdraw/resubmit action is provided for pending or rejected items. Review decisions are available only through the management review queue, and authors cannot approve their own submissions.
+
+**Verification boundary:** source syntax/static checks only. No deployed callable execution, emulator tests, browser tests, accessibility audit or live submission was performed. Changes are committed to GitHub `main`, not confirmed deployed.
+
 ## Operational status — important
 
 The universal home is a navigation and experience foundation. It does not make unconnected modules operational.
