@@ -170,6 +170,9 @@ function saveActivity_(data,user) {
   const time=Utilities.formatDate(now,TIME_ZONE,"hh:mm:ss a");
   if (outcome) setCell_(sheet,row,map,"Last Contact Outcome",outcome);
   setCell_(sheet,row,map,"Last Contact Date",date);
+  if (outcome && /connected|visit scheduled|visited school/i.test(outcome) && !getCell_(sheet,row,map,"First Contact Date")) {
+    setCell_(sheet,row,map,"First Contact Date",date);
+  }
   setCell_(sheet,row,map,"Contact Status",outcome || "Contact Attempted");
   if (data.nextFollowupDate) setCell_(sheet,row,map,"Next Follow-up Date",data.nextFollowupDate);
   if (data.nextFollowupTime) setCell_(sheet,row,map,"Next Follow-up Time",data.nextFollowupTime);
