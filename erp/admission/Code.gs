@@ -150,7 +150,7 @@ function allocateEnquiry_(data,user) {
   setCell_(sheet,row,map,"Enquiry Status","Assigned");
   setCell_(sheet,row,map,"Last Updated By",user.email);
   setCell_(sheet,row,map,"Last Updated Date",Utilities.formatDate(new Date(),TIME_ZONE,"dd-MM-yyyy HH:mm:ss"));
-  logActivity_(id,"Allocation","Assigned to "+assignee,"", "", "", "","",user);
+  logActivity_(id,"Allocation","Assigned to "+assignee,"","","","",user);
   return jsonResponse_({success:true,message:"Enquiry assigned.",enquiryId:id,assignedCounsellor:assignee});
 }
 
@@ -191,7 +191,7 @@ function verifyUser_(idToken) {
   if (response.getResponseCode() !== 200 || !result.users || !result.users.length) throw new Error("Your school login could not be verified. Please sign in again.");
   const email=String(result.users[0].email || "").toLowerCase();
   if (!email.endsWith("@"+ALLOWED_DOMAIN)) throw new Error("Only authorised school accounts can access this module.");
-  return {email:email,isAdmin:email===ADMIN_EMAIL};
+  return {email:email,name:result.users[0].displayName || email.split("@")[0],isAdmin:email===ADMIN_EMAIL};
 }
 
 function getMasterSheet_() {
@@ -229,7 +229,7 @@ function logActivity_(id,type,outcome,remarks,nextDate,nextTime,nextAction,user)
   const now=new Date();
   sh.appendRow(["ACT"+Utilities.getUuid().substring(0,8).toUpperCase(),id,
     Utilities.formatDate(now,TIME_ZONE,"dd-MM-yyyy"),Utilities.formatDate(now,TIME_ZONE,"hh:mm:ss a"),
-    type,outcome,remarks,nextDate,nextTime,nextAction,user.email,user.email]);
+    type,outcome,remarks,nextDate,nextTime,nextAction,user.name || user.email,user.email]);
 }
 function normalizeHeader(value) { return String(value||"").toLowerCase().trim().replace(/[^a-z0-9]/g,""); }
 function jsonResponse_(result) { return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON); }
