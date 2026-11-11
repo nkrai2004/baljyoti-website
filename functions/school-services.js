@@ -11,9 +11,16 @@ const {
   hasValidAudience,
   validRejectionReason
 } = require("./workflow-validation");
-const LEADERS = new Set(["super_admin", "director", "principal", "administrator"]);
-const NOTICE_AUTHORS = new Set(["super_admin", "director", "principal", "administrator", "academic_coordinator", "admission_coordinator", "activity_coordinator", "sports_discipline_coordinator", "teacher", "accountant", "hr_manager", "staff"]);
-const CALENDAR_AUTHORS = new Set(["super_admin", "director", "principal", "administrator", "academic_coordinator", "admission_coordinator", "activity_coordinator", "sports_discipline_coordinator", "teacher", "staff"]);
+const {
+  LEADER_ROLES: LEADERS,
+  NOTICE_AUTHOR_ROLES: NOTICE_AUTHORS,
+  CALENDAR_AUTHOR_ROLES: CALENDAR_AUTHORS,
+  hasRole,
+  isActiveProfile,
+  canUpdateTask,
+  canReviewSubmission,
+  canResubmitSubmission
+} = require("./workflow-policy");
 
 function fail(condition, message) { if (condition) throw new HttpsError("invalid-argument", message); }
 async function actorFor(request) {
