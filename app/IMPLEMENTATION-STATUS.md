@@ -210,3 +210,19 @@ Committed to `main`:
 - The first callable-emulator run exposed a real wiring defect: the service module called shared policy helpers without importing them. The emulator caught this as an internal callable error. The policy import is now added in commit `86e699c7c392f25d6eba90e4db6feac90c0d874e`.
 - The same run showed the Functions emulator attempting to retrieve SMTP secrets from Google Secret Manager during local startup. CI now supplies dummy SMTP values through a temporary emulator-only `functions/.secret.local`; no real SMTP credentials are used.
 - A new CI run was started after these corrections. Its result is pending and must be checked before claiming callable integration tests pass.
+
+
+## Current verification update — 11 November 2026
+
+- The corrected GitHub Actions security workflow completed successfully on commit `2740e9871d6a20427149305311fc8754786e1cbc`.
+- Confirmed test results: **14/14** Firestore rules, workflow-policy and validation tests passed; **8/8** callable emulator integration tests passed. The callable tests exercised the Functions, Authentication and Firestore emulators with synthetic identities/data.
+- Workflow run: https://github.com/nkrai2004/baljyoti-website/actions/runs/42977525468
+- The first callable integration attempt failed and exposed a missing policy-helper import; that defect was fixed before the successful run. The emulator-only SMTP placeholder setup also resolved local startup's Secret Manager dependency.
+- Changed `app/index.html` so the default `/app/` entry opens `home.html`. The home page still checks Firebase authentication and redirects signed-out visitors to `login.html`; it does not bypass sign-in or role checks.
+- The index redirect change is committed to `main` in commit `6c3a3fd2f9cef269cf26b40602fbe7a99de7a2e6`.
+
+**Still not verified/deployed:** the current hosted contents of `https://baljyoti.com/app/` have not been confirmed after the commit; no staging Functions deployment or browser acceptance test has been run. Workflow buttons that call the new school-service functions will not work on a live environment until those functions are deployed to staging. Do not treat prototype module screens or local/sample data as operational school records.
+
+**Remaining functional gaps:** persistent operational services and record-level authorization for admissions, student/parent records, attendance, timetable, assessments/results, fees/accounts, HR/leave, transport, library, inventory, reports and communication; published audience-aware notices/calendar feeds; direct/group messaging; activity feed; real timetable/My Day; pagination and broader operational reporting; mobile/desktop end-to-end and accessibility testing; and deliberate review of the 15 npm audit advisories (9 moderate, 6 high).
+
+**Release boundary:** no staging or production Firebase deployment was performed by this update. Production Firebase `baljyoti-erp` and ERP1 remain untouched.
