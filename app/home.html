@@ -113,7 +113,7 @@
     host.append(serviceCard(item.title,item.description,
       "Status: "+item.status.replace("_"," ")+" · Priority: "+item.priority+(item.dueDate?" · Due: "+item.dueDate:""),actions));
    });
-  }catch(error){const e=document.createElement("div");e.className="empty";e.innerHTML="<strong>Tasks could not be loaded</strong><span>"+(error.message||"Please try again later.")+"</span>";host.append(e)}
+  }catch(error){const e=document.createElement("div");e.className="empty";const strong=document.createElement("strong");strong.textContent="Tasks could not be loaded";const span=document.createElement("span");span.textContent=error.message||"Please try again later.";e.append(strong,span);host.append(e)}
   if(["super_admin","director","principal"].includes(role))await loadApprovalQueues(functions);
  }
  async function changeTask(taskId,status){
