@@ -148,3 +148,19 @@ Each phase must use synthetic staging data until the collection rules, backend v
 - GitHub confirmed the new home page and updated sign-in redirect on `main`.
 - The inline JavaScript in the new home page passed a JavaScript syntax parse.
 - This is not a browser end-to-end test, Firestore rules test, accessibility audit or deployment verification.
+
+## Phase 7 — Staging integration and security-test foundation
+
+Committed to `main`:
+
+- Added Firestore emulator configuration using a dedicated local port and disabled emulator UI.
+- Added `@firebase/rules-unit-testing` and Firebase client SDK development dependencies for rules tests.
+- Added `functions/firestore-rules.test.js` with synthetic profiles and records. It tests own-profile access, cross-user profile denial, Super Admin-only user listing, operational collection denial, module-override owner/Admin reads, client-write denial, and active-profile/email matching.
+- Added `test`, `test:validation`, and `test:security` scripts. The standard test command runs both pure validation tests and Firestore rules tests.
+- Added GitHub Actions workflow `.github/workflows/test-staging-security.yml` to install test dependencies and run the test suite inside the Firestore emulator on relevant changes to `main`, pull requests and manual dispatch.
+- Test project ID is `demo-baljyoti-school-os`; emulator tests use synthetic records only. No production or staging credentials are used by the test workflow.
+- Firestore operational collection rules remain deny-by-default. No permissive rules were introduced.
+
+**Verification status:** GitHub confirms the test files, emulator configuration and workflow are committed. The emulator suite and GitHub Actions run have not yet been independently observed as passing in this phase. Do not treat the tests as executed or as proof of callable authorization. These are Firestore client-rules tests; they do not yet exercise callable functions, Admin SDK transactions, role-specific review/resubmission flows, or browser end-to-end behavior.
+
+**Deployment status:** no Firebase deployment was run. No staging or production data was changed. Existing staging deployment workflow was not invoked.
