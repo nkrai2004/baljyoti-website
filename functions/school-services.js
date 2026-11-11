@@ -14,7 +14,6 @@ const {
 const LEADERS = new Set(["super_admin", "director", "principal", "administrator"]);
 const NOTICE_AUTHORS = new Set(["super_admin", "director", "principal", "administrator", "academic_coordinator", "admission_coordinator", "activity_coordinator", "sports_discipline_coordinator", "teacher", "accountant", "hr_manager", "staff"]);
 const CALENDAR_AUTHORS = new Set(["super_admin", "director", "principal", "administrator", "academic_coordinator", "admission_coordinator", "activity_coordinator", "sports_discipline_coordinator", "teacher", "staff"]);
-const REQUESTED_AUDIENCES = new Set(["all_school", "staff", "students", "parents"]);
 
 function fail(condition, message) { if (condition) throw new HttpsError("invalid-argument", message); }
 async function actorFor(request) {
@@ -82,8 +81,8 @@ exports.submitSchoolNotice = onCall({ region: "asia-south1" }, async request => 
   const data = request.data || {};
   const title = clean(data.title, 140);
   const body = clean(data.body, 4000);
-  const audience = Array.isArray(data.audience) ? [...new Set(data.audience.map(x => clean(x, 80)).filter(Boolean))] : [];
-  fail(!title || !body || !audience.length || audience.length > 4 || audience.some(group => !REQUESTED_AUDIENCES.has(group)), "Choose one or more supported audience groups.");
+  const audience = normalizeAudience(data.audience);
+  fail(!title || !body || !hasValidAudience(audience), "Choose one or more supported audience groups.");
   const ref = db.collection("schoolNotices").doc();
   await db.runTransaction(async tx => {
     tx.create(ref, { title, body, audience, category: clean(data.category, 40) || "general", authorUid: actor.uid, authorRole: actor.role, status: "pending_approval", createdAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
@@ -122,8 +121,8 @@ exports.submitSchoolCalendarEvent = onCall({ region: "asia-south1" }, async requ
   const startDate = data.startDate || "";
   const endDate = data.endDate || startDate;
   fail(!title || !validDate(startDate) || !validDate(endDate) || endDate < startDate, "Provide a title and valid event dates.");
-  const audience = Array.isArray(data.audience) ? [...new Set(data.audience.map(x => clean(x, 80)).filter(Boolean))] : [];
-  fail(!audience.length || audience.length > 4 || audience.some(group => !REQUESTED_AUDIENCES.has(group)), "Choose one or more supported audience groups.");
+  const audience = normalizeAudience(data.audience);
+  fail(!hasValidAudience(audience), "Choose one or more supported audience groups.");
   const ref = db.collection("schoolCalendarEvents").doc();
   await db.runTransaction(async tx => {
     tx.create(ref, { title, description, startDate, endDate, audience, category: clean(data.category, 40) || "school", location: clean(data.location, 160), createdByUid: actor.uid, createdByRole: actor.role, status: "pending_approval", createdAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
