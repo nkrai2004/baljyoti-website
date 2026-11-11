@@ -6,7 +6,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "lint": "node --check index.js && node --check school-services.js && node --check workflow-validation.js && npm test",
+    "lint": "node --check index.js && node --check school-services.js && node --check workflow-validation.js && node --check workflow-policy.js && npm test",
     "test": "node --test workflow-validation.test.js workflow-policy.test.js firestore-rules.test.js",
     "test:validation": "node --test workflow-validation.test.js",
     "test:security": "firebase emulators:exec --only firestore --project demo-baljyoti-school-os \"node --test firestore-rules.test.js\"",
