@@ -245,3 +245,20 @@ Committed to `main`:
 
 
 - Added a link to the demo workspace under the authenticated School OS Explore page so users can find the demo from the main app. This is navigation only and does not change the demo's browser-local storage or security boundary.
+
+
+## Phase 10 — Persistent Student Records foundation (staging-first)
+
+Committed to `main`:
+
+- Added callable services for listing, creating, updating and archiving student master records in the `students` collection.
+- Server checks the active verified user profile, configured active role, module grant/custom deny, and management-role allowlist before any student-record operation.
+- Student admission numbers are checked for duplicates. Inputs are normalised and length-limited.
+- Student records are soft-archived by setting status to inactive; history is retained.
+- Added a Super Admin-only, repeat-safe sample-data initialiser with five fictional students and clearly synthetic admission numbers.
+- Connected the Student Records module UI to the callable services. Records now load from and save to the isolated staging database rather than browser-only arrays.
+- Added the new functions to the staging-only deployment workflow. Firestore client rules remain deny-by-default; all access is through validated callables.
+
+**Scope boundary:** this is the first persistent module slice, not completion of the School OS. Student access is currently limited to authorised management/admissions roles. Teacher class/section scope, verified parent-child links, student self-service, attendance, fees and related records are not enabled by this service. The sample-data initialiser must be run after the Functions are deployed to staging. No production Firebase project or ERP1 was changed.
+
+**Verification boundary:** GitHub Actions security tests and Pages deployment were triggered by the commits and were still running at the time of this update. Staging Functions have not been deployed and sample records have not yet been seeded into staging. Do not treat this module as live until those steps and an authenticated browser test pass.
