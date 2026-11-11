@@ -226,3 +226,19 @@ Committed to `main`:
 **Remaining functional gaps:** persistent operational services and record-level authorization for admissions, student/parent records, attendance, timetable, assessments/results, fees/accounts, HR/leave, transport, library, inventory, reports and communication; published audience-aware notices/calendar feeds; direct/group messaging; activity feed; real timetable/My Day; pagination and broader operational reporting; mobile/desktop end-to-end and accessibility testing; and deliberate review of the 15 npm audit advisories (9 moderate, 6 high).
 
 **Release boundary:** no staging or production Firebase deployment was performed by this update. Production Firebase `baljyoti-erp` and ERP1 remain untouched.
+
+
+## Phase 9 — Isolated browser demo workspace
+
+Committed to `main`:
+
+- Added `app/demo.html`, a standalone School OS demonstration workspace covering 18 school areas: students, admissions, parents/guardians, staff, attendance, timetable, homework, exams/results, fees, expenses/accounts, HR/leave, transport, library, inventory/assets, notices, calendar, tasks/approvals, communication log, and facilities/maintenance.
+- Seeded each module with fictional sample records and explicit demo identifiers where relevant.
+- Added browser-local create, edit, delete, search and status-filter actions, plus JSON export and reset-to-sample-data controls.
+- Demo changes persist in the current browser using local storage. They are not sent to Firebase or any school server.
+- Added a persistent warning that the environment is demo-only and must not contain real student, parent, employee or financial information.
+- Kept the demo workspace separate from the authenticated School OS and existing operational services.
+
+**Verification boundary:** GitHub confirms the demo page is committed to `main`. This is a browser-local demonstration, not a production workflow or shared multi-user database. No Firebase collections, Firestore rules, staging services or production records were changed. Browser end-to-end and accessibility testing are still pending. Do not represent the sample data as official school records or the modules as production-ready.
+
+**Next:** perform browser smoke tests on desktop and mobile, then connect modules incrementally to isolated staging services with per-record authorization and automated tests. Prioritize student/parent master data, admissions, attendance, timetable and assessment before finance and HR.
