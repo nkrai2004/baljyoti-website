@@ -90,7 +90,8 @@
           "OFF"
         ]
       }
-    ]
+    ],
+    "classTeacherEmail": "ruby.soni@baljyoti.com"
   },
   {
     "id": "BG:NUR",
@@ -183,7 +184,8 @@
           "OFF"
         ]
       }
-    ]
+    ],
+    "classTeacherEmail": "meenakshi.jain@baljyoti.com"
   },
   {
     "id": "BG:KG",
@@ -276,6 +278,7 @@
           "OFF"
         ]
       }
-    ]
+    ],
+    "classTeacherEmail": "parvita.saini@baljyoti.com"
   }
 ]
