@@ -10,7 +10,7 @@ Teacher, Student, Coordinator, Management and Parent.
 - WhatsApp: manual FOC-first sharing only; no paid API automation or unofficial bots in V1.
 - Parent workspace included in V1.
 
-## Main-branch implementation
+## Universal experience design review (11 November 2026)\n- `UNIVERSAL-UX-DESIGN-REVIEW.md`: scored assessment of Universal Experience v2.0, recommended improvements, decisions, wireframe scope, validation criteria and phased roadmap.\n- Overall design direction: 8.2/10 readiness-adjusted score; detailed design and approval required before implementation.\n- This is a design document only; no application code, Firebase configuration or deployment was changed by the review.\n\n## Main-branch implementation
 - `index.html`: routes to secure Google sign-in.
 - `login.html`: Google sign-in and authorised workspace shell.
 - `assets/auth.js`: profile/status check and role/module permission loading.
