@@ -6,7 +6,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "lint": "node --check index.js && node --check school-services.js"
+    "lint": "node --check index.js && node --check school-services.js && node --check workflow-validation.js && node --test workflow-validation.test.js"
   },
   "dependencies": {
     "firebase-admin": "^13.0.0",
