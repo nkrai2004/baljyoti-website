@@ -32,7 +32,31 @@
 <script>
 function showMode(mode){const scan=mode==='scan';document.getElementById('scanPanel').hidden=!scan;document.getElementById('manualMode').classList.toggle('active',!scan);document.getElementById('scanMode').classList.toggle('active',scan);if(scan)document.getElementById('source').value='Printed enquiry form'}
 document.getElementById('photo').addEventListener('change',function(){const f=this.files&&this.files[0],p=document.getElementById('preview');if(f&&f.type.startsWith('image/')){p.src=URL.createObjectURL(f);p.style.display='block'}else{p.removeAttribute('src');p.style.display='none'}});
-document.getElementById('enquiryForm').addEventListener('submit',function(e){e.preventDefault();if(!this.reportValidity())return;const m=document.getElementById('mobile').value.replace(/\D/g,'');if(!/^[6-9]\d{9}$/.test(m)){alert('Enter a valid 10-digit mobile number.');return}const d=Object.fromEntries(new FormData(this).entries());const summary=Object.entries(d).filter(([k,v])=>v).map(([k,v])=>k+': '+v).join('\n');if(confirm('Please verify these details:\n\n'+summary+'\n\nContinue?')){const s=document.getElementById('status');s.textContent='Prototype review complete. Enquiry ID generation and Google Sheets saving are not connected yet.';s.style.display='block';window.scrollTo({top:0,behavior:'smooth'})}});
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6MEYBiikPU5JsHE7kG70RqZRk0WuHcfKY_nybZQpmJ-HXigYCi5EbcvE3m_2k0hlI/exec";
+document.getElementById('enquiryForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  if(!this.reportValidity()) return;
+  const m=document.getElementById('mobile').value.replace(/\\D/g,'');
+  if(!/^[6-9]\\d{9}$/.test(m)){alert('Enter a valid 10-digit mobile number.');return}
+  const d=new URLSearchParams(new FormData(this));
+  const s=document.getElementById('status');
+  const submit=this.querySelector('button[type="submit"]');
+  if(!confirm('Submit this enquiry to the Admission CRM?')) return;
+  submit.disabled=true;
+  submit.textContent='Submitting…';
+  try{
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:d});
+    s.textContent='Enquiry sent to the CRM. Please check the MASTER ADMISSION tab to confirm it has been recorded.';
+    s.style.display='block';
+    this.reset();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }catch(error){
+    alert('Could not send the enquiry. Please check your internet connection and try again.');
+  }finally{
+    submit.disabled=false;
+    submit.textContent='Submit Enquiry';
+  }
+});
 </script>
 <script>
 (function(){
