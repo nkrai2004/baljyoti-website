@@ -117,3 +117,12 @@ exports.seedSampleStudents = onCall({ region: "asia-south1", secrets: SHEETS_SEC
   await audit(actor, "student_sample_data_initialised", "", result);
   return Object.assign({ success: true }, result);
 });
+
+
+exports.setupSchoolSheetsDatabase = onCall({ region: "asia-south1", secrets: SHEETS_SECRETS }, async request => {
+  const actor = await actorFor(request);
+  if (actor.role !== "super_admin") throw new HttpsError("permission-denied", "Only Super Admin can initialise the school database.");
+  const result = await sheets("setup");
+  await audit(actor, "school_sheets_database_setup", "", result);
+  return Object.assign({ success: true }, result);
+});
