@@ -1,20 +1,41 @@
 "use strict";
 
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
-const { getFirestore, FieldValue } = require("firebase-admin/firestore");
+const { getFirestore } = require("firebase-admin/firestore");
+const { defineSecret } = require("firebase-functions/params");
 const db = getFirestore();
 
+const SHEETS_API_URL = defineSecret("SHEETS_API_URL");
+const SHEETS_API_KEY = defineSecret("SHEETS_API_KEY");
+const SHEETS_SECRETS = [SHEETS_API_URL, SHEETS_API_KEY];
 const MANAGERS = new Set(["super_admin", "director", "principal", "administrator", "admission_coordinator"]);
-const FIELDS = ["admissionNo", "firstName", "lastName", "className", "section", "guardianName", "status"];
 
 function clean(value, max) {
-  return String(value == null ? "" : value).trim().replace(/\\s+/g, " ").slice(0, max);
+  return String(value == null ? "" : value).trim().replace(/\s+/g, " ").slice(0, max);
 }
 function validStudent(data) {
   return !!(clean(data.admissionNo, 32) && clean(data.firstName, 80) &&
     clean(data.lastName, 80) && clean(data.className, 40) &&
     clean(data.section, 20) && clean(data.guardianName, 120) &&
     ["active", "inactive"].includes(data.status || "active"));
+}
+async function sheets(action, payload) {
+  let response;
+  try {
+    response = await fetch(SHEETS_API_URL.value(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(Object.assign({ action, apiKey: SHEETS_API_KEY.value() }, payload || {}))
+    });
+  } catch (error) {
+    throw new HttpsError("unavailable", "The Google Sheets database is not reachable.");
+  }
+  const result = await response.json();
+  if (!response.ok || !result.ok) {
+    const message = String(result.error || "Google Sheets database request failed.");
+    throw new HttpsError("failed-precondition", message);
+  }
+  return result.result;
 }
 async function actorFor(request) {
   if (!request.auth || !request.auth.uid) throw new HttpsError("unauthenticated", "Please sign in.");
@@ -49,26 +70,19 @@ async function actorFor(request) {
   if (!MANAGERS.has(role)) throw new HttpsError("permission-denied", "Your role cannot manage student master records.");
   return { uid, email, role };
 }
-function audit(actor, action, studentId, extra) {
-  return db.collection("auditLogs").add(Object.assign({
-    actorUid: actor.uid, actorEmail: actor.email, actorRole: actor.role,
-    action, collection: "students", recordId: studentId || null,
-    timestamp: FieldValue.serverTimestamp()
-  }, extra || {}));
+async function audit(actor, action, studentId, details) {
+  return sheets("appendAudit", { entry: {
+    actorUid: actor.uid, actorRole: actor.role, action,
+    entity: "Students", entityId: studentId || "", details: details || {}
+  }});
 }
 
-exports.listStudents = onCall({ region: "asia-south1" }, async request => {
+exports.listStudents = onCall({ region: "asia-south1", secrets: SHEETS_SECRETS }, async request => {
   await actorFor(request);
-  const snap = await db.collection("students").orderBy("admissionNo").limit(200).get();
-  return { students: snap.docs.map(doc => {
-    const d = doc.data();
-    return { id: doc.id, admissionNo: d.admissionNo, firstName: d.firstName,
-      lastName: d.lastName, className: d.className, section: d.section,
-      guardianName: d.guardianName, status: d.status, isSample: d.isSample === true };
-  }) };
+  return { students: await sheets("listStudents") };
 });
 
-exports.saveStudent = onCall({ region: "asia-south1" }, async request => {
+exports.saveStudent = onCall({ region: "asia-south1", secrets: SHEETS_SECRETS }, async request => {
   const actor = await actorFor(request);
   const data = request.data || {};
   const student = {
@@ -82,62 +96,24 @@ exports.saveStudent = onCall({ region: "asia-south1" }, async request => {
   };
   if (!validStudent(student)) throw new HttpsError("invalid-argument", "Complete all required student fields.");
   const studentId = clean(data.studentId, 128);
-  const duplicate = await db.collection("students").where("admissionNo", "==", student.admissionNo).limit(2).get();
-  if (duplicate.docs.some(doc => doc.id !== studentId)) {
-    throw new HttpsError("already-exists", "That admission number is already in use.");
-  }
-  const ref = studentId ? db.collection("students").doc(studentId) : db.collection("students").doc();
-  if (studentId) {
-    const existing = await ref.get();
-    if (!existing.exists) throw new HttpsError("not-found", "Student record not found.");
-    await ref.update(Object.assign(student, { updatedAt: FieldValue.serverTimestamp(), updatedBy: actor.uid }));
-  } else {
-    await ref.create(Object.assign(student, {
-      isSample: false, createdAt: FieldValue.serverTimestamp(),
-      createdBy: actor.uid, updatedAt: FieldValue.serverTimestamp(), updatedBy: actor.uid
-    }));
-  }
-  await audit(actor, studentId ? "student_updated" : "student_created", ref.id,
-    { admissionNo: student.admissionNo });
-  return { success: true, studentId: ref.id };
+  const result = await sheets("saveStudent", { student: Object.assign(student, { id: studentId }) });
+  await audit(actor, studentId ? "student_updated" : "student_created", result.id, { admissionNo: student.admissionNo });
+  return { success: true, studentId: result.id };
 });
 
-exports.archiveStudent = onCall({ region: "asia-south1" }, async request => {
+exports.archiveStudent = onCall({ region: "asia-south1", secrets: SHEETS_SECRETS }, async request => {
   const actor = await actorFor(request);
   const studentId = clean(request.data && request.data.studentId, 128);
   if (!studentId) throw new HttpsError("invalid-argument", "Student record is required.");
-  const ref = db.collection("students").doc(studentId);
-  const snap = await ref.get();
-  if (!snap.exists) throw new HttpsError("not-found", "Student record not found.");
-  await ref.update({ status: "inactive", archivedAt: FieldValue.serverTimestamp(), archivedBy: actor.uid });
-  await audit(actor, "student_archived", studentId, { admissionNo: snap.data().admissionNo || "" });
-  return { success: true };
+  const result = await sheets("archiveStudent", { recordId: studentId });
+  await audit(actor, "student_archived", studentId, {});
+  return { success: true, result };
 });
 
-exports.seedSampleStudents = onCall({ region: "asia-south1" }, async request => {
+exports.seedSampleStudents = onCall({ region: "asia-south1", secrets: SHEETS_SECRETS }, async request => {
   const actor = await actorFor(request);
   if (actor.role !== "super_admin") throw new HttpsError("permission-denied", "Only Super Admin can initialise sample records.");
-  const samples = [
-    ["BJ-SAMPLE-001", "Aarav", "Sharma", "Class V", "A", "Sample Guardian One"],
-    ["BJ-SAMPLE-002", "Ananya", "Verma", "Class V", "A", "Sample Guardian Two"],
-    ["BJ-SAMPLE-003", "Kabir", "Singh", "Class VI", "B", "Sample Guardian Three"],
-    ["BJ-SAMPLE-004", "Meera", "Gupta", "Class IV", "A", "Sample Guardian Four"],
-    ["BJ-SAMPLE-005", "Ishaan", "Kumar", "Class VII", "A", "Sample Guardian Five"]
-  ];
-  const results = [];
-  for (const row of samples) {
-    const existing = await db.collection("students").where("admissionNo", "==", row[0]).limit(1).get();
-    if (existing.empty) {
-      const ref = db.collection("students").doc();
-      await ref.create({
-        admissionNo: row[0], firstName: row[1], lastName: row[2],
-        className: row[3], section: row[4], guardianName: row[5],
-        status: "active", isSample: true, createdBy: actor.uid,
-        createdAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp()
-      });
-      results.push({ admissionNo: row[0], created: true });
-    } else results.push({ admissionNo: row[0], created: false });
-  }
-  await audit(actor, "student_sample_data_initialised", null, { count: results.filter(x => x.created).length });
-  return { success: true, results };
+  const result = await sheets("seedSampleStudents");
+  await audit(actor, "student_sample_data_initialised", "", result);
+  return Object.assign({ success: true }, result);
 });
