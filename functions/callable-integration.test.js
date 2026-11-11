@@ -3,7 +3,6 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const { initializeApp } = require("firebase-admin/app");
-const { getAuth } = require("firebase-admin/auth");
 const { getFirestore, FieldValue } = require("firebase-admin/firestore");
 
 const projectId = process.env.GCLOUD_PROJECT || "demo-baljyoti-school-os";
@@ -12,17 +11,10 @@ const functionsHost = process.env.FUNCTIONS_EMULATOR_HOST || "127.0.0.1:5001";
 const authHost = process.env.FIREBASE_AUTH_EMULATOR_HOST || "127.0.0.1:9099";
 const app = initializeApp({ projectId }, "callable-integration-tests");
 const db = getFirestore(app);
-const auth = getAuth(app);
 const actors = {};
 
 async function createActor(key, role, accountType = "staff") {
   const email = key + "@example.test";
-  const created = await auth.createUser({
-    email, password: "Test-password-123!", emailVerified: true, displayName: key
-  });
-  await db.collection("users").doc(created.uid).set({
-    uid: created.uid, email, fullName: key, role, status: "active", accountType
-  });
   const signUp = await fetch(
     "http://" + authHost + "/identitytoolkit.googleapis.com/v1/accounts:signUp?key=fake-api-key",
     {
@@ -33,7 +25,11 @@ async function createActor(key, role, accountType = "staff") {
   );
   const authBody = await signUp.json();
   assert.equal(signUp.ok, true, JSON.stringify(authBody));
-  actors[key] = { uid: created.uid, email, token: authBody.idToken, role };
+  const uid = authBody.localId;
+  await db.collection("users").doc(uid).set({
+    uid, email, fullName: key, role, status: "active", accountType
+  });
+  actors[key] = { uid, email, token: authBody.idToken, role };
   return actors[key];
 }
 
