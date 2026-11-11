@@ -186,3 +186,10 @@ Committed to `main`:
 **Scope boundary:** these are tested policy decisions called by the callable implementations, plus Firestore client-rules emulator tests. They are not a full end-to-end callable emulator test: Admin SDK transaction behavior, actual callable HTTP invocation, Authentication emulator identity issuance, concurrent review/resubmission races, and browser flows remain unverified. No synthetic users were created in the real staging Firebase project.
 
 **Staging/release boundary:** no Functions deployment was performed. The existing staging deploy workflow was not invoked and currently only names the two user-administration functions; it does not deploy the school workflow callables. Do not use the live workflow forms until the school workflow functions have been separately deployed to staging and callable integration tests pass. Production Firebase and ERP1 remain untouched.
+
+### Phase 8 staging deployment preparation
+
+- Updated the manual staging Functions workflow to include the task, notice, calendar, scoped-read and resubmission callable endpoints, in addition to the existing staff-administration endpoints.
+- The workflow remains `workflow_dispatch` only and targets `baljyoti-school-os-staging` explicitly.
+- The workflow was **not run**. This change only prepares the deployment definition; it does not deploy code or change Firebase.
+- The workflow does not deploy Firestore rules. The catch-all deny rule remains unchanged.
