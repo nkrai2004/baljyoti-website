@@ -262,3 +262,20 @@ Committed to `main`:
 **Scope boundary:** this is the first persistent module slice, not completion of the School OS. Student access is currently limited to authorised management/admissions roles. Teacher class/section scope, verified parent-child links, student self-service, attendance, fees and related records are not enabled by this service. The sample-data initialiser must be run after the Functions are deployed to staging. No production Firebase project or ERP1 was changed.
 
 **Verification boundary:** GitHub Actions security tests and Pages deployment were triggered by the commits and were still running at the time of this update. Staging Functions have not been deployed and sample records have not yet been seeded into staging. Do not treat this module as live until those steps and an authenticated browser test pass.
+
+
+## Phase 11 — Google Sheets operational database foundation
+
+Committed to `main`:
+
+- Added `google-sheets/Code.gs`, a Google Apps Script gateway intended to be bound to the school's master spreadsheet.
+- Added structured tabs and fixed header schemas for students, parents, parent-child links, admissions, classes, subjects, staff, teacher assignments, student/staff attendance, timetable, homework, assessments, marks, fee structures/invoices/payments, expenses, leave, transport, library, inventory, notices, calendar events, tasks and audit logs.
+- Added a one-time setup action that creates missing tabs and refuses to overwrite mismatched existing headers.
+- Added API-key validation, server-side input normalisation, duplicate admission-number checks, script locking for student writes, soft archiving and repeat-safe fictional student sample seeding.
+- Moved Student Records callable data operations to the Google Sheets gateway. Firebase remains the identity/role authorisation layer; operational student rows and their audit events are written to Sheets.
+- Added a Super Admin-only callable to initialise the workbook and added the new callables to the staging deployment workflow.
+- Documented the administrator setup and security requirements in `google-sheets/README.md`.
+
+**Required administrator setup:** create the master Google Spreadsheet, bind the Apps Script, set the private script property `BJ_SHEETS_API_KEY`, deploy the Web App, and configure Firebase staging secrets `SHEETS_API_URL` and `SHEETS_API_KEY`. Then deploy the staging Functions and run the Super Admin workbook setup callable. The Google Drive connector is unavailable in this workspace, so the workbook cannot be created or connected automatically from ChatGPT.
+
+**Current boundary:** only Student Records uses the Sheets gateway. The other tabs are schemas only, not functioning modules. The database gateway has not yet been connected to a real school spreadsheet, staging secrets are not configured, Functions are not confirmed deployed, and no sample records have been seeded. No production Firebase or ERP1 resources were changed.
