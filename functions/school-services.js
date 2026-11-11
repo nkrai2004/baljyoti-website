@@ -4,19 +4,19 @@ const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { getFirestore, FieldValue } = require("firebase-admin/firestore");
 
 const db = getFirestore();
+const {
+  cleanText: clean,
+  isValidDate: validDate,
+  normalizeAudience,
+  hasValidAudience,
+  validRejectionReason
+} = require("./workflow-validation");
 const LEADERS = new Set(["super_admin", "director", "principal", "administrator"]);
 const NOTICE_AUTHORS = new Set(["super_admin", "director", "principal", "administrator", "academic_coordinator", "admission_coordinator", "activity_coordinator", "sports_discipline_coordinator", "teacher", "accountant", "hr_manager", "staff"]);
 const CALENDAR_AUTHORS = new Set(["super_admin", "director", "principal", "administrator", "academic_coordinator", "admission_coordinator", "activity_coordinator", "sports_discipline_coordinator", "teacher", "staff"]);
 const REQUESTED_AUDIENCES = new Set(["all_school", "staff", "students", "parents"]);
 
-function clean(value, max) {
-  if (typeof value !== "string") return "";
-  return value.trim().replace(/\s+/g, " ").slice(0, max);
-}
 function fail(condition, message) { if (condition) throw new HttpsError("invalid-argument", message); }
-function validDate(value) {
-  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value + "T00:00:00Z"));
-}
 async function actorFor(request) {
   if (!request.auth || !request.auth.uid) throw new HttpsError("unauthenticated", "Please sign in.");
   const snap = await db.collection("users").doc(request.auth.uid).get();
@@ -99,7 +99,7 @@ exports.reviewSchoolNotice = onCall({ region: "asia-south1" }, async request => 
   const noticeId = clean(data.noticeId, 128);
   const decision = clean(data.decision, 20);
   const reason = clean(data.reason, 500);
-  fail(!noticeId || !["approve", "reject"].includes(decision), "Select a notice and approve or reject it.");
+  fail(!noticeId || !["approve", "reject"].includes(decision) || !validRejectionReason(decision, reason), "Select a decision and provide a reason of at least 3 characters when rejecting.");
   const ref = db.collection("schoolNotices").doc(noticeId);
   await db.runTransaction(async tx => {
     const snap = await tx.get(ref);
@@ -139,7 +139,7 @@ exports.reviewSchoolCalendarEvent = onCall({ region: "asia-south1" }, async requ
   const eventId = clean(data.eventId, 128);
   const decision = clean(data.decision, 20);
   const reason = clean(data.reason, 500);
-  fail(!eventId || !["approve", "reject"].includes(decision), "Select an event and approve or reject it.");
+  fail(!eventId || !["approve", "reject"].includes(decision) || !validRejectionReason(decision, reason), "Select a decision and provide a reason of at least 3 characters when rejecting.");
   const ref = db.collection("schoolCalendarEvents").doc(eventId);
   await db.runTransaction(async tx => {
     const snap = await tx.get(ref);
@@ -240,5 +240,65 @@ exports.listPendingSchoolCalendarEvents = onCall({ region: "asia-south1" }, asyn
     .filter(item => item.createdByUid !== actor.uid)
     .sort((a, b) => String(a.startDate || "").localeCompare(String(b.startDate || "")));
   return { items, limit: 50 };
+});
+
+exports.resubmitRejectedSchoolNotice = onCall({ region: "asia-south1" }, async request => {
+  const actor = await actorFor(request);
+  requireRole(actor, NOTICE_AUTHORS);
+  const data = request.data || {};
+  const noticeId = clean(data.noticeId, 128);
+  const title = clean(data.title, 140);
+  const body = clean(data.body, 4000);
+  const audience = normalizeAudience(data.audience);
+  fail(!noticeId || !title || !body || !hasValidAudience(audience), "Provide a valid notice ID, title, message and supported audience.");
+  const ref = db.collection("schoolNotices").doc(noticeId);
+  await db.runTransaction(async tx => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) throw new HttpsError("not-found", "Notice not found.");
+    const notice = snap.data();
+    if (notice.authorUid !== actor.uid) throw new HttpsError("permission-denied", "Only the original author can resubmit this notice.");
+    if (notice.status !== "rejected") throw new HttpsError("failed-precondition", "Only rejected notices can be resubmitted.");
+    tx.update(ref, {
+      title, body, audience, category: clean(data.category, 40) || "general",
+      status: "pending_approval", reviewReason: FieldValue.delete(),
+      reviewedByUid: FieldValue.delete(), reviewedByRole: FieldValue.delete(),
+      reviewedAt: FieldValue.delete(), updatedAt: FieldValue.serverTimestamp(),
+      resubmittedAt: FieldValue.serverTimestamp(), resubmissionCount: (notice.resubmissionCount || 0) + 1
+    });
+    audit(tx, actor, "school_notice_resubmitted", "schoolNotices", noticeId, { resubmissionCount: (notice.resubmissionCount || 0) + 1 });
+  });
+  return { success: true, noticeId, status: "pending_approval" };
+});
+
+exports.resubmitRejectedSchoolCalendarEvent = onCall({ region: "asia-south1" }, async request => {
+  const actor = await actorFor(request);
+  requireRole(actor, CALENDAR_AUTHORS);
+  const data = request.data || {};
+  const eventId = clean(data.eventId, 128);
+  const title = clean(data.title, 140);
+  const description = clean(data.description, 2000);
+  const startDate = data.startDate || "";
+  const endDate = data.endDate || startDate;
+  const audience = normalizeAudience(data.audience);
+  fail(!eventId || !title || !validDate(startDate) || !validDate(endDate) || endDate < startDate || !hasValidAudience(audience), "Provide valid event details, dates and supported audience.");
+  const ref = db.collection("schoolCalendarEvents").doc(eventId);
+  await db.runTransaction(async tx => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) throw new HttpsError("not-found", "Calendar event not found.");
+    const event = snap.data();
+    if (event.createdByUid !== actor.uid) throw new HttpsError("permission-denied", "Only the original author can resubmit this event.");
+    if (event.status !== "rejected") throw new HttpsError("failed-precondition", "Only rejected events can be resubmitted.");
+    const count = (event.resubmissionCount || 0) + 1;
+    tx.update(ref, {
+      title, description, startDate, endDate, audience,
+      category: clean(data.category, 40) || "school", location: clean(data.location, 160),
+      status: "pending_approval", reviewReason: FieldValue.delete(),
+      reviewedByUid: FieldValue.delete(), reviewedByRole: FieldValue.delete(),
+      reviewedAt: FieldValue.delete(), updatedAt: FieldValue.serverTimestamp(),
+      resubmittedAt: FieldValue.serverTimestamp(), resubmissionCount: count
+    });
+    audit(tx, actor, "school_calendar_event_resubmitted", "schoolCalendarEvents", eventId, { resubmissionCount: count });
+  });
+  return { success: true, eventId, status: "pending_approval" };
 });
 
