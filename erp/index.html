@@ -291,56 +291,69 @@
             <!-- DASHBOARD SUMMARY -->
 
 
-            <!-- QUICK ACCESS -->
-            <div class="mt-8 flex items-center justify-between gap-3">
-
-              <div>
-                <h3 class="text-lg font-bold text-slate-900">
-                  Quick access
-                </h3>
-
-                <p class="text-sm text-slate-500 mt-1">
-                  Open the available teaching tools.
-                </p>
-              </div>
-
-              <button
-                class="text-sm font-semibold text-bjred hover:underline"
-                data-go="teachingView">
-                View teaching tools →
-              </button>
-
-            </div>
-
-            <div id="quickLinksGrid"
-              class="mt-4 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
-            </div>
-
-
-
-            <!-- ADMISSION QUICK SHORTCUTS -->
+            <!-- DASHBOARD CATEGORIES -->
             <div class="mt-8">
-              <div class="mb-4">
-                <h3 class="text-lg font-bold text-slate-900">Admission shortcuts</h3>
-                <p class="text-sm text-slate-500 mt-1">Quick access to student enquiries and calling allocation.</p>
+              <div class="mb-5">
+                <h3 class="text-xl font-extrabold text-slate-900">Your Workspace</h3>
+                <p class="mt-1 text-sm text-slate-500">Choose a section to access the tools and activities you need.</p>
               </div>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <a href="admission/enq.html" class="card-hover flex items-center gap-4 bg-white rounded-2xl p-5 border border-slate-100 shadow-soft hover:border-red-200">
-                  <div class="h-12 w-12 shrink-0 rounded-xl bg-red-50 flex items-center justify-center text-2xl">📝</div>
-                  <div class="min-w-0">
-                    <h3 class="font-bold text-slate-900">New Student Enquiry</h3>
-                    <p class="mt-1 text-sm text-slate-500">Record a new admission enquiry.</p>
-                    <span class="mt-3 inline-block text-sm text-bjred font-semibold">Open enquiry form →</span>
+
+              <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <!-- ACADEMIC CATEGORY -->
+                <section class="rounded-2xl border border-blue-100 bg-blue-50/60 p-5 sm:p-6">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="h-12 w-12 rounded-xl bg-blue-100 flex items-center justify-center text-2xl" aria-hidden="true">🎓</div>
+                    <div>
+                      <h3 class="text-lg font-extrabold text-slate-900">Academic</h3>
+                      <p class="text-sm text-slate-600">Teaching, learning and classroom communication</p>
+                    </div>
                   </div>
-                </a>
-                <a href="admission/allocation.html" class="card-hover flex items-center gap-4 bg-white rounded-2xl p-5 border border-slate-100 shadow-soft hover:border-red-200">
-                  <div class="h-12 w-12 shrink-0 rounded-xl bg-red-50 flex items-center justify-center text-2xl">📋</div>
-                  <div class="min-w-0">
-                    <h3 class="font-bold text-slate-900">Enquiry Allocation & Calling</h3>
-                    <p class="mt-1 text-sm text-slate-500">View allocated leads and follow-ups.</p>
-                    <span class="mt-3 inline-block text-sm text-bjred font-semibold">Open allocation board →</span>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <a href="https://classroom.google.com/" target="_blank" rel="noopener noreferrer" class="card-hover flex items-center gap-3 rounded-xl border border-blue-100 bg-white p-4">
+                      <span class="text-2xl" aria-hidden="true">📚</span>
+                      <span class="min-w-0">
+                        <span class="block font-bold text-slate-900">Google Classroom</span>
+                        <span class="mt-1 block text-xs text-slate-500">Manage classes, assignments and student learning.</span>
+                      </span>
+                    </a>
+                    <a href="https://mail.google.com/" target="_blank" rel="noopener noreferrer" class="card-hover flex items-center gap-3 rounded-xl border border-blue-100 bg-white p-4">
+                      <span class="text-2xl" aria-hidden="true">✉️</span>
+                      <span class="min-w-0">
+                        <span class="block font-bold text-slate-900">School Gmail</span>
+                        <span class="mt-1 block text-xs text-slate-500">Access official school email and updates.</span>
+                      </span>
+                    </a>
                   </div>
-                </a>
+                  <button class="mt-4 text-sm font-bold text-blue-700 hover:underline" data-go="teachingView">View all academic tools →</button>
+                </section>
+
+                <!-- ADMISSION CATEGORY -->
+                <section class="rounded-2xl border border-red-100 bg-red-50/60 p-5 sm:p-6">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="h-12 w-12 rounded-xl bg-red-100 flex items-center justify-center text-2xl" aria-hidden="true">🏫</div>
+                    <div>
+                      <h3 class="text-lg font-extrabold text-slate-900">Admission</h3>
+                      <p class="text-sm text-slate-600">Student enquiries, calling and follow-ups</p>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <a href="admission/enq.html" class="card-hover flex items-center gap-3 rounded-xl border border-red-100 bg-white p-4">
+                      <span class="text-2xl" aria-hidden="true">📝</span>
+                      <span class="min-w-0">
+                        <span class="block font-bold text-slate-900">Enter Admission Data</span>
+                        <span class="mt-1 block text-xs text-slate-500">Record a new student admission enquiry.</span>
+                      </span>
+                    </a>
+                    <a href="admission/allocation.html" class="card-hover flex items-center gap-3 rounded-xl border border-red-100 bg-white p-4">
+                      <span class="text-2xl" aria-hidden="true">📋</span>
+                      <span class="min-w-0">
+                        <span class="block font-bold text-slate-900">Call Admission Data</span>
+                        <span class="mt-1 block text-xs text-slate-500">View assigned leads, calls and follow-ups.</span>
+                      </span>
+                    </a>
+                  </div>
+                  <button class="mt-4 text-sm font-bold text-bjred hover:underline" data-go="admissionsView">View all admission activities →</button>
+                </section>
               </div>
             </div>
 
@@ -441,7 +454,7 @@
                 <div class="flex items-start gap-4">
                   <div class="h-12 w-12 shrink-0 rounded-xl bg-red-50 flex items-center justify-center text-2xl">📝</div>
                   <div class="min-w-0">
-                    <h3 class="font-bold text-slate-900">New Student Enquiry</h3>
+                    <h3 class="font-bold text-slate-900">Enter Admission Data</h3>
                     <p class="mt-1 text-sm text-slate-500">Enter a new admission enquiry manually or photograph the printed enquiry form.</p>
                     <span class="mt-3 inline-block text-sm font-semibold text-bjred">Open enquiry form →</span>
                   </div>
@@ -451,7 +464,7 @@
                 <div class="flex items-start gap-4">
                   <div class="h-12 w-12 shrink-0 rounded-xl bg-red-50 flex items-center justify-center text-2xl">📋</div>
                   <div class="min-w-0">
-                    <h3 class="font-bold text-slate-900">Enquiry Allocation & Calling</h3>
+                    <h3 class="font-bold text-slate-900">Call Admission Data & Calling</h3>
                     <p class="mt-1 text-sm text-slate-500">View enquiry allocation, assigned calling teacher and follow-up progress.</p>
                     <span class="mt-3 inline-block text-sm font-semibold text-bjred">Open allocation board →</span>
                   </div>
