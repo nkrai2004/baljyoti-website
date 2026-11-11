@@ -1,4 +1,0 @@
-uid,fullName,email,role,accountType,status,mobile,admissionNumber,linkedAdmissionNumbers
-FIREBASE_AUTH_UID_001,Sample Teacher,teacher@baljyoti.com,teacher,staff,active,9876543210,,
-FIREBASE_AUTH_UID_002,Sample Parent,parent@example.com,parent,parent,active,9876543211,ADM2026001,ADM2026001|ADM2026002
-FIREBASE_AUTH_UID_003,Sample Student,,student,student,active,,ADM2026001,
