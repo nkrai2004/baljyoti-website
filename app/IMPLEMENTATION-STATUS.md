@@ -204,3 +204,9 @@ Committed to `main`:
 **Latest verification:** the earlier CI run for the rules and policy suite completed successfully with 14/14 tests passing. The new full callable-emulator CI run for commit `944ab553da6952e792aa3154437f7d16f321dc9b` was still running at the time of this update; its callable integration result is not yet confirmed. A successful policy/rules run is not a substitute for this integration result.
 
 **Known dependency note:** the CI dependency installation reported 15 npm audit advisories (9 moderate, 6 high) in the resolved dependency tree. No automatic or force upgrade was applied. Review the audit details and update dependencies deliberately before production release.
+
+### Callable emulator test findings and correction
+
+- The first callable-emulator run exposed a real wiring defect: the service module called shared policy helpers without importing them. The emulator caught this as an internal callable error. The policy import is now added in commit `86e699c7c392f25d6eba90e4db6feac90c0d874e`.
+- The same run showed the Functions emulator attempting to retrieve SMTP secrets from Google Secret Manager during local startup. CI now supplies dummy SMTP values through a temporary emulator-only `functions/.secret.local`; no real SMTP credentials are used.
+- A new CI run was started after these corrections. Its result is pending and must be checked before claiming callable integration tests pass.
