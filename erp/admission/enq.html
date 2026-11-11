@@ -72,6 +72,17 @@ document.getElementById('enquiryForm').addEventListener('submit', async function
     if(!firebase.apps.length) firebase.initializeApp(config);
     firebase.auth().onAuthStateChanged(function(user){
       if(user && user.email && user.email.toLowerCase().endsWith("@baljyoti.com")){
+        // Automatically fill the enquiry tracking fields from the signed-in school account.
+        const staffNameField = document.getElementById("teacher");
+        const staffEmailField = document.getElementById("staffEmail");
+        if (staffNameField) {
+          staffNameField.value = user.displayName || user.email.split("@")[0];
+          staffNameField.readOnly = true;
+        }
+        if (staffEmailField) {
+          staffEmailField.value = user.email;
+          staffEmailField.readOnly = true;
+        }
         document.getElementById("authGate").style.display="none";
         document.getElementById("protectedContent").style.display="block";
       }else{
