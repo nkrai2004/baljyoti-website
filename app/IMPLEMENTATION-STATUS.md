@@ -164,3 +164,25 @@ Committed to `main`:
 **Verification status:** GitHub confirms the test files, emulator configuration and workflow are committed. The emulator suite and GitHub Actions run have not yet been independently observed as passing in this phase. Do not treat the tests as executed or as proof of callable authorization. These are Firestore client-rules tests; they do not yet exercise callable functions, Admin SDK transactions, role-specific review/resubmission flows, or browser end-to-end behavior.
 
 **Deployment status:** no Firebase deployment was run. No staging or production data was changed. Existing staging deployment workflow was not invoked.
+
+## Phase 8 — Callable authorization policy and test coverage
+
+Committed to `main`:
+
+- Extracted the authorization decisions used by school workflow callables into `functions/workflow-policy.js` so the same policy logic can be tested independently.
+- Updated `functions/school-services.js` to use the shared policy for active-profile/email matching, role checks, task status ownership, reviewer eligibility, prevention of self-review, and author-only resubmission of rejected records.
+- Added `functions/workflow-policy.test.js` with synthetic role/identity cases:
+  - active profile and matching email required;
+  - leadership-only task assignment/status authority;
+  - separate notice-author and calendar-author role sets;
+  - only Super Admin, Director and Principal are reviewers;
+  - authors cannot review their own submissions;
+  - only the original author can resubmit, and only while status is rejected.
+- Added policy tests to the standard test suite and added the policy module to JavaScript syntax checks.
+- Existing Firestore emulator rules tests remain part of the same CI test command.
+
+**Verification:** GitHub Actions started the security workflow for Phase 7 and Phase 8 commits. At the time this status entry was written, dependency installation was still running and test execution had not yet completed. Results must be checked before treating this phase as passing.
+
+**Scope boundary:** these are tested policy decisions called by the callable implementations, plus Firestore client-rules emulator tests. They are not a full end-to-end callable emulator test: Admin SDK transaction behavior, actual callable HTTP invocation, Authentication emulator identity issuance, concurrent review/resubmission races, and browser flows remain unverified. No synthetic users were created in the real staging Firebase project.
+
+**Staging/release boundary:** no Functions deployment was performed. The existing staging deploy workflow was not invoked and currently only names the two user-administration functions; it does not deploy the school workflow callables. Do not use the live workflow forms until the school workflow functions have been separately deployed to staging and callable integration tests pass. Production Firebase and ERP1 remain untouched.
