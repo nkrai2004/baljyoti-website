@@ -107,7 +107,7 @@ exports.reviewSchoolNotice = onCall({ region: "asia-south1" }, async request => 
     if (notice.status !== "pending_approval") throw new HttpsError("failed-precondition", "Only pending notices can be reviewed.");
     if (notice.authorUid === actor.uid) throw new HttpsError("permission-denied", "Authors cannot approve their own notices.");
     tx.update(ref, { status: decision === "approve" ? "published" : "rejected", reviewedByUid: actor.uid, reviewedByRole: actor.role, reviewReason: reason, reviewedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
-    audit(tx, actor, "school_notice_" + decision + "d", "schoolNotices", noticeId, { authorUid: notice.authorUid });
+    audit(tx, actor, decision === "approve" ? "school_notice_approved" : "school_notice_rejected", "schoolNotices", noticeId, { authorUid: notice.authorUid });
   });
   return { success: true, noticeId, status: decision === "approve" ? "published" : "rejected" };
 });
@@ -122,7 +122,7 @@ exports.submitSchoolCalendarEvent = onCall({ region: "asia-south1" }, async requ
   const endDate = data.endDate || startDate;
   fail(!title || !validDate(startDate) || !validDate(endDate) || endDate < startDate, "Provide a title and valid event dates.");
   const audience = Array.isArray(data.audience) ? [...new Set(data.audience.map(x => clean(x, 80)).filter(Boolean))] : [];
-  fail(audience.length > 100, "An event can target up to 100 audience groups.");
+  fail(!audience.length || audience.length > 100, "Choose 1–100 audience groups for this event.");
   const ref = db.collection("schoolCalendarEvents").doc();
   await db.runTransaction(async tx => {
     tx.create(ref, { title, description, startDate, endDate, audience, category: clean(data.category, 40) || "school", location: clean(data.location, 160), createdByUid: actor.uid, createdByRole: actor.role, status: "pending_approval", createdAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
@@ -147,7 +147,7 @@ exports.reviewSchoolCalendarEvent = onCall({ region: "asia-south1" }, async requ
     if (event.status !== "pending_approval") throw new HttpsError("failed-precondition", "Only pending events can be reviewed.");
     if (event.createdByUid === actor.uid) throw new HttpsError("permission-denied", "Authors cannot approve their own events.");
     tx.update(ref, { status: decision === "approve" ? "published" : "rejected", reviewedByUid: actor.uid, reviewedByRole: actor.role, reviewReason: reason, reviewedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
-    audit(tx, actor, "school_calendar_event_" + decision + "d", "schoolCalendarEvents", eventId, { createdByUid: event.createdByUid });
+    audit(tx, actor, decision === "approve" ? "school_calendar_event_approved" : "school_calendar_event_rejected", "schoolCalendarEvents", eventId, { createdByUid: event.createdByUid });
   });
   return { success: true, eventId, status: decision === "approve" ? "published" : "rejected" };
 });
