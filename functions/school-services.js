@@ -21,13 +21,13 @@ async function actorFor(request) {
   const snap = await db.collection("users").doc(request.auth.uid).get();
   if (!snap.exists) throw new HttpsError("permission-denied", "Your school profile is missing.");
   const profile = snap.data() || {};
-  if (profile.status !== "active" || String(profile.email || "").toLowerCase() !== String(request.auth.token.email || "").toLowerCase()) {
+  if (!isActiveProfile(profile, request.auth.token.email)) {
     throw new HttpsError("permission-denied", "Your school profile is not active or does not match your Google account.");
   }
   return { uid: request.auth.uid, email: request.auth.token.email || "", role: String(profile.role || "").toLowerCase(), profile };
 }
 function requireRole(actor, roles) {
-  if (!roles.has(actor.role)) throw new HttpsError("permission-denied", "Your role cannot perform this action.");
+  if (!hasRole(actor.role, roles)) throw new HttpsError("permission-denied", "Your role cannot perform this action.");
 }
 function audit(tx, actor, action, collection, recordId, extra) {
   const ref = db.collection("auditLogs").doc();
@@ -68,7 +68,7 @@ exports.updateSchoolTaskStatus = onCall({ region: "asia-south1" }, async request
     const snap = await tx.get(ref);
     if (!snap.exists) throw new HttpsError("not-found", "Task not found.");
     const task = snap.data();
-    if (task.assigneeUid !== actor.uid) requireRole(actor, LEADERS);
+    if (!canUpdateTask(actor.uid, task.assigneeUid, actor.role)) requireRole(actor, LEADERS);
     tx.update(ref, { status, updatedAt: FieldValue.serverTimestamp(), lastUpdatedByUid: actor.uid });
     audit(tx, actor, "school_task_status_changed", "schoolTasks", taskId, { previousStatus: task.status, newStatus: status });
   });
@@ -105,7 +105,7 @@ exports.reviewSchoolNotice = onCall({ region: "asia-south1" }, async request => 
     if (!snap.exists) throw new HttpsError("not-found", "Notice not found.");
     const notice = snap.data();
     if (notice.status !== "pending_approval") throw new HttpsError("failed-precondition", "Only pending notices can be reviewed.");
-    if (notice.authorUid === actor.uid) throw new HttpsError("permission-denied", "Authors cannot approve their own notices.");
+    if (!canReviewSubmission(actor.uid, notice.authorUid, actor.role)) throw new HttpsError("permission-denied", "Your role cannot review this notice or you are its author.");
     tx.update(ref, { status: decision === "approve" ? "published" : "rejected", reviewedByUid: actor.uid, reviewedByRole: actor.role, reviewReason: reason, reviewedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
     audit(tx, actor, decision === "approve" ? "school_notice_approved" : "school_notice_rejected", "schoolNotices", noticeId, { authorUid: notice.authorUid });
   });
@@ -145,7 +145,7 @@ exports.reviewSchoolCalendarEvent = onCall({ region: "asia-south1" }, async requ
     if (!snap.exists) throw new HttpsError("not-found", "Calendar event not found.");
     const event = snap.data();
     if (event.status !== "pending_approval") throw new HttpsError("failed-precondition", "Only pending events can be reviewed.");
-    if (event.createdByUid === actor.uid) throw new HttpsError("permission-denied", "Authors cannot approve their own events.");
+    if (!canReviewSubmission(actor.uid, event.createdByUid, actor.role)) throw new HttpsError("permission-denied", "Your role cannot review this event or you are its author.");
     tx.update(ref, { status: decision === "approve" ? "published" : "rejected", reviewedByUid: actor.uid, reviewedByRole: actor.role, reviewReason: reason, reviewedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
     audit(tx, actor, decision === "approve" ? "school_calendar_event_approved" : "school_calendar_event_rejected", "schoolCalendarEvents", eventId, { createdByUid: event.createdByUid });
   });
