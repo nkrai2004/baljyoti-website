@@ -36,6 +36,21 @@ Committed to `main`:
 
 **Boundary:** these are module-level exceptions only. They do not grant access to individual student, parent, fee, HR, attendance or other records. Record-level security remains disabled until each data collection has approved rules and tests.
 
+## Phase 3 — Shared school services foundation
+
+Committed to `main`:
+
+- Added trusted callable workflows for task creation and assignee status updates.
+- Added notice submission with a mandatory pending-approval state and Director/Principal/Super Admin review.
+- Added calendar event submission with explicit audience groups and a mandatory pending-approval state.
+- Prevented authors from approving their own notices or calendar events.
+- Added actor, action, target, timestamp and workflow metadata to audit events.
+- Added input limits, active-profile checks, role checks and date validation.
+- Added logical schemas for `schoolTasks`, `schoolNotices` and `schoolCalendarEvents`.
+- Updated the Functions lint command to syntax-check both the entry point and shared service module.
+
+**Not yet connected:** no browser-facing list/read interface is enabled. Firestore's catch-all deny rule still blocks direct client access to these records. The callable services use the Admin SDK for controlled writes; audience-aware reads and scoped task views are a separate security phase.
+
 ## Operational status — important
 
 The universal home is a navigation and experience foundation. It does not make unconnected modules operational.
