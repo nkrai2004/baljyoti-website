@@ -175,7 +175,7 @@ function noticeView(doc) {
     id: doc.id, title: x.title || "", body: x.body || "",
     audience: Array.isArray(x.audience) ? x.audience : [],
     category: x.category || "general", authorUid: x.authorUid || "",
-    authorRole: x.authorRole || "", status: x.status || "",
+    authorRole: x.authorRole || "", status: x.status || "", reviewReason: x.reviewReason || "",
     createdAt: dateValue(x.createdAt), reviewedAt: dateValue(x.reviewedAt)
   };
 }
@@ -187,7 +187,7 @@ function eventView(doc) {
     audience: Array.isArray(x.audience) ? x.audience : [],
     category: x.category || "school", location: x.location || "",
     createdByUid: x.createdByUid || "", createdByRole: x.createdByRole || "",
-    status: x.status || "", createdAt: dateValue(x.createdAt),
+    status: x.status || "", reviewReason: x.reviewReason || "", createdAt: dateValue(x.createdAt),
     reviewedAt: dateValue(x.reviewedAt)
   };
 }
