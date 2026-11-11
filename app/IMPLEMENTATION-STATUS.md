@@ -51,6 +51,24 @@ Committed to `main`:
 
 **Not yet connected:** no browser-facing list/read interface is enabled. Firestore's catch-all deny rule still blocks direct client access to these records. The callable services use the Admin SDK for controlled writes; audience-aware reads and scoped task views are a separate security phase.
 
+
+## Phase 4 — Scoped reads and initial workspace connection
+
+Committed to `main`:
+
+- Added bounded callable reads for tasks assigned to the signed-in user.
+- Added author-only reads for a user's own notice and calendar submissions.
+- Added reviewer-only pending notice and calendar queues for Super Admin, Director and Principal.
+- Read responses expose an explicit allowlist of fields and are capped at 50 records per call.
+- Connected the universal My Work view to the assigned-task list and task status updates.
+- Connected management review queues to notice and calendar approve/reject callables.
+- Kept published notice/event audience reads disabled. Audience labels are not trusted as proof of class, section or responsibility membership.
+- Kept Firestore operational collection rules deny-by-default; browser access uses callable services rather than direct collection queries.
+
+**Not yet connected:** notice/event submission forms, author submission history in the UI, published audience-aware notices, and a full academic calendar view. The current review queues are bounded first-page lists (up to 50 records), not a paginated archive.
+
+**Verification boundary:** source-level syntax and static checks only. No callable was deployed or exercised against Firebase, no Firestore emulator/security tests were run, and no browser end-to-end test was performed. The UI is committed but not confirmed deployed at `https://baljyoti.com/app/`.
+
 ## Operational status — important
 
 The universal home is a navigation and experience foundation. It does not make unconnected modules operational.
