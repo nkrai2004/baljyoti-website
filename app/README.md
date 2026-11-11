@@ -55,3 +55,9 @@ Do not modify `/erp1/` or change production Firebase rules. The repository conta
 - `demo/sample-data.js`: synthetic cross-module demo records (not automatically seeded to Firestore).
 - `demo/README.md`: safe staging demo-account setup; Firebase Authentication identities must be created in the staging console before profiles can be assigned.
 - Current status remains prototype: module edits are not persistent, operational Firestore collections remain denied, and demo Auth accounts have not been provisioned. Do not use real school data yet.
+
+
+## Implementation status
+
+- [Universal School OS implementation status](IMPLEMENTATION-STATUS.md)
+- [Universal experience design review](UNIVERSAL-UX-DESIGN-REVIEW.md)
