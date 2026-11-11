@@ -242,3 +242,6 @@ Committed to `main`:
 **Verification boundary:** GitHub confirms the demo page is committed to `main`. This is a browser-local demonstration, not a production workflow or shared multi-user database. No Firebase collections, Firestore rules, staging services or production records were changed. Browser end-to-end and accessibility testing are still pending. Do not represent the sample data as official school records or the modules as production-ready.
 
 **Next:** perform browser smoke tests on desktop and mobile, then connect modules incrementally to isolated staging services with per-record authorization and automated tests. Prioritize student/parent master data, admissions, attendance, timetable and assessment before finance and HR.
+
+
+- Added a link to the demo workspace under the authenticated School OS Explore page so users can find the demo from the main app. This is navigation only and does not change the demo's browser-local storage or security boundary.
