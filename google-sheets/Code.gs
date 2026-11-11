@@ -172,7 +172,7 @@ function sheet_(name) {
   return sh;
 }
 function index_(headers) { const out = {}; headers.forEach((h, i) => out[String(h)] = i); return out; }
-function clean_(v, max) { return String(v == null ? "" : v).trim().replace(/\\s+/g, " ").slice(0, max); }
+function clean_(v, max) { return String(v == null ? "" : v).trim().replace(/\s+/g, " ").slice(0, max); }
 function constantTimeEqual_(a, b) {
   if (a.length !== b.length) return false;
   let diff = 0; for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
