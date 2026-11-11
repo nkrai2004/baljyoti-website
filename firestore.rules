@@ -38,6 +38,15 @@ service cloud.firestore {
       allow create, update, delete: if superAdmin();
     }
 
+
+    // Per-user module overrides are private to the target user and Super Admin.
+    // Only the trusted callable function writes these records and audit entries.
+    match /userModuleOverrides/{uid} {
+      allow get: if activeUser() && (request.auth.uid == uid || superAdmin());
+      allow list: if superAdmin();
+      allow create, update, delete: if false;
+    }
+
     // All operational collections remain closed until each collection has
     // approved schema-specific and record-level rules plus role tests.
     match /{document=**} {
