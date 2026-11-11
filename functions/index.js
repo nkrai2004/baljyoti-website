@@ -334,3 +334,7 @@ exports.setUserModuleOverrides = onCall({ region: "asia-south1" }, async request
 
 // Shared server-validated school workflows.
 Object.assign(exports, require("./school-services"));
+
+
+// Persistent student master-data services.
+Object.assign(exports, require("./student-services"));
