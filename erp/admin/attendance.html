@@ -8,41 +8,96 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <style>body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}</style>
+  <style>
+    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+    .calendar-cell{min-height:76px}
+    .status-dot{width:8px;height:8px;border-radius:9999px;display:inline-block}
+    button:focus-visible,a:focus-visible{outline:3px solid rgba(181,18,27,.3);outline-offset:2px}
+    @media(max-width:640px){.calendar-cell{min-height:58px}.calendar-cell .day-status{font-size:9px}}
+  </style>
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-800">
   <header class="bg-[#b5121b] px-4 py-4 text-white shadow">
-    <div class="mx-auto flex max-w-5xl items-center justify-between gap-3">
+    <div class="mx-auto flex max-w-6xl items-center justify-between gap-3">
       <div><div class="font-extrabold">Bal Jyoti Public School</div><div class="text-xs text-red-100">Teacher ERP · My Attendance</div></div>
       <a href="../index.html" class="rounded-lg border border-white/50 px-3 py-2 text-sm font-semibold hover:bg-white/10">Dashboard</a>
     </div>
   </header>
-  <main class="mx-auto max-w-5xl px-4 py-8">
-    <div class="mb-6">
-      <p class="text-sm font-semibold text-[#b5121b]">ADMIN</p>
-      <h1 class="mt-1 text-2xl font-extrabold text-slate-900">My Attendance</h1>
-      <p class="mt-1 text-sm text-slate-500">Your personal attendance record and monthly summary.</p>
+  <main class="mx-auto max-w-6xl px-4 py-7 sm:py-8">
+    <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+      <div><p class="text-sm font-semibold text-[#b5121b]">ADMIN / ATTENDANCE</p><h1 class="mt-1 text-2xl font-extrabold text-slate-900">My Attendance</h1><p class="mt-1 text-sm text-slate-500">Monthly attendance calendar and daily time records.</p></div>
+      <div class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-500">Attendance source: <span class="font-semibold text-slate-700">SalaryBox integration pending</span></div>
     </div>
     <div id="accessNotice" class="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">Checking your school account…</div>
-    <section class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-      
-      <div class="flex items-start gap-3">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-red-50 text-2xl">🕘</div>
-        <div><h2 class="font-bold text-slate-900">Attendance summary</h2><p class="mt-1 text-sm text-slate-500">Your attendance information will be displayed here.</p></div>
+
+    <section class="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p class="text-xs font-medium text-slate-500">Present</p><p id="presentCount" class="mt-2 text-2xl font-extrabold text-emerald-700">—</p></article>
+      <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p class="text-xs font-medium text-slate-500">Absent</p><p id="absentCount" class="mt-2 text-2xl font-extrabold text-rose-700">—</p></article>
+      <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p class="text-xs font-medium text-slate-500">Half Day</p><p id="halfCount" class="mt-2 text-2xl font-extrabold text-amber-700">—</p></article>
+      <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p class="text-xs font-medium text-slate-500">Attendance</p><p id="attendancePercent" class="mt-2 text-2xl font-extrabold text-slate-800">—</p></article>
+    </section>
+
+    <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-4 py-4 sm:px-5">
+        <div><h2 class="font-bold text-slate-900">Monthly Calendar</h2><p class="mt-1 text-xs text-slate-500">Select a month to view your attendance summary.</p></div>
+        <div class="flex items-center gap-2">
+          <button id="prevMonth" type="button" aria-label="Previous month" class="rounded-lg border border-slate-200 px-3 py-2 text-slate-700 hover:bg-slate-50">‹</button>
+          <div id="monthLabel" class="min-w-32 text-center text-sm font-bold text-slate-800"></div>
+          <button id="nextMonth" type="button" aria-label="Next month" class="rounded-lg border border-slate-200 px-3 py-2 text-slate-700 hover:bg-slate-50">›</button>
+        </div>
       </div>
-      <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-xs text-slate-500">Present</p><p class="mt-2 text-2xl font-extrabold text-slate-800">—</p></div>
-        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-xs text-slate-500">Absent</p><p class="mt-2 text-2xl font-extrabold text-slate-800">—</p></div>
-        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-xs text-slate-500">Attendance %</p><p class="mt-2 text-2xl font-extrabold text-slate-800">—</p></div>
-      </div>
-      <div class="mt-6 rounded-xl border border-dashed border-slate-300 p-5 text-center">
-        <p class="font-semibold text-slate-800">Attendance data connection pending</p>
-        <p class="mt-2 text-sm text-slate-500">This page is ready. Once the school attendance register is connected, your daily records and monthly totals can appear here.</p>
+      <div class="p-3 sm:p-5">
+        <div class="mb-3 flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-600">
+          <span class="inline-flex items-center gap-2"><i class="status-dot bg-emerald-500"></i>Present</span>
+          <span class="inline-flex items-center gap-2"><i class="status-dot bg-rose-500"></i>Absent</span>
+          <span class="inline-flex items-center gap-2"><i class="status-dot bg-amber-500"></i>Half Day - Morning</span>
+          <span class="inline-flex items-center gap-2"><i class="status-dot bg-orange-500"></i>Half Day - Evening</span>
+        </div>
+        <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-500">
+          <div class="py-2">Sun</div><div class="py-2">Mon</div><div class="py-2">Tue</div><div class="py-2">Wed</div><div class="py-2">Thu</div><div class="py-2">Fri</div><div class="py-2">Sat</div>
+        </div>
+        <div id="calendarGrid" class="grid grid-cols-7 gap-1"></div>
+        <p class="mt-3 text-xs text-slate-400">Calendar dates are shown for layout preview. Attendance statuses will appear after the SalaryBox connection is configured.</p>
       </div>
     </section>
+
+    <section class="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="border-b border-slate-100 px-4 py-4 sm:px-5"><h2 class="font-bold text-slate-900">Daily Attendance Details</h2><p class="mt-1 text-xs text-slate-500">Check-in, check-out and attendance status for the selected month.</p></div>
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[650px] text-left text-sm">
+          <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th class="px-4 py-3">Date</th><th class="px-4 py-3">In Time</th><th class="px-4 py-3">Out Time</th><th class="px-4 py-3">Status</th></tr></thead>
+          <tbody id="attendanceRows"><tr><td colspan="4" class="px-4 py-8 text-center text-sm text-slate-500">Attendance data will appear here after SalaryBox is connected.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+    <div class="mt-5 rounded-xl border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-600">
+      <p class="font-semibold text-slate-800">SalaryBox connection pending</p>
+      <p class="mt-1">This is the new attendance interface. No attendance figures or timings are being assumed. Once API access is confirmed, the calendar, monthly counts, IN/OUT times and statuses will populate from SalaryBox.</p>
+    </div>
     <p class="mt-6 text-center text-xs text-slate-400">© 2026 Bal Jyoti Public School</p>
   </main>
   <script>
+    const calendarGrid=document.getElementById("calendarGrid");
+    const monthLabel=document.getElementById("monthLabel");
+    let shownMonth=new Date(); shownMonth.setDate(1);
+    function renderCalendar(){
+      const year=shownMonth.getFullYear(),month=shownMonth.getMonth();
+      monthLabel.textContent=shownMonth.toLocaleDateString("en-IN",{month:"long",year:"numeric"});
+      calendarGrid.innerHTML="";
+      const firstDay=new Date(year,month,1).getDay();
+      const days=new Date(year,month+1,0).getDate();
+      for(let i=0;i<firstDay;i++){const blank=document.createElement("div");blank.className="calendar-cell rounded-lg bg-slate-50/60";calendarGrid.appendChild(blank);}
+      for(let day=1;day<=days;day++){
+        const cell=document.createElement("div");
+        cell.className="calendar-cell rounded-lg border border-slate-100 bg-white p-1.5 text-left sm:p-2";
+        const number=document.createElement("div");number.className="text-xs font-semibold text-slate-700";number.textContent=day;
+        const status=document.createElement("div");status.className="day-status mt-2 text-[10px] text-slate-300";status.textContent="—";
+        cell.append(number,status);calendarGrid.appendChild(cell);
+      }
+    }
+    document.getElementById("prevMonth").addEventListener("click",()=>{shownMonth.setMonth(shownMonth.getMonth()-1);renderCalendar();});
+    document.getElementById("nextMonth").addEventListener("click",()=>{shownMonth.setMonth(shownMonth.getMonth()+1);renderCalendar();});
+    renderCalendar();
     const config={apiKey:"AIzaSyB2SGgV_zUFOyOGIIM27H5HNQYlO5WdFEY",authDomain:"baljyoti-erp.firebaseapp.com",projectId:"baljyoti-erp",appId:"1:422855577454:web:9bccb80cc472d02275bb7f"};
     const notice=document.getElementById("accessNotice");
     try{
