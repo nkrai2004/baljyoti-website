@@ -36,8 +36,8 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6MEYBiikPU5JsHE7kG
 document.getElementById('enquiryForm').addEventListener('submit', async function(e){
   e.preventDefault();
   if(!this.reportValidity()) return;
-  const m=document.getElementById('mobile').value.replace(/\\D/g,'');
-  if(!/^[6-9]\\d{9}$/.test(m)){alert('Enter a valid 10-digit mobile number.');return}
+  const m=document.getElementById('mobile').value.replace(/\D/g,'');
+  if(!/^[6-9]\d{9}$/.test(m)){alert('Enter a valid 10-digit mobile number.');return}
   const d=new URLSearchParams(new FormData(this));
   const s=document.getElementById('status');
   const submit=this.querySelector('button[type="submit"]');
