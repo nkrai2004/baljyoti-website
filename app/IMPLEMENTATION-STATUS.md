@@ -23,6 +23,19 @@ Implemented in this phase:
 - Added verified-email checking to the universal home.
 - Preserved the existing Firebase authentication and role/module grant checks.
 
+## Phase 2 — Individual module permission foundation
+
+Committed to `main`:
+
+- Added `userModuleOverrides/{uid}` as a separate per-user permission record with explicit `allow` and `deny` module lists.
+- Added the Super Admin callable `setUserModuleOverrides`. It validates active module IDs, prevents Super Admin overrides and conflicting allow/deny entries, and writes an audit event.
+- Added a Super Admin-only editor at `app/user-management/custom-access.html`, linked from Role & Module Access.
+- Updated sign-in, universal home and module entry checks to combine role grants with per-user exceptions.
+- Added Firestore rules allowing only the target active user and Super Admin to read an override. Client-side create/update/delete are denied; the callable uses the Admin SDK.
+- Existing operational data collections remain denied by the catch-all rule.
+
+**Boundary:** these are module-level exceptions only. They do not grant access to individual student, parent, fee, HR, attendance or other records. Record-level security remains disabled until each data collection has approved rules and tests.
+
 ## Operational status — important
 
 The universal home is a navigation and experience foundation. It does not make unconnected modules operational.
