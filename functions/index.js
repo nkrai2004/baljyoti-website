@@ -330,3 +330,7 @@ exports.setUserModuleOverrides = onCall({ region: "asia-south1" }, async request
   });
   return { success: true, allow: allowSet, deny: denySet };
 });
+
+
+// Shared server-validated school workflows.
+Object.assign(exports, require("./school-services"));
