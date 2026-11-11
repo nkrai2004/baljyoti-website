@@ -44,7 +44,7 @@ const periods=[
 ];
 const workload=[
 ["ARTI MISHRA","6","30","Mother Teacher"],["MEENAKSHI JAIN","6","30","Mother Teacher"],["PARVITA SAINI","6","30","Mother Teacher"],["SHAZIA ALI","4","24","English, Hindi, EVS, Art, GK"],["SONAM YADAV","5","30","English"],["SONIA JAIN","4","24","Hindi"],["RINKI SHARMA","5","30","Maths; Economics (XI–XII)"],["SUSHMA SHARMA","—","—","—"],["KAPILA","5","30","Hindi; Games"],["PREETI SINGH","5","24","English"],["SHIVANGI","2","12","English"],["RAJNI TIWARI","5","30","Science and Maths"],["POONAM TIWARI","4","24","Maths (XA/XB); Computer (III–VIII)"],["SONALI YADAV","5","30","Biology (XI/XII); Games II; Science XA/XB"],["VIPRA MALIK","—","—","SST"],["DEVENDRA MISHRA","—","—","Humanities subjects"],["SAPNA MISHRA","—","—","Science subjects"],["ANKUR SINGH","—","—","Senior classes"] ];
-const classTeachers=["SHAZIA ALI","SONAM YADAV","SONIA JAIN","RINKI SHARMA","NEELAM","KAPILA","VIPRA","SHIVANGI","RAJNI TIWARI","POONAM TIWARI","ARTI SHARMA","SONALI YADAV","PREETI SINGH","DEVENDRA MISHRA"];
+const classTeachers=["SHAZIA ALI","SONAM YADAV","SONIA JAIN","RINKI SHARMA","NEELAM","KAPILA","VIPRA","SHIVANGI","RAJNI TIWARI","POONAM TIWARI","ARTI SHARMA","SONALI YADAV","PREETI SINGH","DEVENDRA MISHRA","ANKUR SINGH","SAPNA MISHRA","SAPNA MISHRA"];
 const $=id=>document.getElementById(id);
 classes.forEach((c,i)=>{const o=document.createElement("option");o.value=i;o.textContent=c;$("classSelect").append(o)});
 function render(){const i=+$("classSelect").value;const day=$("daySelect").value;$("classTeacher").textContent="Class teacher: "+(classTeachers[i]||"Not listed in source")+(i===9?" · Co-teacher: Aditi Rajput":"");$("schedule").innerHTML="";
