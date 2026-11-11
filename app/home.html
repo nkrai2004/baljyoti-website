@@ -186,6 +186,12 @@
  }
  async function reviewItem(name,payload){
   if(!confirm(payload.decision==="approve"?"Approve this submission?":"Reject this submission?"))return;
+  if(payload.decision==="reject"){
+   const reason=prompt("Enter a rejection reason (at least 3 characters):");
+   if(reason===null)return;
+   if(reason.trim().length<3){alert("Please provide a clear rejection reason.");return}
+   payload.reason=reason.trim();
+  }
   try{await firebase.app().functions("asia-south1").httpsCallable(name)(payload);await loadSchoolWork(profile.role||"")}
   catch(error){alert(error.message||"The review decision could not be saved.")}
  }
@@ -201,8 +207,23 @@
    items.forEach(item=>{
     const date=calendar?item.startDate:(item.createdAt?new Date(item.createdAt).toLocaleDateString():"");
     const status=(item.status||"unknown").replace("_"," ");
+    const actions=[];
+    if(item.status==="rejected")actions.push(actionButton("Edit and resubmit",()=>{
+     if(calendar){
+      const form=$("calendarForm");form.elements.title.value=item.title||"";form.elements.description.value=item.description||"";
+      form.elements.startDate.value=item.startDate||"";form.elements.endDate.value=item.endDate||"";
+      form.elements.category.value=item.category||"school";form.elements.location.value=item.location||"";
+      form.querySelectorAll('input[name="audience"]').forEach(input=>input.checked=(item.audience||[]).includes(input.value));
+      form.dataset.resubmitId=item.id;form.scrollIntoView({behavior:"smooth",block:"center"});
+     }else{
+      const form=$("noticeForm");form.elements.title.value=item.title||"";form.elements.body.value=item.body||"";
+      form.elements.category.value=item.category||"general";
+      form.querySelectorAll('input[name="audience"]').forEach(input=>input.checked=(item.audience||[]).includes(input.value));
+      form.dataset.resubmitId=item.id;form.scrollIntoView({behavior:"smooth",block:"center"});
+     }
+    },true));
     host.append(serviceCard(item.title,calendar?item.description:item.body,
-      "Status: "+status+" · "+date+(item.reviewReason?" · Review: "+item.reviewReason:""),[]));
+      "Status: "+status+" · "+date+(item.reviewReason?" · Reviewer feedback: "+item.reviewReason:""),actions));
    });
   }catch(error){const e=document.createElement("div");e.className="empty";e.textContent=error.message||"Submission history could not be loaded.";host.append(e)}
  }
@@ -216,10 +237,12 @@
    if(!audience.length){status.textContent="Choose at least one audience.";return}
    const data=new FormData(noticeForm);
    try{
-    await firebase.app().functions("asia-south1").httpsCallable("submitSchoolNotice")({
-     title:data.get("title"),body:data.get("body"),category:data.get("category"),audience
-    });
-    noticeForm.reset();status.textContent="Submitted for approval.";
+    const editId=noticeForm.dataset.resubmitId;
+    const endpoint=editId?"resubmitRejectedSchoolNotice":"submitSchoolNotice";
+    const payload={title:data.get("title"),body:data.get("body"),category:data.get("category"),audience};
+    if(editId)payload.noticeId=editId;
+    await firebase.app().functions("asia-south1").httpsCallable(endpoint)(payload);
+    noticeForm.reset();delete noticeForm.dataset.resubmitId;status.textContent=editId?"Resubmitted for approval.":"Submitted for approval.";
     await renderSubmissionHistory("listMySchoolNoticeSubmissions","myNoticeSubmissions",false);
     if(["super_admin","director","principal"].includes(role))await loadApprovalQueues(firebase.app().functions("asia-south1"));
    }catch(error){status.textContent=error.message||"Notice could not be submitted."}
@@ -230,12 +253,14 @@
    if(!audience.length){status.textContent="Choose at least one audience.";return}
    const data=new FormData(calendarForm);
    try{
-    await firebase.app().functions("asia-south1").httpsCallable("submitSchoolCalendarEvent")({
-     title:data.get("title"),description:data.get("description"),startDate:data.get("startDate"),
+    const editId=calendarForm.dataset.resubmitId;
+    const endpoint=editId?"resubmitRejectedSchoolCalendarEvent":"submitSchoolCalendarEvent";
+    const payload={title:data.get("title"),description:data.get("description"),startDate:data.get("startDate"),
      endDate:data.get("endDate")||data.get("startDate"),category:data.get("category"),
-     location:data.get("location"),audience
-    });
-    calendarForm.reset();status.textContent="Submitted for approval.";
+     location:data.get("location"),audience};
+    if(editId)payload.eventId=editId;
+    await firebase.app().functions("asia-south1").httpsCallable(endpoint)(payload);
+    calendarForm.reset();delete calendarForm.dataset.resubmitId;status.textContent=editId?"Resubmitted for approval.":"Submitted for approval.";
     await renderSubmissionHistory("listMySchoolCalendarSubmissions","myCalendarSubmissions",true);
     if(["super_admin","director","principal"].includes(role))await loadApprovalQueues(firebase.app().functions("asia-south1"));
    }catch(error){status.textContent=error.message||"Calendar event could not be submitted."}
