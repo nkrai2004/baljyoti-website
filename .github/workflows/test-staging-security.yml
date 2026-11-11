@@ -8,6 +8,7 @@ on:
       - "firebase.json"
       - "functions/**"
       - ".github/workflows/test-staging-security.yml"
+      - ".github/workflows/deploy-staging-functions.yml"
   pull_request:
     paths:
       - "firestore.rules"
