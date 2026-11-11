@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#a91f2b"><title>Bal Jyoti ERP | Admission Allocation</title>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<style>
+:root{--red:#a91f2b;--ink:#202938;--muted:#667085;--line:#e3e7ed;--bg:#f5f7fa}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Arial,sans-serif}header{background:#fff;border-bottom:1px solid var(--line);padding:14px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:2}.logo{width:40px;height:40px;border-radius:10px;background:var(--red);color:#fff;display:grid;place-items:center;font-weight:800}.headcopy strong{display:block}.headcopy small{color:var(--muted)}.back{margin-left:auto;color:var(--red);text-decoration:none;font-weight:700;border:1px solid #e7b8bc;border-radius:8px;padding:9px 12px}main{max-width:1100px;margin:22px auto;padding:0 14px 40px}.intro h1{margin:0;font-size:24px}.intro p{margin:5px 0 18px;color:var(--muted)}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.stat,.panel,.lead{background:#fff;border:1px solid var(--line);border-radius:13px;padding:15px}.stat strong{font-size:26px;display:block}.stat span{font-size:12px;color:var(--muted)}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}.toolbar input,.toolbar select,input,select,textarea{font:inherit;border:1px solid #cfd5df;border-radius:8px;padding:10px;background:#fff;min-height:40px}.toolbar input{flex:1;min-width:180px}.btn{border:0;border-radius:8px;padding:10px 13px;background:var(--red);color:#fff;font-weight:700;cursor:pointer}.btn.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn:disabled{opacity:.5}.list{display:grid;gap:10px}.lead-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.lead h3{margin:0;font-size:16px}.muted{color:var(--muted);font-size:13px}.pill{display:inline-block;padding:4px 8px;border-radius:20px;background:#f1f3f6;color:#475467;font-size:11px;font-weight:700}.pill.red{background:#fff0f0;color:var(--red)}.lead-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.details{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.details div{font-size:13px}.details b{display:block;color:var(--muted);font-size:11px;font-weight:600}.assign,.activity{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}.assign{display:flex;gap:8px;flex-wrap:wrap}.assign input{flex:1;min-width:220px}.activity-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}.activity-grid textarea{grid-column:1/-1;min-height:60px}.empty,.error{padding:18px;text-align:center;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:12px}.error{color:#a91f2b}.hide{display:none!important}#authGate{max-width:500px;margin:18vh auto;padding:25px;text-align:center;background:white;border-radius:14px}.small{font-size:12px;color:var(--muted)}@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.details{grid-template-columns:repeat(2,1fr)}.lead-top{display:block}.lead-top .pill{margin-top:8px}.activity-grid{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div id="authGate">Checking your Bal Jyoti school login…</div>
+<div id="app" class="hide">
+<header><div class="logo">B</div><div class="headcopy"><strong>BAL JYOTI ERP</strong><small>Admission · Allocation & Calling</small></div><a class="back" href="../index.html">← Dashboard</a></header>
+<main>
+<div class="intro"><h1>Admission Allocation Board</h1><p>All teachers can see allocation status. Only the Admission Incharge can assign or reassign enquiries.</p></div>
+<div class="stats">
+<div class="stat"><strong id="totalCount">0</strong><span>Total enquiries</span></div>
+<div class="stat"><strong id="unassignedCount">0</strong><span>Awaiting allocation</span></div>
+<div class="stat"><strong id="assignedCount">0</strong><span>Assigned for calling</span></div>
+<div class="stat"><strong id="followupCount">0</strong><span>Follow-up / active</span></div>
+</div>
+<div id="adminNote" class="panel hide"><b>Admission Incharge controls</b><p class="small">Enter the teacher's official @baljyoti.com email against an enquiry to assign or reassign it. The email is used as the ownership key.</p></div>
+<div class="toolbar"><input id="search" placeholder="Search student, class or assigned teacher"><select id="filter"><option value="all">All enquiries</option><option value="unassigned">Unallocated</option><option value="assigned">Assigned</option><option value="mine">My assigned enquiries</option></select><button class="btn secondary" id="refreshBtn">Refresh</button></div>
+<div id="message" class="small"></div><div id="leadList" class="list"><div class="empty">Loading enquiries…</div></div>
+</main></div>
+<script>
+const FIREBASE_CONFIG={apiKey:"AIzaSyB2SGgV_zUFOyOGIIM27H5HNQYlO5WdFEY",authDomain:"baljyoti-erp.firebaseapp.com",projectId:"baljyoti-erp",storageBucket:"baljyoti-erp.firebasestorage.app",messagingSenderId:"422855577454",appId:"1:422855577454:web:9bccb80cc472d02275bb7f"};
+const API_URL="https://script.google.com/macros/s/AKfycbw6MEYBiikPU5JsHE7kG70RqZRk0WuHcfKY_nybZQpmJ-HXigYCi5EbcvE3m_2k0hlI/exec";
+let auth,currentUser,isAdmin=false,items=[];
+const $=id=>document.getElementById(id);
+function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function apiList(){
+ return new Promise(async(resolve,reject)=>{
+  try{
+   const token=await currentUser.getIdToken(true), callback="bjCallback"+Date.now();
+   const script=document.createElement("script");
+   const timer=setTimeout(()=>{cleanup();reject(new Error("Could not load enquiries. Check Apps Script deployment."));},15000);
+   function cleanup(){clearTimeout(timer);delete window[callback];script.remove();}
+   window[callback]=data=>{cleanup();resolve(data);};
+   script.onerror=()=>{cleanup();reject(new Error("Unable to connect to Admission CRM."));};
+   script.src=API_URL+"?action=list&idToken="+encodeURIComponent(token)+"&callback="+callback+"&_="+Date.now();
+   document.body.appendChild(script);
+  }catch(e){reject(e);}
+ });
+}
+async function apiPost(payload){
+ const token=await currentUser.getIdToken(true);
+ const body=new URLSearchParams({...payload,idToken:token});
+ await fetch(API_URL,{method:"POST",mode:"no-cors",body});
+}
+async function refresh(){
+ $("leadList").innerHTML='<div class="empty">Loading enquiries…</div>';
+ try{
+  const data=await apiList();
+  if(!data.success)throw new Error(data.message||"Could not load enquiries.");
+  items=data.items||[];isAdmin=!!data.user.isAdmin;
+  $("adminNote").classList.toggle("hide",!isAdmin);
+  render();
+  $("message").textContent="Signed in as "+data.user.email+(isAdmin?" · Admission Incharge":" · Teacher view");
+ }catch(e){$("leadList").innerHTML='<div class="error">'+esc(e.message)+'</div>';}
+}
+function render(){
+ const q=$("search").value.toLowerCase(),filter=$("filter").value;
+ const unassigned=items.filter(x=>!x.assignedCounsellor).length;
+ $("totalCount").textContent=items.length;$("unassignedCount").textContent=unassigned;
+ $("assignedCount").textContent=items.length-unassigned;
+ $("followupCount").textContent=items.filter(x=>x.nextFollowupDate).length;
+ const shown=items.filter(x=>{
+  const match=[x.studentName,x.classApplying,x.assignedCounsellor,x.enquiryId].join(" ").toLowerCase().includes(q);
+  if(!match)return false;
+  if(filter==="unassigned"&&x.assignedCounsellor)return false;
+  if(filter==="assigned"&&!x.assignedCounsellor)return false;
+  if(filter==="mine"&&!x.canWork)return false;
+  return true;
+ });
+ if(!shown.length){$("leadList").innerHTML='<div class="empty">No enquiries match this view.</div>';return;}
+ $("leadList").innerHTML=shown.map(x=>{
+  const owner=x.assignedCounsellor||"Not yet allocated";
+  let html='<article class="lead"><div class="lead-top"><div><h3>'+esc(x.studentName||"Unnamed student")+'</h3><div class="muted">'+esc(x.classApplying)+' · '+esc(x.academicYear)+' · '+esc(x.enquiryId)+'</div></div><span class="pill '+(x.assignedCounsellor?"":"red")+'">'+esc(x.currentStage||"New Enquiry")+'</span></div>';
+  html+='<div class="details"><div><b>Assigned calling teacher</b>'+esc(owner)+'</div><div><b>Enquiry collected by</b>'+esc(x.collectedBy||"—")+'</div><div><b>Contact status</b>'+esc(x.contactStatus||"Pending")+'</div></div>';
+  if(x.canWork){
+   html+='<div class="details"><div><b>Parent mobile</b>'+esc(x.mobile||"—")+'</div><div><b>WhatsApp</b>'+esc(x.whatsapp||x.mobile||"—")+'</div><div><b>Next follow-up</b>'+esc(x.nextFollowupDate||"Not set")+'</div></div>';
+   const phone=(x.whatsapp||x.mobile||"").replace(/\D/g,"");
+   html+='<div class="lead-actions">'+(x.mobile?'<a class="btn secondary" href="tel:'+esc(x.mobile)+'">Call</a>':"")+(phone?'<a class="btn secondary" target="_blank" rel="noopener" href="https://wa.me/91'+esc(phone)+'">WhatsApp</a>':"")+'</div>';
+   html+='<div class="activity"><b>Record calling outcome</b><div class="activity-grid"><select id="outcome-'+esc(x.enquiryId)+'"><option value="">Select outcome</option><option>Connected – Interested</option><option>Connected – Not Interested</option><option>No Answer</option><option>Call Back Requested</option><option>Visit Scheduled</option><option>Wrong Number</option><option>Visited School</option></select><select id="stage-'+esc(x.enquiryId)+'"><option value="">Keep current stage</option><option>Contact Attempted</option><option>Contacted</option><option>Visit Scheduled</option><option>School Walk-in</option><option>Registration Pending</option><option>Registered – Paid</option><option>Admission Confirmed</option><option>Not Interested</option><option>Deferred</option></select><input id="date-'+esc(x.enquiryId)+'" type="date" aria-label="Next follow-up date"><input id="time-'+esc(x.enquiryId)+'" type="time" aria-label="Next follow-up time"><textarea id="remarks-'+esc(x.enquiryId)+'" placeholder="Call remarks"></textarea></div><div class="lead-actions"><button class="btn" onclick="saveActivity(\''+esc(x.enquiryId)+'\')">Save update</button></div></div>';
+  }
+  if(isAdmin){
+   html+='<div class="assign"><input id="assign-'+esc(x.enquiryId)+'" type="email" placeholder="Calling teacher email @baljyoti.com" value="'+esc(x.assignedCounsellor)+'"><button class="btn" onclick="assignLead(\''+esc(x.enquiryId)+'\')">'+(x.assignedCounsellor?"Reassign":"Assign")+'</button></div>';
+  }
+  html+='</article>';return html;
+ }).join("");
+}
+async function assignLead(id){
+ const field=$("assign-"+id),email=field.value.trim().toLowerCase();
+ if(!email.endsWith("@baljyoti.com")){alert("Enter a valid @baljyoti.com email.");return;}
+ if(!confirm("Assign this enquiry to "+email+"?"))return;
+ try{await apiPost({action:"allocate",enquiryId:id,assignedCounsellor:email});$("message").textContent="Assignment submitted. Refreshing…";setTimeout(refresh,1800);}
+ catch(e){alert("Could not submit assignment: "+e.message);}
+}
+async function saveActivity(id){
+ const outcome=$("outcome-"+id).value,stage=$("stage-"+id).value;
+ if(!outcome&&!stage&&!$("remarks-"+id).value.trim()){alert("Please enter an outcome, stage or remark.");return;}
+ try{
+  await apiPost({action:"activity",enquiryId:id,activityType:"Call / Follow-up",outcome:outcome,currentStage:stage,nextFollowupDate:$("date-"+id).value,nextFollowupTime:$("time-"+id).value,remarks:$("remarks-"+id).value,nextAction:"Follow up"});
+  $("message").textContent="Update submitted. Refreshing…";setTimeout(refresh,1800);
+ }catch(e){alert("Could not save update: "+e.message);}
+}
+$("search").addEventListener("input",render);$("filter").addEventListener("change",render);$("refreshBtn").addEventListener("click",refresh);
+(function(){
+ try{if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CONFIG);auth=firebase.auth();auth.onAuthStateChanged(user=>{
+  if(!user||!user.email||!user.email.toLowerCase().endsWith("@baljyoti.com")){window.location.replace("../index.html");return;}
+  currentUser=user;$("authGate").classList.add("hide");$("app").classList.remove("hide");refresh();
+ });}catch(e){$("authGate").textContent="Unable to verify school login. Please return to the ERP dashboard.";}
+})();
+</script></body></html>
