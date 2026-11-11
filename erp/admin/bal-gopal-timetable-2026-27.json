@@ -1,0 +1,281 @@
+[
+  {
+    "id": "BG:PRE",
+    "name": "Pre-Nursery",
+    "classTeacher": "Mrs Ruby Soni",
+    "slots": [
+      {
+        "time": "9:30–10:00 AM"
+      },
+      {
+        "time": "10:00–10:30 AM"
+      },
+      {
+        "time": "10:30–11:00 AM"
+      },
+      {
+        "time": "11:00–11:30 AM · Lunch"
+      },
+      {
+        "time": "11:30 AM–12:15 PM"
+      },
+      {
+        "time": "12:15–1:00 PM"
+      }
+    ],
+    "days": [
+      {
+        "day": "Monday",
+        "activities": [
+          "P.T",
+          "English Notebook / W / O",
+          "Hindi Notebook",
+          "LUNCH",
+          "English Writing Book",
+          "Story Telling"
+        ]
+      },
+      {
+        "day": "Tuesday",
+        "activities": [
+          "Free Conversation",
+          "Hindi Notebook",
+          "Hindi Notebook",
+          "LUNCH",
+          "Hindi Writing Book",
+          "Rhymes / Oral Time"
+        ]
+      },
+      {
+        "day": "Wednesday",
+        "activities": [
+          "Yoga",
+          "English Notebook / W / O",
+          "Math Notebook",
+          "LUNCH",
+          "Math Writing Book",
+          "Hindi / English / Math Activity"
+        ]
+      },
+      {
+        "day": "Thursday",
+        "activities": [
+          "Indoor Games",
+          "Indoor Games",
+          "Art Book",
+          "LUNCH",
+          "E.V.S",
+          "Dance / Music"
+        ]
+      },
+      {
+        "day": "Friday",
+        "activities": [
+          "Outdoor Games",
+          "Outdoor Games",
+          "Art File",
+          "LUNCH",
+          "G.K Oral",
+          "Dance"
+        ]
+      },
+      {
+        "day": "Saturday",
+        "activities": [
+          "OFF",
+          "OFF",
+          "OFF",
+          "OFF",
+          "OFF",
+          "OFF"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "BG:NUR",
+    "name": "Nursery",
+    "classTeacher": "Mrs Meenakshi",
+    "slots": [
+      {
+        "time": "9:30–10:00 AM"
+      },
+      {
+        "time": "10:00–10:30 AM"
+      },
+      {
+        "time": "10:30–11:00 AM"
+      },
+      {
+        "time": "11:00–11:30 AM · Lunch"
+      },
+      {
+        "time": "11:30 AM–12:15 PM"
+      },
+      {
+        "time": "12:15–1:00 PM"
+      }
+    ],
+    "days": [
+      {
+        "day": "Monday",
+        "activities": [
+          "P.T",
+          "English Notebook / W / O",
+          "English Notebook",
+          "LUNCH",
+          "English Writing Book",
+          "Story Telling"
+        ]
+      },
+      {
+        "day": "Tuesday",
+        "activities": [
+          "Free Conversation",
+          "Hindi Notebook",
+          "Hindi Notebook",
+          "LUNCH",
+          "Hindi Writing Book",
+          "Rhymes"
+        ]
+      },
+      {
+        "day": "Wednesday",
+        "activities": [
+          "Yoga",
+          "English Notebook / W / O",
+          "Math Notebook",
+          "LUNCH",
+          "Math Writing Book",
+          "Hindi / English / Math Activity"
+        ]
+      },
+      {
+        "day": "Thursday",
+        "activities": [
+          "Indoor Games",
+          "Indoor Games",
+          "Art Book",
+          "LUNCH",
+          "E.V.S",
+          "Dance / Music"
+        ]
+      },
+      {
+        "day": "Friday",
+        "activities": [
+          "Outdoor Games",
+          "Outdoor Games",
+          "Art File",
+          "LUNCH",
+          "G.K Oral",
+          "Dance"
+        ]
+      },
+      {
+        "day": "Saturday",
+        "activities": [
+          "OFF",
+          "OFF",
+          "OFF",
+          "OFF",
+          "OFF",
+          "OFF"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "BG:KG",
+    "name": "K.G",
+    "classTeacher": "Mrs Parvita",
+    "slots": [
+      {
+        "time": "8:30–9:00 AM"
+      },
+      {
+        "time": "9:00–9:30 AM"
+      },
+      {
+        "time": "9:30–10:00 AM"
+      },
+      {
+        "time": "10:00–10:30 AM · Lunch"
+      },
+      {
+        "time": "10:30–11:15 AM"
+      },
+      {
+        "time": "11:15 AM–12:00 PM"
+      }
+    ],
+    "days": [
+      {
+        "day": "Monday",
+        "activities": [
+          "P.T",
+          "English Notebook / W / O",
+          "Hindi Notebook",
+          "LUNCH",
+          "Hindi Note Book",
+          "Story Telling and Hindi, English, Maths Oral"
+        ]
+      },
+      {
+        "day": "Tuesday",
+        "activities": [
+          "Free Conversation",
+          "English Notebook / W / O",
+          "Hindi Notebook",
+          "LUNCH",
+          "Hindi Note Book",
+          "Rhymes / Song"
+        ]
+      },
+      {
+        "day": "Wednesday",
+        "activities": [
+          "Yoga",
+          "Maths Note Book / W / O",
+          "Maths Note Book / W / O",
+          "LUNCH",
+          "English Writing Book",
+          "E.V.S Oral / Hindi Activity"
+        ]
+      },
+      {
+        "day": "Thursday",
+        "activities": [
+          "Indoor Games",
+          "Maths Notebook / W / O",
+          "Maths Notebook / W / O",
+          "LUNCH",
+          "Maths Writing Book",
+          "Dance / Music / English Activity"
+        ]
+      },
+      {
+        "day": "Friday",
+        "activities": [
+          "Outdoor Games",
+          "Art",
+          "Hindi Writing Book",
+          "LUNCH",
+          "E.V.S",
+          "G.K Oral / Dance / Maths Activity"
+        ]
+      },
+      {
+        "day": "Saturday",
+        "activities": [
+          "OFF",
+          "OFF",
+          "OFF",
+          "OFF",
+          "OFF",
+          "OFF"
+        ]
+      }
+    ]
+  }
+]
