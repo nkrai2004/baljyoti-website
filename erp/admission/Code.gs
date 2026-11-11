@@ -130,7 +130,6 @@ function listEnquiries_(p) {
       item.canWork = user.isAdmin || isOwner;
       return item;
     });
-    jsonpResponse_(p.callback,{success:true,user:{email:user.email,isAdmin:user.isAdmin},items:items});
     return jsonpResponse_(p.callback,{success:true,user:{email:user.email,isAdmin:user.isAdmin},items:items});
   } catch(err) {
     return jsonpResponse_(p.callback,{success:false,message:err.message});
