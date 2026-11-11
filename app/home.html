@@ -23,7 +23,7 @@
 .columns{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(250px,.7fr);gap:12px}.panel{padding:17px}.panel h2{font-size:16px;margin:0 0 5px}.panel p{font-size:12px;margin:0;color:var(--muted)}.empty{margin-top:13px;padding:18px;border:1px dashed #C9CED6;border-radius:12px;background:#FAFBFC;text-align:center}.empty strong{display:block;font-size:13px}.empty span{display:block;font-size:12px;color:var(--muted);margin-top:5px;line-height:1.5}
 .modulegrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.module{padding:14px;min-height:92px;display:block}.module .ico{display:block;color:var(--red);font-size:19px;margin-bottom:8px}
 .category{margin:20px 0}.category h3{font-size:13px;margin:0 0 9px;color:#596474}.profilegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.profilefield{padding:13px;border:1px solid var(--line);border-radius:12px;background:#fff}.profilefield small{display:block;color:var(--muted);font-size:11px}.profilefield strong{display:block;font-size:13px;margin-top:5px;overflow-wrap:anywhere}
-.service-list{display:grid;gap:9px;margin-top:14px}.service-item{border:1px solid var(--line);border-radius:12px;padding:13px;background:#fff}.service-item strong{display:block;font-size:13px}.service-item p{margin:5px 0;color:var(--muted);font-size:12px;line-height:1.5}.service-meta{font-size:11px;color:var(--muted);margin:6px 0}.service-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.service-actions button{min-height:40px;padding:7px 11px;border:1px solid var(--line);border-radius:9px;background:#fff;font-weight:700}.service-actions .approve{background:var(--red);color:#fff;border-color:var(--red)}.service-section{margin-top:14px}.service-section h2{font-size:16px;margin:0 0 5px}.service-section>p{font-size:12px;color:var(--muted);margin:0}.statusnote{margin-top:14px;padding:11px 13px;border:1px solid #EAD9B0;background:#FFF9EB;color:#684D18;border-radius:11px;font-size:12px;line-height:1.5}
+.service-form{display:grid;gap:12px;margin-top:14px}.service-form>label,.form-grid>label{display:grid;gap:6px;font-size:12px;font-weight:700}.service-form input:not([type=checkbox]),.service-form textarea,.service-form select{width:100%;min-height:44px;border:1px solid var(--line);border-radius:9px;padding:10px;font:inherit;background:#fff;color:var(--ink)}.service-form textarea{resize:vertical}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.service-form fieldset{border:1px solid var(--line);border-radius:10px;padding:10px}.service-form legend{font-size:12px;font-weight:800;padding:0 4px}.audience-options{display:flex;gap:10px 18px;flex-wrap:wrap}.audience-options label{font-size:12px;display:flex;align-items:center;gap:6px}.form-note,.form-status{font-size:11px;color:var(--muted)}.form-status{margin-left:8px}.service-list{display:grid;gap:9px;margin-top:14px}.service-item{border:1px solid var(--line);border-radius:12px;padding:13px;background:#fff}.service-item strong{display:block;font-size:13px}.service-item p{margin:5px 0;color:var(--muted);font-size:12px;line-height:1.5}.service-meta{font-size:11px;color:var(--muted);margin:6px 0}.service-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.service-actions button{min-height:40px;padding:7px 11px;border:1px solid var(--line);border-radius:9px;background:#fff;font-weight:700}.service-actions .approve{background:var(--red);color:#fff;border-color:var(--red)}.service-section{margin-top:14px}.service-section h2{font-size:16px;margin:0 0 5px}.service-section>p{font-size:12px;color:var(--muted);margin:0}.statusnote{margin-top:14px;padding:11px 13px;border:1px solid #EAD9B0;background:#FFF9EB;color:#684D18;border-radius:11px;font-size:12px;line-height:1.5}
 .loading,.denied{max-width:520px;margin:70px auto;padding:24px;text-align:center;background:#fff;border:1px solid var(--line);border-radius:16px}.loading p,.denied p{color:var(--muted);line-height:1.5}
 .mobilebar{display:none}.foot{font-size:11px;color:var(--muted);text-align:center;margin:25px 0}
 [hidden]{display:none!important}
@@ -60,7 +60,42 @@
    </div>
   </section>
   <section class="view" id="view-conversations" aria-labelledby="convoTitle"><div class="welcome"><div><div class="eyebrow">COMMUNICATION</div><h1 id="convoTitle">Conversations</h1><p class="muted">School communication in one place.</p></div></div><section class="panel"><h2>Your inbox</h2><p>Direct, group and work-related conversations.</p><div class="empty"><strong>Messaging is not connected yet</strong><span>Conversation storage, membership rules, moderation and delivery states must be implemented before messages can be sent or received.</span></div></section></section>
-  <section class="view" id="view-work" aria-labelledby="workTitle"><div class="welcome"><div><div class="eyebrow">YOUR RESPONSIBILITIES</div><h1 id="workTitle">My Work</h1><p class="muted">Tasks, reminders, approvals and deadlines assigned to you.</p></div></div><section class="panel"><h2>Work list</h2><p>Official assigned tasks and personal reminders.</p><div id="myTaskList" class="service-list" aria-live="polite"><div class="empty"><strong>Loading your assigned tasks…</strong><span>Only tasks assigned to your account will be shown.</span></div></div></section><div id="approvalWorkspace"></div></section>
+  <section class="view" id="view-work" aria-labelledby="workTitle"><div class="welcome"><div><div class="eyebrow">YOUR RESPONSIBILITIES</div><h1 id="workTitle">My Work</h1><p class="muted">Tasks, reminders, approvals and deadlines assigned to you.</p></div></div><section class="panel"><h2>Work list</h2><p>Official assigned tasks and personal reminders.</p><div id="myTaskList" class="service-list" aria-live="polite"><div class="empty"><strong>Loading your assigned tasks…</strong><span>Only tasks assigned to your account will be shown.</span></div></div></section><section class="panel service-section" id="noticeComposer" hidden>
+ <h2>Submit a school notice</h2><p>Notices remain pending until a Director, Principal or Super Admin reviews them.</p>
+ <form id="noticeForm" class="service-form">
+  <label>Notice title<input name="title" maxlength="140" required></label>
+  <label>Message<textarea name="body" maxlength="4000" rows="4" required></textarea></label>
+  <label>Category<select name="category"><option value="general">General</option><option value="academic">Academic</option><option value="administration">Administration</option><option value="event">Event</option><option value="urgent">Urgent</option></select></label>
+  <fieldset><legend>Requested audience</legend><div class="audience-options">
+   <label><input type="checkbox" name="audience" value="all_school"> Whole school</label>
+   <label><input type="checkbox" name="audience" value="staff"> Staff</label>
+   <label><input type="checkbox" name="audience" value="students"> Students</label>
+   <label><input type="checkbox" name="audience" value="parents"> Parents</label>
+  </div></fieldset>
+  <p class="form-note">Audience is a request only. Automatic publication and audience delivery are not enabled yet.</p>
+  <button class="btn primary" type="submit">Submit for approval</button><span class="form-status" id="noticeFormStatus" role="status"></span>
+ </form>
+ <div class="service-section"><h3>My notice submissions</h3><div id="myNoticeSubmissions" class="service-list" aria-live="polite"></div></div>
+</section>
+<section class="panel service-section" id="calendarComposer" hidden>
+ <h2>Submit a calendar event</h2><p>Events remain pending until management review.</p>
+ <form id="calendarForm" class="service-form">
+  <label>Event title<input name="title" maxlength="140" required></label>
+  <label>Description<textarea name="description" maxlength="2000" rows="3"></textarea></label>
+  <div class="form-grid"><label>Start date<input name="startDate" type="date" required></label><label>End date<input name="endDate" type="date"></label></div>
+  <div class="form-grid"><label>Category<select name="category"><option value="school">School</option><option value="academic">Academic</option><option value="exam">Examination</option><option value="holiday">Holiday</option><option value="activity">Activity</option></select></label><label>Location<input name="location" maxlength="160"></label></div>
+  <fieldset><legend>Requested audience</legend><div class="audience-options">
+   <label><input type="checkbox" name="audience" value="all_school"> Whole school</label>
+   <label><input type="checkbox" name="audience" value="staff"> Staff</label>
+   <label><input type="checkbox" name="audience" value="students"> Students</label>
+   <label><input type="checkbox" name="audience" value="parents"> Parents</label>
+  </div></fieldset>
+  <p class="form-note">Audience is a request only. Automatic publication and audience delivery are not enabled yet.</p>
+  <button class="btn primary" type="submit">Submit event for approval</button><span class="form-status" id="calendarFormStatus" role="status"></span>
+ </form>
+ <div class="service-section"><h3>My calendar submissions</h3><div id="myCalendarSubmissions" class="service-list" aria-live="polite"></div></div>
+</section>
+<div id="approvalWorkspace"></div></section>
   <section class="view" id="view-explore" aria-labelledby="exploreTitle"><div class="welcome"><div><div class="eyebrow">SCHOOL SERVICES</div><h1 id="exploreTitle">Explore</h1><p class="muted">Find the tools and services available to your role.</p></div></div><div id="exploreModules"></div></section>
   <section class="view" id="view-profile" aria-labelledby="profileTitle"><div class="welcome"><div><div class="eyebrow">YOUR ACCOUNT</div><h1 id="profileTitle">Profile</h1><p class="muted">Your account identity and workspace access.</p></div></div><div class="profilegrid" id="profileFields"></div><div class="statusnote">Your role controls which services are displayed. Record-level permissions must also be enforced by the secure backend before sensitive school data is available.</div></section>
   <p class="foot">Bal Jyoti School OS · English / हिन्दी · Designed for mobile and desktop.</p>
