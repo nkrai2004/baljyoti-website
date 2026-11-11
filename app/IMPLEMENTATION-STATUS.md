@@ -193,3 +193,14 @@ Committed to `main`:
 - The workflow remains `workflow_dispatch` only and targets `baljyoti-school-os-staging` explicitly.
 - The workflow was **not run**. This change only prepares the deployment definition; it does not deploy code or change Firebase.
 - The workflow does not deploy Firestore rules. The catch-all deny rule remains unchanged.
+
+### Phase 8 callable emulator integration suite
+
+- Added `functions/callable-integration.test.js`. It creates temporary test identities through the Firebase Authentication emulator, seeds synthetic Firestore profiles/records, and calls the Functions emulator over its callable HTTP interface.
+- Scenarios include unauthenticated calls, teacher submission, required rejection reasons, reviewer-role restrictions, self-review denial, author-only resubmission, rejected-only resubmission, task leadership/assignee restrictions, parent-account task assignment denial, scoped list/history calls and profile/token email mismatch.
+- Configured the Auth emulator and updated CI to start Auth, Firestore and Functions emulators for the full suite.
+- Added `test:callables` and `test:emulator` scripts. The integration test uses only the demo emulator project and creates no live Firebase accounts or records.
+
+**Latest verification:** the earlier CI run for the rules and policy suite completed successfully with 14/14 tests passing. The new full callable-emulator CI run for commit `944ab553da6952e792aa3154437f7d16f321dc9b` was still running at the time of this update; its callable integration result is not yet confirmed. A successful policy/rules run is not a substitute for this integration result.
+
+**Known dependency note:** the CI dependency installation reported 15 npm audit advisories (9 moderate, 6 high) in the resolved dependency tree. No automatic or force upgrade was applied. Review the audit details and update dependencies deliberately before production release.
