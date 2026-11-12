@@ -43,6 +43,9 @@
     .dropdown a:hover{background:var(--soft);color:var(--red-dark)}
     .nav-group:hover .dropdown,.nav-group:focus-within .dropdown{display:block}
     .nav-links .login-link{border:1px solid var(--maroon);padding:9px 16px;border-radius:99px;color:var(--maroon)}
+    @media(min-width:761px){.nav-links .login-link{display:none}}\n    .header-login{display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;background:var(--maroon);color:#fff;padding:11px 17px;border-radius:99px;font-weight:800;font-size:.88rem;box-shadow:0 5px 14px rgba(110,11,30,.18);transition:.2s}
+    .header-login:hover{background:#570817;transform:translateY(-1px)}
+    .header-login .login-icon{font-size:1rem;line-height:1}
     .nav-links .apply-link,.btn-primary{background:var(--maroon);color:#fff;padding:11px 19px;border-radius:99px}
     .nav-links .apply-link:hover,.btn-primary:hover{background:#570817;color:#fff}
     .menu-toggle{display:none;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-size:1.2rem}
@@ -137,12 +140,12 @@
     .whatsapp{position:fixed;right:20px;bottom:20px;z-index:90;width:56px;height:56px;border-radius:50%;background:#20bd5a;color:#fff;display:grid;place-items:center;font-size:1.7rem;box-shadow:0 8px 24px #0003}
     .whatsapp:hover{transform:scale(1.06)}
     @media(max-width:980px){
-      .nav-links{gap:13px}.nav-links>a,.nav-group>a{font-size:.82rem}
+      .nav-links{gap:13px}.nav-links>a,.nav-group>a{font-size:.82rem}.header-login{padding:10px 13px;font-size:.82rem}
       .hero-grid{gap:28px}.facility-grid{grid-template-columns:repeat(2,1fr)}
       .footer-grid{grid-template-columns:repeat(2,1fr)}
     }
     @media(max-width:760px){
-      .nav-wrap{min-height:72px}.brand img{width:49px;height:49px}.brand{min-width:0}
+      .nav-wrap{min-height:72px;gap:8px}.brand img{width:49px;height:49px}.brand{min-width:0;flex:1}
       .menu-toggle{display:block}
       .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border-bottom:1px solid var(--line);padding:18px 22px 24px;align-items:stretch;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
       .nav-links.open{display:flex}
