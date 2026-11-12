@@ -9,7 +9,7 @@
 <p class="mt-6 text-center text-xs text-slate-400">© 2026 Bal Jyoti Public School</p></main>
 <script>
 const cfg={apiKey:"AIzaSyB2SGgV_zUFOyOGIIM27H5HNQYlO5WdFEY",authDomain:"baljyoti-erp.firebaseapp.com",projectId:"baljyoti-erp",appId:"1:422855577454:web:9bccb80cc472d02275bb7f"};
-let email="",currentUser=null,month=new Date();month.setDate(1);let byDate={};const $=id=>document.getElementById(id);
+let email="",currentUser=null,portalReady=false,month=new Date();month.setDate(1);let byDate={};const $=id=>document.getElementById(id);
 function safe(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function render(){const y=month.getFullYear(),m=month.getMonth();$("monthLabel").textContent=month.toLocaleDateString("en-IN",{month:"long",year:"numeric"});const grid=$("calendar");grid.innerHTML="";for(let i=0;i<new Date(y,m,1).getDay();i++)grid.appendChild(document.createElement("div"));const days=new Date(y,m+1,0).getDate();for(let d=1;d<=days;d++){const date=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0"),r=byDate[date],cell=document.createElement("div");cell.className="calendar-cell rounded-lg border border-slate-100 p-2";const color={"Present":"text-emerald-700 bg-emerald-50","Absent":"text-rose-700 bg-rose-50","Half Day":"text-amber-800 bg-amber-50","First Half":"text-amber-800 bg-amber-50","Second Half":"text-amber-800 bg-amber-50","Leave":"text-violet-700 bg-violet-50"}[r?.status]||"text-slate-300";cell.innerHTML='<div class="text-xs font-semibold">'+d+'</div><div class="mt-2 rounded px-1 py-1 text-[10px] '+color+'">'+(r?safe(r.status):"—")+'</div>';grid.appendChild(cell);}
 const records=Object.values(byDate).filter(r=>r.date&&r.date.startsWith(y+"-"+String(m+1).padStart(2,"0"))).sort((a,b)=>b.date.localeCompare(a.date));$("rows").innerHTML=records.length?records.map(r=>'<tr class="border-t"><td class="px-4 py-3">'+safe(r.date)+'</td><td class="px-4 py-3">'+safe(r.checkIn||r.salaryBoxCheckIn||"—")+'</td><td class="px-4 py-3">'+safe(r.checkOut||r.salaryBoxCheckOut||"—")+'</td><td class="px-4 py-3 font-semibold">'+safe(r.status||"Pending Verification")+'</td></tr>').join(""):'<tr><td colspan="4" class="p-6 text-center text-slate-500">No attendance records found for this month.</td></tr>';
@@ -17,12 +17,10 @@ const vals=records.map(r=>r.status);$("present").textContent=vals.filter(x=>x===
 function loadMonth(){render();}
 $("prev").onclick=()=>{month.setMonth(month.getMonth()-1);loadMonth().catch(showError);};$("next").onclick=()=>{month.setMonth(month.getMonth()+1);loadMonth().catch(showError);};function showError(e){$("notice").textContent="Attendance could not be loaded: "+e.message;}
 const portalFrame=$("attendancePortalFrame");
+async function sendAttendanceToken(){if(!portalReady||!currentUser)return;try{const token=await currentUser.getIdToken();portalFrame.contentWindow.postMessage({idToken:token},"*");}catch(e){showError(e);}}
 window.addEventListener("message",async event=>{
  if(event.source!==portalFrame.contentWindow)return;
- if(event.data&&event.data.type==="ATTENDANCE_PORTAL_READY"&&currentUser){
-   try{const token=await currentUser.getIdToken();portalFrame.contentWindow.postMessage({idToken:token},"*");}
-   catch(e){showError(e);}
- }
+ if(event.data&&event.data.type==="ATTENDANCE_PORTAL_READY"){portalReady=true;sendAttendanceToken();}
  if(event.data&&event.data.type==="ATTENDANCE_DATA"){
    const result=event.data.result||{};
    if(!result.success){$("notice").textContent=result.message||"Attendance could not be loaded.";return;}
@@ -39,5 +37,6 @@ try{if(!firebase.apps.length)firebase.initializeApp(cfg);firebase.auth().onAuthS
  email=(user.email||"").toLowerCase();$("userEmail").textContent=email;
  if(!email.endsWith("@baljyoti.com")){$("notice").textContent="Please use your official Bal Jyoti account.";return;}
  $("notice").textContent="Verifying your school account and loading attendance...";
+ sendAttendanceToken();
 });}catch(e){showError(e);}
 </script></body></html>
