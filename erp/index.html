@@ -781,11 +781,51 @@
 
       if (gmailLink) {
         gmailLink.href = getAccountSpecificUrl(
-          "https://mail.google.com/mail/u/"
+          "https://mail.google.com/"
         );
       }
 
     }
+
+
+    // Apply the signed-in ERP account to every Google Workspace app link,
+    // including links rendered later by dashboard views or integrations.
+    document.addEventListener("click", (event) => {
+      const link = event.target.closest("a[href]");
+      if (!link || !currentUser || !currentUser.email) return;
+
+      let targetUrl;
+      try {
+        targetUrl = new URL(link.href, window.location.href);
+      } catch (error) {
+        return;
+      }
+
+      const googleWorkspaceHosts = new Set([
+        "classroom.google.com",
+        "mail.google.com",
+        "drive.google.com",
+        "docs.google.com",
+        "sheets.google.com",
+        "slides.google.com",
+        "forms.google.com",
+        "sites.google.com",
+        "calendar.google.com",
+        "meet.google.com",
+        "chat.google.com",
+        "keep.google.com",
+        "contacts.google.com",
+        "tasks.google.com",
+        "photos.google.com",
+        "groups.google.com",
+        "workspace.google.com"
+      ]);
+
+      if (!googleWorkspaceHosts.has(targetUrl.hostname.toLowerCase())) return;
+
+      targetUrl.searchParams.set("authuser", currentUser.email);
+      link.href = targetUrl.toString();
+    });
 
 
     function isSchoolEmail(email) {
