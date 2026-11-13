@@ -175,6 +175,22 @@
     }
     try {
       const idToken = await user.getIdToken(true);
+      // One-time bootstrap is available only to the explicitly approved school owner account.
+      // The server independently verifies Firebase identity and allowlists the exact email.
+      if (String(user.email || "").trim().toLowerCase() === "info@baljyoti.com") {
+        const setupResponse = await fetch(BJPS_ERP_API_URL, {
+          method: "POST",
+          headers: {"Content-Type":"text/plain;charset=utf-8"},
+          body: JSON.stringify({action:"admin.bootstrapSuperAdmin", idToken:idToken}),
+          redirect: "follow"
+        });
+        const setupPayload = await setupResponse.json();
+        if (!setupResponse.ok || !setupPayload || setupPayload.success !== true) {
+          const setupError = setupPayload && setupPayload.error ? setupPayload.error : {};
+          throw new Error((setupError.code ? "[" + setupError.code + "] " : "") +
+            (setupError.message || "Initial ERP administrator setup could not be completed."));
+        }
+      }
       const response = await fetch(BJPS_ERP_API_URL, {
         method: "POST",
         headers: {"Content-Type":"text/plain;charset=utf-8"},

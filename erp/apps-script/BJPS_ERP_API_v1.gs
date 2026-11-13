@@ -7,7 +7,7 @@ const BJPS_API_V1 = Object.freeze({
   VERSION: '1.0.0',
   MAX_BODY_CHARS: 16000,
   ALLOWED_DOMAIN: 'baljyoti.com',
-  ACTIONS: Object.freeze(['session.bootstrap','admission.enquiries.list','admission.enquiries.create','admission.followups.list','admission.followups.create','academic.classSections.list'])
+  ACTIONS: Object.freeze(['admin.bootstrapSuperAdmin','session.bootstrap','admission.enquiries.list','admission.enquiries.create','admission.followups.list','admission.followups.create','academic.classSections.list'])
 });
 
 function doGet() {
@@ -22,7 +22,8 @@ function doPost(e) {
     if (!request || typeof request !== 'object' || Array.isArray(request)) throw bjpsApiError_('INVALID_REQUEST','A JSON object is required.');
     const action = String(request.action || '').trim();
     let data;
-    if (action === 'session.bootstrap') data = bjpsApiSessionBootstrap_(request.idToken);
+    if (action === 'admin.bootstrapSuperAdmin') data = bjpsApiBootstrapSuperAdmin_(request.idToken);
+    else if (action === 'session.bootstrap') data = bjpsApiSessionBootstrap_(request.idToken);
     else if (action === 'admission.enquiries.list') data = bjpsApiAdmissionListEnquiries_(request.idToken, request.filters || {});
     else if (action === 'admission.enquiries.create') data = bjpsApiAdmissionCreateEnquiry_(request.idToken, request.record || {});
     else if (action === 'admission.followups.list') data = bjpsApiAdmissionListFollowups_(request.idToken, request.enquiryId);
@@ -203,6 +204,97 @@ function bjpsApiHeaderIndexes_(headers,required) {
 function bjpsApiDateValue_(value) {
   if(!value)return '';
   return value instanceof Date ? Utilities.formatDate(value,Session.getScriptTimeZone(),'yyyy-MM-dd') : String(value);
+}
+
+
+/**
+ * One-time, allowlisted identity bootstrap.
+ * Creates only the approved Super Admin identity + GLOBAL role assignment.
+ * It deliberately creates NO permission grants and never modifies existing grants.
+ */
+function bjpsApiBootstrapSuperAdmin_(idToken) {
+  const identity = verifyBJPSFirebaseIdToken(idToken);
+  const email = String(identity && identity.email || '').trim().toLowerCase();
+  if (!identity || identity.authenticated !== true || identity.disabled === true ||
+      identity.emailVerified !== true || email !== 'info@baljyoti.com' || !identity.uid) {
+    throw bjpsApiError_('BOOTSTRAP_NOT_AUTHORIZED','Only the pre-approved, verified school account can perform initial setup.');
+  }
+  const lock = LockService.getScriptLock();
+  if (!lock.tryLock(10000)) throw bjpsApiError_('BUSY','ERP setup is already in progress. Please retry.');
+  try {
+    const userSheet = getBJPSERPSheet(BJPS_RBAC.DATABASE_KEY, BJPS_RBAC.TABLES.USERS);
+    const assignmentSheet = getBJPSERPSheet(BJPS_RBAC.DATABASE_KEY, BJPS_RBAC.TABLES.ASSIGNMENTS);
+    const roleSheet = getBJPSERPSheet(BJPS_RBAC.DATABASE_KEY, BJPS_RBAC.TABLES.ROLES);
+    const permissionSheet = getBJPSERPSheet(BJPS_RBAC.DATABASE_KEY, BJPS_RBAC.TABLES.PERMISSIONS);
+    const userHeaders = userSheet.getRange(1,1,1,userSheet.getLastColumn()).getDisplayValues()[0].map(String);
+    const assignmentHeaders = assignmentSheet.getRange(1,1,1,assignmentSheet.getLastColumn()).getDisplayValues()[0].map(String);
+    const roleHeaders = roleSheet.getRange(1,1,1,roleSheet.getLastColumn()).getDisplayValues()[0].map(String);
+    const permissionHeaders = permissionSheet.getRange(1,1,1,permissionSheet.getLastColumn()).getDisplayValues()[0].map(String);
+    const col = function(headers, name) {
+      const i = headers.indexOf(name);
+      if (i < 0) throw bjpsApiError_('SERVER_CONFIGURATION','Required setup column is missing: ' + name);
+      return i;
+    };
+    const roleCodeIx = col(roleHeaders,'RoleCode');
+    const roleActiveIx = col(roleHeaders,'IsActive');
+    const roles = roleSheet.getDataRange().getValues().slice(1);
+    const superRole = roles.find(row => String(row[roleCodeIx] || '').trim().toUpperCase() === 'SUPER_ADMIN' &&
+      (row[roleActiveIx] === true || String(row[roleActiveIx]).toUpperCase() === 'TRUE'));
+    if (!superRole) throw bjpsApiError_('SUPER_ADMIN_ROLE_MISSING','The active SUPER_ADMIN role must exist before setup.');
+    col(permissionHeaders,'RoleCode'); col(permissionHeaders,'PermissionCode');
+    col(permissionHeaders,'ScopeType'); col(permissionHeaders,'IsAllowed'); col(permissionHeaders,'IsActive');
+
+    const assignmentValues = assignmentSheet.getDataRange().getValues();
+    const ah = assignmentHeaders;
+    const aRole = col(ah,'RoleCode'), aScope = col(ah,'ScopeType'), aScopeId = col(ah,'ScopeID');
+    const aActive = col(ah,'IsActive'), aUid = col(ah,'FirebaseUID');
+    const existingSuperAdmin = assignmentValues.slice(1).some(row =>
+      String(row[aRole] || '').trim().toUpperCase() === 'SUPER_ADMIN' &&
+      String(row[aScope] || '').trim().toUpperCase() === 'GLOBAL' &&
+      !String(row[aScopeId] || '').trim() &&
+      (row[aActive] === true || String(row[aActive]).toUpperCase() === 'TRUE') &&
+      String(row[aUid] || '').trim() !== String(identity.uid).trim());
+    if (existingSuperAdmin) throw bjpsApiError_('BOOTSTRAP_ALREADY_CLAIMED','An active global Super Admin already exists. Initial setup is closed.');
+
+    const userValues = userSheet.getDataRange().getValues();
+    const uUid = col(userHeaders,'FirebaseUID'), uEmail = col(userHeaders,'Email');
+    const uStatus = col(userHeaders,'AccountStatus'), uVerified = col(userHeaders,'EmailVerified');
+    const userRow = userValues.slice(1).find(row => String(row[uUid] || '').trim() === String(identity.uid).trim());
+    if (userRow && String(userRow[uEmail] || '').trim().toLowerCase() !== email) {
+      throw bjpsApiError_('IDENTITY_MISMATCH','The existing ERP user record does not match the verified email.');
+    }
+    if (userRow && String(userRow[uStatus] || '').trim().toUpperCase() !== 'ACTIVE') {
+      throw bjpsApiError_('ACCOUNT_REQUIRES_REVIEW','An existing non-active ERP account requires manual review; no changes were made.');
+    }
+    const now = new Date();
+    if (!userRow) {
+      const row = new Array(userHeaders.length).fill('');
+      row[col(userHeaders,'ERPUserID')] = 'ERPUSR_' + Utilities.getUuid();
+      row[uUid] = identity.uid; row[uEmail] = email;
+      row[col(userHeaders,'DisplayName')] = String(identity.displayName || 'School Administrator');
+      row[col(userHeaders,'UserType')] = 'STAFF'; row[uStatus] = 'ACTIVE'; row[uVerified] = true;
+      row[col(userHeaders,'CreatedAt')] = now; row[col(userHeaders,'UpdatedAt')] = now;
+      userSheet.appendRow(row);
+    }
+    const alreadyAssigned = assignmentValues.slice(1).some(row =>
+      String(row[aUid] || '').trim() === String(identity.uid).trim() &&
+      String(row[aRole] || '').trim().toUpperCase() === 'SUPER_ADMIN' &&
+      String(row[aScope] || '').trim().toUpperCase() === 'GLOBAL' &&
+      !String(row[aScopeId] || '').trim() &&
+      (row[aActive] === true || String(row[aActive]).toUpperCase() === 'TRUE'));
+    if (!alreadyAssigned) {
+      const row = new Array(assignmentHeaders.length).fill('');
+      row[col(ah,'AssignmentID')] = 'ROLE_' + Utilities.getUuid();
+      row[aUid] = identity.uid; row[aRole] = 'SUPER_ADMIN'; row[aScope] = 'GLOBAL';
+      row[aScopeId] = ''; row[col(ah,'AcademicYearID')] = '';
+      row[col(ah,'ValidFrom')] = now; row[col(ah,'ValidTo')] = '';
+      row[aActive] = true; row[col(ah,'AssignedByUID')] = identity.uid;
+      row[col(ah,'CreatedAt')] = now;
+      assignmentSheet.appendRow(row);
+    }
+    return {accountStatus:'ACTIVE',roleCodes:['SUPER_ADMIN'],scope:'GLOBAL',
+      permissionGrantsChanged:0,setup:'COMPLETE'};
+  } finally { lock.releaseLock(); }
 }
 
 function bjpsApiSessionBootstrap_(idToken) {
