@@ -242,3 +242,30 @@ function cleanupBJPSERPDevData() {
     return {deletedRows:preview.matchedRows,registryCleared:true};
   } finally { lock.releaseLock(); }
 }
+
+/** Read-only full schema inspection for the four proposed fixture tables. */
+function inspectBJPSERPDevFixtureSchemas() {
+  const report = [];
+  BJPS_DEV_FIXTURE_PLAN_.forEach(function(plan) {
+    try {
+      const sh = bjpsDevGetSpreadsheet_(plan.databaseKey).getSheetByName(plan.sheetName);
+      if (!sh) throw new Error('Worksheet not found');
+      report.push({
+        databaseKey: plan.databaseKey,
+        sheetName: plan.sheetName,
+        lastRow: sh.getLastRow(),
+        headers: sh.getLastColumn()
+          ? sh.getRange(1, 1, 1, sh.getLastColumn()).getDisplayValues()[0]
+          : []
+      });
+    } catch (e) {
+      report.push({
+        databaseKey: plan.databaseKey,
+        sheetName: plan.sheetName,
+        error: String(e.message || e)
+      });
+    }
+  });
+  Logger.log(JSON.stringify(report, null, 2));
+  return report;
+}
