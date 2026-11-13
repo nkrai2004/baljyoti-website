@@ -36,7 +36,9 @@ function doPost(e) {
 }
 
 function bjpsApiRequireSchoolIdentity_(idToken) {
+  if (!idToken || typeof idToken !== 'string' || idToken.length > 12000) throw bjpsApiError_('AUTH_REQUIRED','A valid Firebase ID token is required.');
   const identity=verifyBJPSFirebaseIdToken(idToken);
+  if (!identity || identity.authenticated !== true || identity.disabled === true || !identity.uid) throw bjpsApiError_('AUTH_FAILED','Authentication could not be verified.');
   const email=String(identity.email || '').trim().toLowerCase();
   if(identity.emailVerified!==true) throw bjpsApiError_('EMAIL_NOT_VERIFIED','Verify your school Google account email before continuing.');
   if(!email.endsWith('@'+BJPS_API_V1.ALLOWED_DOMAIN)) throw bjpsApiError_('SCHOOL_ACCOUNT_REQUIRED','Use your official @baljyoti.com account.');
@@ -53,6 +55,7 @@ function bjpsApiRequireSchoolIdentity_(idToken) {
 /** First functional slice: secured Admission enquiry list and create. */
 function bjpsApiAdmissionListEnquiries_(idToken, filters) {
   bjpsApiRequireSchoolIdentity_(idToken);
+  if (!filters || typeof filters !== 'object' || Array.isArray(filters)) throw bjpsApiError_('VALIDATION_FAILED','Filters must be an object.');
   authorizeBJPSERPRequest_(idToken, 'ADMISSION_VIEW', {type:'GLOBAL', id:''});
   const sheet = getBJPSERPSheet('ADMISSION_DATABASE', 'ADMISSION_ENQUIRIES');
   const values = sheet.getDataRange().getValues();
@@ -95,13 +98,14 @@ function bjpsApiAdmissionCreateEnquiry_(idToken, record) {
     if (!studentName || !classAppliedId) throw bjpsApiError_('VALIDATION_FAILED','Student name and applied class are required.');
     if (studentName.length > 150 || classAppliedId.length > 80) throw bjpsApiError_('VALIDATION_FAILED','One or more fields exceed the allowed length.');
     const yearId = bjpsApiGetCurrentAcademicYearId_();
+    bjpsApiRequireActiveClass_(classAppliedId);
     const now = new Date();
     const row = new Array(headers.length).fill('');
     const put = function(name,value){row[ix[name]]=value;};
     put('EnquiryID','ENQ_' + Utilities.getUuid());
     put('EnquiryNumber','ENQ-' + yearId.replace(/[^A-Za-z0-9]/g,'').slice(-12) + '-' + Utilities.getUuid().slice(0,8).toUpperCase());
-    put('AcademicYearID',yearId); put('EnquiryDate',now); put('StudentName',studentName);
-    put('ClassAppliedID',classAppliedId); put('CurrentStage','ENQUIRY'); put('EnquiryStatus','NEW');
+    put('AcademicYearID',yearId); put('EnquiryDate',now); put('StudentName',bjpsApiSafeCellText_(studentName));
+    put('ClassAppliedID',bjpsApiSafeCellText_(classAppliedId)); put('CurrentStage','ENQUIRY'); put('EnquiryStatus','NEW');
     put('CreatedAt',now); put('CreatedBy',String(identity.uid || ''));
     const optional = {dob:'DOB',gender:'Gender',fatherName:'FatherName',motherName:'MotherName',mobileNumber:'MobileNumber',email:'Email',address:'Address',enquirySource:'EnquirySource',remarks:'Remarks'};
     Object.keys(optional).forEach(function(key) {
@@ -109,12 +113,32 @@ function bjpsApiAdmissionCreateEnquiry_(idToken, record) {
       if (ix[name] !== undefined && record[key] !== undefined) {
         const value=String(record[key] || '').trim();
         if (value.length>500) throw bjpsApiError_('VALIDATION_FAILED',name + ' exceeds the allowed length.');
-        row[ix[name]]=value;
+        row[ix[name]]=bjpsApiSafeCellText_(value);
       }
     });
     sheet.appendRow(row);
     return {enquiryId:row[ix.EnquiryID],enquiryNumber:row[ix.EnquiryNumber],academicYearId:yearId,enquiryStatus:'NEW'};
   } finally { lock.releaseLock(); }
+}
+
+
+/** Reject unknown/inactive class references before writing an enquiry. */
+function bjpsApiRequireActiveClass_(classId) {
+  const sheet = getBJPSERPSheet('CORE_MASTER', 'CLASSES');
+  const values = sheet.getDataRange().getValues();
+  if (values.length < 2) throw bjpsApiError_('CLASS_NOT_AVAILABLE','No active classes are configured.');
+  const ix = bjpsApiHeaderIndexes_(values[0].map(function(v){return String(v || '').trim();}), ['ClassID','Status']);
+  const found = values.slice(1).some(function(row) {
+    return String(row[ix.ClassID] || '').trim() === classId &&
+      String(row[ix.Status] || '').trim().toUpperCase() === 'ACTIVE';
+  });
+  if (!found) throw bjpsApiError_('CLASS_NOT_AVAILABLE','Select an active class from the school class list.');
+}
+
+/** Prevent user-entered text from being interpreted as a spreadsheet formula. */
+function bjpsApiSafeCellText_(value) {
+  const text = String(value == null ? '' : value).trim();
+  return /^[=+\\-@]/.test(text) ? "'" + text : text;
 }
 
 function bjpsApiGetCurrentAcademicYearId_() {
