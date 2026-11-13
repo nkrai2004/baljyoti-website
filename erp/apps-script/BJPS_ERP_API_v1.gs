@@ -31,10 +31,17 @@ function doPost(e) {
     else throw bjpsApiError_('ACTION_NOT_ALLOWED','This API action is not available.');
     return bjpsApiJson_({success:true, data:data});
   } catch (error) {
-    const code = error && error.apiCode ? error.apiCode : 'REQUEST_FAILED';
-    const message = error && error.apiCode ? error.message : 'The request could not be completed. Check the API deployment and server logs.';
-    console.error('BJPS API v1 failure [' + code + ']: ' + String(error && error.stack || error));
-    return bjpsApiJson_({success:false, error:{code:code, message:message}});
+    const known = Boolean(error && error.apiCode);
+    const code = known ? error.apiCode : 'INTERNAL_SERVER_ERROR';
+    const rawMessage = String(error && error.message || error || 'Unknown server error');
+    const safeMessage = rawMessage
+      .replace(/[A-Za-z0-9_-]{80,}/g, '[redacted]')
+      .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}/gi, '[redacted-email]')
+      .slice(0, 220);
+    const diagnosticId = Utilities.getUuid();
+    const message = known ? String(error.message || 'The request was rejected.') : 'Server error: ' + safeMessage;
+    console.error('BJPS API v1 failure [' + code + '] [' + diagnosticId + ']: ' + String(error && error.stack || error));
+    return bjpsApiJson_({success:false, error:{code:code, message:message, diagnosticId:diagnosticId}});
   }
 }
 
