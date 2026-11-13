@@ -45,6 +45,39 @@ function doPost(e) {
   }
 }
 
+
+/**
+ * Verify Firebase ID tokens with the Firebase Identity Toolkit service.
+ * Configure BJPS_FIREBASE_WEB_API_KEY in Apps Script Script Properties.
+ */
+function verifyBJPSFirebaseIdToken(idToken) {
+  const token = String(idToken || '').trim();
+  if (!token || token.length > 12000) throw bjpsApiError_('AUTH_REQUIRED','A valid Firebase ID token is required.');
+  const apiKey = PropertiesService.getScriptProperties().getProperty('BJPS_FIREBASE_WEB_API_KEY');
+  if (!apiKey) throw bjpsApiError_('SERVER_CONFIGURATION','Firebase verification is not configured. Set BJPS_FIREBASE_WEB_API_KEY in Script Properties.');
+  let response;
+  try {
+    response = UrlFetchApp.fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=' + encodeURIComponent(apiKey), {
+      method: 'post', contentType: 'application/json',
+      payload: JSON.stringify({idToken:token}), muteHttpExceptions:true
+    });
+  } catch (err) {
+    throw bjpsApiError_('AUTH_PROVIDER_UNAVAILABLE','Firebase could not be reached to verify your sign-in. Please retry.');
+  }
+  let body = {};
+  try { body = JSON.parse(response.getContentText() || '{}'); } catch (_) {}
+  if (response.getResponseCode() !== 200 || !body.users || !body.users.length) {
+    throw bjpsApiError_('AUTH_FAILED','Your sign-in token is invalid or expired. Please sign in again.');
+  }
+  const user = body.users[0];
+  if (!user.localId || user.disabled === true) throw bjpsApiError_('AUTH_FAILED','This Firebase account is unavailable.');
+  return {
+    authenticated:true, uid:String(user.localId), email:String(user.email || ''),
+    emailVerified:user.emailVerified === true, displayName:String(user.displayName || ''),
+    disabled:user.disabled === true
+  };
+}
+
 function bjpsApiRequireSchoolIdentity_(idToken) {
   if (!idToken || typeof idToken !== 'string' || idToken.length > 12000) throw bjpsApiError_('AUTH_REQUIRED','A valid Firebase ID token is required.');
   const identity=verifyBJPSFirebaseIdToken(idToken);
