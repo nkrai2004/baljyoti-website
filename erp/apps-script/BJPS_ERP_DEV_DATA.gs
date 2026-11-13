@@ -10,6 +10,24 @@
  *
  * Install alongside Code.gs and BJPS_ERP_API_v1.gs.
  */
+// Self-contained database map: this file can run even if the shared foundation
+// file has not yet been copied into the same Apps Script project.
+const BJPS_DEV_DATABASES_ = Object.freeze({
+  CORE_MASTER: 'BJPS_ERP_FILE_01_BJPS_ERP_Core_Master',
+  STUDENT_DATABASE: 'BJPS_ERP_FILE_02_BJPS_ERP_Student_Database',
+  STAFF_DATABASE: 'BJPS_ERP_FILE_03_BJPS_ERP_Staff_Database',
+  USER_ACCESS: 'BJPS_ERP_FILE_04_BJPS_ERP_User_Access',
+  ADMISSION_DATABASE: 'BJPS_ERP_FILE_05_BJPS_ERP_Admission_Database',
+  ACADEMIC_DATABASE: 'BJPS_ERP_FILE_06_BJPS_ERP_Academic_Database',
+  ACTIVITY_DATABASE: 'BJPS_ERP_FILE_07_BJPS_ERP_Activity_Database',
+  FINANCE_DATABASE: 'BJPS_ERP_FILE_08_BJPS_ERP_Finance_Database',
+  HR_DATABASE: 'BJPS_ERP_FILE_09_BJPS_ERP_HR_Database',
+  PROCUREMENT_INVENTORY: 'BJPS_ERP_FILE_10_BJPS_ERP_Procurement_Inventory',
+  TRANSPORT_DATABASE: 'BJPS_ERP_FILE_11_BJPS_ERP_Transport_Database',
+  ADMIN_OPERATIONS: 'BJPS_ERP_FILE_12_BJPS_ERP_Admin_Operations',
+  WORKFLOW_AUDIT: 'BJPS_ERP_FILE_13_BJPS_ERP_Workflow_Audit',
+  DASHBOARD_MIS: 'BJPS_ERP_FILE_14_BJPS_ERP_Dashboard_MIS'
+});
 const BJPS_DEV_MARKER_ = 'DEV-2026-';
 const BJPS_DEV_REGISTRY_SHEET_ = 'ERP_DEV_DATA_REGISTRY';
 const BJPS_DEV_REGISTRY_HEADERS_ = [
@@ -58,7 +76,7 @@ const BJPS_DEV_FIXTURE_PLAN_ = [
 ];
 
 function bjpsDevGetSpreadsheet_(databaseKey) {
-  const propertyName = BJPS_DATABASES[String(databaseKey || '').trim()];
+  const propertyName = BJPS_DEV_DATABASES_[String(databaseKey || '').trim()];
   if (!propertyName) throw new Error('Unknown database key: ' + databaseKey);
   const id = PropertiesService.getScriptProperties().getProperty(propertyName);
   if (!id) throw new Error('Missing Script Property: ' + propertyName);
@@ -91,7 +109,7 @@ function bjpsDevGetRegistry_(createIfMissing) {
 /** Read-only inventory: lists worksheet names, row counts and headers across all 14 databases. */
 function auditBJPSERPDevelopmentSchemas() {
   const report = {databaseCount:0,worksheets:[],errors:[]};
-  Object.keys(BJPS_DATABASES).forEach(function(key) {
+  Object.keys(BJPS_DEV_DATABASES_).forEach(function(key) {
     try {
       const ss=bjpsDevGetSpreadsheet_(key);
       report.databaseCount++;
