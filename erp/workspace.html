@@ -63,7 +63,7 @@
       <a class="active" href="workspace.html"><span class="ico">▦</span>Overview</a>
       <a href="#management"><span class="ico">◈</span>Management</a>
       <a href="#admission-workspace" data-module="admission"><span class="ico">◎</span>Admission</a>
-      <a href="#academic"><span class="ico">▤</span>Academic</a>
+      <a href="#academic-workspace" data-module="academic"><span class="ico">▤</span>Academic</a>
       <a href="#activity"><span class="ico">✦</span>Activity</a>
       <a href="#admin"><span class="ico">⚙</span>Admin</a>
     </nav></div>
@@ -93,6 +93,18 @@
           <label class="wide">Remarks<textarea name="remarks" maxlength="500"></textarea></label><div class="form-actions"><button type="button" class="module-button secondary" id="admissionCancelBtn">Cancel</button><button type="submit" class="module-button" id="admissionSaveBtn">Save enquiry</button></div>
         </form></div>
         <div class="data-panel"><div class="data-panel-head"><div><h2>Enquiry register</h2><p id="admissionCount">No records loaded</p></div><span class="pill">Current session only</span></div><div class="data-table-wrap"><table class="data-table"><thead><tr><th>Enquiry no.</th><th>Student</th><th>Class ID</th><th>Date</th><th>Stage</th><th>Status</th><th>Follow-up</th></tr></thead><tbody id="admissionRows"><tr><td colspan="7" class="empty-state">Sign in with an active, authorised Admission account to load records.</td></tr></tbody></table></div></div>
+      </section>
+      <section id="academic-workspace" class="module-page" aria-label="Academic workspace">
+        <div class="module-page-head"><div><div class="eyebrow">Pillar 03 · Session 2026–27</div><h1>Academic · Classes & sections</h1><p>Live class structure and aggregate student placements. Individual student records remain protected.</p></div><button type="button" class="module-button secondary" id="academicBackBtn">← Overview</button></div>
+        <div id="academicMessage" class="inline-message" role="status">Academic data loads only after your account and Student Profile permissions are verified.</div>
+        <div class="module-toolbar"><button type="button" class="module-button secondary" id="academicRefreshBtn">Refresh class structure</button></div>
+        <div class="grid" style="margin:0 0 14px">
+          <div class="data-panel" style="padding:16px"><div class="crumb">Active classes</div><div id="academicClassCount" style="font-size:26px;font-weight:750">—</div></div>
+          <div class="data-panel" style="padding:16px"><div class="crumb">Active sections</div><div id="academicSectionCount" style="font-size:26px;font-weight:750">—</div></div>
+          <div class="data-panel" style="padding:16px"><div class="crumb">Current placements</div><div id="academicPlacementCount" style="font-size:26px;font-weight:750">—</div></div>
+        </div>
+        <div class="data-panel"><div class="data-panel-head"><div><h2>Class and section register</h2><p id="academicYearLabel">No academic data loaded</p></div><span class="pill">Aggregate view only</span></div><div class="data-table-wrap"><table class="data-table" style="min-width:520px"><thead><tr><th>Class</th><th>Section</th><th>Active placements</th></tr></thead><tbody id="academicRows"><tr><td colspan="3" class="empty-state">Sign in with an authorised Academic account to load class structure.</td></tr></tbody></table></div></div>
+        <p class="crumb" style="margin-top:12px">Next Academic releases: attendance register, teacher allocation and timetable, examinations, marks and report cards. These remain unavailable until their permissions and workflows are implemented and tested.</p>
       </section>
       <div class="section-head" id="overviewPillars"><div><h2>ERP Pillars</h2><p>Five coordinated areas of school operations</p></div></div>
       <section class="grid">
@@ -130,6 +142,7 @@
   let auth = null;
   let currentFirebaseUser = null;
   let admissionSessionReady = false;
+  let academicSessionReady = false;
   const loginMessage = document.getElementById("loginMessage");
   function showLoginMessage(message) { loginMessage.textContent = message; loginMessage.style.display = "block"; }
   function isSchoolEmail(email) { return typeof email === "string" && email.trim().toLowerCase().split("@").length === 2 && email.trim().toLowerCase().endsWith("@"+ALLOWED_EMAIL_DOMAIN); }
@@ -179,8 +192,10 @@
         return;
       }
       admissionSessionReady = data.roleCodes.includes("SUPER_ADMIN") || data.roleCodes.includes("DIRECTOR") || data.roleCodes.includes("ADMISSION_OFFICER");
+      academicSessionReady = data.roleCodes.includes("SUPER_ADMIN") || data.roleCodes.includes("DIRECTOR") || data.roleCodes.includes("PRINCIPAL") || data.roleCodes.includes("CLASS_TEACHER");
       setAccessStatus("Identity & role confirmed", "ERP account active. Assigned role(s): " + data.roleCodes.join(", ") + ". Admission data requests are still checked by server-side permissions.");
       if (location.hash === "#admission-workspace") openAdmissionWorkspace();
+      if (location.hash === "#academic-workspace") openAcademicWorkspace();
     } catch (error) {
       console.error("BJPS ERP API session bootstrap failed", error);
       setAccessStatus("Backend connection unavailable", "Firebase sign-in succeeded, but the Apps Script API could not confirm your ERP session. Check the Web App URL, deployment access and browser network/CORS response. No protected data has been loaded.");
@@ -197,8 +212,8 @@
   }
 
   function showAdmissionMessage(message,type){const el=document.getElementById("admissionMessage");el.textContent=message;el.className="inline-message"+(type?" "+type:"");}
-  function openAdmissionWorkspace(){document.getElementById("overviewPillars").style.display="none";document.querySelector(".welcome").style.display="none";document.querySelector(".notice").style.display="none";document.querySelectorAll(".grid,.services,.section-head").forEach(el=>{if(el.id!=="overviewPillars")el.style.display="none";});document.getElementById("admission-workspace").classList.add("active");history.replaceState(null,"","#admission-workspace");loadAdmissionEnquiries();}
-  function closeAdmissionWorkspace(){document.getElementById("admission-workspace").classList.remove("active");document.querySelector(".welcome").style.display="flex";document.querySelector(".notice").style.display="block";document.querySelectorAll(".grid,.services,.section-head").forEach(el=>el.style.display="");document.getElementById("overviewPillars").style.display="flex";history.replaceState(null,"",location.pathname);}
+  function openAdmissionWorkspace(){document.getElementById("overviewPillars").style.display="none";document.querySelector(".welcome").style.display="none";document.querySelector(".notice").style.display="none";document.querySelectorAll(".content > .grid,.content > .services,.content > .section-head").forEach(el=>{if(el.id!=="overviewPillars")el.style.display="none";});document.getElementById("admission-workspace").classList.add("active");history.replaceState(null,"","#admission-workspace");loadAdmissionEnquiries();}
+  function closeAdmissionWorkspace(){document.getElementById("admission-workspace").classList.remove("active");document.querySelector(".welcome").style.display="flex";document.querySelector(".notice").style.display="block";document.querySelectorAll(".content > .grid,.content > .services,.content > .section-head").forEach(el=>el.style.display="");document.getElementById("overviewPillars").style.display="flex";history.replaceState(null,"",location.pathname);}
   function renderAdmissionRows(records){const body=document.getElementById("admissionRows");body.replaceChildren();if(!records.length){const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=7;td.className="empty-state";td.textContent="No admission enquiries found for the selected filters.";tr.appendChild(td);body.appendChild(tr);return;}records.forEach(r=>{const tr=document.createElement("tr");[r.enquiryNumber,r.studentName,r.classAppliedId,r.enquiryDate,r.currentStage,r.enquiryStatus,r.nextFollowUpDate].forEach(v=>{const td=document.createElement("td");td.textContent=v||"—";tr.appendChild(td);});body.appendChild(tr);});}
   async function loadAdmissionEnquiries(){const body=document.getElementById("admissionRows");body.innerHTML='<tr><td colspan="7" class="empty-state">Loading authorised admission enquiries…</td></tr>';try{const filters={search:document.getElementById("admissionSearch").value.trim(),status:document.getElementById("admissionStatus").value};const data=await apiRequest("admission.enquiries.list",{filters});renderAdmissionRows(data.records||[]);document.getElementById("admissionCount").textContent=(data.count||0)+" enquiries · "+(data.academicYearId||"Current session");showAdmissionMessage("Admission register refreshed successfully.","success");}catch(e){renderAdmissionRows([]);showAdmissionMessage(e.message+" If access is denied, the ERP administrator must provision your account and grant ADMISSION_VIEW.","error");document.getElementById("admissionCount").textContent="Access not confirmed";}}
   document.querySelectorAll('a[data-module="admission"],#admission').forEach(el=>el.addEventListener("click",e=>{e.preventDefault();openAdmissionWorkspace();}));
@@ -209,11 +224,20 @@
   document.getElementById("admissionNewBtn").addEventListener("click",()=>{document.getElementById("admissionFormPanel").style.display="block";});
   document.getElementById("admissionCancelBtn").addEventListener("click",()=>{document.getElementById("admissionFormPanel").style.display="none";document.getElementById("admissionCreateForm").reset();});
   document.getElementById("admissionCreateForm").addEventListener("submit",async e=>{e.preventDefault();const form=e.currentTarget,button=document.getElementById("admissionSaveBtn"),record=Object.fromEntries(new FormData(form).entries());button.disabled=true;button.textContent="Saving…";try{const result=await apiRequest("admission.enquiries.create",{record});form.reset();document.getElementById("admissionFormPanel").style.display="none";showAdmissionMessage("Enquiry "+result.enquiryNumber+" saved successfully.","success");await loadAdmissionEnquiries();}catch(err){showAdmissionMessage(err.message+" No success will be shown unless the server confirms the save.","error");}finally{button.disabled=false;button.textContent="Save enquiry";}});
+  function showAcademicMessage(message,type){const el=document.getElementById("academicMessage");el.textContent=message;el.className="inline-message"+(type?" "+type:"");}
+  function openAcademicWorkspace(){document.getElementById("overviewPillars").style.display="none";document.querySelector(".welcome").style.display="none";document.querySelector(".notice").style.display="none";document.querySelectorAll(".content > .grid,.content > .services,.content > .section-head").forEach(el=>{if(el.id!=="overviewPillars")el.style.display="none";});document.getElementById("academic-workspace").classList.add("active");history.replaceState(null,"","#academic-workspace");loadAcademicClassSections();}
+  function closeAcademicWorkspace(){document.getElementById("academic-workspace").classList.remove("active");document.querySelector(".welcome").style.display="flex";document.querySelector(".notice").style.display="block";document.querySelectorAll(".content > .grid,.content > .services,.content > .section-head").forEach(el=>el.style.display="");document.getElementById("overviewPillars").style.display="flex";history.replaceState(null,"",location.pathname);}
+  function renderAcademicRows(classes){const body=document.getElementById("academicRows");body.replaceChildren();let n=0;classes.forEach(c=>{if(!c.sections.length){const tr=document.createElement("tr");[c.className,"No active sections","0"].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td);});body.appendChild(tr);return;}c.sections.forEach(s=>{n++;const tr=document.createElement("tr");[c.className+" · "+c.classId,s.sectionName+" · "+s.sectionId,String(s.activePlacements)].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td);});body.appendChild(tr);});});if(!n){const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=3;td.className="empty-state";td.textContent="No active class sections are configured for this session.";tr.appendChild(td);body.appendChild(tr);}}
+  async function loadAcademicClassSections(){const body=document.getElementById("academicRows");body.innerHTML='<tr><td colspan="3" class="empty-state">Loading authorised academic structure…</td></tr>';try{const data=await apiRequest("academic.classSections.list");renderAcademicRows(data.classes||[]);document.getElementById("academicClassCount").textContent=data.classCount||0;document.getElementById("academicSectionCount").textContent=data.sectionCount||0;document.getElementById("academicPlacementCount").textContent=data.activePlacements||0;document.getElementById("academicYearLabel").textContent=(data.academicYearId||"Current session")+" · live master data";showAcademicMessage("Class and section structure loaded from the ERP databases. Individual student records are not exposed in this view.","success");}catch(e){renderAcademicRows([]);showAcademicMessage(e.message+" If access is denied, the ERP administrator must grant STUDENT_PROFILE_VIEW. The Academic API update must also be deployed.","error");document.getElementById("academicYearLabel").textContent="Access not confirmed";}}
+  document.querySelectorAll('a[data-module="academic"],#academic').forEach(el=>el.addEventListener("click",e=>{e.preventDefault();openAcademicWorkspace();}));
+  document.getElementById("academicBackBtn").addEventListener("click",closeAcademicWorkspace);
+  document.getElementById("academicRefreshBtn").addEventListener("click",loadAcademicClassSections);
   function showLogin() {
     document.getElementById("workspaceApp").classList.add("hidden");
     document.getElementById("loginScreen").classList.remove("hidden");
     currentFirebaseUser = null;
     document.getElementById("admission-workspace").classList.remove("active");
+    document.getElementById("academic-workspace").classList.remove("active");
     document.getElementById("signedInEmail").textContent = "";
   }
   try {

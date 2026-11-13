@@ -7,7 +7,7 @@ const BJPS_API_V1 = Object.freeze({
   VERSION: '1.0.0',
   MAX_BODY_CHARS: 16000,
   ALLOWED_DOMAIN: 'baljyoti.com',
-  ACTIONS: Object.freeze(['session.bootstrap','admission.enquiries.list','admission.enquiries.create','admission.followups.list','admission.followups.create'])
+  ACTIONS: Object.freeze(['session.bootstrap','admission.enquiries.list','admission.enquiries.create','admission.followups.list','admission.followups.create','academic.classSections.list'])
 });
 
 function doGet() {
@@ -27,6 +27,7 @@ function doPost(e) {
     else if (action === 'admission.enquiries.create') data = bjpsApiAdmissionCreateEnquiry_(request.idToken, request.record || {});
     else if (action === 'admission.followups.list') data = bjpsApiAdmissionListFollowups_(request.idToken, request.enquiryId);
     else if (action === 'admission.followups.create') data = bjpsApiAdmissionCreateFollowup_(request.idToken, request.record || {});
+    else if (action === 'academic.classSections.list') data = bjpsApiAcademicListClassSections_(request.idToken);
     else throw bjpsApiError_('ACTION_NOT_ALLOWED','This API action is not available.');
     return bjpsApiJson_({success:true, data:data});
   } catch (error) {
@@ -207,6 +208,49 @@ function bjpsApiSessionBootstrap_(idToken) {
     roleCodes:roleCodes,
     accessStatus:roleCodes.length ? 'ROLE_ASSIGNED' : 'ROLE_PENDING'
   };
+}
+
+/**
+ * Academic pilot: expose only class/section reference data and aggregate placement
+ * counts. No student names, IDs, guardian data or individual attendance are returned.
+ */
+function bjpsApiAcademicListClassSections_(idToken) {
+  bjpsApiRequireSchoolIdentity_(idToken);
+  authorizeBJPSERPRequest_(idToken, 'STUDENT_PROFILE_VIEW', {type:'GLOBAL', id:''});
+  const yearId = bjpsApiGetCurrentAcademicYearId_();
+  const coreClasses = getBJPSERPSheet('CORE_MASTER','CLASSES').getDataRange().getValues();
+  const coreSections = getBJPSERPSheet('CORE_MASTER','SECTIONS').getDataRange().getValues();
+  const placementRows = getBJPSERPSheet('ACADEMIC_DATABASE','CLASS_SECTION_ASSIGNMENTS').getDataRange().getValues();
+  if (coreClasses.length < 1 || coreSections.length < 1 || placementRows.length < 1) {
+    throw bjpsApiError_('SCHEMA_INVALID','Academic class, section or placement tables are unavailable.');
+  }
+  const ci = bjpsApiHeaderIndexes_(coreClasses[0].map(v=>String(v || '').trim()),['ClassID','ClassName','ClassOrder','Status']);
+  const si = bjpsApiHeaderIndexes_(coreSections[0].map(v=>String(v || '').trim()),['SectionID','SectionName','ClassID','AcademicYearID','Status']);
+  const pi = bjpsApiHeaderIndexes_(placementRows[0].map(v=>String(v || '').trim()),['StudentID','AcademicYearID','ClassID','SectionID','Status']);
+  const counts = {};
+  placementRows.slice(1).forEach(row => {
+    if (String(row[pi.AcademicYearID] || '').trim() !== yearId ||
+        String(row[pi.Status] || '').trim().toUpperCase() !== 'ACTIVE') return;
+    const key = String(row[pi.ClassID] || '').trim() + '|' + String(row[pi.SectionID] || '').trim();
+    counts[key] = (counts[key] || 0) + 1;
+  });
+  const sections = coreSections.slice(1).filter(row =>
+    String(row[si.AcademicYearID] || '').trim() === yearId &&
+    String(row[si.Status] || '').trim().toUpperCase() === 'ACTIVE'
+  );
+  const records = coreClasses.slice(1)
+    .filter(row => String(row[ci.Status] || '').trim().toUpperCase() === 'ACTIVE')
+    .sort((a,b) => Number(a[ci.ClassOrder] || 0) - Number(b[ci.ClassOrder] || 0))
+    .map(row => {
+      const classId = String(row[ci.ClassID] || '').trim();
+      const classSections = sections.filter(section => String(section[si.ClassID] || '').trim() === classId)
+        .map(section => {
+          const sectionId = String(section[si.SectionID] || '').trim();
+          return {sectionId:sectionId,sectionName:String(section[si.SectionName] || ''),activePlacements:counts[classId+'|'+sectionId] || 0};
+        });
+      return {classId:classId,className:String(row[ci.ClassName] || ''),classOrder:Number(row[ci.ClassOrder] || 0),sectionCount:classSections.length,activePlacements:classSections.reduce((n,s)=>n+s.activePlacements,0),sections:classSections};
+    });
+  return {academicYearId:yearId,classCount:records.length,sectionCount:records.reduce((n,c)=>n+c.sectionCount,0),activePlacements:records.reduce((n,c)=>n+c.activePlacements,0),classes:records};
 }
 
 function bjpsApiJson_(payload) {
