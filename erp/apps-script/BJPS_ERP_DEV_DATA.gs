@@ -64,10 +64,6 @@ const BJPS_DEV_FIXTURE_PLAN_ = [
       {SectionID:'DEV-SEC-03-B',SectionCode:'DEV-03-B',SectionName:'DEV B',ClassID:'DEV-CLS-03',AcademicYearID:'DEV-2026-27',StudentCapacity:30,Status:'ACTIVE'}
     ]
   },
-  {
-    // Class-section assignments are intentionally deferred until matching synthetic
-    // student master records and their required fields are validated.
-  }
 ];
 
 function bjpsDevGetSpreadsheet_(databaseKey) {
