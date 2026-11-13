@@ -26,8 +26,34 @@
     @media(max-width:1000px){.shell{grid-template-columns:220px 1fr}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.services{grid-template-columns:repeat(2,minmax(0,1fr))}.content{padding:24px 20px}}
     @media(max-width:700px){.shell{display:block}aside{display:none}.top{height:60px;padding:0 16px}.content{padding:22px 15px 34px}.welcome{display:block}.date{display:block;margin-top:10px}.grid{grid-template-columns:1fr}.services{grid-template-columns:1fr 1fr}.mobile-head{display:block;font-size:14px;font-weight:750}.crumb{display:none}.status{font-size:10px}.welcome h1{font-size:24px}}
   </style>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <style>
+    .auth-screen{min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(135deg,#f8e9eb,#f5f7fa 55%,#fff)}
+    .auth-card{width:min(100%,430px);background:#fff;border:1px solid var(--line);border-radius:18px;padding:30px;box-shadow:0 18px 55px #17243a12}
+    .auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:25px}.auth-mark{width:48px;height:48px;border-radius:12px;background:var(--red);color:white;display:grid;place-items:center;font-weight:800}
+    .auth-card h1{font-size:23px;margin:0 0 8px}.auth-card p{font-size:13px;line-height:1.6;color:var(--muted)}
+    .auth-button{width:100%;border:0;border-radius:10px;background:var(--red);color:#fff;padding:13px 16px;font-weight:700;cursor:pointer;margin-top:16px}
+    .auth-button:disabled{opacity:.6;cursor:wait}.auth-message{display:none;margin-top:14px;padding:11px 12px;border-radius:9px;font-size:12px;line-height:1.5;background:#fff0f0;color:#9b1c2b;border:1px solid #f1cdd1}
+    .auth-foot{font-size:11px!important;margin-top:20px}
+    .signout{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 10px;font-size:11px;cursor:pointer;color:var(--ink)}
+    .hidden{display:none!important}
+</style>
 </head>
 <body>
+
+<section id="loginScreen" class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-brand"><div class="auth-mark">BJ</div><div><strong>Bal Jyoti Public School</strong><div class="crumb">Integrated ERP</div></div></div>
+    <h1>Sign in to BJPS ERP</h1>
+    <p>Use your official school Google account to continue. Signing in confirms identity only; access to ERP data and modules is checked separately by the backend.</p>
+    <div id="loginMessage" class="auth-message" role="alert" aria-live="polite"></div>
+    <button id="googleSignInBtn" class="auth-button" type="button">Continue with Google</button>
+    <p class="auth-foot">Only accounts registered with the school domain can proceed. If your account is not yet provisioned in ERP, contact the ERP administrator.</p>
+  </div>
+</section>
+
+<div id="workspaceApp" class="hidden">
 <div class="shell">
   <aside>
     <div class="brand"><img src="logo.png" alt="BJPS"><div><strong>BJPS ERP</strong><span>Integrated School Platform</span></div></div>
@@ -47,7 +73,7 @@
     <div class="side-note">Access to each module will be enabled only after identity, role, scope and permission checks are confirmed by the ERP backend.</div>
   </aside>
   <main>
-    <header class="top"><div><span class="crumb">Bal Jyoti Public School / ERP / Overview</span><span class="mobile-head">BJPS ERP Workspace</span></div><div class="top-right"><span class="status">Access verification pending</span><span class="avatar" aria-label="User">BJ</span></div></header>
+    <header class="top"><div><span class="crumb">Bal Jyoti Public School / ERP / Overview</span><span class="mobile-head">BJPS ERP Workspace</span></div><div class="top-right"><span class="status">Access verification pending</span><span id="signedInEmail" class="crumb"></span><button id="signOutBtn" class="signout" type="button">Sign out</button><span class="avatar" aria-label="User">BJ</span></div></header>
     <div class="content">
       <section class="welcome"><div><div class="eyebrow">Integrated ERP workspace</div><h1>Welcome to BJPS ERP</h1><p class="sub">A unified workspace for school leadership, admission, teaching, student activities and administration.</p></div><div class="date" id="today"></div></section>
       <div class="notice"><b>Development workspace:</b> This page is the new ERP shell. Module links are intentionally not enabled yet. Signing in or seeing a module tile does not itself grant access; the backend must verify the signed-in Firebase identity and the user's assigned permissions.</div>
@@ -70,10 +96,72 @@
     </div>
   </main>
 </div>
+</div>
 <script>
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyB2SGgV_zUFOyOGIIM27H5HNQYlO5WdFEY",
+    authDomain: "baljyoti-erp.firebaseapp.com",
+    projectId: "baljyoti-erp",
+    storageBucket: "baljyoti-erp.firebasestorage.app",
+    messagingSenderId: "422855577454",
+    appId: "1:422855577454:web:9bccb80cc472d02275bb7f",
+    measurementId: "G-CS6FSBHL0D"
+  };
+  const ALLOWED_EMAIL_DOMAIN = "baljyoti.com";
+  let auth = null;
+  const loginMessage = document.getElementById("loginMessage");
+  function showLoginMessage(message) { loginMessage.textContent = message; loginMessage.style.display = "block"; }
+  function isSchoolEmail(email) { return typeof email === "string" && email.trim().toLowerCase().split("@").length === 2 && email.trim().toLowerCase().endsWith("@"+ALLOWED_EMAIL_DOMAIN); }
+  function showWorkspace(user) {
+    document.getElementById("loginScreen").classList.add("hidden");
+    document.getElementById("workspaceApp").classList.remove("hidden");
+    document.getElementById("signedInEmail").textContent = user.email || "";
+    document.getElementById("today").textContent = new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    document.getElementById("year").textContent = new Date().getFullYear();
+  }
+  function showLogin() {
+    document.getElementById("workspaceApp").classList.add("hidden");
+    document.getElementById("loginScreen").classList.remove("hidden");
+    document.getElementById("signedInEmail").textContent = "";
+  }
+  try {
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    auth = firebase.auth();
+    auth.onAuthStateChanged(user => {
+      if (!user) { showLogin(); return; }
+      if (!isSchoolEmail(user.email)) {
+        auth.signOut().finally(() => showLoginMessage("Please use your official @baljyoti.com Google account."));
+        return;
+      }
+      showWorkspace(user);
+    });
+  } catch (error) {
+    showLoginMessage("Firebase could not be initialised. Please contact the ERP administrator.");
+    console.error("BJPS ERP Firebase initialisation failed", error);
+  }
+  document.getElementById("googleSignInBtn").addEventListener("click", async () => {
+    const button = document.getElementById("googleSignInBtn");
+    button.disabled = true; button.textContent = "Connecting…"; loginMessage.style.display = "none";
+    try {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      provider.setCustomParameters({prompt:"select_account"});
+      const result = await auth.signInWithPopup(provider);
+      if (!isSchoolEmail(result.user.email)) {
+        await auth.signOut(); showLoginMessage("Please use your official @baljyoti.com Google account.");
+      }
+    } catch (error) {
+      const messages = {
+        "auth/popup-closed-by-user":"The sign-in window was closed. Please try again.",
+        "auth/popup-blocked":"Your browser blocked the sign-in popup. Allow popups and try again.",
+        "auth/unauthorized-domain":"Add baljyoti.com to Firebase Authentication → Settings → Authorized domains.",
+        "auth/operation-not-allowed":"Enable Google sign-in in Firebase Authentication → Sign-in method."
+      };
+      showLoginMessage(messages[error.code] || "Sign-in failed. Please try again.");
+      console.error("BJPS ERP sign-in failed", error);
+    } finally { button.disabled = false; button.textContent = "Continue with Google"; }
+  });
+  document.getElementById("signOutBtn").addEventListener("click", () => auth && auth.signOut());
   const now = new Date();
-  document.getElementById("today").textContent = now.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
-  document.getElementById("year").textContent = now.getFullYear();
 </script>
 </body>
 </html>
