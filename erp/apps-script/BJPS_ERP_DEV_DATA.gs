@@ -5,8 +5,8 @@
  * - Never clears/replaces a worksheet or its headers.
  * - Writes only to the explicitly allowlisted tables below.
  * - Requires the live headers to contain each table's required fields.
- * - Every fixture uses a DEV-2026- marker and is recorded in ERP_DEV_DATA_REGISTRY.
- * - Cleanup deletes only registered rows whose marker key still matches.
+ * - Every fixture uses a DEV- namespace marker and is recorded in ERP_DEV_DATA_REGISTRY.
+ * - Cleanup deletes only registered rows whose exact marker key still matches.
  *
  * Install alongside Code.gs and BJPS_ERP_API_v1.gs.
  */
@@ -28,7 +28,7 @@ const BJPS_DEV_DATABASES_ = Object.freeze({
   WORKFLOW_AUDIT: 'BJPS_ERP_FILE_13_BJPS_ERP_Workflow_Audit',
   DASHBOARD_MIS: 'BJPS_ERP_FILE_14_BJPS_ERP_Dashboard_MIS'
 });
-const BJPS_DEV_MARKER_ = 'DEV-2026-';
+const BJPS_DEV_MARKER_ = 'DEV-';
 const BJPS_DEV_REGISTRY_SHEET_ = 'ERP_DEV_DATA_REGISTRY';
 const BJPS_DEV_REGISTRY_HEADERS_ = [
   'BatchID','DatabaseKey','SheetName','RowNumber','KeyColumn','MarkerValue','InsertedAt','InsertedBy'
