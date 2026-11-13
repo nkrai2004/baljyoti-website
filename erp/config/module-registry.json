@@ -1,0 +1,109 @@
+{
+  "version": "1.0.0",
+  "status": "implementation_registry",
+  "note": "Module map for BJPS ERP. Every data operation must be server-authorized; no module may infer permissions from client-side roles.",
+  "pillars": [
+    {
+      "id": "management",
+      "name": "Management",
+      "modules": [
+        "institutional-dashboard",
+        "governance",
+        "approvals",
+        "strategic-planning",
+        "management-reports"
+      ]
+    },
+    {
+      "id": "admission",
+      "name": "Admission",
+      "modules": [
+        "enquiries",
+        "applications",
+        "applicant-documents",
+        "verification",
+        "selection",
+        "enrolment",
+        "admission-reports"
+      ]
+    },
+    {
+      "id": "academic",
+      "name": "Academic",
+      "modules": [
+        "student-information",
+        "class-section",
+        "student-placement",
+        "attendance",
+        "timetable",
+        "lesson-planning",
+        "assessment",
+        "marks",
+        "report-cards",
+        "academic-calendar"
+      ]
+    },
+    {
+      "id": "activity",
+      "name": "Activity",
+      "modules": [
+        "clubs",
+        "events",
+        "competitions",
+        "student-participation",
+        "duties",
+        "activity-reports"
+      ]
+    },
+    {
+      "id": "admin",
+      "name": "Admin & Operations",
+      "modules": [
+        "finance",
+        "fee-management",
+        "hr",
+        "payroll",
+        "leave",
+        "procurement",
+        "inventory",
+        "transport",
+        "facilities",
+        "maintenance"
+      ]
+    }
+  ],
+  "commonServices": [
+    "people-directory",
+    "notifications",
+    "documents",
+    "workflow-inbox",
+    "approvals",
+    "audit-trail",
+    "reports-mis",
+    "user-settings",
+    "academic-year-context"
+  ],
+  "foundations": [
+    "firebase-identity",
+    "erp-user-master",
+    "role-assignment",
+    "permission-policy",
+    "scope-resolution",
+    "record-filtering",
+    "field-redaction",
+    "audit-logging",
+    "schema-validation",
+    "concurrency-control"
+  ],
+  "releaseRules": [
+    "deny-by-default",
+    "no-client-trusted-role",
+    "no-unscoped-list-endpoints",
+    "parent-access-requires-verified-child-link",
+    "finance-approval-requires-delegated-limit",
+    "principal-fee-status-only",
+    "class-teacher-fee-status-limited-to-assigned-class-section",
+    "super-admin-is-technical-not-business-approver",
+    "preserve-public-website-and-legacy-pages"
+  ]
+}
