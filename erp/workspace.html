@@ -25,6 +25,8 @@
     .mobile-head{display:none}
     @media(max-width:1000px){.shell{grid-template-columns:220px 1fr}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.services{grid-template-columns:repeat(2,minmax(0,1fr))}.content{padding:24px 20px}}
     @media(max-width:700px){.shell{display:block}aside{display:none}.top{height:60px;padding:0 16px}.content{padding:22px 15px 34px}.welcome{display:block}.date{display:block;margin-top:10px}.grid{grid-template-columns:1fr}.services{grid-template-columns:1fr 1fr}.mobile-head{display:block;font-size:14px;font-weight:750}.crumb{display:none}.status{font-size:10px}.welcome h1{font-size:24px}}
+
+    .module-page{display:none}.module-page.active{display:block}.module-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.module-toolbar input,.module-toolbar select,.admission-form input,.admission-form select,.admission-form textarea{border:1px solid var(--line);border-radius:8px;padding:10px 11px;background:#fff;font:inherit;font-size:12px;min-width:0}.module-toolbar input{flex:1;min-width:200px}.module-button{border:0;border-radius:8px;padding:10px 14px;background:var(--red);color:#fff;font-size:12px;font-weight:650;cursor:pointer}.module-button.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}.module-button:disabled{opacity:.55;cursor:wait}.data-panel{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}.data-panel-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:15px 17px;border-bottom:1px solid var(--line)}.data-panel-head h2{font-size:14px;margin:0}.data-panel-head p{font-size:11px;color:var(--muted);margin:4px 0 0}.data-table-wrap{overflow:auto}table.data-table{border-collapse:collapse;width:100%;min-width:720px;text-align:left}table.data-table th,table.data-table td{padding:12px 15px;border-bottom:1px solid var(--line);font-size:12px}table.data-table th{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;background:#fafbfc}table.data-table td.muted{color:var(--muted)}.empty-state{padding:30px 18px;text-align:center;color:var(--muted);font-size:12px}.inline-message{margin:12px 0;padding:11px 13px;border-radius:8px;background:#f4f7fb;border:1px solid var(--line);font-size:12px;color:#4d5b6e}.inline-message.error{background:#fff1f1;border-color:#f1cdd1;color:#9b1c2b}.inline-message.success{background:#eef8f1;border-color:#cce8d5;color:#17633f}.admission-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;padding:16px}.admission-form label{display:grid;gap:6px;font-size:11px;color:#596579}.admission-form .wide{grid-column:1/-1}.admission-form textarea{min-height:72px;resize:vertical}.form-actions{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px}.module-page-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:3px 0 18px}.module-page-head h1{font-size:22px;margin:5px 0}.module-page-head p{font-size:12px;color:var(--muted);margin:0}@media(max-width:650px){.admission-form{grid-template-columns:1fr}.admission-form .wide,.form-actions{grid-column:auto}.module-page-head{align-items:flex-start;flex-direction:column}}
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -60,7 +62,7 @@
     <div><div class="nav-label">Workspace</div><nav class="nav">
       <a class="active" href="workspace.html"><span class="ico">▦</span>Overview</a>
       <a href="#management"><span class="ico">◈</span>Management</a>
-      <a href="#admission"><span class="ico">◎</span>Admission</a>
+      <a href="#admission-workspace" data-module="admission"><span class="ico">◎</span>Admission</a>
       <a href="#academic"><span class="ico">▤</span>Academic</a>
       <a href="#activity"><span class="ico">✦</span>Activity</a>
       <a href="#admin"><span class="ico">⚙</span>Admin</a>
@@ -77,10 +79,25 @@
     <div class="content">
       <section class="welcome"><div><div class="eyebrow">Integrated ERP workspace</div><h1>Welcome to BJPS ERP</h1><p class="sub">A unified workspace for school leadership, admission, teaching, student activities and administration.</p></div><div class="date" id="today"></div></section>
       <div class="notice"><b>Development workspace:</b> <a href="preview.html" style="color:var(--red);font-weight:700;text-decoration:underline">Open the 2026–27 front-end preview</a> ·  This page is the new ERP shell. Module links are intentionally not enabled yet. Signing in or seeing a module tile does not itself grant access; the backend must verify the signed-in Firebase identity and the user's assigned permissions.</div>
-      <div class="section-head"><div><h2>ERP Pillars</h2><p>Five coordinated areas of school operations</p></div></div>
+
+      <section id="admission-workspace" class="module-page" aria-label="Admission workspace">
+        <div class="module-page-head"><div><div class="eyebrow">Pillar 02 · Session 2026–27</div><h1>Admission enquiries</h1><p>Capture, search and review current-session enquiries.</p></div><button type="button" class="module-button secondary" id="admissionBackBtn">← Overview</button></div>
+        <div id="admissionMessage" class="inline-message" role="status">Admission records load only after your account and Admission permissions are verified.</div>
+        <div class="module-toolbar"><input id="admissionSearch" type="search" placeholder="Search enquiry number, student or class"><select id="admissionStatus"><option value="">All statuses</option><option value="NEW">New</option><option value="IN_PROGRESS">In progress</option><option value="CONVERTED">Converted</option><option value="CLOSED">Closed</option></select><button type="button" class="module-button secondary" id="admissionRefreshBtn">Refresh</button><button type="button" class="module-button" id="admissionNewBtn">+ New enquiry</button></div>
+        <div id="admissionFormPanel" class="data-panel" style="display:none;margin-bottom:14px"><div class="data-panel-head"><div><h2>Register admission enquiry</h2><p>Required fields are marked with an asterisk.</p></div></div><form id="admissionCreateForm" class="admission-form">
+          <label>Student name *<input name="studentName" maxlength="150" required autocomplete="off"></label><label>Class applied · Class ID *<input name="classAppliedId" maxlength="80" required placeholder="Enter the active Class ID"></label>
+          <label>Date of birth<input name="dob" type="date"></label><label>Gender<input name="gender" maxlength="30"></label>
+          <label>Father's name<input name="fatherName" maxlength="150"></label><label>Mother's name<input name="motherName" maxlength="150"></label>
+          <label>Mobile number<input name="mobileNumber" maxlength="30" inputmode="tel"></label><label>Email<input name="email" type="email" maxlength="150"></label>
+          <label>Enquiry source<input name="enquirySource" maxlength="100" placeholder="Walk-in, referral, website…"></label><label>Address<input name="address" maxlength="500"></label>
+          <label class="wide">Remarks<textarea name="remarks" maxlength="500"></textarea></label><div class="form-actions"><button type="button" class="module-button secondary" id="admissionCancelBtn">Cancel</button><button type="submit" class="module-button" id="admissionSaveBtn">Save enquiry</button></div>
+        </form></div>
+        <div class="data-panel"><div class="data-panel-head"><div><h2>Enquiry register</h2><p id="admissionCount">No records loaded</p></div><span class="pill">Current session only</span></div><div class="data-table-wrap"><table class="data-table"><thead><tr><th>Enquiry no.</th><th>Student</th><th>Class ID</th><th>Date</th><th>Stage</th><th>Status</th><th>Follow-up</th></tr></thead><tbody id="admissionRows"><tr><td colspan="7" class="empty-state">Sign in with an active, authorised Admission account to load records.</td></tr></tbody></table></div></div>
+      </section>
+      <div class="section-head" id="overviewPillars"><div><h2>ERP Pillars</h2><p>Five coordinated areas of school operations</p></div></div>
       <section class="grid">
         <a class="pillar" id="management" href="#management"><div class="pillar-top"><span class="pillar-icon">◈</span><span class="pill">In design</span></div><h3>Management</h3><p>Governance, leadership dashboards, strategic oversight, approvals and institutional reporting.</p><footer>Workspace under development →</footer></a>
-        <a class="pillar" id="admission" href="#admission"><div class="pillar-top"><span class="pillar-icon">◎</span><span class="pill">In design</span></div><h3>Admission</h3><p>Enquiries, applications, document verification, selection, enrolment and admission operations.</p><footer>Workspace under development →</footer></a>
+        <a class="pillar" id="admission" href="#admission-workspace"><div class="pillar-top"><span class="pillar-icon">◎</span><span class="pill">In design</span></div><h3>Admission</h3><p>Enquiries, applications, document verification, selection, enrolment and admission operations.</p><footer>Workspace under development →</footer></a>
         <a class="pillar" id="academic" href="#academic"><div class="pillar-top"><span class="pillar-icon">▤</span><span class="pill">In design</span></div><h3>Academic</h3><p>Student information, classes, sections, attendance, timetable, assessments and results.</p><footer>Workspace under development →</footer></a>
         <a class="pillar" id="activity" href="#activity"><div class="pillar-top"><span class="pillar-icon">✦</span><span class="pill">In design</span></div><h3>Activity</h3><p>Clubs, events, competitions, duties, participation and co-curricular programmes.</p><footer>Workspace under development →</footer></a>
         <a class="pillar" id="admin" href="#admin"><div class="pillar-top"><span class="pillar-icon">⚙</span><span class="pill">In design</span></div><h3>Admin</h3><p>Finance, HR, procurement, inventory, transport, facilities and school operations.</p><footer>Workspace under development →</footer></a>
@@ -111,6 +128,8 @@
   // Set this to the deployed Apps Script Web App URL ending in /exec.
   const BJPS_ERP_API_URL = "https://script.google.com/macros/s/AKfycbzrcd1zhGk2oQk0FyRfumiE7I5-t9bJb_eEejTsK5KqMFott0h3BqMhCYolDpC0kMncgQ/exec";
   let auth = null;
+  let currentFirebaseUser = null;
+  let admissionSessionReady = false;
   const loginMessage = document.getElementById("loginMessage");
   function showLoginMessage(message) { loginMessage.textContent = message; loginMessage.style.display = "block"; }
   function isSchoolEmail(email) { return typeof email === "string" && email.trim().toLowerCase().split("@").length === 2 && email.trim().toLowerCase().endsWith("@"+ALLOWED_EMAIL_DOMAIN); }
@@ -120,7 +139,18 @@
     if (status) status.textContent = label;
     if (notice) notice.textContent = message;
   }
+  async function apiRequest(action, extra = {}) {
+    if (!currentFirebaseUser) throw new Error("Please sign in again.");
+    const idToken = await currentFirebaseUser.getIdToken();
+    const response = await fetch(BJPS_ERP_API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action,idToken,...extra}),redirect:"follow"});
+    if (!response.ok) throw new Error("API request failed (HTTP "+response.status+").");
+    const payload = await response.json();
+    if (!payload || payload.success !== true) throw new Error(payload && payload.error ? payload.error.message : "The ERP API rejected the request.");
+    return payload.data;
+  }
   async function verifyErpSession(user) {
+    currentFirebaseUser = user;
+    admissionSessionReady = false;
     if (!BJPS_ERP_API_URL || BJPS_ERP_API_URL.indexOf("https://") !== 0 || BJPS_ERP_API_URL.indexOf("PASTE_") >= 0) {
       setAccessStatus("API setup required", "Firebase sign-in succeeded. The Apps Script API URL has not been configured; no ERP data is being requested or exposed.");
       return;
@@ -148,13 +178,16 @@
         setAccessStatus("Role assignment pending", "Your ERP account is active, but no active role is assigned. Modules remain unavailable until an authorised administrator assigns your role and scope.");
         return;
       }
-      setAccessStatus("Identity & role confirmed", "ERP account active. Assigned role(s): " + data.roleCodes.join(", ") + ". Business data modules remain locked until each module has its own permission and scope checks.");
+      admissionSessionReady = data.roleCodes.includes("SUPER_ADMIN") || data.roleCodes.includes("DIRECTOR") || data.roleCodes.includes("ADMISSION_OFFICER");
+      setAccessStatus("Identity & role confirmed", "ERP account active. Assigned role(s): " + data.roleCodes.join(", ") + ". Admission data requests are still checked by server-side permissions.");
+      if (location.hash === "#admission-workspace") openAdmissionWorkspace();
     } catch (error) {
       console.error("BJPS ERP API session bootstrap failed", error);
       setAccessStatus("Backend connection unavailable", "Firebase sign-in succeeded, but the Apps Script API could not confirm your ERP session. Check the Web App URL, deployment access and browser network/CORS response. No protected data has been loaded.");
     }
   }
   function showWorkspace(user) {
+    currentFirebaseUser = user;
     document.getElementById("loginScreen").classList.add("hidden");
     document.getElementById("workspaceApp").classList.remove("hidden");
     document.getElementById("signedInEmail").textContent = user.email || "";
@@ -162,9 +195,25 @@
     document.getElementById("year").textContent = new Date().getFullYear();
     verifyErpSession(user);
   }
+
+  function showAdmissionMessage(message,type){const el=document.getElementById("admissionMessage");el.textContent=message;el.className="inline-message"+(type?" "+type:"");}
+  function openAdmissionWorkspace(){document.getElementById("overviewPillars").style.display="none";document.querySelector(".welcome").style.display="none";document.querySelector(".notice").style.display="none";document.querySelectorAll(".grid,.services,.section-head").forEach(el=>{if(el.id!=="overviewPillars")el.style.display="none";});document.getElementById("admission-workspace").classList.add("active");history.replaceState(null,"","#admission-workspace");loadAdmissionEnquiries();}
+  function closeAdmissionWorkspace(){document.getElementById("admission-workspace").classList.remove("active");document.querySelector(".welcome").style.display="flex";document.querySelector(".notice").style.display="block";document.querySelectorAll(".grid,.services,.section-head").forEach(el=>el.style.display="");document.getElementById("overviewPillars").style.display="flex";history.replaceState(null,"",location.pathname);}
+  function renderAdmissionRows(records){const body=document.getElementById("admissionRows");body.replaceChildren();if(!records.length){const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=7;td.className="empty-state";td.textContent="No admission enquiries found for the selected filters.";tr.appendChild(td);body.appendChild(tr);return;}records.forEach(r=>{const tr=document.createElement("tr");[r.enquiryNumber,r.studentName,r.classAppliedId,r.enquiryDate,r.currentStage,r.enquiryStatus,r.nextFollowUpDate].forEach(v=>{const td=document.createElement("td");td.textContent=v||"—";tr.appendChild(td);});body.appendChild(tr);});}
+  async function loadAdmissionEnquiries(){const body=document.getElementById("admissionRows");body.innerHTML='<tr><td colspan="7" class="empty-state">Loading authorised admission enquiries…</td></tr>';try{const filters={search:document.getElementById("admissionSearch").value.trim(),status:document.getElementById("admissionStatus").value};const data=await apiRequest("admission.enquiries.list",{filters});renderAdmissionRows(data.records||[]);document.getElementById("admissionCount").textContent=(data.count||0)+" enquiries · "+(data.academicYearId||"Current session");showAdmissionMessage("Admission register refreshed successfully.","success");}catch(e){renderAdmissionRows([]);showAdmissionMessage(e.message+" If access is denied, the ERP administrator must provision your account and grant ADMISSION_VIEW.","error");document.getElementById("admissionCount").textContent="Access not confirmed";}}
+  document.querySelectorAll('a[data-module="admission"],#admission').forEach(el=>el.addEventListener("click",e=>{e.preventDefault();openAdmissionWorkspace();}));
+  document.getElementById("admissionBackBtn").addEventListener("click",closeAdmissionWorkspace);
+  document.getElementById("admissionRefreshBtn").addEventListener("click",loadAdmissionEnquiries);
+  document.getElementById("admissionSearch").addEventListener("keydown",e=>{if(e.key==="Enter")loadAdmissionEnquiries();});
+  document.getElementById("admissionStatus").addEventListener("change",loadAdmissionEnquiries);
+  document.getElementById("admissionNewBtn").addEventListener("click",()=>{document.getElementById("admissionFormPanel").style.display="block";});
+  document.getElementById("admissionCancelBtn").addEventListener("click",()=>{document.getElementById("admissionFormPanel").style.display="none";document.getElementById("admissionCreateForm").reset();});
+  document.getElementById("admissionCreateForm").addEventListener("submit",async e=>{e.preventDefault();const form=e.currentTarget,button=document.getElementById("admissionSaveBtn"),record=Object.fromEntries(new FormData(form).entries());button.disabled=true;button.textContent="Saving…";try{const result=await apiRequest("admission.enquiries.create",{record});form.reset();document.getElementById("admissionFormPanel").style.display="none";showAdmissionMessage("Enquiry "+result.enquiryNumber+" saved successfully.","success");await loadAdmissionEnquiries();}catch(err){showAdmissionMessage(err.message+" No success will be shown unless the server confirms the save.","error");}finally{button.disabled=false;button.textContent="Save enquiry";}});
   function showLogin() {
     document.getElementById("workspaceApp").classList.add("hidden");
     document.getElementById("loginScreen").classList.remove("hidden");
+    currentFirebaseUser = null;
+    document.getElementById("admission-workspace").classList.remove("active");
     document.getElementById("signedInEmail").textContent = "";
   }
   try {
