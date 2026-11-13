@@ -7,7 +7,7 @@ const BJPS_API_V1 = Object.freeze({
   VERSION: '1.0.0',
   MAX_BODY_CHARS: 16000,
   ALLOWED_DOMAIN: 'baljyoti.com',
-  ACTIONS: Object.freeze(['session.bootstrap'])
+  ACTIONS: Object.freeze(['session.bootstrap','admission.enquiries.list','admission.enquiries.create'])
 });
 
 function doGet() {
@@ -35,8 +35,24 @@ function doPost(e) {
   }
 }
 
+function bjpsApiRequireSchoolIdentity_(idToken) {
+  const identity=verifyBJPSFirebaseIdToken(idToken);
+  const email=String(identity.email || '').trim().toLowerCase();
+  if(identity.emailVerified!==true) throw bjpsApiError_('EMAIL_NOT_VERIFIED','Verify your school Google account email before continuing.');
+  if(!email.endsWith('@'+BJPS_API_V1.ALLOWED_DOMAIN)) throw bjpsApiError_('SCHOOL_ACCOUNT_REQUIRED','Use your official @baljyoti.com account.');
+  const values=getBJPSERPSheet(BJPS_RBAC.DATABASE_KEY,BJPS_RBAC.TABLES.USERS).getDataRange().getValues();
+  const headers=values.length?values[0].map(function(v){return String(v || '').trim();}):[];
+  const ix=bjpsApiHeaderIndexes_(headers,['FirebaseUID','Email','AccountStatus']);
+  const row=values.slice(1).find(function(item){return String(item[ix.FirebaseUID] || '').trim()===String(identity.uid || '').trim();});
+  if(!row || String(row[ix.Email] || '').trim().toLowerCase()!==email || String(row[ix.AccountStatus] || '').trim().toUpperCase()!=='ACTIVE') {
+    throw bjpsApiError_('ERP_ACCOUNT_INACTIVE','An active, matching ERP account is required.');
+  }
+  return identity;
+}
+
 /** First functional slice: secured Admission enquiry list and create. */
 function bjpsApiAdmissionListEnquiries_(idToken, filters) {
+  bjpsApiRequireSchoolIdentity_(idToken);
   authorizeBJPSERPRequest_(idToken, 'ADMISSION_VIEW', {type:'GLOBAL', id:''});
   const sheet = getBJPSERPSheet('ADMISSION_DATABASE', 'ADMISSION_ENQUIRIES');
   const values = sheet.getDataRange().getValues();
@@ -66,6 +82,7 @@ function bjpsApiAdmissionListEnquiries_(idToken, filters) {
 }
 
 function bjpsApiAdmissionCreateEnquiry_(idToken, record) {
+  const identity = bjpsApiRequireSchoolIdentity_(idToken);
   authorizeBJPSERPRequest_(idToken, 'ADMISSION_CREATE', {type:'GLOBAL', id:''});
   const lock = LockService.getScriptLock();
   if (!lock.tryLock(10000)) throw bjpsApiError_('BUSY','Another admission update is in progress. Please retry.');
@@ -78,7 +95,6 @@ function bjpsApiAdmissionCreateEnquiry_(idToken, record) {
     if (!studentName || !classAppliedId) throw bjpsApiError_('VALIDATION_FAILED','Student name and applied class are required.');
     if (studentName.length > 150 || classAppliedId.length > 80) throw bjpsApiError_('VALIDATION_FAILED','One or more fields exceed the allowed length.');
     const yearId = bjpsApiGetCurrentAcademicYearId_();
-    const identity = verifyBJPSFirebaseIdToken(idToken);
     const now = new Date();
     const row = new Array(headers.length).fill('');
     const put = function(name,value){row[ix[name]]=value;};
