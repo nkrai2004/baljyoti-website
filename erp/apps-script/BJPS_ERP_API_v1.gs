@@ -138,7 +138,7 @@ function bjpsApiRequireActiveClass_(classId) {
 /** Prevent user-entered text from being interpreted as a spreadsheet formula. */
 function bjpsApiSafeCellText_(value) {
   const text = String(value == null ? '' : value).trim();
-  return /^[=+\\-@]/.test(text) ? "'" + text : text;
+  return /^[=+\-@]/.test(text) ? "'" + text : text;
 }
 
 function bjpsApiGetCurrentAcademicYearId_() {
