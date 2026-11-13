@@ -157,11 +157,13 @@ function seedBJPSERPDevData() {
       const values=plan.rows.map(function(obj){return headers.map(function(h){return Object.prototype.hasOwnProperty.call(obj,h)?obj[h]:'';});});
       const start=sh.getLastRow()+1;
       sh.getRange(start,1,values.length,headers.length).setValues(values);
-      plan.rows.forEach(function(obj,i){
-        inserted.push([batch,plan.databaseKey,plan.sheetName,start+i,plan.keyColumn,String(obj[plan.keyColumn]),new Date(),actor]);
+      const tableRegistry=plan.rows.map(function(obj,i){
+        return [batch,plan.databaseKey,plan.sheetName,start+i,plan.keyColumn,String(obj[plan.keyColumn]),new Date(),actor];
       });
+      // Register immediately after each table append so a later failure remains cleanable.
+      if(tableRegistry.length) registry.getRange(registry.getLastRow()+1,1,tableRegistry.length,BJPS_DEV_REGISTRY_HEADERS_.length).setValues(tableRegistry);
+      Array.prototype.push.apply(inserted,tableRegistry);
     });
-    if(inserted.length) registry.getRange(registry.getLastRow()+1,1,inserted.length,BJPS_DEV_REGISTRY_HEADERS_.length).setValues(inserted);
     const result={batchID:batch,insertedRows:inserted.length,registrySheet:BJPS_DEV_REGISTRY_SHEET_,tables:inserted.length};
     Logger.log(JSON.stringify(result,null,2));
     return result;
