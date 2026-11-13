@@ -288,7 +288,7 @@ function bjpsApiAdmissionCreateFollowup_(idToken,record) {
     }
     let nextFollowDate='';
     if(nextDate) {
-      if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(nextDate) || isNaN(new Date(nextDate+'T00:00:00').getTime())) throw bjpsApiError_('VALIDATION_FAILED','Next follow-up date must be a valid YYYY-MM-DD date.');
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(nextDate) || isNaN(new Date(nextDate+'T00:00:00').getTime())) throw bjpsApiError_('VALIDATION_FAILED','Next follow-up date must be a valid YYYY-MM-DD date.');
       nextFollowDate=new Date(nextDate+'T00:00:00');
     }
     const row=new Array(headers.length).fill('');
