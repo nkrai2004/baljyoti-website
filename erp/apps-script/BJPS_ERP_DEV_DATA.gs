@@ -41,7 +41,7 @@ const BJPS_DEV_FIXTURE_PLAN_ = [
     databaseKey:'CORE_MASTER', sheetName:'ACADEMIC_YEARS',
     required:['AcademicYearID','IsCurrent','Status'], keyColumn:'AcademicYearID',
     rows:[{
-      AcademicYearID:'DEV-2026-27', AcademicYearName:'DEV SAMPLE 2026–27',
+      AcademicYearID:'DEV-2026-27', YearName:'DEV SAMPLE 2026–27',
       StartDate:new Date(2026,3,1), EndDate:new Date(2027,2,31),
       IsCurrent:false, Status:'ACTIVE'
     }]
