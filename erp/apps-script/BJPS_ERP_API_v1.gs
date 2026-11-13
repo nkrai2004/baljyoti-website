@@ -7,7 +7,7 @@ const BJPS_API_V1 = Object.freeze({
   VERSION: '1.0.0',
   MAX_BODY_CHARS: 16000,
   ALLOWED_DOMAIN: 'baljyoti.com',
-  ACTIONS: Object.freeze(['session.bootstrap','admission.enquiries.list','admission.enquiries.create'])
+  ACTIONS: Object.freeze(['session.bootstrap','admission.enquiries.list','admission.enquiries.create','admission.followups.list','admission.followups.create'])
 });
 
 function doGet() {
@@ -25,6 +25,8 @@ function doPost(e) {
     if (action === 'session.bootstrap') data = bjpsApiSessionBootstrap_(request.idToken);
     else if (action === 'admission.enquiries.list') data = bjpsApiAdmissionListEnquiries_(request.idToken, request.filters || {});
     else if (action === 'admission.enquiries.create') data = bjpsApiAdmissionCreateEnquiry_(request.idToken, request.record || {});
+    else if (action === 'admission.followups.list') data = bjpsApiAdmissionListFollowups_(request.idToken, request.enquiryId);
+    else if (action === 'admission.followups.create') data = bjpsApiAdmissionCreateFollowup_(request.idToken, request.record || {});
     else throw bjpsApiError_('ACTION_NOT_ALLOWED','This API action is not available.');
     return bjpsApiJson_({success:true, data:data});
   } catch (error) {
@@ -214,4 +216,99 @@ function bjpsApiError_(code,message) {
   const error = new Error(message);
   error.apiCode = code;
   return error;
+}
+
+
+/**
+ * Admission follow-up history. Enquiry ownership is constrained to the active
+ * academic year before any follow-up data is returned or changed.
+ */
+function bjpsApiAdmissionFindCurrentEnquiry_(enquiryId) {
+  const id = String(enquiryId || '').trim();
+  if (!id || id.length > 100) throw bjpsApiError_('VALIDATION_FAILED','A valid enquiry ID is required.');
+  const sheet = getBJPSERPSheet('ADMISSION_DATABASE','ADMISSION_ENQUIRIES');
+  const values = sheet.getDataRange().getValues();
+  if (!values.length) throw bjpsApiError_('SCHEMA_INVALID','Admission enquiry sheet has no header row.');
+  const ix = bjpsApiHeaderIndexes_(values[0].map(v=>String(v || '').trim()),['EnquiryID','AcademicYearID']);
+  const yearId = bjpsApiGetCurrentAcademicYearId_();
+  const rowIndex = values.slice(1).findIndex(row =>
+    String(row[ix.EnquiryID] || '').trim() === id &&
+    String(row[ix.AcademicYearID] || '').trim() === yearId
+  );
+  if (rowIndex < 0) throw bjpsApiError_('ENQUIRY_NOT_FOUND','The enquiry was not found in the active academic session.');
+  return {sheet:sheet,rowNumber:rowIndex+2,yearId:yearId};
+}
+
+function bjpsApiAdmissionListFollowups_(idToken,enquiryId) {
+  bjpsApiRequireSchoolIdentity_(idToken);
+  authorizeBJPSERPRequest_(idToken,'ADMISSION_VIEW',{type:'GLOBAL',id:''});
+  const enquiry = bjpsApiAdmissionFindCurrentEnquiry_(enquiryId);
+  const sheet = getBJPSERPSheet('ADMISSION_DATABASE','ADMISSION_FOLLOWUPS');
+  const values = sheet.getDataRange().getValues();
+  if (!values.length) throw bjpsApiError_('SCHEMA_INVALID','Admission follow-up sheet has no header row.');
+  const ix = bjpsApiHeaderIndexes_(values[0].map(v=>String(v || '').trim()),['FollowUpID','EnquiryID','FollowUpDateTime','ContactMode','ContactedBy','Outcome','ParentResponse','NextAction','NextFollowUpDate','Remarks','CreatedAt']);
+  const records = values.slice(1).filter(row=>String(row[ix.EnquiryID] || '').trim()===String(enquiry.sheet.getRange(enquiry.rowNumber,1).getValue() || '').trim())
+    .map(row=>({
+      followUpId:String(row[ix.FollowUpID] || ''),
+      followUpDateTime:bjpsApiDateValue_(row[ix.FollowUpDateTime]),
+      contactMode:String(row[ix.ContactMode] || ''),
+      outcome:String(row[ix.Outcome] || ''),
+      parentResponse:String(row[ix.ParentResponse] || ''),
+      nextAction:String(row[ix.NextAction] || ''),
+      nextFollowUpDate:bjpsApiDateValue_(row[ix.NextFollowUpDate]),
+      remarks:String(row[ix.Remarks] || '')
+    })).reverse().slice(0,100);
+  return {enquiryId:String(enquiry.sheet.getRange(enquiry.rowNumber,1).getValue() || ''),count:records.length,records:records};
+}
+
+function bjpsApiAdmissionCreateFollowup_(idToken,record) {
+  const identity = bjpsApiRequireSchoolIdentity_(idToken);
+  authorizeBJPSERPRequest_(idToken,'ADMISSION_CREATE',{type:'GLOBAL',id:''});
+  const enquiryId=String(record.enquiryId || '').trim();
+  const enquiry=bjpsApiAdmissionFindCurrentEnquiry_(enquiryId);
+  const lock=LockService.getScriptLock();
+  if(!lock.tryLock(10000)) throw bjpsApiError_('BUSY','Another admission update is in progress. Please retry.');
+  try {
+    const sheet=getBJPSERPSheet('ADMISSION_DATABASE','ADMISSION_FOLLOWUPS');
+    const headers=sheet.getRange(1,1,1,sheet.getLastColumn()).getDisplayValues()[0].map(v=>String(v || '').trim());
+    const ix=bjpsApiHeaderIndexes_(headers,['FollowUpID','EnquiryID','FollowUpDateTime','ContactMode','ContactedBy','Outcome','ParentResponse','NextAction','NextFollowUpDate','Remarks','CreatedAt']);
+    const mode=String(record.contactMode || '').trim();
+    const outcome=String(record.outcome || '').trim();
+    const nextAction=String(record.nextAction || '').trim();
+    const parentResponse=String(record.parentResponse || '').trim();
+    const remarks=String(record.remarks || '').trim();
+    const nextDate=String(record.nextFollowUpDate || '').trim();
+    if(!mode || !outcome) throw bjpsApiError_('VALIDATION_FAILED','Contact mode and outcome are required.');
+    if(mode.length>50 || outcome.length>200 || nextAction.length>300 || parentResponse.length>500 || remarks.length>1000) throw bjpsApiError_('VALIDATION_FAILED','One or more follow-up fields exceed the allowed length.');
+    let followDate=new Date();
+    if(record.followUpDateTime) {
+      followDate=new Date(record.followUpDateTime);
+      if(isNaN(followDate.getTime())) throw bjpsApiError_('VALIDATION_FAILED','Follow-up date and time is invalid.');
+      if(followDate.getTime()>Date.now()+5*60*1000) throw bjpsApiError_('VALIDATION_FAILED','A follow-up cannot be dated in the future.');
+    }
+    let nextFollowDate='';
+    if(nextDate) {
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(nextDate) || isNaN(new Date(nextDate+'T00:00:00').getTime())) throw bjpsApiError_('VALIDATION_FAILED','Next follow-up date must be a valid YYYY-MM-DD date.');
+      nextFollowDate=new Date(nextDate+'T00:00:00');
+    }
+    const row=new Array(headers.length).fill('');
+    const put=(name,value)=>{row[ix[name]]=value;};
+    put('FollowUpID','FUP_'+Utilities.getUuid());
+    put('EnquiryID',enquiryId);
+    put('FollowUpDateTime',followDate);
+    put('ContactMode',bjpsApiSafeCellText_(mode));
+    put('ContactedBy',String(identity.uid || ''));
+    put('Outcome',bjpsApiSafeCellText_(outcome));
+    put('ParentResponse',bjpsApiSafeCellText_(parentResponse));
+    put('NextAction',bjpsApiSafeCellText_(nextAction));
+    put('NextFollowUpDate',nextFollowDate);
+    put('Remarks',bjpsApiSafeCellText_(remarks));
+    put('CreatedAt',new Date());
+    sheet.appendRow(row);
+    const enquiryHeaders=enquiry.sheet.getRange(1,1,1,enquiry.sheet.getLastColumn()).getDisplayValues()[0].map(v=>String(v || '').trim());
+    const enquiryIx=bjpsApiHeaderIndexes_(enquiryHeaders,['UpdatedAt','NextFollowUpDate']);
+    enquiry.sheet.getRange(enquiry.rowNumber,enquiryIx.NextFollowUpDate+1).setValue(nextFollowDate);
+    enquiry.sheet.getRange(enquiry.rowNumber,enquiryIx.UpdatedAt+1).setValue(new Date());
+    return {followUpId:row[ix.FollowUpID],enquiryId:enquiryId,nextFollowUpDate:nextDate};
+  } finally {lock.releaseLock();}
 }
