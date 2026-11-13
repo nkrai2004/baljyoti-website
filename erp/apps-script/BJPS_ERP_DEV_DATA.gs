@@ -41,37 +41,32 @@ const BJPS_DEV_FIXTURE_PLAN_ = [
     databaseKey:'CORE_MASTER', sheetName:'ACADEMIC_YEARS',
     required:['AcademicYearID','IsCurrent','Status'], keyColumn:'AcademicYearID',
     rows:[{
-      AcademicYearID:'DEV-2026-27', YearName:'DEV SAMPLE 2026–27',
+      AcademicYearID:'DEV-2026-27', YearCode:'DEV-2026-27', YearName:'DEV SAMPLE 2026–27',
       StartDate:new Date(2026,3,1), EndDate:new Date(2027,2,31),
       IsCurrent:false, Status:'ACTIVE'
     }]
   },
   {
     databaseKey:'CORE_MASTER', sheetName:'CLASSES',
-    required:['ClassID','ClassName','ClassOrder','Status'], keyColumn:'ClassID',
+    required:['ClassID','ClassCode','ClassName','ClassOrder','EducationLevel','Status'], keyColumn:'ClassID',
     rows:[
-      {ClassID:'DEV-CLS-NUR',ClassName:'DEV Nursery',ClassOrder:0,Status:'ACTIVE'},
-      {ClassID:'DEV-CLS-01',ClassName:'DEV Class 1',ClassOrder:1,Status:'ACTIVE'},
-      {ClassID:'DEV-CLS-03',ClassName:'DEV Class 3',ClassOrder:3,Status:'ACTIVE'}
+      {ClassID:'DEV-CLS-NUR',ClassCode:'DEV-NUR',ClassName:'DEV Nursery',ClassOrder:0,EducationLevel:'DEV_EARLY_YEARS',Status:'ACTIVE'},
+      {ClassID:'DEV-CLS-01',ClassCode:'DEV-01',ClassName:'DEV Class 1',ClassOrder:1,EducationLevel:'DEV_PRIMARY',Status:'ACTIVE'},
+      {ClassID:'DEV-CLS-03',ClassCode:'DEV-03',ClassName:'DEV Class 3',ClassOrder:3,EducationLevel:'DEV_PRIMARY',Status:'ACTIVE'}
     ]
   },
   {
     databaseKey:'CORE_MASTER', sheetName:'SECTIONS',
-    required:['SectionID','SectionName','ClassID','AcademicYearID','Status'], keyColumn:'SectionID',
+    required:['SectionID','SectionCode','SectionName','ClassID','AcademicYearID','StudentCapacity','Status'], keyColumn:'SectionID',
     rows:[
-      {SectionID:'DEV-SEC-NUR-A',SectionName:'DEV A',ClassID:'DEV-CLS-NUR',AcademicYearID:'DEV-2026-27',Status:'ACTIVE'},
-      {SectionID:'DEV-SEC-01-A',SectionName:'DEV A',ClassID:'DEV-CLS-01',AcademicYearID:'DEV-2026-27',Status:'ACTIVE'},
-      {SectionID:'DEV-SEC-03-B',SectionName:'DEV B',ClassID:'DEV-CLS-03',AcademicYearID:'DEV-2026-27',Status:'ACTIVE'}
+      {SectionID:'DEV-SEC-NUR-A',SectionCode:'DEV-NUR-A',SectionName:'DEV A',ClassID:'DEV-CLS-NUR',AcademicYearID:'DEV-2026-27',StudentCapacity:25,Status:'ACTIVE'},
+      {SectionID:'DEV-SEC-01-A',SectionCode:'DEV-01-A',SectionName:'DEV A',ClassID:'DEV-CLS-01',AcademicYearID:'DEV-2026-27',StudentCapacity:30,Status:'ACTIVE'},
+      {SectionID:'DEV-SEC-03-B',SectionCode:'DEV-03-B',SectionName:'DEV B',ClassID:'DEV-CLS-03',AcademicYearID:'DEV-2026-27',StudentCapacity:30,Status:'ACTIVE'}
     ]
   },
   {
-    databaseKey:'ACADEMIC_DATABASE', sheetName:'CLASS_SECTION_ASSIGNMENTS',
-    required:['StudentID','AcademicYearID','ClassID','SectionID','Status'], keyColumn:'StudentID',
-    rows:[
-      {StudentID:'DEV-STU-001',AcademicYearID:'DEV-2026-27',ClassID:'DEV-CLS-NUR',SectionID:'DEV-SEC-NUR-A',Status:'ACTIVE'},
-      {StudentID:'DEV-STU-002',AcademicYearID:'DEV-2026-27',ClassID:'DEV-CLS-01',SectionID:'DEV-SEC-01-A',Status:'ACTIVE'},
-      {StudentID:'DEV-STU-003',AcademicYearID:'DEV-2026-27',ClassID:'DEV-CLS-03',SectionID:'DEV-SEC-03-B',Status:'ACTIVE'}
-    ]
+    // Class-section assignments are intentionally deferred until matching synthetic
+    // student master records and their required fields are validated.
   }
 ];
 
