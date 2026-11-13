@@ -28,7 +28,7 @@ const BJPS_RBAC = Object.freeze({
   TABLES: Object.freeze({
     USERS: 'ERP_USER_MASTER',
     ASSIGNMENTS: 'ERP_USER_ROLE_ASSIGNMENTS',
-    ROLES: 'ERP_ROLE_MASTER',
+    ROLES: 'ERP_ROLES',
     PERMISSIONS: 'ERP_ROLE_PERMISSIONS'
   })
 });
@@ -50,7 +50,7 @@ function getBJPSERPSheet(databaseKey, tableName) {
 const BJPS_SHEET_ALIASES_ = Object.freeze({
   ERP_USER_MASTER: ['ERP_USERS','USER_MASTER','USERS'],
   ERP_USER_ROLE_ASSIGNMENTS: ['ERP_USER_ROLE_ASSIGNMENT','USER_ROLE_ASSIGNMENTS','ROLE_ASSIGNMENTS'],
-  ERP_ROLE_MASTER: ['ERP_ROLES','ROLE_MASTER','ROLES'],
+  ERP_ROLES: ['ERP_ROLE_MASTER','ROLE_MASTER','ROLES'],
   ERP_ROLE_PERMISSIONS: ['ERP_ROLE_PERMISSION_GRANTS','ERP_ROLE_PERMISSION','ROLE_PERMISSION_GRANTS','ROLE_PERMISSIONS','PERMISSION_GRANTS']
 });
 
@@ -96,10 +96,12 @@ function authorizeBJPSERPRequest_(idToken, permissionCode, scope) {
   const uUid = bjpsFindColumn_(uh,['FirebaseUID','UID'],true);
   const uEmail = bjpsFindColumn_(uh,['Email'],true);
   const uStatus = bjpsFindColumn_(uh,['AccountStatus','Status'],true);
+  const uVerified = bjpsFindColumn_(uh,['EmailVerified'],true);
   const user = userValues.slice(1).find(function(row) {
     return String(bjpsCell_(row,uUid) || '').trim() === String(identity.uid).trim() &&
       String(bjpsCell_(row,uEmail) || '').trim().toLowerCase() === email &&
-      String(bjpsCell_(row,uStatus) || '').trim().toUpperCase() === 'ACTIVE';
+      String(bjpsCell_(row,uStatus) || '').trim().toUpperCase() === 'ACTIVE' &&
+      bjpsIsActive_(bjpsCell_(row,uVerified));
   });
   if (!user) throw bjpsFoundationError_('ERP_ACCOUNT_INACTIVE','An active ERP user account is required.');
 
@@ -108,9 +110,11 @@ function authorizeBJPSERPRequest_(idToken, permissionCode, scope) {
   const ah = bjpsGetHeaderMap_(assignmentSheet);
   const aUid = bjpsFindColumn_(ah,['FirebaseUID','UserFirebaseUID','UID'],true);
   const aRole = bjpsFindColumn_(ah,['RoleCode','RoleID'],true);
-  const aStart = bjpsFindColumn_(ah,['EffectiveFrom','StartDate'],false);
-  const aEnd = bjpsFindColumn_(ah,['EffectiveTo','EndDate'],false);
+  const aStart = bjpsFindColumn_(ah,['ValidFrom','EffectiveFrom','StartDate'],false);
+  const aEnd = bjpsFindColumn_(ah,['ValidTo','EffectiveTo','EndDate'],false);
   const aActive = bjpsFindColumn_(ah,['IsActive','AssignmentStatus','Status'],true);
+  const aScope = bjpsFindColumn_(ah,['ScopeType'],true);
+  const aScopeId = bjpsFindColumn_(ah,['ScopeID'],true);
 
   const roleSheet = getBJPSERPSheet(BJPS_RBAC.DATABASE_KEY,BJPS_RBAC.TABLES.ROLES);
   const roleRows = roleSheet.getDataRange().getValues();
@@ -121,7 +125,9 @@ function authorizeBJPSERPRequest_(idToken, permissionCode, scope) {
   const activeRoleCodes = assignmentRows.slice(1).filter(function(row) {
     return String(bjpsCell_(row,aUid) || '').trim() === String(identity.uid).trim() &&
       bjpsIsActive_(bjpsCell_(row,aActive)) &&
-      bjpsDateAllows_(bjpsCell_(row,aStart),bjpsCell_(row,aEnd),now);
+      bjpsDateAllows_(bjpsCell_(row,aStart),bjpsCell_(row,aEnd),now) &&
+      String(bjpsCell_(row,aScope) || '').trim().toUpperCase() === 'GLOBAL' &&
+      !String(bjpsCell_(row,aScopeId) || '').trim();
   }).map(function(row) { return String(bjpsCell_(row,aRole) || '').trim().toUpperCase(); }).filter(Boolean);
   const validRoles = roleRows.slice(1).filter(function(row) {
     return activeRoleCodes.indexOf(String(bjpsCell_(row,rCode) || '').trim().toUpperCase()) >= 0 &&
