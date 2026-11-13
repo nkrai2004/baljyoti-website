@@ -158,7 +158,12 @@
     const response = await fetch(BJPS_ERP_API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action,idToken,...extra}),redirect:"follow"});
     if (!response.ok) throw new Error("API request failed (HTTP "+response.status+").");
     const payload = await response.json();
-    if (!payload || payload.success !== true) throw new Error(payload && payload.error ? payload.error.message : "The ERP API rejected the request.");
+    if (!payload || payload.success !== true) {
+      const apiError = payload && payload.error ? payload.error : {};
+      const code = apiError.code ? "[" + apiError.code + "] " : "";
+      const diagnostic = apiError.diagnosticId ? " · Diagnostic ID: " + apiError.diagnosticId : "";
+      throw new Error(code + (apiError.message || "The ERP API rejected the request.") + diagnostic);
+    }
     return payload.data;
   }
   async function verifyErpSession(user) {
@@ -179,7 +184,10 @@
       if (!response.ok) throw new Error("HTTP " + response.status);
       const payload = await response.json();
       if (!payload || payload.success !== true || !payload.data) {
-        setAccessStatus("Access not confirmed", payload && payload.error ? payload.error.message : "The backend rejected the session.");
+        const apiError = payload && payload.error ? payload.error : {};
+        const diagnostic = apiError.diagnosticId ? " · Diagnostic ID: " + apiError.diagnosticId : "";
+        const code = apiError.code ? "[" + apiError.code + "] " : "";
+        setAccessStatus("Access not confirmed", code + (apiError.message || "The backend rejected the session.") + diagnostic);
         return;
       }
       const data = payload.data;
