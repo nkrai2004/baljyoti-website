@@ -106,6 +106,18 @@ function bjpsDevGetRegistry_(createIfMissing) {
   return sh;
 }
 
+/** Lists configured database Script Property NAMES only; never exposes IDs or values. */
+function listBJPSERPDevPropertyStatus() {
+  const props = PropertiesService.getScriptProperties().getProperties();
+  const report = Object.keys(BJPS_DEV_DATABASES_).map(function(key) {
+    const propertyName = BJPS_DEV_DATABASES_[key];
+    return {databaseKey:key, propertyName:propertyName, configured:Object.prototype.hasOwnProperty.call(props,propertyName) && Boolean(String(props[propertyName] || '').trim())};
+  });
+  const result = {configuredCount:report.filter(function(x){return x.configured;}).length, expectedCount:report.length, properties:report};
+  Logger.log(JSON.stringify(result,null,2));
+  return result;
+}
+
 /** Read-only inventory: lists worksheet names, row counts and headers across all 14 databases. */
 function auditBJPSERPDevelopmentSchemas() {
   const report = {databaseCount:0,worksheets:[],errors:[]};
