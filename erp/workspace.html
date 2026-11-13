@@ -127,7 +127,9 @@
   const ALLOWED_EMAIL_DOMAIN = "baljyoti.com";
   // Set this to the deployed Apps Script Web App URL ending in /exec.
   const BJPS_ERP_API_URL = "https://script.google.com/macros/s/AKfycbzrcd1zhGk2oQk0FyRfumiE7I5-t9bJb_eEejTsK5KqMFott0h3BqMhCYolDpC0kMncgQ/exec";
-  let auth = null;\n  let currentFirebaseUser = null;\n  let admissionSessionReady = false;
+  let auth = null;
+  let currentFirebaseUser = null;
+  let admissionSessionReady = false;
   const loginMessage = document.getElementById("loginMessage");
   function showLoginMessage(message) { loginMessage.textContent = message; loginMessage.style.display = "block"; }
   function isSchoolEmail(email) { return typeof email === "string" && email.trim().toLowerCase().split("@").length === 2 && email.trim().toLowerCase().endsWith("@"+ALLOWED_EMAIL_DOMAIN); }
@@ -137,7 +139,18 @@
     if (status) status.textContent = label;
     if (notice) notice.textContent = message;
   }
-  async function apiRequest(action, extra = {}) {\n    if (!currentFirebaseUser) throw new Error("Please sign in again.");\n    const idToken = await currentFirebaseUser.getIdToken();\n    const response = await fetch(BJPS_ERP_API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action,idToken,...extra}),redirect:"follow"});\n    if (!response.ok) throw new Error("API request failed (HTTP "+response.status+").");\n    const payload = await response.json();\n    if (!payload || payload.success !== true) throw new Error(payload && payload.error ? payload.error.message : "The ERP API rejected the request.");\n    return payload.data;\n  }\n  async function verifyErpSession(user) {\n    currentFirebaseUser = user;\n    admissionSessionReady = false;
+  async function apiRequest(action, extra = {}) {
+    if (!currentFirebaseUser) throw new Error("Please sign in again.");
+    const idToken = await currentFirebaseUser.getIdToken();
+    const response = await fetch(BJPS_ERP_API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action,idToken,...extra}),redirect:"follow"});
+    if (!response.ok) throw new Error("API request failed (HTTP "+response.status+").");
+    const payload = await response.json();
+    if (!payload || payload.success !== true) throw new Error(payload && payload.error ? payload.error.message : "The ERP API rejected the request.");
+    return payload.data;
+  }
+  async function verifyErpSession(user) {
+    currentFirebaseUser = user;
+    admissionSessionReady = false;
     if (!BJPS_ERP_API_URL || BJPS_ERP_API_URL.indexOf("https://") !== 0 || BJPS_ERP_API_URL.indexOf("PASTE_") >= 0) {
       setAccessStatus("API setup required", "Firebase sign-in succeeded. The Apps Script API URL has not been configured; no ERP data is being requested or exposed.");
       return;
@@ -165,13 +178,16 @@
         setAccessStatus("Role assignment pending", "Your ERP account is active, but no active role is assigned. Modules remain unavailable until an authorised administrator assigns your role and scope.");
         return;
       }
-      admissionSessionReady = data.roleCodes.includes("SUPER_ADMIN") || data.roleCodes.includes("DIRECTOR") || data.roleCodes.includes("ADMISSION_OFFICER");\n      setAccessStatus("Identity & role confirmed", "ERP account active. Assigned role(s): " + data.roleCodes.join(", ") + ". Admission data requests are still checked by server-side permissions.");\n      if (location.hash === "#admission-workspace") openAdmissionWorkspace();
+      admissionSessionReady = data.roleCodes.includes("SUPER_ADMIN") || data.roleCodes.includes("DIRECTOR") || data.roleCodes.includes("ADMISSION_OFFICER");
+      setAccessStatus("Identity & role confirmed", "ERP account active. Assigned role(s): " + data.roleCodes.join(", ") + ". Admission data requests are still checked by server-side permissions.");
+      if (location.hash === "#admission-workspace") openAdmissionWorkspace();
     } catch (error) {
       console.error("BJPS ERP API session bootstrap failed", error);
       setAccessStatus("Backend connection unavailable", "Firebase sign-in succeeded, but the Apps Script API could not confirm your ERP session. Check the Web App URL, deployment access and browser network/CORS response. No protected data has been loaded.");
     }
   }
-  function showWorkspace(user) {\n    currentFirebaseUser = user;
+  function showWorkspace(user) {
+    currentFirebaseUser = user;
     document.getElementById("loginScreen").classList.add("hidden");
     document.getElementById("workspaceApp").classList.remove("hidden");
     document.getElementById("signedInEmail").textContent = user.email || "";
@@ -196,7 +212,9 @@
   function showLogin() {
     document.getElementById("workspaceApp").classList.add("hidden");
     document.getElementById("loginScreen").classList.remove("hidden");
-    currentFirebaseUser = null;\n    document.getElementById("admission-workspace").classList.remove("active");\n    document.getElementById("signedInEmail").textContent = "";
+    currentFirebaseUser = null;
+    document.getElementById("admission-workspace").classList.remove("active");
+    document.getElementById("signedInEmail").textContent = "";
   }
   try {
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
