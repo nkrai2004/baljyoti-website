@@ -1,0 +1,9 @@
+{
+  "catalogVersion": "draft-2026-11-13",
+  "source": "BJPS_ERP_Master_Schema_Catalog.xlsx",
+  "status": "draft_not_live_contract",
+  "databaseCount": 14,
+  "worksheetCount": 348,
+  "fieldCount": 3894,
+  "detail": "Full field catalogue remains in the supplied workbook; do not infer requiredness or validation beyond its field notes."
+}
