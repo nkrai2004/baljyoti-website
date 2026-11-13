@@ -25,7 +25,7 @@ const BJPS_DEV_FIXTURE_PLAN_ = [
     rows:[{
       AcademicYearID:'DEV-2026-27', AcademicYearName:'DEV SAMPLE 2026–27',
       StartDate:new Date(2026,3,1), EndDate:new Date(2027,2,31),
-      IsCurrent:true, Status:'ACTIVE'
+      IsCurrent:false, Status:'ACTIVE'
     }]
   },
   {
