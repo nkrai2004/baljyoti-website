@@ -29,7 +29,7 @@ const BJPS_RBAC = Object.freeze({
     USERS: 'ERP_USER_MASTER',
     ASSIGNMENTS: 'ERP_USER_ROLE_ASSIGNMENTS',
     ROLES: 'ERP_ROLE_MASTER',
-    PERMISSIONS: 'ERP_ROLE_PERMISSION_GRANTS'
+    PERMISSIONS: 'ERP_ROLE_PERMISSIONS'
   })
 });
 
@@ -51,7 +51,7 @@ const BJPS_SHEET_ALIASES_ = Object.freeze({
   ERP_USER_MASTER: ['ERP_USERS','USER_MASTER','USERS'],
   ERP_USER_ROLE_ASSIGNMENTS: ['ERP_USER_ROLE_ASSIGNMENT','USER_ROLE_ASSIGNMENTS','ROLE_ASSIGNMENTS'],
   ERP_ROLE_MASTER: ['ERP_ROLES','ROLE_MASTER','ROLES'],
-  ERP_ROLE_PERMISSION_GRANTS: ['ERP_ROLE_PERMISSION','ROLE_PERMISSION_GRANTS','ROLE_PERMISSIONS','PERMISSION_GRANTS']
+  ERP_ROLE_PERMISSIONS: ['ERP_ROLE_PERMISSION_GRANTS','ERP_ROLE_PERMISSION','ROLE_PERMISSION_GRANTS','ROLE_PERMISSIONS','PERMISSION_GRANTS']
 });
 
 function bjpsGetHeaderMap_(sheet) {
@@ -139,12 +139,14 @@ function authorizeBJPSERPRequest_(idToken, permissionCode, scope) {
   const pCode = bjpsFindColumn_(ph,['PermissionCode','Permission'],true);
   const pScope = bjpsFindColumn_(ph,['ScopeType','Scope'],true);
   const pActive = bjpsFindColumn_(ph,['IsActive','GrantStatus','Status'],true);
+  const pAllowed = bjpsFindColumn_(ph,['IsAllowed','Allowed'],false);
   const wanted = String(permissionCode || '').trim().toUpperCase();
   const granted = permissionRows.slice(1).some(function(row) {
     return validRoles.indexOf(String(bjpsCell_(row,pRole) || '').trim().toUpperCase()) >= 0 &&
       String(bjpsCell_(row,pCode) || '').trim().toUpperCase() === wanted &&
       String(bjpsCell_(row,pScope) || '').trim().toUpperCase() === 'GLOBAL' &&
-      bjpsIsActive_(bjpsCell_(row,pActive));
+      bjpsIsActive_(bjpsCell_(row,pActive)) &&
+      (pAllowed < 0 || bjpsIsActive_(bjpsCell_(row,pAllowed)));
   });
   if (!granted) throw bjpsFoundationError_('PERMISSION_DENIED','The required permission has not been granted: ' + wanted + '.');
   return {authorized:true,uid:identity.uid,roleCodes:validRoles,permissionCode:wanted,scope:'GLOBAL'};
