@@ -73,7 +73,7 @@
     <div class="side-note">Access to each module will be enabled only after identity, role, scope and permission checks are confirmed by the ERP backend.</div>
   </aside>
   <main>
-    <header class="top"><div><span class="crumb">Bal Jyoti Public School / ERP / Overview</span><span class="mobile-head">BJPS ERP Workspace</span></div><div class="top-right"><span class="status">Access verification pending</span><span id="signedInEmail" class="crumb"></span><button id="signOutBtn" class="signout" type="button">Sign out</button><span class="avatar" aria-label="User">BJ</span></div></header>
+    <header class="top"><div><span class="crumb">Bal Jyoti Public School / ERP / Overview</span><span class="mobile-head">BJPS ERP Workspace</span></div><div class="top-right"><span id="accessStatus" class="status">API setup required</span><span id="signedInEmail" class="crumb"></span><button id="signOutBtn" class="signout" type="button">Sign out</button><span class="avatar" aria-label="User">BJ</span></div></header>
     <div class="content">
       <section class="welcome"><div><div class="eyebrow">Integrated ERP workspace</div><h1>Welcome to BJPS ERP</h1><p class="sub">A unified workspace for school leadership, admission, teaching, student activities and administration.</p></div><div class="date" id="today"></div></section>
       <div class="notice"><b>Development workspace:</b> This page is the new ERP shell. Module links are intentionally not enabled yet. Signing in or seeing a module tile does not itself grant access; the backend must verify the signed-in Firebase identity and the user's assigned permissions.</div>
@@ -108,16 +108,59 @@
     measurementId: "G-CS6FSBHL0D"
   };
   const ALLOWED_EMAIL_DOMAIN = "baljyoti.com";
+  // Set this to the deployed Apps Script Web App URL ending in /exec.
+  const BJPS_ERP_API_URL = "https://script.google.com/macros/s/AKfycbzrcd1zhGk2oQk0FyRfumiE7I5-t9bJb_eEejTsK5KqMFott0h3BqMhCYolDpC0kMncgQ/exec";
   let auth = null;
   const loginMessage = document.getElementById("loginMessage");
   function showLoginMessage(message) { loginMessage.textContent = message; loginMessage.style.display = "block"; }
   function isSchoolEmail(email) { return typeof email === "string" && email.trim().toLowerCase().split("@").length === 2 && email.trim().toLowerCase().endsWith("@"+ALLOWED_EMAIL_DOMAIN); }
+  function setAccessStatus(label, message) {
+    const status = document.getElementById("accessStatus");
+    const notice = document.querySelector(".notice");
+    if (status) status.textContent = label;
+    if (notice) notice.textContent = message;
+  }
+  async function verifyErpSession(user) {
+    if (!BJPS_ERP_API_URL || BJPS_ERP_API_URL.indexOf("https://") !== 0 || BJPS_ERP_API_URL.indexOf("PASTE_") >= 0) {
+      setAccessStatus("API setup required", "Firebase sign-in succeeded. The Apps Script API URL has not been configured; no ERP data is being requested or exposed.");
+      return;
+    }
+    try {
+      const idToken = await user.getIdToken(true);
+      const response = await fetch(BJPS_ERP_API_URL, {
+        method: "POST",
+        headers: {"Content-Type":"text/plain;charset=utf-8"},
+        body: JSON.stringify({action:"session.bootstrap", idToken:idToken}),
+        redirect: "follow"
+      });
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      const payload = await response.json();
+      if (!payload || payload.success !== true || !payload.data) {
+        setAccessStatus("Access not confirmed", payload && payload.error ? payload.error.message : "The backend rejected the session.");
+        return;
+      }
+      const data = payload.data;
+      if (data.accountStatus !== "ACTIVE") {
+        setAccessStatus(data.accountStatus === "NOT_PROVISIONED" ? "Provisioning required" : "Account pending", "Your school identity is verified, but your ERP account is not active yet. Contact the ERP administrator.");
+        return;
+      }
+      if (!data.roleCodes || !data.roleCodes.length) {
+        setAccessStatus("Role assignment pending", "Your ERP account is active, but no active role is assigned. Modules remain unavailable until an authorised administrator assigns your role and scope.");
+        return;
+      }
+      setAccessStatus("Identity & role confirmed", "ERP account active. Assigned role(s): " + data.roleCodes.join(", ") + ". Business data modules remain locked until each module has its own permission and scope checks.");
+    } catch (error) {
+      console.error("BJPS ERP API session bootstrap failed", error);
+      setAccessStatus("Backend connection unavailable", "Firebase sign-in succeeded, but the Apps Script API could not confirm your ERP session. Check the Web App URL, deployment access and browser network/CORS response. No protected data has been loaded.");
+    }
+  }
   function showWorkspace(user) {
     document.getElementById("loginScreen").classList.add("hidden");
     document.getElementById("workspaceApp").classList.remove("hidden");
     document.getElementById("signedInEmail").textContent = user.email || "";
-    document.getElementById("today").textContent = new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    document.getElementById("today").textContent = new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:"Asia/Kolkata"});
     document.getElementById("year").textContent = new Date().getFullYear();
+    verifyErpSession(user);
   }
   function showLogin() {
     document.getElementById("workspaceApp").classList.add("hidden");
