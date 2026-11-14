@@ -8,29 +8,83 @@
   <meta name="description" content="Bal Jyoti Public School integrated ERP workspace">
   <link rel="icon" href="logo.png">
   <style>
-    :root{--red:#a51d2d;--red-dark:#7e1723;--ink:#182230;--muted:#667085;--line:#e6eaf0;--bg:#f5f7fa;--card:#fff;--nav:#162235;--nav2:#22334b;--green:#16845b;--amber:#a76711}
+    :root{--red:#b5121b;--red-dark:#8f0d15;--red-light:#fff5f5;--ink:#182230;--muted:#667085;--line:#e6eaf0;--bg:#f7f8fa;--card:#fff;--green:#16845b;--amber:#a76711}
     *{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg)}
-    button,a{font:inherit}a{color:inherit;text-decoration:none}.shell{min-height:100vh;display:grid;grid-template-columns:260px 1fr}
-    aside{background:var(--nav);color:#e9eef6;padding:22px 16px;display:flex;flex-direction:column;gap:24px}
+    button,a{font:inherit}a{color:inherit;text-decoration:none}.shell{min-height:100vh;display:block}
     .brand{display:flex;align-items:center;gap:12px;padding:4px 8px 20px;border-bottom:1px solid #ffffff20}.brand img{width:45px;height:45px;object-fit:contain;background:white;border-radius:10px;padding:4px}.brand strong{display:block;font-size:15px}.brand span{display:block;font-size:11px;color:#aebbd0;margin-top:3px}
     .nav-label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#8190a6;padding:0 10px;margin:5px 0 8px}.nav{display:grid;gap:5px}.nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:9px;color:#c9d3e2;font-size:13px}.nav a:hover,.nav a.active{background:var(--nav2);color:#fff}.nav .ico{width:20px;text-align:center;font-size:16px}
     .side-note{margin-top:auto;background:#ffffff0d;border:1px solid #ffffff18;border-radius:12px;padding:13px;font-size:11px;line-height:1.55;color:#b9c5d6}
-    main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:5}.crumb{font-size:12px;color:var(--muted)}.top-right{display:flex;align-items:center;gap:12px}.status{font-size:11px;padding:7px 10px;background:#fff8e8;border:1px solid #f0dfb7;color:#885b12;border-radius:20px}.avatar{width:34px;height:34px;border-radius:50%;background:#f5e6e8;color:var(--red);display:grid;place-items:center;font-weight:700}
-    .content{padding:28px 30px 46px;max-width:1500px;margin:auto}.welcome{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:24px}.eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red)}h1{font-size:27px;margin:8px 0 7px;letter-spacing:-.03em}.sub{color:var(--muted);font-size:13px;margin:0;line-height:1.6}.date{font-size:12px;color:var(--muted);white-space:nowrap}
+    main{min-width:0}.top{min-height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:5}.crumb{font-size:12px;color:var(--muted)}.top-right{display:flex;align-items:center;gap:12px}.status{font-size:11px;padding:7px 10px;background:#fff8e8;border:1px solid #f0dfb7;color:#885b12;border-radius:20px}.avatar{width:34px;height:34px;border-radius:50%;background:#f5e6e8;color:var(--red);display:grid;place-items:center;font-weight:700}
+    .content{padding:24px 20px 42px;max-width:1500px;margin:auto}.welcome{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:24px}.eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red)}h1{font-size:27px;margin:8px 0 7px;letter-spacing:-.03em}.sub{color:var(--muted);font-size:13px;margin:0;line-height:1.6}.date{font-size:12px;color:var(--muted);white-space:nowrap}
     .notice{background:#fff;border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:10px;padding:13px 16px;margin:0 0 26px;font-size:12px;color:#5d6470;line-height:1.6}
     .section-head{display:flex;align-items:end;justify-content:space-between;margin:27px 0 13px}.section-head h2{font-size:15px;margin:0}.section-head p{font-size:11px;color:var(--muted);margin:4px 0 0}
     .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.pillar{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:18px;min-height:160px;display:flex;flex-direction:column;transition:.16s ease}.pillar:hover{transform:translateY(-2px);box-shadow:0 10px 25px #17243a0d;border-color:#d5dbe5}.pillar.pending{background:#f0f2f5;border-color:#e2e6eb;color:#929aa7;filter:grayscale(1);box-shadow:none}.pillar.pending:hover{transform:none;border-color:#e2e6eb;box-shadow:none}.pillar.pending .pillar-icon{background:#e5e8ed;color:#929aa7}.pillar.pending p,.pillar.pending footer{color:#929aa7}.pillar.pending .pill{background:#e7e9ed;border-color:#dfe3e8;color:#737d8b}.pillar.active-pilot{border-color:#d9e9df}.pillar.active-pilot .pill{background:#eaf6ef;border-color:#cce8d5;color:#17633f}.pillar-top{display:flex;align-items:center;justify-content:space-between}.pillar-icon{width:38px;height:38px;border-radius:10px;background:#f8e9eb;display:grid;place-items:center;font-size:19px}.pill{font-size:10px;color:#8c611b;background:#fff7e7;border:1px solid #f1e1bf;border-radius:20px;padding:5px 8px}.pillar h3{font-size:15px;margin:14px 0 6px}.pillar p{font-size:12px;color:var(--muted);line-height:1.55;margin:0}.pillar footer{margin-top:auto;padding-top:15px;font-size:11px;color:var(--red);font-weight:700}
     .services{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.service{background:#f0f2f5;border:1px solid #e2e6eb;border-radius:10px;padding:15px;font-size:12px;color:#929aa7;filter:grayscale(1)}.service span{color:#929aa7}.service b{display:block;margin:0 0 5px}.service span{color:var(--muted);font-size:11px}
     .bottom{display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--line);padding-top:18px;margin-top:35px;font-size:10px;color:#8a93a2}
-    .mobile-head{display:none}
-    @media(max-width:1000px){.shell{grid-template-columns:220px 1fr}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.services{grid-template-columns:repeat(2,minmax(0,1fr))}.content{padding:24px 20px}}
-    @media(max-width:700px){.shell{display:block}aside{display:none}.top{height:60px;padding:0 16px}.content{padding:22px 15px 34px}.welcome{display:block}.date{display:block;margin-top:10px}.grid{grid-template-columns:1fr}.services{grid-template-columns:1fr 1fr}.mobile-head{display:block;font-size:14px;font-weight:750}.crumb{display:none}.status{font-size:10px}.welcome h1{font-size:24px}}
+    .mobile-head{display:block;font-size:15px;font-weight:750;color:var(--red)}
+    @media(max-width:1000px){.shell{display:block}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.services{grid-template-columns:repeat(2,minmax(0,1fr))}.content{padding:24px 20px}}
+    @media(max-width:700px){.shell{display:block}.top{height:auto;min-height:60px;padding:12px 15px;gap:10px;align-items:flex-start}.content{padding:18px 14px 30px}.welcome{display:block}.date{display:block;margin-top:10px}.grid{grid-template-columns:1fr}.services{grid-template-columns:1fr 1fr}.mobile-head{display:block;font-size:14px;font-weight:750}.crumb{display:none}.status{font-size:10px}.welcome h1{font-size:24px}}
 
     .module-page{display:none}.module-page.active{display:block}.module-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.module-toolbar input,.module-toolbar select,.admission-form input,.admission-form select,.admission-form textarea{border:1px solid var(--line);border-radius:8px;padding:10px 11px;background:#fff;font:inherit;font-size:12px;min-width:0}.module-toolbar input{flex:1;min-width:200px}.module-button{border:0;border-radius:8px;padding:10px 14px;background:var(--red);color:#fff;font-size:12px;font-weight:650;cursor:pointer}.module-button.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}.module-button:disabled{opacity:.55;cursor:wait}.data-panel{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}.data-panel-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:15px 17px;border-bottom:1px solid var(--line)}.data-panel-head h2{font-size:14px;margin:0}.data-panel-head p{font-size:11px;color:var(--muted);margin:4px 0 0}.data-table-wrap{overflow:auto}table.data-table{border-collapse:collapse;width:100%;min-width:720px;text-align:left}table.data-table th,table.data-table td{padding:12px 15px;border-bottom:1px solid var(--line);font-size:12px}table.data-table th{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;background:#fafbfc}table.data-table td.muted{color:var(--muted)}.empty-state{padding:30px 18px;text-align:center;color:var(--muted);font-size:12px}.inline-message{margin:12px 0;padding:11px 13px;border-radius:8px;background:#f4f7fb;border:1px solid var(--line);font-size:12px;color:#4d5b6e}.inline-message.error{background:#fff1f1;border-color:#f1cdd1;color:#9b1c2b}.inline-message.success{background:#eef8f1;border-color:#cce8d5;color:#17633f}.admission-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;padding:16px}.admission-form label{display:grid;gap:6px;font-size:11px;color:#596579}.admission-form .wide{grid-column:1/-1}.admission-form textarea{min-height:72px;resize:vertical}.form-actions{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px}.module-page-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:3px 0 18px}.module-page-head h1{font-size:22px;margin:5px 0}.module-page-head p{font-size:12px;color:var(--muted);margin:0}@media(max-width:650px){.admission-form{grid-template-columns:1fr}.admission-form .wide,.form-actions{grid-column:auto}.module-page-head{align-items:flex-start;flex-direction:column}}
   /* User and role access preview */
 .access-hero{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:18px}.access-hero h2{font-size:22px;margin:5px 0}.access-tabs{display:flex;gap:7px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin:18px 0}.access-tabs button{border:0;background:transparent;color:var(--muted);padding:11px 14px;border-bottom:2px solid transparent;font-size:12px}.access-tabs button.active{color:var(--red);border-color:var(--red);font-weight:800}.access-panel{display:none}.access-panel.active{display:block}.access-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.access-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}.access-card h3{font-size:14px;margin:0 0 12px}.access-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.access-kpi{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px}.access-kpi b{display:block;font-size:21px}.access-kpi span{font-size:10px;color:var(--muted)}.access-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.access-toolbar input,.access-toolbar select,.access-field input,.access-field select{border:1px solid var(--line);border-radius:8px;padding:10px;background:#fff;font:inherit;font-size:12px;min-width:0}.access-toolbar input{flex:1;min-width:190px}.access-table{overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff}.access-table table{min-width:720px}.role-pill{display:inline-flex;background:#f6eaec;color:var(--red);border-radius:20px;padding:4px 8px;font-size:10px;font-weight:700;margin:2px}.scope-pill{display:inline-flex;background:#edf5f0;color:#236b47;border-radius:20px;padding:4px 8px;font-size:10px}.small-action{border:1px solid var(--line);background:#fff;border-radius:7px;padding:6px 9px;font-size:10px}.small-action.primary{background:var(--red);border-color:var(--red);color:#fff}.access-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.access-field{display:grid;gap:5px}.access-field label{font-size:10px;color:var(--muted);font-weight:700}.access-field input,.access-field select{width:100%}.permission-table{overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff}.permission-table table{min-width:780px}.permission-table th,.permission-table td{text-align:center}.permission-table th:first-child,.permission-table td:first-child{text-align:left}.permission-table input{accent-color:var(--red);width:16px;height:16px}.module-chip{display:inline-flex;align-items:center;gap:7px;font-weight:700}.access-note{background:#fff8e8;border:1px solid #efdfb9;color:#72551b;padding:11px 13px;border-radius:9px;font-size:11px;line-height:1.6;margin:12px 0}.access-success{display:none;background:#eaf6ef;color:#17633e;padding:10px 12px;border-radius:8px;font-size:11px;margin:10px 0}.access-success.show{display:block}.role-list{display:grid;gap:8px}.role-option{border:1px solid var(--line);border-radius:9px;padding:11px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fff;text-align:left}.role-option.active{border-color:#d8aab1;background:#fff8f9}.role-option b{font-size:12px}.role-option small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.permission-summary{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.permission-summary span{font-size:10px;padding:5px 8px;border-radius:20px;background:#f1f3f6;color:#596579}
 @media(max-width:850px){.access-grid{grid-template-columns:1fr}.access-hero{display:block}.access-kpis{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:520px){.access-form{grid-template-columns:1fr}.access-kpi{padding:9px}.access-kpi b{font-size:18px}.access-tabs button{padding:10px 8px;font-size:11px}}
+
+    /* BJPS brand alignment and mobile-first type scale */
+    body{font-size:16px;line-height:1.5}
+    h1{font-size:clamp(1.45rem,4vw,1.85rem);line-height:1.2}
+    h2{line-height:1.25}
+    .eyebrow{color:var(--red);font-size:11px}
+    .module-button,.auth-button{background:var(--red)}
+    .module-button:hover,.auth-button:hover{background:var(--red-dark)}
+    .pillar-icon,.avatar,.auth-mark{color:var(--red)}
+    .notice{border-left-color:var(--red);background:var(--red-light)}
+    .access-tabs button.active{color:var(--red);border-color:var(--red)}
+    .permission-table input{accent-color:var(--red)}
+    .access-table,.permission-table{max-width:100%}
+    .top-right{flex-wrap:wrap;justify-content:flex-end}
+    .status{max-width:42vw;white-space:normal;text-align:center}
+    .service.access-entry{background:#fff;border:1px solid #f0d3d6;color:var(--ink);filter:none;cursor:pointer}
+    .service.access-entry b{color:var(--red)}
+    .service.access-entry span{color:var(--muted)}
+    @media(max-width:700px){
+      body{font-size:16px}
+      .content{padding:18px 14px 30px}
+      .welcome{align-items:flex-start;gap:8px}
+      .welcome h1{font-size:25px}
+      .sub,.notice,.pillar p,.service span{font-size:14px}
+      .grid,.services{grid-template-columns:1fr}
+      .pillar{padding:17px;min-height:145px}
+      .section-head h2{font-size:18px}
+      .top-right{gap:7px}
+      #signedInEmail{display:none}
+      .status{font-size:11px;max-width:46vw;padding:6px 8px}
+      .signout{min-height:40px;padding:8px 11px}
+      .module-page-head{gap:10px}
+      .module-page-head h1{font-size:24px}
+      .module-toolbar{display:grid;grid-template-columns:1fr 1fr}
+      .module-toolbar input{grid-column:1/-1;min-width:0;width:100%}
+      .module-toolbar select{min-width:0;width:100%}
+      .module-toolbar button{min-height:42px}
+      .access-kpis{gap:7px}
+      .access-kpi{padding:10px}
+      .access-kpi b{font-size:19px}
+      .access-kpi span{font-size:11px}
+      .access-tabs{display:grid;grid-template-columns:1fr;gap:4px}
+      .access-tabs button{text-align:left;padding:12px;font-size:14px;border:1px solid var(--line);border-radius:8px}
+      .access-tabs button.active{background:var(--red-light);border-color:#e7b7bc}
+      .access-toolbar{display:grid;grid-template-columns:1fr}
+      .access-toolbar input,.access-toolbar select{width:100%;min-height:42px;font-size:14px}
+      .access-form{grid-template-columns:1fr}
+      .access-field input,.access-field select{min-height:42px;font-size:14px}
+      .access-table table{min-width:680px}
+      .permission-table table{min-width:740px}
+      .access-card{padding:14px}
+      .access-note{font-size:13px}
+      .module-button{min-height:42px;font-size:14px}
+      .bottom{font-size:11px;flex-direction:column;gap:7px}
+    }
 </style>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -61,24 +115,6 @@
 
 <div id="workspaceApp" class="hidden">
 <div class="shell">
-  <aside>
-    <div class="brand"><img src="logo.png" alt="BJPS"><div><strong>BJPS ERP</strong><span>Integrated School Platform</span></div></div>
-    <div><div class="nav-label">Workspace</div><nav class="nav">
-      <a class="active" href="workspace.html"><span class="ico">▦</span>Overview</a>
-      <a href="#management"><span class="ico">◈</span>Management</a>
-      <a href="#admission-workspace" data-module="admission"><span class="ico">◎</span>Admission</a>
-      <a href="#academic-workspace" data-module="academic"><span class="ico">▤</span>Academic</a>
-      <a href="#activity"><span class="ico">✦</span>Activity</a>
-      <a href="#admin"><span class="ico">⚙</span>Admin</a>
-    </nav></div>
-    <div><div class="nav-label">Common services</div><nav class="nav">
-      <a href="#people"><span class="ico">♙</span>People & Directory</a>
-      <a href="#reports"><span class="ico">▥</span>Reports & MIS</a>
-      <a href="#workflow"><span class="ico">⇄</span>Workflow & Audit</a>
-      <a href="#access-control" id="accessControlNav" class="hidden"><span class="ico">♙</span>User & Role Access</a>
-    </nav></div>
-    <div class="side-note">Access to each module will be enabled only after identity, role, scope and permission checks are confirmed by the ERP backend.</div>
-  </aside>
   <main>
     <header class="top"><div><span class="crumb">Bal Jyoti Public School / ERP / Overview</span><span class="mobile-head">BJPS ERP Workspace</span></div><div class="top-right"><span id="accessStatus" class="status">API setup required</span><span id="signedInEmail" class="crumb"></span><button id="signOutBtn" class="signout" type="button">Sign out</button><span class="avatar" aria-label="User">BJ</span></div></header>
     <div class="content">
@@ -125,6 +161,7 @@
         <div class="service pending" id="reports"><b>Reports & MIS</b><span>Consolidated operational and management information</span></div>
         <div class="service pending" id="workflow"><b>Workflow & Audit</b><span>Approvals, task routing and traceable activity records</span></div>
         <div class="service pending"><b>Documents</b><span>Drive-backed files with controlled metadata and access</span></div>
+        <a class="service access-entry hidden" id="accessControlNav" href="#access-control"><b>User & Role Access</b><span>Manage user mappings, roles and module permissions</span></a>
       </section>
       <section id="access-control" class="module-page" aria-label="User and role access">
   <div class="module-page-head"><div><div class="eyebrow">Administration · Access governance</div><h1>User & Role Management</h1><p>Map school users to roles, then define module and action permissions.</p></div><button type="button" class="module-button secondary" id="accessBackBtn">← Overview</button></div><div class="access-hero"><div><div class="eyebrow">Access governance</div><h2>User & Role Management</h2><p class="sub">Prototype of user mapping, role catalogue and module permissions.</p></div><span class="state amber">Prototype · not live</span></div>
