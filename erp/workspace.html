@@ -165,30 +165,30 @@
       </section>
       <section id="access-control" class="module-page" aria-label="User and role access">
   <div class="module-page-head"><div><div class="eyebrow">Administration · Access governance</div><h1>User & Role Management</h1><p>Map school users to roles, then define module and action permissions.</p></div><button type="button" class="module-button secondary" id="accessBackBtn">← Overview</button></div><div class="access-hero"><div><div class="eyebrow">Access governance</div><h2>User & Role Management</h2><p class="sub">Prototype of user mapping, role catalogue and module permissions.</p></div><span class="state amber">Prototype · not live</span></div>
-  <div class="notice"><b>Design prototype only:</b> The user list and assignments are sample data. This screen is not connected to live Google Sheets or Firebase access records. Changes made here stay in this browser session and do not grant or revoke ERP access.</div>
+  <div id="accessLiveStatus" class="access-note">Waiting for secure connection to Google Sheets…</div>
   <div class="access-kpis"><div class="access-kpi"><b id="userCount">8</b><span>Sample users</span></div><div class="access-kpi"><b id="roleCount">12</b><span>Role definitions</span></div><div class="access-kpi"><b>05</b><span>ERP pillars</span></div></div>
   <div class="access-tabs" id="accessTabs">
     <button class="active" data-tab="user-mapping">User mapping</button><button data-tab="role-catalog">Role catalogue</button><button data-tab="module-permissions">Module permissions</button>
   </div>
   <div class="access-panel active" id="user-mapping">
-    <div class="pagehead"><div><h2>Users and assigned roles</h2><p class="sub">One user can hold multiple roles with defined scope.</p></div><button class="action" id="addUserBtn">＋ Add sample user</button></div>
+    <div class="pagehead"><div><h2>Users and assigned roles</h2><p class="sub">One user can hold multiple roles with defined scope.</p></div><button class="action" id="addUserBtn" hidden>＋ Add user</button></div>
     <div class="access-toolbar"><input id="userSearch" placeholder="Search name, email or designation"><select id="userRoleFilter"><option value="">All roles</option><option>SUPER_ADMIN</option><option>DIRECTOR</option><option>PRINCIPAL</option><option>ADMISSION_INCHARGE</option><option>ACCOUNTS</option><option>CLASS_TEACHER</option><option>SUBJECT_TEACHER</option><option>PARENT</option><option>STUDENT</option></select><select id="userStatusFilter"><option value="">All statuses</option><option>Active</option><option>Invited</option><option>Suspended</option></select></div>
     <div class="access-table"><table><thead><tr><th>User</th><th>Designation / type</th><th>Assigned roles</th><th>Scope</th><th>Status</th><th>Action</th></tr></thead><tbody id="userRows"></tbody></table></div>
     <div class="access-note">Role assignment is separate from designation. Scope may be global, academic-year, class, section, subject or linked-record based. The production screen must validate every scope on the server.</div>
     <div class="access-card" style="margin-top:14px"><h3>Assign role to a user</h3><div class="access-form"><div class="access-field"><label>User</label><select id="assignUser"></select></div><div class="access-field"><label>Role</label><select id="assignRole"><option value="DIRECTOR">Director</option><option value="PRINCIPAL">Principal</option><option value="ADMISSION_INCHARGE">Admission In-charge</option><option value="ACCOUNTS">Accounts</option><option value="CLASS_TEACHER">Class Teacher</option><option value="SUBJECT_TEACHER">Subject Teacher</option><option value="PARENT">Parent</option><option value="STUDENT">Student</option></select></div><div class="access-field"><label>Scope type</label><select id="assignScope"><option>GLOBAL</option><option>ACADEMIC_YEAR</option><option>CLASS</option><option>SECTION</option><option>SUBJECT</option><option>LINKED_RECORD</option></select></div><div class="access-field"><label>Academic year</label><select id="assignYear"><option>2026–27</option><option>2025–26</option></select></div></div><div class="access-success" id="assignMessage"></div><div style="margin-top:12px"><button class="action" id="assignRoleBtn">Preview role assignment</button></div></div>
   </div>
   <div class="access-panel" id="role-catalog">
-    <div class="pagehead"><div><h2>Role catalogue</h2><p class="sub">Define the school responsibilities represented by each role.</p></div><button class="action" id="addRoleBtn">＋ Add sample role</button></div>
-    <div class="access-grid"><div class="access-card"><h3>Available roles</h3><div class="role-list" id="roleList"></div></div><div class="access-card"><h3 id="roleDetailTitle">SUPER_ADMIN</h3><p class="sub" id="roleDetailDesc">Platform-level administration and access governance.</p><div class="permission-summary" id="roleDetailTags"></div><div class="access-note">A role describes responsibility. Its module permissions are configured separately. Avoid using job titles as implicit security rules.</div><button class="small-action" id="editRoleBtn">Edit sample role details</button></div></div>
+    <div class="pagehead"><div><h2>Role catalogue</h2><p class="sub">Define the school responsibilities represented by each role.</p></div><button class="action" id="addRoleBtn" hidden>＋ Add role</button></div>
+    <div class="access-grid"><div class="access-card"><h3>Available roles</h3><div class="role-list" id="roleList"></div></div><div class="access-card"><h3 id="roleDetailTitle">SUPER_ADMIN</h3><p class="sub" id="roleDetailDesc">Platform-level administration and access governance.</p><div class="permission-summary" id="roleDetailTags"></div><div class="access-note">A role describes responsibility. Its module permissions are configured separately. Avoid using job titles as implicit security rules.</div><button class="small-action" id="editRoleBtn" hidden>Edit role</button></div></div>
   </div>
   <div class="access-panel" id="module-permissions">
-    <div class="pagehead"><div><h2>Role-to-module permissions</h2><p class="sub">Choose a role and define permitted actions by ERP module.</p></div><button class="action" id="savePermissionBtn">Preview permission changes</button></div>
+    <div class="pagehead"><div><h2>Permission grants</h2><p class="sub">Live permission-code grants stored against roles; functional modules remain a separate catalogue.</p></div><button class="action" id="savePermissionBtn" hidden>Save changes</button></div>
     <div class="access-toolbar"><select id="permissionRole"><option value="SUPER_ADMIN">SUPER_ADMIN</option><option value="DIRECTOR">DIRECTOR</option><option value="PRINCIPAL">PRINCIPAL</option><option value="ADMISSION_INCHARGE">ADMISSION_INCHARGE</option><option value="ACCOUNTS">ACCOUNTS</option><option value="HR_INCHARGE">HR_INCHARGE</option><option value="CLASS_TEACHER">CLASS_TEACHER</option><option value="SUBJECT_TEACHER">SUBJECT_TEACHER</option><option value="PARENT">PARENT</option><option value="STUDENT">STUDENT</option></select><span class="scope-pill">Scope-aware model</span></div>
     <div class="permission-table"><table><thead><tr><th>Module / area</th><th>View</th><th>Create</th><th>Edit</th><th>Delete</th><th>Approve</th><th>Export</th></tr></thead><tbody id="permissionRows"></tbody></table></div>
     <div class="access-note"><b>Policy guardrails:</b> Principal has no financial approval authority. Accounts verifies/processes finance; Director approves within delegated limits. Class Teachers see fee status only for assigned classes/sections. Subject Teachers have no default fee access. Parents and students are restricted to verified linked/own records.</div>
     <div class="access-success" id="permissionMessage"></div>
   </div>
-  <div class="bottom"><span>BJPS ERP · User & Role Access</span><span>Prototype only · Not connected to live access records</span></div>
+  <div class="bottom"><span>BJPS ERP · User & Role Access</span><span>Live Google Sheets · Read-only</span></div>
 </section>\n
       <footer class="bottom"><span>© <span id="year"></span> Bal Jyoti Public School</span><span>ERP development workspace · UI only · Not a production authorization layer</span></footer>
     </div>
@@ -375,95 +375,108 @@
     } finally { button.disabled = false; button.textContent = "Continue with Google"; }
   });
   document.getElementById("signOutBtn").addEventListener("click", () => auth && auth.signOut());
-const sampleUsers=[
- {name:"School Super Admin",email:"info@baljyoti.com",type:"System administrator",roles:["SUPER_ADMIN"],scope:"Global",status:"Active"},
- {name:"School Director",email:"director@example.test",type:"Leadership",roles:["DIRECTOR"],scope:"Global",status:"Invited"},
- {name:"Principal",email:"principal@example.test",type:"School leadership",roles:["PRINCIPAL"],scope:"Global · 2026–27",status:"Invited"},
- {name:"Admission In-charge",email:"admissions@example.test",type:"Admission staff",roles:["ADMISSION_INCHARGE"],scope:"Admission",status:"Invited"},
- {name:"Accounts Officer",email:"accounts@example.test",type:"Accounts",roles:["ACCOUNTS"],scope:"Finance operations",status:"Invited"},
- {name:"Class Teacher",email:"teacher@example.test",type:"Teaching staff",roles:["CLASS_TEACHER"],scope:"Class 3 · Section B",status:"Invited"},
- {name:"Parent account",email:"parent@example.test",type:"Parent",roles:["PARENT"],scope:"Linked child only",status:"Invited"},
- {name:"Student account",email:"student@example.test",type:"Student",roles:["STUDENT"],scope:"Own record",status:"Invited"}
-];
-const sampleRoles=[
- ["SUPER_ADMIN","Super Admin","Platform configuration, user access and security administration."],
- ["CHAIRMAN","Chairman","Governing oversight and reserved institutional matters."],
- ["DIRECTOR","Director","Institutional leadership, admission oversight and delegated approvals."],
- ["PRINCIPAL","Principal","Academic leadership and school operations."],
- ["VICE_PRINCIPAL","Vice Principal","Delegated academic and operational coordination."],
- ["ADMISSION_INCHARGE","Admission In-charge","Admission enquiries, applications and enrolment operations."],
- ["ACCOUNTS","Accounts","Fee verification, receipts and finance processing."],
- ["HR_INCHARGE","HR In-charge","Staff records and human resource workflows."],
- ["CLASS_TEACHER","Class Teacher","Assigned class and section academic responsibilities."],
- ["SUBJECT_TEACHER","Subject Teacher","Assigned subject teaching and assessment responsibilities."],
- ["PARENT","Parent","Verified linked-child information and communication."],
- ["STUDENT","Student","Own academic records and participation."]
-];
-const modulesForRoles=["Management","Admission","Academic","Activity","Admin & Operations"];
-let selectedRole="SUPER_ADMIN";
-const userRows=document.getElementById("userRows");
-function renderUsers(){
- const q=(document.getElementById("userSearch")?.value||"").toLowerCase(), rf=document.getElementById("userRoleFilter")?.value||"", sf=document.getElementById("userStatusFilter")?.value||"";
- userRows.innerHTML=sampleUsers.filter(u=>(!q||(u.name+" "+u.email+" "+u.type).toLowerCase().includes(q))&&(!rf||u.roles.includes(rf))&&(!sf||u.status===sf)).map((u,i)=>'<tr><td><b>'+u.name+'</b><small>'+u.email+'</small></td><td>'+u.type+'</td><td>'+u.roles.map(x=>'<span class="role-pill">'+x+'</span>').join("")+'</td><td>'+u.scope+'</td><td><span class="state '+(u.status==="Active"?"green":"amber")+'">'+u.status+'</span></td><td><button class="small-action" data-user="'+sampleUsers.indexOf(u)+'">View / edit</button></td></tr>').join("")||'<tr><td colspan="6" class="empty">No matching sample users</td></tr>';
- document.getElementById("userCount").textContent=sampleUsers.length;
- document.getElementById("assignUser").innerHTML=sampleUsers.map((u,i)=>'<option value="'+i+'">'+u.name+'</option>').join("");
+
+let accessData = null;
+let selectedRole = "SUPER_ADMIN";
+function accessCell(value){return value==null || value==="" ? "—" : String(value);}
+function accessNode(tag,text,className){
+ const el=document.createElement(tag); if(text!==undefined)el.textContent=accessCell(text); if(className)el.className=className; return el;
 }
-function renderRoles(){
- document.getElementById("roleList").innerHTML=sampleRoles.map(r=>'<button class="role-option '+(r[0]===selectedRole?'active':'')+'" data-role="'+r[0]+'"><span><b>'+r[0]+'</b><small>'+r[1]+'</small></span><span class="state">Role</span></button>').join("");
- const r=sampleRoles.find(x=>x[0]===selectedRole)||sampleRoles[0];
- document.getElementById("roleDetailTitle").textContent=r[0]+" · "+r[1];document.getElementById("roleDetailDesc").textContent=r[2];
- document.getElementById("roleDetailTags").innerHTML=['Role identity','Module grants','Scoped assignments'].map(x=>'<span>'+x+'</span>').join("");
- document.getElementById("roleCount").textContent=sampleRoles.length;
+function accessStatus(message,isError){
+ const el=document.getElementById("accessLiveStatus"); if(!el)return;
+ el.textContent=message; el.className="access-note"+(isError?" error":"");
 }
-const permissionModel={
- SUPER_ADMIN:[1,1,1,1,1,1],DIRECTOR:[1,0,0,0,1,1],CHAIRMAN:[1,0,0,0,0,1],PRINCIPAL:[1,1,1,0,0,1],VICE_PRINCIPAL:[1,1,1,0,0,0],ADMISSION_INCHARGE:[0,1,1,0,0,0],ACCOUNTS:[0,0,1,0,0,1],HR_INCHARGE:[0,0,1,0,0,0],CLASS_TEACHER:[0,0,1,0,0,0],SUBJECT_TEACHER:[0,0,1,0,0,0],PARENT:[0,0,1,0,0,0],STUDENT:[0,0,1,0,0,0]
-};
-const actions=["View","Create","Edit","Delete","Approve","Export"];
-function renderPermissions(){
- const vals=permissionModel[selectedRole]||[0,0,0,0,0,0];
- document.getElementById("permissionRole").value=selectedRole;
- document.getElementById("permissionRows").innerHTML=modulesForRoles.map((m,i)=>'<tr><td><b>'+m+'</b><small>'+["Governance & leadership","Enquiries & enrolment","Student & teaching records","Events & participation","Finance, HR & operations"][i]+'</small></td>'+actions.map((a,j)=>'<td><input type="checkbox" aria-label="'+m+' '+a+'" data-mod="'+i+'" data-act="'+j+'" '+(vals[j]&&!(selectedRole==="PRINCIPAL"&&m==="Admin & Operations"&&a==="Approve")?'checked':'')+'></td>').join("")+'</tr>').join("");
+async function loadAccessControlData(){
+ accessStatus("Loading live access records from Google Sheets…");
+ try{
+  accessData=await apiRequest("admin.access.read");
+  renderLiveAccessUsers(); renderLiveAccessRoles(); renderLivePermissionGrants();
+  document.getElementById("userCount").textContent=accessData.users.length;
+  document.getElementById("roleCount").textContent=accessData.roles.length;
+  accessStatus("Connected · Read-only view · Google Sheets is the source of truth.");
+ }catch(error){
+  accessData=null;
+  ["userRows","roleList","permissionRows"].forEach(id=>{const el=document.getElementById(id);if(el)el.replaceChildren();});
+  accessStatus("Could not load live access records: "+error.message,true);
+ }
 }
-function accessTab(id){
- document.querySelectorAll(".access-tabs button").forEach(b=>b.classList.toggle("active",b.dataset.tab===id));
- document.querySelectorAll(".access-panel").forEach(p=>p.classList.toggle("active",p.id===id));
+function renderLiveAccessUsers(){
+ const body=document.getElementById("userRows"); body.replaceChildren();
+ const q=(document.getElementById("userSearch").value||"").toLowerCase();
+ const rf=document.getElementById("userRoleFilter").value||"";
+ const sf=document.getElementById("userStatusFilter").value||"";
+ const assignments=accessData.assignments, roles=accessData.roles;
+ const filtered=accessData.users.filter(u=>{
+  const ua=assignments.filter(a=>a.FirebaseUID===u.FirebaseUID);
+  const codes=ua.filter(a=>String(a.IsActive).toUpperCase()==="TRUE").map(a=>a.RoleCode);
+  const searchable=[u.DisplayName,u.Email,u.UserType,u.ERPUserID].join(" ").toLowerCase();
+  return (!q||searchable.includes(q))&&(!rf||codes.includes(rf))&&(!sf||String(u.AccountStatus).toUpperCase()===sf.toUpperCase());
+ });
+ filtered.forEach(u=>{
+  const tr=document.createElement("tr"), td1=accessNode("td"), td2=accessNode("td"), td3=accessNode("td"), td4=accessNode("td"), td5=accessNode("td"), td6=accessNode("td");
+  td1.append(accessNode("b",u.DisplayName||u.Email),accessNode("small",u.Email));
+  td2.textContent=[u.UserType,u.Designation,u.Department].filter(Boolean).join(" · ")||"Profile details in User Master";
+  const ua=assignments.filter(a=>a.FirebaseUID===u.FirebaseUID);
+  ua.forEach(a=>td3.appendChild(accessNode("span",a.RoleCode+" · "+a.ScopeType,"role-pill")));
+  if(!ua.length)td3.textContent="No role assignment";
+  td4.textContent=ua.map(a=>[a.ScopeType,a.ScopeID,a.AcademicYearID].filter(Boolean).join(" · ")).join("; ")||"—";
+  td5.appendChild(accessNode("span",u.AccountStatus,"state "+(String(u.AccountStatus).toUpperCase()==="ACTIVE"?"green":"amber")));
+  td6.textContent="Read only";
+  tr.append(td1,td2,td3,td4,td5,td6); body.appendChild(tr);
+ });
+ if(!filtered.length){const tr=document.createElement("tr"),td=accessNode("td","No matching live users.");td.colSpan=6;tr.appendChild(td);body.appendChild(tr);}
 }
-document.querySelectorAll("#accessTabs button").forEach(b=>b.addEventListener("click",()=>accessTab(b.dataset.tab)));
-document.getElementById("userSearch").addEventListener("input",renderUsers);
-document.getElementById("userRoleFilter").addEventListener("change",renderUsers);
-document.getElementById("userStatusFilter").addEventListener("change",renderUsers);
-document.getElementById("roleList").addEventListener("click",e=>{const b=e.target.closest("[data-role]");if(b){selectedRole=b.dataset.role;renderRoles();}});
-document.getElementById("permissionRole").addEventListener("change",e=>{selectedRole=e.target.value;renderPermissions();});
-document.getElementById("assignRoleBtn").addEventListener("click",()=>{
- const u=sampleUsers[Number(document.getElementById("assignUser").value)], role=document.getElementById("assignRole").value;
- if(!u.roles.includes(role))u.roles.push(role);
- u.scope=document.getElementById("assignScope").value+" · "+document.getElementById("assignYear").value;
- renderUsers();const m=document.getElementById("assignMessage");m.textContent="Preview updated for "+u.name+". No live user record was changed.";m.classList.add("show");
+function renderLiveAccessRoles(){
+ const list=document.getElementById("roleList");list.replaceChildren();
+ accessData.roles.forEach(r=>{
+  const b=accessNode("button",undefined,"role-option"+(r.RoleCode===selectedRole?" active":""));b.type="button";b.dataset.role=r.RoleCode;
+  const span=accessNode("span"), strong=accessNode("b",r.RoleCode), small=accessNode("small",r.RoleName);
+  span.append(strong,small);b.append(span,accessNode("span",String(r.IsActive).toUpperCase()==="TRUE"?"Active":"Inactive","state"));list.appendChild(b);
+ });
+ const r=accessData.roles.find(x=>x.RoleCode===selectedRole)||accessData.roles[0];
+ document.getElementById("roleDetailTitle").textContent=r?r.RoleCode+" · "+r.RoleName:"No roles configured";
+ document.getElementById("roleDetailDesc").textContent=r?r.Description||"No description in ERP_ROLES.":"";
+ document.getElementById("roleDetailTags").textContent=r?"Role ID: "+r.RoleID+" · Status: "+r.IsActive:"";
+ const select=document.getElementById("permissionRole");select.replaceChildren();
+ accessData.roles.forEach(x=>{const o=accessNode("option",x.RoleCode);o.value=x.RoleCode;select.appendChild(o);});
+ select.value=selectedRole;
+}
+function renderLivePermissionGrants(){
+ const table=document.querySelector("#module-permissions table");
+ const head=table.querySelector("thead");head.replaceChildren();
+ const hr=document.createElement("tr");
+ ["Role","Permission code","Scope","Allowed","Active"].forEach(x=>hr.appendChild(accessNode("th",x)));
+ head.appendChild(hr);
+ const body=document.getElementById("permissionRows");body.replaceChildren();
+ const grants=accessData.permissionGrants.filter(g=>!selectedRole||g.RoleCode===selectedRole);
+ grants.forEach(g=>{
+  const tr=document.createElement("tr");
+  [g.RoleCode,g.PermissionCode,g.ScopeType,g.IsAllowed,g.IsActive].forEach(v=>tr.appendChild(accessNode("td",v)));
+  body.appendChild(tr);
+ });
+ if(!grants.length){const tr=document.createElement("tr"),td=accessNode("td","No permission grants recorded for this role.");td.colSpan=5;tr.appendChild(td);body.appendChild(tr);}
+ document.getElementById("permissionMessage").textContent="These are permission-code grants from ERP_ROLE_PERMISSIONS. They are not inferred module-level permissions.";
+}
+document.getElementById("userSearch").addEventListener("input",()=>accessData&&renderLiveAccessUsers());
+document.getElementById("userRoleFilter").addEventListener("change",()=>accessData&&renderLiveAccessUsers());
+document.getElementById("userStatusFilter").addEventListener("change",()=>accessData&&renderLiveAccessUsers());
+document.getElementById("roleList").addEventListener("click",e=>{
+ const b=e.target.closest("[data-role]");if(!b||!accessData)return;
+ selectedRole=b.dataset.role;renderLiveAccessRoles();renderLivePermissionGrants();
 });
-document.getElementById("addUserBtn").addEventListener("click",()=>{
- sampleUsers.push({name:"New sample user",email:"new.user@example.test",type:"Staff",roles:[],scope:"Unassigned",status:"Invited"});renderUsers();
+document.getElementById("permissionRole").addEventListener("change",e=>{
+ selectedRole=e.target.value;if(accessData){renderLiveAccessRoles();renderLivePermissionGrants();}
 });
-document.getElementById("addRoleBtn").addEventListener("click",()=>{
- const n=sampleRoles.length+1,code="CUSTOM_ROLE_"+n;sampleRoles.push([code,"Custom role "+n,"New illustrative role for design review."]);selectedRole=code;renderRoles();renderPermissions();accessTab("role-catalog");
+["addUserBtn","addRoleBtn","editRoleBtn","savePermissionBtn","assignRoleBtn"].forEach(id=>{
+ const el=document.getElementById(id);if(el){el.disabled=true;el.title="Live write actions will be enabled only after schema and validation safeguards are implemented.";}
 });
-document.getElementById("editRoleBtn").addEventListener("click",()=>{
- const r=sampleRoles.find(x=>x[0]===selectedRole);if(r){r[2]="Updated sample description. Production editing will require authorised server-side validation.";renderRoles();}
-});
-document.getElementById("savePermissionBtn").addEventListener("click",()=>{
- const boxes=[...document.querySelectorAll("#permissionRows input")], vals=[0,0,0,0,0,0];
- boxes.forEach(b=>{if(b.checked)vals[Number(b.dataset.act)]=1;});
- permissionModel[selectedRole]=vals;
- const m=document.getElementById("permissionMessage");m.textContent="Illustrative permission selection updated for "+selectedRole+". Nothing has been saved to the live ERP.";m.classList.add("show");
-});
-document.getElementById("permissionRows").addEventListener("change",e=>{
- const b=e.target;if(!b.matches("input[type=checkbox]"))return;
- if(selectedRole==="PRINCIPAL"&&Number(b.dataset.mod)===4&&Number(b.dataset.act)===4){b.checked=false;alert("Principal financial approval is not permitted by the school authority policy.");}
-});
-document.getElementById("userRows").addEventListener("click",e=>{
- const b=e.target.closest("[data-user]");if(!b)return;const u=sampleUsers[Number(b.dataset.user)];
- document.getElementById("assignUser").value=String(Number(b.dataset.user));document.getElementById("assignMessage").textContent="Selected "+u.name+" for role assignment.";document.getElementById("assignMessage").classList.add("show");
-});
-renderUsers();renderRoles();renderPermissions();
+document.querySelector("#user-mapping .access-card[style]")?.setAttribute("hidden","hidden");
+document.getElementById("addUserBtn").hidden=true;
+document.getElementById("addRoleBtn").hidden=true;
+document.getElementById("editRoleBtn").hidden=true;
+document.getElementById("savePermissionBtn").hidden=true;
+document.getElementById("assignRoleBtn").hidden=true;
+document.getElementById("assignMessage").textContent="Live role assignment writes are not enabled in this read-only integration.";
 
   function openAccessControl(){
     if(!document.getElementById("accessControlNav") || document.getElementById("accessControlNav").classList.contains("hidden")) return;
@@ -474,6 +487,7 @@ renderUsers();renderRoles();renderPermissions();
     document.getElementById("academic-workspace").classList.remove("active");
     document.getElementById("access-control").classList.add("active");
     history.replaceState(null,"","#access-control");
+    loadAccessControlData();
   }
   function closeAccessControl(){
     document.getElementById("access-control").classList.remove("active");
