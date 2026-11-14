@@ -7,7 +7,7 @@ const BJPS_API_V1 = Object.freeze({
   VERSION: '1.0.0',
   MAX_BODY_CHARS: 16000,
   ALLOWED_DOMAIN: 'baljyoti.com',
-  ACTIONS: Object.freeze(['admin.bootstrapSuperAdmin','session.bootstrap','admission.enquiries.list','admission.enquiries.create','admission.followups.list','admission.followups.create','academic.classSections.list'])
+  ACTIONS: Object.freeze(['admin.bootstrapSuperAdmin','session.bootstrap','admission.enquiries.list','admission.enquiries.create','admission.followups.list','admission.followups.create','academic.classSections.list','admin.access.read'])
 });
 
 function doGet() {
@@ -29,6 +29,7 @@ function doPost(e) {
     else if (action === 'admission.followups.list') data = bjpsApiAdmissionListFollowups_(request.idToken, request.enquiryId);
     else if (action === 'admission.followups.create') data = bjpsApiAdmissionCreateFollowup_(request.idToken, request.record || {});
     else if (action === 'academic.classSections.list') data = bjpsApiAcademicListClassSections_(request.idToken);
+    else if (action === 'admin.access.read') data = bjpsApiAdminReadAccess_(request.idToken);
     else throw bjpsApiError_('ACTION_NOT_ALLOWED','This API action is not available.');
     return bjpsApiJson_({success:true, data:data});
   } catch (error) {
@@ -383,6 +384,65 @@ function bjpsApiAcademicListClassSections_(idToken) {
       return {classId:classId,className:String(row[ci.ClassName] || ''),classOrder:Number(row[ci.ClassOrder] || 0),sectionCount:classSections.length,activePlacements:classSections.reduce((n,s)=>n+s.activePlacements,0),sections:classSections};
     });
   return {academicYearId:yearId,classCount:records.length,sectionCount:records.reduce((n,c)=>n+c.sectionCount,0),activePlacements:records.reduce((n,c)=>n+c.activePlacements,0),classes:records};
+}
+
+/**
+ * Read-only User & Role Access data. The live schema is authoritative:
+ * profiles are the identity fields present in ERP_USER_MASTER; roles,
+ * assignments and permission grants remain separate tables. Functional
+ * module catalogue is not inferred from permission codes.
+ */
+function bjpsApiAdminReadAccess_(idToken) {
+  const identity = verifyBJPSFirebaseIdToken(idToken);
+  if (!identity || identity.authenticated !== true || identity.disabled === true ||
+      identity.emailVerified !== true || !identity.uid ||
+      String(identity.email || '').trim().toLowerCase() !== 'info@baljyoti.com') {
+    throw bjpsApiError_('ACCESS_ADMIN_REQUIRED','Access governance is restricted to the approved Super Admin account.');
+  }
+  const userSheet = getBJPSERPSheet(BJPS_RBAC.DATABASE_KEY,BJPS_RBAC.TABLES.USERS);
+  const assignmentSheet = getBJPSERPSheet(BJPS_RBAC.DATABASE_KEY,BJPS_RBAC.TABLES.ASSIGNMENTS);
+  const roleSheet = getBJPSERPSheet(BJPS_RBAC.DATABASE_KEY,BJPS_RBAC.TABLES.ROLES);
+  const grantSheet = getBJPSERPSheet(BJPS_RBAC.DATABASE_KEY,BJPS_RBAC.TABLES.PERMISSIONS);
+  const values = sheet => {
+    const rows = sheet.getDataRange().getDisplayValues();
+    if (!rows.length) throw bjpsApiError_('SCHEMA_INVALID','A required access table has no header row: '+sheet.getName());
+    const headers = rows[0].map(v=>String(v || '').trim());
+    if (!headers.some(Boolean)) throw bjpsApiError_('SCHEMA_INVALID','A required access table has blank headers: '+sheet.getName());
+    return {headers:headers,rows:rows.slice(1).filter(row=>row.some(v=>String(v || '').trim()))};
+  };
+  const users=values(userSheet), assignments=values(assignmentSheet), roles=values(roleSheet), grants=values(grantSheet);
+  const index=(headers,name)=>headers.indexOf(name);
+  const required=(headers,names,sheetName)=> {
+    const missing=names.filter(name=>index(headers,name)<0);
+    if(missing.length) throw bjpsApiError_('SCHEMA_INVALID',sheetName+' missing columns: '+missing.join(', '));
+  };
+  required(users.headers,['ERPUserID','FirebaseUID','Email','DisplayName','UserType','AccountStatus','EmailVerified'],'ERP_USER_MASTER');
+  required(assignments.headers,['AssignmentID','FirebaseUID','RoleCode','ScopeType','ScopeID','AcademicYearID','ValidFrom','ValidTo','IsActive','AssignedByUID','CreatedAt'],'ERP_USER_ROLE_ASSIGNMENTS');
+  required(roles.headers,['RoleID','RoleCode','RoleName','Description','IsActive'],'ERP_ROLES');
+  required(grants.headers,['RoleCode','PermissionCode','ScopeType','IsAllowed','IsActive'],'ERP_ROLE_PERMISSIONS');
+  const userRow=users.rows.find(row=>row[index(users.headers,'FirebaseUID')]===String(identity.uid));
+  if(!userRow || String(userRow[index(users.headers,'Email')]).toLowerCase()!=='info@baljyoti.com' ||
+      String(userRow[index(users.headers,'AccountStatus')]).toUpperCase()!=='ACTIVE') {
+    throw bjpsApiError_('ERP_ACCOUNT_INACTIVE','An active Super Admin ERP account is required.');
+  }
+  const roleRows=roles.rows.filter(row=>String(row[index(roles.headers,'IsActive')]).toUpperCase()==='TRUE');
+  const activeCodes=roleRows.map(row=>String(row[index(roles.headers,'RoleCode')]).trim().toUpperCase());
+  const hasSuper=assignments.rows.some(row=>
+    row[index(assignments.headers,'FirebaseUID')]===String(identity.uid) &&
+    String(row[index(assignments.headers,'RoleCode')]).trim().toUpperCase()==='SUPER_ADMIN' &&
+    String(row[index(assignments.headers,'ScopeType')]).trim().toUpperCase()==='GLOBAL' &&
+    !String(row[index(assignments.headers,'ScopeID')]).trim() &&
+    String(row[index(assignments.headers,'IsActive')]).toUpperCase()==='TRUE');
+  if(!hasSuper || activeCodes.indexOf('SUPER_ADMIN')<0) throw bjpsApiError_('ACCESS_ADMIN_REQUIRED','An active global SUPER_ADMIN role assignment is required.');
+  const toObjects=(table)=>table.rows.map(row=>{
+    const out={}; table.headers.forEach((header,i)=>{if(header)out[header]=row[i];}); return out;
+  });
+  return {
+    schema:{users:users.headers,assignments:assignments.headers,roles:roles.headers,permissionGrants:grants.headers},
+    users:toObjects(users), assignments:toObjects(assignments),
+    roles:toObjects(roles), permissionGrants:toObjects(grants),
+    moduleCatalogue:{source:'FRONTEND_FUNCTIONAL_CATALOGUE',note:'Functional modules are not stored in ERP_ROLE_PERMISSIONS; permission codes are not treated as module names.'}
+  };
 }
 
 function bjpsApiJson_(payload) {
