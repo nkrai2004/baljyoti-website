@@ -30,28 +30,49 @@ const API_URL="https://script.google.com/macros/s/AKfycbw6MEYBiikPU5JsHE7kG70RqZ
 let auth,currentUser,isAdmin=false,items=[];
 const $=id=>document.getElementById(id);
 function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-function apiUrlForCurrentUser(){
- const url=new URL(API_URL);
- if(currentUser&&currentUser.email)url.searchParams.set("authuser",currentUser.email);
- return url.toString();
-}
 function apiList(){
  return new Promise(async(resolve,reject)=>{
   let script,timer,callback;
-  try{
-   const token=await currentUser.getIdToken(true);
-   callback="bjAdmissionCallback_"+Date.now()+"_"+Math.random().toString(36).slice(2);
-   script=document.createElement("script");
-   const cleanup=()=>{if(timer)clearTimeout(timer);if(callback)delete window[callback];if(script)script.remove();};
-   timer=setTimeout(()=>{cleanup();reject(new Error("Admission CRM request timed out. Check Apps Script deployment and try Refresh."));},20000);
-   window[callback]=data=>{cleanup();if(!data||typeof data!=="object"){reject(new Error("Admission CRM returned an invalid response."));return;}resolve(data);};
-   script.onerror=()=>{cleanup();reject(new Error("Unable to load Admission CRM. Check the Apps Script web-app deployment URL and access."));};
-   script.src=apiUrlForCurrentUser()+"&action=list&idToken="+encodeURIComponent(token)+"&callback="+encodeURIComponent(callback)+"&_="+Date.now();
-   document.body.appendChild(script);
-  }catch(error){
+  const cleanup=()=>{
    if(timer)clearTimeout(timer);
    if(callback)delete window[callback];
    if(script)script.remove();
+  };
+  try{
+   if(!currentUser)throw new Error("Your school login has expired. Please sign in again.");
+   const token=await currentUser.getIdToken(true);
+   callback="bjAdmissionCallback_"+Date.now()+"_"+Math.random().toString(36).slice(2);
+   const url=new URL(API_URL);
+   url.searchParams.set("action","list");
+   url.searchParams.set("idToken",token);
+   url.searchParams.set("callback",callback);
+   url.searchParams.set("_",String(Date.now()));
+   script=document.createElement("script");
+   script.async=true;
+   timer=setTimeout(()=>{
+    cleanup();
+    reject(new Error("Admission CRM did not respond. Please check the Apps Script deployment."));
+   },25000);
+   window[callback]=data=>{
+    cleanup();
+    if(!data||typeof data!=="object"){
+     reject(new Error("Admission CRM returned an invalid response."));
+     return;
+    }
+    if(data.success!==true){
+     reject(new Error(data.message||"Admission CRM could not read the enquiries."));
+     return;
+    }
+    resolve(data);
+   };
+   script.onerror=()=>{
+    cleanup();
+    reject(new Error("Admission CRM connection failed. Please verify the deployed Apps Script URL and access."));
+   };
+   script.src=url.toString();
+   document.body.appendChild(script);
+  }catch(error){
+   cleanup();
    reject(error);
   }
  });
