@@ -30,6 +30,11 @@ const API_URL="https://script.google.com/macros/s/AKfycbw6MEYBiikPU5JsHE7kG70RqZ
 let auth,currentUser,isAdmin=false,items=[];
 const $=id=>document.getElementById(id);
 function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function apiUrlForCurrentUser(){
+ const url=new URL(API_URL);
+ if(currentUser&&currentUser.email)url.searchParams.set("authuser",currentUser.email);
+ return url.toString();
+}
 function apiList(){
  return new Promise(async(resolve,reject)=>{
   let script,timer,callback;
@@ -41,7 +46,7 @@ function apiList(){
    timer=setTimeout(()=>{cleanup();reject(new Error("Admission CRM request timed out. Check Apps Script deployment and try Refresh."));},20000);
    window[callback]=data=>{cleanup();if(!data||typeof data!=="object"){reject(new Error("Admission CRM returned an invalid response."));return;}resolve(data);};
    script.onerror=()=>{cleanup();reject(new Error("Unable to load Admission CRM. Check the Apps Script web-app deployment URL and access."));};
-   script.src=API_URL+"?action=list&idToken="+encodeURIComponent(token)+"&callback="+encodeURIComponent(callback)+"&_="+Date.now();
+   script.src=apiUrlForCurrentUser()+"&action=list&idToken="+encodeURIComponent(token)+"&callback="+encodeURIComponent(callback)+"&_="+Date.now();
    document.body.appendChild(script);
   }catch(error){
    if(timer)clearTimeout(timer);
@@ -54,7 +59,7 @@ function apiList(){
 async function apiPost(payload){
  const token=await currentUser.getIdToken(true);
  const body=new URLSearchParams({...payload,idToken:token});
- await fetch(API_URL,{method:"POST",mode:"no-cors",body});
+ await fetch(apiUrlForCurrentUser(),{method:"POST",mode:"no-cors",body});
 }
 async function refresh(){
  $("leadList").innerHTML='<div class="empty">Loading enquiries…</div>';
