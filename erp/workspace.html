@@ -85,6 +85,87 @@
       .module-button{min-height:42px;font-size:14px}
       .bottom{font-size:11px;flex-direction:column;gap:7px}
     }
+
+    /* Android phone-first workspace: large visual targets, minimal copy */
+    @media(max-width:700px){
+      html{background:#f7f8fa}
+      body{font-size:16px;-webkit-text-size-adjust:100%;overscroll-behavior-y:contain}
+      .top{position:sticky;top:0;z-index:20;min-height:66px;padding:10px 14px;align-items:center;background:#fff;box-shadow:0 2px 12px #1822300b}
+      .mobile-head{font-size:18px;letter-spacing:-.03em}
+      .avatar{width:42px;height:42px;font-size:15px;flex:0 0 42px}
+      .signout{min-height:44px;padding:9px 13px;border-radius:12px;font-size:13px}
+      .top-right{align-items:center;gap:8px}
+      .status{font-size:10px;max-width:38vw;padding:5px 8px}
+      .content{padding:17px 13px calc(28px + env(safe-area-inset-bottom))}
+      .welcome{margin:0 0 15px}
+      .welcome .eyebrow{font-size:10px;letter-spacing:.1em}
+      .welcome h1{font-size:25px;margin:5px 0 0;line-height:1.15}
+      .welcome .sub,.welcome .date{display:none}
+      .notice{margin:0 0 17px;padding:9px 11px;font-size:11px;line-height:1.4;border-radius:10px}
+      .notice a{display:inline-block;margin-top:3px}
+      .section-head{margin:21px 2px 10px;align-items:center}
+      .section-head h2{font-size:15px;font-weight:800}
+      .section-head p{display:none}
+      .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+      .pillar{min-height:156px;padding:13px 12px 12px;border-radius:16px;box-shadow:0 3px 12px #17243a08}
+      .pillar:hover{transform:none}
+      .pillar-top{align-items:flex-start;min-height:52px}
+      .pillar-icon{width:52px;height:52px;border-radius:15px;font-size:0;background:#f9e9eb}
+      .pillar-icon:before{font-size:29px;line-height:1}
+      #management .pillar-icon:before{content:"🧭"}
+      #admission .pillar-icon:before{content:"📝"}
+      #academic .pillar-icon:before{content:"📚"}
+      #activity .pillar-icon:before{content:"🎨"}
+      #admin .pillar-icon:before{content:"🏫"}
+      .pill{font-size:9px;padding:4px 6px;max-width:75px;text-align:center;line-height:1.2}
+      .pillar h3{font-size:16px;line-height:1.2;margin:12px 0 0}
+      .pillar p{display:none}
+      .pillar footer{font-size:10px;padding-top:7px;line-height:1.25}
+      .services{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+      .service{min-height:112px;padding:12px;border-radius:15px;display:flex;flex-direction:column;justify-content:center;gap:8px;font-size:13px}
+      .service:before{font-size:27px;line-height:1}
+      #accessControlNav:before{content:"🔐"}
+      #people:before{content:"👥"}
+      #reports:before{content:"📊"}
+      #workflow:before{content:"✅"}
+      .services .service.pending:last-child:before{content:"📁"}
+      .service b{font-size:13px;line-height:1.2;margin:0}
+      .service span{display:none}
+      .service.access-entry{min-height:112px}
+      .bottom{margin-top:24px}
+      /* Keep controls comfortable for thumbs throughout module screens */
+      .module-page-head{position:sticky;top:66px;z-index:10;background:var(--bg);padding:8px 0 10px;margin:0 0 12px}
+      .module-page-head h1{font-size:22px}
+      .module-page-head p{display:none}
+      .module-page-head .module-button{min-height:46px}
+      .module-toolbar{gap:9px}
+      .module-toolbar input,.module-toolbar select,.admission-form input,.admission-form select,.admission-form textarea{min-height:48px;font-size:16px;border-radius:12px}
+      .module-button{min-height:48px;border-radius:12px;font-size:15px;padding:11px 14px}
+      .data-panel,.access-card{border-radius:15px}
+      .data-panel-head{padding:13px}
+      .data-panel-head h2{font-size:16px}
+      .access-kpi{border-radius:13px;padding:11px 8px;text-align:center}
+      .access-kpi b{font-size:21px}
+      .access-kpi span{font-size:10px}
+      .access-tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+      .access-tabs button{min-height:48px;padding:8px 5px;text-align:center;font-size:11px;line-height:1.2}
+      .access-toolbar input,.access-toolbar select,.access-field input,.access-field select{min-height:48px;font-size:16px;border-radius:11px}
+      .role-option{min-height:58px;border-radius:12px}
+      .small-action{min-height:42px;font-size:12px}
+      .auth-screen{padding:16px}
+      .auth-card{padding:24px 20px;border-radius:20px}
+      .auth-card h1{font-size:24px}
+      .auth-card p{font-size:14px}
+      .auth-button{min-height:52px;border-radius:13px;font-size:16px}
+    }
+    @media(max-width:360px){
+      .content{padding-left:10px;padding-right:10px}
+      .grid{gap:8px}
+      .pillar{min-height:148px;padding:11px 10px}
+      .pillar h3{font-size:15px}
+      .services{gap:8px}
+    }
+
 </style>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
