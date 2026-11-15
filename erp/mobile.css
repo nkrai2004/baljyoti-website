@@ -1,4 +1,4 @@
-/* BJPS ERP mobile design system — Android-first */
+/* BJPS ERP mobile design system — Android-first | deployment refresh 2026-11-15 */
 :root{--bjps-red:#b5121b;--bjps-red-dark:#8f0d15;--bjps-pink:#fff1f2;--bjps-ink:#182230;--bjps-muted:#667085;--bjps-line:#e7e9ee}
 @media(max-width:700px){
  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
