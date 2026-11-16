@@ -123,7 +123,7 @@ function apiList(){
 async function apiPost(payload){
  const token=await currentUser.getIdToken(true);
  const body=new URLSearchParams({...payload,idToken:token});
- await fetch(apiUrlForCurrentUser(),{method:"POST",mode:"no-cors",body});
+ await fetch(API_URL,{method:"POST",mode:"no-cors",body});
 }
 async function refresh(){
  $("leadList").innerHTML='<div class="empty">Loading enquiries…</div>';
@@ -131,7 +131,7 @@ async function refresh(){
   const data=await apiList();
   if(!data.success)throw new Error(data.message||"Could not load enquiries.");
   items=data.items||[];isAdmin=!!data.user.isAdmin;
-  $("filter").value=isAdmin?"all":"mine";
+  $("filter").value="all";
   $("adminNote").classList.toggle("hide",!isAdmin);
   render();
   $("message").textContent="Signed in as "+data.user.email+(isAdmin?" · Admission Incharge":" · Teacher view");
