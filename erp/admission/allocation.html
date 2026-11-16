@@ -86,7 +86,6 @@ function apiList(){
    const token=await currentUser.getIdToken(true);
    callback="bjAdmissionCallback_"+Date.now()+"_"+Math.random().toString(36).slice(2);
    const url=new URL(API_URL);
-   if(currentUser.email)url.searchParams.set("authuser",currentUser.email);
    url.searchParams.set("action","list");
    url.searchParams.set("idToken",token);
    url.searchParams.set("callback",callback);
