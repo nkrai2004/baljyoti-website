@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#142B49">
+  <title>AARIKA CARE</title>
+  <style>
+    :root{--navy:#142b49;--blue:#2879c7;--bg:#f3f6fa;--ink:#17263b;--muted:#718096;--line:#e4eaf1;--green:#16845b;--amber:#b66b08;--red:#c0392b}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:Inter,Arial,sans-serif;color:var(--ink)}
+    .app{max-width:520px;margin:auto;min-height:100vh;background:#fff;padding-bottom:28px}
+    header{background:var(--navy);color:#fff;padding:20px 18px 24px;border-radius:0 0 24px 24px}
+    .top{display:flex;justify-content:space-between;align-items:center}.brand{font-weight:800;letter-spacing:1.5px;font-size:18px}
+    .sub{font-size:11px;color:#c9d8e9;letter-spacing:1px;margin-top:18px}
+    .reading{display:flex;align-items:center;justify-content:space-between;margin-top:5px}.value{font-size:54px;font-weight:800;letter-spacing:-2px}.unit{font-size:13px;color:#d7e4f2}
+    .status{background:#5a4529;color:#ffdc9a;padding:8px 11px;border-radius:12px;font-size:11px;font-weight:800}
+    .trend{font-size:14px;color:#ffd58a;font-weight:700}
+    main{padding:18px}.section-title{font-size:14px;font-weight:800;margin:4px 0 12px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+    button,.tile{border:0;background:#f3f6fa;border-radius:16px;padding:16px 12px;min-height:105px;text-align:center;color:var(--ink);cursor:pointer}
+    button:active{transform:scale(.98)} .ico{font-size:28px;display:block;margin-bottom:8px}.tile strong{font-size:13px;display:block}.tile small{font-size:11px;color:var(--muted);display:block;margin-top:5px}
+    .panel{border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:16px}
+    .panelhead{display:flex;align-items:center;justify-content:space-between;font-weight:800;font-size:13px;margin-bottom:10px}
+    .muted{font-size:12px;color:var(--muted);line-height:1.45}
+    .fields{display:grid;gap:10px}.field label{font-size:11px;font-weight:700;color:#566579;display:block;margin-bottom:5px}
+    input,select,textarea{width:100%;padding:12px;border:1px solid #dce4ed;border-radius:11px;font-size:14px;background:#fff;color:var(--ink)}
+    .primary{background:var(--blue);color:white;font-weight:800;width:100%;min-height:48px;border-radius:12px;margin-top:10px}
+    .secondary{background:#eaf2fb;color:#1e5f9b;font-weight:800;width:100%;min-height:44px;border-radius:12px;margin-top:8px}
+    .danger{background:#fff0ed;color:#a52d22}
+    .photo{width:100%;max-height:260px;object-fit:contain;border-radius:12px;background:#f3f6fa;margin-top:10px;display:none}
+    .hidden{display:none!important}.nav{display:flex;justify-content:space-around;border-top:1px solid var(--line);padding:12px 4px;position:sticky;bottom:0;background:#fff}
+    .nav button{min-height:auto;padding:6px;background:transparent;font-size:11px;color:var(--muted)}.nav span{display:block;font-size:20px;margin-bottom:3px}
+    .notice{font-size:11px;color:#765000;background:#fff7e8;border-radius:12px;padding:11px;margin-top:14px;line-height:1.4}
+    .toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:#17263b;color:white;padding:11px 16px;border-radius:20px;font-size:12px;display:none;max-width:90%;z-index:5}
+    .metric{background:#f3f6fa;border-radius:12px;padding:12px}.metric b{font-size:20px;display:block}.metric small{font-size:10px;color:var(--muted)}
+    .row{display:flex;gap:10px}.row>*{flex:1}
+    @media(min-width:520px){body{padding:18px 0}.app{border-radius:24px;overflow:hidden;box-shadow:0 10px 40px #1c34501a}}
+  </style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="top"><div class="brand">✦ AARIKA CARE</div><div aria-label="Notifications">🔔</div></div>
+  <div class="sub">GLUCOSE MONITOR</div>
+  <div class="reading"><div><div class="value" id="glucose">—</div><div class="trend" id="trend">No reading yet</div><div class="unit">mg/dL</div></div><div class="status" id="status">WAITING</div></div>
+</header>
+<main>
+  <div class="section-title">QUICK ACTIONS</div>
+  <div class="grid">
+    <button class="tile" onclick="show('capture')"><span class="ico">📷</span><strong>Capture CGM</strong><small>Photograph reader</small></button>
+    <button class="tile" onclick="show('food')"><span class="ico">🥗</span><strong>Food</strong><small>Meal & carbohydrates</small></button>
+    <button class="tile" onclick="show('insulin')"><span class="ico">💉</span><strong>Insulin</strong><small>Record administered dose</small></button>
+    <button class="tile" onclick="show('ketone')"><span class="ico">🩸</span><strong>Ketones</strong><small>Record ketone result</small></button>
+  </div>
+
+  <section id="home" class="panel">
+    <div class="panelhead">📊 TODAY'S OVERVIEW <span class="muted" id="today"></span></div>
+    <div class="grid">
+      <div class="metric"><b id="count">0</b><small>READINGS SAVED</small></div>
+      <div class="metric"><b id="lastSource">—</b><small>LATEST SOURCE</small></div>
+    </div>
+    <p class="muted" style="margin-bottom:0">Readings captured from a photograph are marked as photo readings. This app does not yet receive continuous CGM data.</p>
+  </section>
+
+  <section id="capture" class="panel hidden">
+    <div class="panelhead">📷 CAPTURE READER</div>
+    <p class="muted">Photograph the full reader screen in good light. Check the extracted value and trend before saving.</p>
+    <input id="camera" type="file" accept="image/*" capture="environment" onchange="previewPhoto(event)">
+    <img id="preview" class="photo" alt="CGM reader photo preview">
+    <button class="primary" onclick="readPhoto()">🔎 Read photograph</button>
+    <div id="ocrArea" class="hidden">
+      <div class="row" style="margin-top:12px">
+        <div class="field"><label>GLUCOSE (mg/dL)</label><input id="photoGlucose" type="number" inputmode="numeric" placeholder="e.g. 267"></div>
+        <div class="field"><label>TREND</label><select id="photoTrend"><option value="Rising">↗ Rising</option><option value="Steady">→ Steady</option><option value="Falling">↘ Falling</option><option value="Unknown">Unknown</option></select></div>
+      </div>
+      <div class="field" style="margin-top:10px"><label>READER TIME (if visible)</label><input id="photoTime" type="datetime-local"></div>
+      <p class="muted" id="ocrText"></p>
+      <button class="primary" onclick="savePhotoReading()">✓ Verify & save reading</button>
+    </div>
+  </section>
+
+  <section id="food" class="panel hidden">
+    <div class="panelhead">🥗 FOOD LOG</div>
+    <div class="fields">
+      <div class="field"><label>MEAL</label><select id="meal"><option>Breakfast</option><option>Lunch</option><option>Evening snack</option><option>Dinner</option><option>Other</option></select></div>
+      <div class="field"><label>FOOD / NOTES</label><input id="foodName" placeholder="Describe food"></div>
+      <div class="field"><label>CARBOHYDRATES (grams)</label><input id="carbs" type="number" min="0" inputmode="decimal"></div>
+    </div>
+    <button class="primary" onclick="saveLog('food')">✓ Save food log</button>
+  </section>
+
+  <section id="insulin" class="panel hidden">
+    <div class="panelhead">💉 INSULIN LOG</div>
+    <div class="fields">
+      <div class="field"><label>INSULIN TYPE</label><select id="insulinType"><option>Rapid-acting</option><option>Long-acting</option><option>Other (specify in notes)</option></select></div>
+      <div class="field"><label>DOSE ACTUALLY ADMINISTERED (units)</label><input id="dose" type="number" min="0" step="0.1" inputmode="decimal"></div>
+      <div class="field"><label>TIME</label><input id="doseTime" type="datetime-local"></div>
+      <div class="field"><label>NOTES</label><input id="doseNotes" placeholder="Optional"></div>
+    </div>
+    <div class="notice">Record only the dose actually administered. This screen does not calculate or recommend insulin doses.</div>
+    <button class="primary" onclick="saveLog('insulin')">✓ Save insulin record</button>
+  </section>
+
+  <section id="ketone" class="panel hidden">
+    <div class="panelhead">🩸 KETONE LOG</div>
+    <div class="fields">
+      <div class="field"><label>TEST TYPE</label><select id="ketoneType"><option>Blood</option><option>Urine</option></select></div>
+      <div class="field"><label>RESULT</label><input id="ketoneValue" placeholder="Enter result and units"></div>
+      <div class="field"><label>TIME</label><input id="ketoneTime" type="datetime-local"></div>
+    </div>
+    <button class="primary" onclick="saveLog('ketone')">✓ Save ketone result</button>
+  </section>
+
+  <section id="history" class="panel hidden">
+    <div class="panelhead">🗂 RECENT READINGS</div>
+    <div id="historyList" class="muted">Loading…</div>
+    <button class="secondary" onclick="loadSummary()">↻ Refresh</button>
+  </section>
+
+  <div class="notice">⚠️ Medical safety: Keep the manufacturer's CGM alarms active and follow the child's clinician-approved diabetes and sick-day plan. This app is an auxiliary log, not an emergency monitoring or insulin dosing device.</div>
+</main>
+<div class="nav">
+  <button onclick="show('home')"><span>🏠</span>Home</button>
+  <button onclick="show('capture')"><span>📷</span>Capture</button>
+  <button onclick="show('history')"><span>📈</span>History</button>
+</div>
+</div>
+<div id="toast" class="toast"></div>
+<script>
+let selectedPhoto=null, lastPhotoResult=null;
+const $=id=>document.getElementById(id);
+function show(id){['home','capture','food','insulin','ketone','history'].forEach(x=>$(x).classList.toggle('hidden',x!==id)); if(id==='history')loadSummary();}
+function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',3000);}
+function nowLocal(){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16);}
+$('today').textContent=new Date().toLocaleDateString();
+['photoTime','doseTime','ketoneTime'].forEach(id=>$(id).value=nowLocal());
+function previewPhoto(e){const f=e.target.files[0];if(!f)return;selectedPhoto=f;$('preview').src=URL.createObjectURL(f);$('preview').style.display='block';$('ocrArea').classList.add('hidden');}
+function fileToBase64(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result.split(',')[1]);r.onerror=reject;r.readAsDataURL(file);});}
+async function readPhoto(){
+  if(!selectedPhoto){toast('Please take a reader photo first');return;}
+  toast('Reading photograph…');
+  try{
+    const b64=await fileToBase64(selectedPhoto);
+    google.script.run.withSuccessHandler(res=>{
+      $('ocrArea').classList.remove('hidden');
+      $('photoGlucose').value=res.glucose||'';
+      $('photoTrend').value=res.trend||'Unknown';
+      lastPhotoResult=res;
+      $('ocrText').textContent=res.text?'Detected text: '+res.text:'Could not confidently read the screen. Please enter the value manually.';
+      toast(res.glucose?'Please verify the extracted reading':'Manual entry required');
+    }).withFailureHandler(err=>toast('OCR error: '+err.message)).processReaderPhoto(b64,selectedPhoto.type,selectedPhoto.name);
+  }catch(e){toast('Could not read photo: '+e.message);}
+}
+function savePhotoReading(){
+  const value=Number($('photoGlucose').value);if(!value||value<20||value>600){toast('Enter a valid glucose value');return;}
+  const payload={glucose:value,trend:$('photoTrend').value,readerTime:$('photoTime').value,source:'Photo',verified:true,photoFileId:lastPhotoResult&&lastPhotoResult.photoFileId||'',ocrText:lastPhotoResult&&lastPhotoResult.text||''};
+  google.script.run.withSuccessHandler(()=>{toast('Reading saved');$('glucose').textContent=value;$('trend').textContent=payload.trend;$('status').textContent=value<70?'LOW':value>250?'HIGH':'RECORDED';$('lastSource').textContent='Photo';$('count').textContent=Number($('count').textContent)+1;show('home');}).withFailureHandler(err=>toast(err.message)).saveGlucoseReading(payload);
+}
+function saveLog(kind){
+ let p={kind,recordedAt:nowLocal()};
+ if(kind==='food'){p.meal=$('meal').value;p.food=$('foodName').value;p.carbs=$('carbs').value;if(!p.food&&!p.carbs){toast('Enter food or carbohydrates');return;}}
+ if(kind==='insulin'){p.insulinType=$('insulinType').value;p.dose=$('dose').value;p.doseTime=$('doseTime').value;p.notes=$('doseNotes').value;if(p.dose===''||Number(p.dose)<0){toast('Enter administered dose');return;}}
+ if(kind==='ketone'){p.testType=$('ketoneType').value;p.result=$('ketoneValue').value;p.testTime=$('ketoneTime').value;if(!p.result){toast('Enter ketone result');return;}}
+ google.script.run.withSuccessHandler(()=>{toast('Saved');show('home');}).withFailureHandler(err=>toast(err.message)).saveCareLog(p);
+}
+function loadSummary(){
+ google.script.run.withSuccessHandler(data=>{
+  $('count').textContent=data.count;
+  $('historyList').innerHTML=data.items.length?data.items.map(x=>`<div style="padding:9px 0;border-bottom:1px solid #e4eaf1"><b>${x.glucose} mg/dL</b> · ${x.trend||'—'}<br><small>${x.time} · ${x.source}</small></div>`).join(''):'No readings saved yet.';
+  if(data.latest){$('glucose').textContent=data.latest.glucose;$('trend').textContent=data.latest.trend||'';$('status').textContent=Number(data.latest.glucose)<70?'LOW':Number(data.latest.glucose)>250?'HIGH':'RECORDED';$('lastSource').textContent=data.latest.source;}
+ }).withFailureHandler(err=>toast(err.message)).getDashboardSummary();
+}
+loadSummary();
+</script>
+</body>
+</html>
