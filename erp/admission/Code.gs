@@ -30,9 +30,52 @@ const ACTIVITY_HEADERS = [
 
 function doGet(e) {
   const p = (e && e.parameter) || {};
+  if (p.bridge === "1") return HtmlService.createHtmlOutput(admissionBridgeHtml_())
+    .setTitle("Bal Jyoti Admission Bridge")
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   if (p.action === "list") return listEnquiries_(p);
   return ContentService.createTextOutput("Bal Jyoti Admission CRM is running.")
     .setMimeType(ContentService.MimeType.TEXT);
+}
+
+// Public google.script.run entry points. Every operation verifies the Firebase ID token.
+function bridgeList(payload) {
+  return listEnquiriesObject_(payload || {});
+}
+function bridgeAllocate(payload) {
+  const data = payload || {};
+  const user = verifyUser_(data.idToken);
+  if (!user.isAdmin) throw new Error("Only the Admission Incharge can allocate enquiries.");
+  allocateEnquiry_(data, user);
+  return {success:true,message:"Enquiry assigned.",enquiryId:data.enquiryId};
+}
+function bridgeActivity(payload) {
+  const data = payload || {};
+  const user = verifyUser_(data.idToken);
+  saveActivity_(data, user);
+  return {success:true,message:"Activity saved.",enquiryId:data.enquiryId};
+}
+function admissionBridgeHtml_() {
+  return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+  <body><script>
+  (function(){
+    var PARENT_ORIGIN="https://baljyoti.com";
+    function send(data){window.parent.postMessage(data,PARENT_ORIGIN);}
+    window.addEventListener("message",function(event){
+      if(event.source!==window.parent||event.origin!==PARENT_ORIGIN)return;
+      var m=event.data||{};
+      if(m.type!=="BJ_ADMISSION_BRIDGE_REQUEST"||!m.id)return;
+      var runner=google.script.run
+        .withSuccessHandler(function(result){send({type:"BJ_ADMISSION_BRIDGE_RESULT",id:m.id,success:true,data:result});})
+        .withFailureHandler(function(error){send({type:"BJ_ADMISSION_BRIDGE_RESULT",id:m.id,success:false,error:error&&error.message?error.message:"Apps Script request failed."});});
+      if(m.action==="list")runner.bridgeList(m.payload);
+      else if(m.action==="allocate")runner.bridgeAllocate(m.payload);
+      else if(m.action==="activity")runner.bridgeActivity(m.payload);
+      else send({type:"BJ_ADMISSION_BRIDGE_RESULT",id:m.id,success:false,error:"Unknown admission action."});
+    });
+    send({type:"BJ_ADMISSION_BRIDGE_READY"});
+  })();
+  </script></body></html>`;
 }
 
 function doPost(e) {
@@ -95,6 +138,45 @@ function saveNewEnquiry_(data) {
   };
   appendMappedRow_(sheet, values);
   return jsonResponse_({success:true,message:"Enquiry submitted successfully.",enquiryId:values["Enquiry ID"]});
+}
+
+function listEnquiriesObject_(p) {
+  try {
+    const user = verifyUser_(p.idToken);
+    const sheet = getMasterSheet_();
+    const values = sheet.getDataRange().getDisplayValues();
+    if (values.length < 2) return {success:true,user:{email:user.email,isAdmin:user.isAdmin},items:[]};
+    const headers = values[0];
+    const rows = values.slice(1);
+    const items = rows.filter(r => r[headers.indexOf("Enquiry ID")]).map(function(r) {
+      const get = name => { const i=headers.indexOf(name); return i < 0 ? "" : r[i]; };
+      const assigned = get("Assigned Counsellor").toLowerCase();
+      const isOwner = assigned === user.email;
+      const item = {
+        enquiryId:get("Enquiry ID"), studentName:get("Student Name"),
+        classApplying:get("Class Applied For"), academicYear:get("Academic Year"),
+        assignedCounsellor:get("Assigned Counsellor"), assignedDate:get("Assigned Date"),
+        currentStage:get("Current Stage") || get("Enquiry Status"),
+        contactStatus:get("Contact Status"), createdDate:get("Created Date"),
+        collectedBy:get("Collected By"), admissionInterest:get("Admission Interest")
+      };
+      if (user.isAdmin || isOwner) {
+        item.mobile=get("Primary Mobile");
+        item.whatsapp=get("WhatsApp Number");
+        item.parentEmail=get("Parent Email");
+        item.nextFollowupDate=get("Next Follow-up Date");
+        item.nextFollowupTime=get("Next Follow-up Time");
+        item.nextAction=get("Next Action");
+        item.lastContactOutcome=get("Last Contact Outcome");
+        item.recordRemarks=get("Record Remarks");
+      }
+      item.canWork = user.isAdmin || isOwner;
+      return item;
+    });
+    return {success:true,user:{email:user.email,isAdmin:user.isAdmin},items:items};
+  } catch(err) {
+    return {success:false,message:err.message};
+  }
 }
 
 function listEnquiries_(p) {
