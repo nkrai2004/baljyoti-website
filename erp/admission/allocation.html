@@ -73,57 +73,57 @@ const API_URL="https://script.google.com/macros/s/AKfycbw6MEYBiikPU5JsHE7kG70RqZ
 let auth,currentUser,isAdmin=false,items=[];
 const $=id=>document.getElementById(id);
 function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-function apiList(){
- return new Promise(async(resolve,reject)=>{
-  let script,timer,callback;
-  const cleanup=()=>{
-   if(timer)clearTimeout(timer);
-   if(callback)delete window[callback];
-   if(script)script.remove();
-  };
-  try{
-   if(!currentUser)throw new Error("Your school login has expired. Please sign in again.");
-   const token=await currentUser.getIdToken(true);
-   callback="bjAdmissionCallback_"+Date.now()+"_"+Math.random().toString(36).slice(2);
-   const url=new URL(API_URL);
-   url.searchParams.set("action","list");
-   url.searchParams.set("idToken",token);
-   url.searchParams.set("callback",callback);
-   url.searchParams.set("_",String(Date.now()));
-   script=document.createElement("script");
-   script.async=true;
-   timer=setTimeout(()=>{
-    cleanup();
-    reject(new Error("Admission CRM did not respond. Please check the Apps Script deployment."));
-   },25000);
-   window[callback]=data=>{
-    cleanup();
-    if(!data||typeof data!=="object"){
-     reject(new Error("Admission CRM returned an invalid response."));
-     return;
-    }
-    if(data.success!==true){
-     reject(new Error(data.message||"Admission CRM could not read the enquiries."));
-     return;
-    }
-    resolve(data);
-   };
-   script.onerror=()=>{
-    cleanup();
-    reject(new Error("Admission CRM connection failed. Please verify the deployed Apps Script URL and access."));
-   };
-   script.src=url.toString();
-   document.body.appendChild(script);
-  }catch(error){
-   cleanup();
-   reject(error);
-  }
+let bridgeFrame=null,bridgeReady=false,bridgeQueue=[],bridgeCalls=new Map(),bridgeCounter=0;
+function initAdmissionBridge(){
+ return new Promise((resolve,reject)=>{
+  if(bridgeFrame&&bridgeReady){resolve();return;}
+  const frame=document.createElement("iframe");
+  frame.title="Admission data connection";
+  frame.setAttribute("aria-hidden","true");
+  frame.style.cssText="position:absolute;width:1px;height:1px;left:-9999px;border:0";
+  const timer=setTimeout(()=>reject(new Error("Admission data bridge did not load. Please redeploy the Apps Script web app.")),20000);
+  frame.onload=()=>{bridgeFrame=frame;bridgeReady=true;clearTimeout(timer);resolve();};
+  frame.onerror=()=>{clearTimeout(timer);reject(new Error("Unable to load the Admission data bridge. Check the Apps Script deployment."));};
+  frame.src=API_URL+"?bridge=1&v=1";
+  document.body.appendChild(frame);
  });
 }
-async function apiPost(payload){
+window.addEventListener("message",event=>{
+ if(!bridgeFrame||event.source!==bridgeFrame.contentWindow)return;
+ const msg=event.data||{};
+ if(msg.type==="BJ_ADMISSION_BRIDGE_READY"){
+  bridgeReady=true;
+  while(bridgeQueue.length)bridgeFrame.contentWindow.postMessage(bridgeQueue.shift(),"*");
+  return;
+ }
+ if(msg.type!=="BJ_ADMISSION_BRIDGE_RESULT"||!msg.id)return;
+ const pending=bridgeCalls.get(msg.id);if(!pending)return;
+ bridgeCalls.delete(msg.id);clearTimeout(pending.timer);
+ if(msg.success)pending.resolve(msg.data);
+ else pending.reject(new Error(msg.error||"Admission request failed."));
+});
+async function bridgeRequest(action,payload){
+ await initAdmissionBridge();
+ const id="bj_"+Date.now()+"_"+(++bridgeCounter);
+ return new Promise((resolve,reject)=>{
+  const timer=setTimeout(()=>{bridgeCalls.delete(id);reject(new Error("Admission request timed out. Please refresh and try again."));},30000);
+  bridgeCalls.set(id,{resolve,reject,timer});
+  const message={type:"BJ_ADMISSION_BRIDGE_REQUEST",id,action,payload};
+  if(bridgeFrame.contentWindow)bridgeFrame.contentWindow.postMessage(message,"*");
+  else bridgeQueue.push(message);
+ });
+}
+async function apiList(){
+ if(!currentUser)throw new Error("Your school login has expired. Please sign in again.");
  const token=await currentUser.getIdToken(true);
- const body=new URLSearchParams({...payload,idToken:token});
- await fetch(API_URL,{method:"POST",mode:"no-cors",body});
+ return bridgeRequest("list",{idToken:token});
+}
+async function apiPost(payload){
+ if(!currentUser)throw new Error("Your school login has expired. Please sign in again.");
+ const token=await currentUser.getIdToken(true);
+ const result=await bridgeRequest(payload.action,{...payload,idToken:token});
+ if(!result||result.success!==true)throw new Error((result&&result.message)||"The update could not be saved.");
+ return result;
 }
 async function refresh(){
  $("leadList").innerHTML='<div class="empty">Loading enquiries…</div>';
