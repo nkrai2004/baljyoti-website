@@ -65,13 +65,33 @@ document.getElementById('enquiryForm').addEventListener('submit', async function
     submit.textContent='Submit Enquiry';
   }
 });
+function requestAdmissionListJsonp(token){
+  return new Promise(function(resolve,reject){
+    const callbackName='__bjAdmissionListCallback';
+    const previous=window[callbackName];
+    let finished=false;
+    const script=document.createElement('script');
+    const cleanup=function(){
+      if(finished)return;
+      finished=true;
+      clearTimeout(timer);
+      script.remove();
+      if(previous===undefined) delete window[callbackName];
+      else window[callbackName]=previous;
+    };
+    const timer=setTimeout(function(){cleanup();reject(new Error('Admission sheet request timed out.'));},20000);
+    window[callbackName]=function(data){cleanup();resolve(data);};
+    script.onerror=function(){cleanup();reject(new Error('Could not connect to the Admission Google Sheet service.'));};
+    script.src=SCRIPT_URL+'?action=list&idToken='+encodeURIComponent(token)+'&callback='+callbackName+'&_='+Date.now();
+    document.head.appendChild(script);
+  });
+}
 async function loadLeadSummary(user){
   const note=document.getElementById('leadSummaryNote');
   try{
     const token=await user.getIdToken();
-    const response=await fetch(SCRIPT_URL+'?action=list&idToken='+encodeURIComponent(token));
-    const data=await response.json();
-    if(!data.success) throw new Error(data.message||'Could not load the lead summary.');
+    const data=await requestAdmissionListJsonp(token);
+    if(!data||!data.success) throw new Error((data&&data.message)||'Could not read admission records from the Google Sheet.');
     const items=Array.isArray(data.items)?data.items:[];
     const isAdmin=!!(data.user&&data.user.isAdmin);
     const assigned=items.filter(x=>String(x.assignedCounsellor||'').trim()).length;
@@ -79,9 +99,9 @@ async function loadLeadSummary(user){
     document.getElementById('leadTotal').textContent=items.length;
     document.getElementById('leadNew').textContent=fresh;
     document.getElementById('leadAssigned').textContent=assigned;
-    note.textContent=isAdmin?'All admission leads · Updated just now':'Leads visible to your account · Updated just now';
+    note.textContent=isAdmin?'All admission leads from MASTER ADMISSION · Updated just now':'Assigned/visible leads from MASTER ADMISSION · Updated just now';
   }catch(error){
-    note.textContent='Lead summary could not be loaded. Please refresh the page.';
+    note.textContent='Could not load Google Sheet data: '+error.message;
     document.getElementById('leadTotal').textContent='—';
     document.getElementById('leadNew').textContent='—';
     document.getElementById('leadAssigned').textContent='—';
