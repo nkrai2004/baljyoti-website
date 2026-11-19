@@ -65,32 +65,76 @@ document.getElementById('enquiryForm').addEventListener('submit', async function
     submit.textContent='Submit Enquiry';
   }
 });
-function requestAdmissionListJsonp(token){
-  return new Promise(function(resolve,reject){
-    const callbackName='__bjAdmissionListCallback';
-    const previous=window[callbackName];
-    let finished=false;
-    const script=document.createElement('script');
-    const cleanup=function(){
-      if(finished)return;
-      finished=true;
+let admissionBridgeFrame=null,admissionBridgeReady=false,admissionBridgeInitPromise=null,admissionBridgeCalls=new Map(),admissionBridgeCounter=0;
+function initAdmissionBridge(){
+  if(admissionBridgeFrame&&admissionBridgeReady)return Promise.resolve();
+  if(admissionBridgeInitPromise)return admissionBridgeInitPromise;
+  admissionBridgeInitPromise=new Promise(function(resolve,reject){
+    const frame=document.createElement('iframe');
+    admissionBridgeFrame=frame;
+    frame.title='Admission data connection';
+    frame.setAttribute('aria-hidden','true');
+    frame.style.cssText='position:absolute;width:1px;height:1px;left:-9999px;border:0';
+    let settled=false;
+    const finish=function(error){
+      if(settled)return;
+      settled=true;
       clearTimeout(timer);
-      script.remove();
-      if(previous===undefined) delete window[callbackName];
-      else window[callbackName]=previous;
+      if(error){admissionBridgeInitPromise=null;reject(error);}
+      else resolve();
     };
-    const timer=setTimeout(function(){cleanup();reject(new Error('Admission sheet request timed out.'));},20000);
-    window[callbackName]=function(data){cleanup();resolve(data);};
-    script.onerror=function(){cleanup();reject(new Error('Could not connect to the Admission Google Sheet service.'));};
-    script.src=SCRIPT_URL+'?action=list&idToken='+encodeURIComponent(token)+'&callback='+callbackName+'&_='+Date.now();
-    document.head.appendChild(script);
+    const timer=setTimeout(function(){
+      finish(new Error('Admission data bridge did not load. Please check the Apps Script deployment.'));
+    },20000);
+    frame.onerror=function(){finish(new Error('Could not load the Admission data bridge.'));};
+    frame.src=SCRIPT_URL+'?bridge=1&v=3';
+    document.body.appendChild(frame);
+    const checkReady=function(){
+      if(admissionBridgeReady)finish();
+    };
+    admissionBridgeReadyCheck=checkReady;
+  });
+  return admissionBridgeInitPromise;
+}
+let admissionBridgeReadyCheck=null;
+window.addEventListener('message',function(event){
+  if(!admissionBridgeFrame||event.source!==admissionBridgeFrame.contentWindow)return;
+  const message=event.data||{};
+  if(message.type==='BJ_ADMISSION_BRIDGE_READY'){
+    admissionBridgeReady=true;
+    if(admissionBridgeReadyCheck)admissionBridgeReadyCheck();
+    return;
+  }
+  if(message.type!=='BJ_ADMISSION_BRIDGE_RESULT'||!message.id)return;
+  const pending=admissionBridgeCalls.get(message.id);
+  if(!pending)return;
+  admissionBridgeCalls.delete(message.id);
+  clearTimeout(pending.timer);
+  if(message.success)pending.resolve(message.data);
+  else pending.reject(new Error(message.error||'Admission request failed.'));
+});
+async function requestAdmissionBridge(action,payload){
+  await initAdmissionBridge();
+  const id='enq_'+Date.now()+'_'+(++admissionBridgeCounter);
+  return new Promise(function(resolve,reject){
+    const timer=setTimeout(function(){
+      admissionBridgeCalls.delete(id);
+      reject(new Error('Admission data request timed out. Please refresh and try again.'));
+    },30000);
+    admissionBridgeCalls.set(id,{resolve:resolve,reject:reject,timer:timer});
+    admissionBridgeFrame.contentWindow.postMessage({
+      type:'BJ_ADMISSION_BRIDGE_REQUEST',
+      id:id,
+      action:action,
+      payload:payload
+    },'*');
   });
 }
 async function loadLeadSummary(user){
   const note=document.getElementById('leadSummaryNote');
   try{
-    const token=await user.getIdToken();
-    const data=await requestAdmissionListJsonp(token);
+    const token=await user.getIdToken(true);
+    const data=await requestAdmissionBridge('list',{idToken:token});
     if(!data||!data.success) throw new Error((data&&data.message)||'Could not read admission records from the Google Sheet.');
     const items=Array.isArray(data.items)?data.items:[];
     const isAdmin=!!(data.user&&data.user.isAdmin);
