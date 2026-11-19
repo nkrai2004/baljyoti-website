@@ -93,6 +93,7 @@ function initAdmissionBridge(){
       if(admissionBridgeReady)finish();
     };
     admissionBridgeReadyCheck=checkReady;
+    if(admissionBridgeReady)checkReady();
   });
   return admissionBridgeInitPromise;
 }
