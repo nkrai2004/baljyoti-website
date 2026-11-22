@@ -148,7 +148,15 @@ function listEnquiriesObject_(p) {
     if (values.length < 2) return {success:true,user:{email:user.email,isAdmin:user.isAdmin},items:[]};
     const headers = values[0];
     const rows = values.slice(1);
-    const items = rows.filter(r => r[headers.indexOf("Enquiry ID")]).map(function(r) {
+    // Counsellors receive only their own assigned enquiries. Admin can see every lead.
+    const assignedCol = headers.indexOf("Assigned Counsellor");
+    const enquiryCol = headers.indexOf("Enquiry ID");
+    const visibleRows = rows.filter(function(r) {
+      if (!r[enquiryCol]) return false;
+      if (user.isAdmin) return true;
+      return assignedCol >= 0 && String(r[assignedCol] || "").trim().toLowerCase() === user.email;
+    });
+    const items = visibleRows.map(function(r) {
       const get = name => { const i=headers.indexOf(name); return i < 0 ? "" : r[i]; };
       const assigned = get("Assigned Counsellor").toLowerCase();
       const isOwner = assigned === user.email;
@@ -187,7 +195,15 @@ function listEnquiries_(p) {
     if (values.length < 2) return jsonpResponse_(p.callback,{success:true,user:{email:user.email,isAdmin:user.isAdmin},items:[]});
     const headers = values[0];
     const rows = values.slice(1);
-    const items = rows.filter(r => r[headers.indexOf("Enquiry ID")]).map(function(r) {
+    // Counsellors receive only their own assigned enquiries. Admin can see every lead.
+    const assignedCol = headers.indexOf("Assigned Counsellor");
+    const enquiryCol = headers.indexOf("Enquiry ID");
+    const visibleRows = rows.filter(function(r) {
+      if (!r[enquiryCol]) return false;
+      if (user.isAdmin) return true;
+      return assignedCol >= 0 && String(r[assignedCol] || "").trim().toLowerCase() === user.email;
+    });
+    const items = visibleRows.map(function(r) {
       const get = name => { const i=headers.indexOf(name); return i < 0 ? "" : r[i]; };
       const assigned = get("Assigned Counsellor").toLowerCase();
       const isOwner = assigned === user.email;
