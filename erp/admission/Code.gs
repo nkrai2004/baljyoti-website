@@ -42,6 +42,13 @@ function doGet(e) {
 function bridgeList(payload) {
   return listEnquiriesObject_(payload || {});
 }
+function bridgeCreate(payload) {
+  const data = payload || {};
+  const user = verifyUser_(data.idToken);
+  data.collectedBy = user.name;
+  data.collectedByEmail = user.email;
+  return createEnquiryObject_(data, user);
+}
 function bridgeAllocate(payload) {
   const data = payload || {};
   const user = verifyUser_(data.idToken);
@@ -69,6 +76,7 @@ function admissionBridgeHtml_() {
         .withSuccessHandler(function(result){send({type:"BJ_ADMISSION_BRIDGE_RESULT",id:m.id,success:true,data:result});})
         .withFailureHandler(function(error){send({type:"BJ_ADMISSION_BRIDGE_RESULT",id:m.id,success:false,error:error&&error.message?error.message:"Apps Script request failed."});});
       if(m.action==="list")runner.bridgeList(m.payload);
+      else if(m.action==="create")runner.bridgeCreate(m.payload);
       else if(m.action==="allocate")runner.bridgeAllocate(m.payload);
       else if(m.action==="activity")runner.bridgeActivity(m.payload);
       else send({type:"BJ_ADMISSION_BRIDGE_RESULT",id:m.id,success:false,error:"Unknown admission action."});
@@ -107,13 +115,18 @@ function doPost(e) {
 }
 
 function saveNewEnquiry_(data) {
-  const required = [["studentName","Student Name"],["classApplying","Class Applied For"],
-    ["mobile","Primary Mobile"],["collectedBy","Staff Name"],["collectedByEmail","Staff Email ID"]];
+  return jsonResponse_(createEnquiryObject_(data, null));
+}
+
+function createEnquiryObject_(data, user) {
+  const required = [["studentName","Student Name"],["classApplying","Class Applied For"],["mobile","Primary Mobile"]];
   required.forEach(function(f) {
     if (!String(data[f[0]] || "").trim()) throw new Error(f[1] + " is required.");
   });
   const sheet = getMasterSheet_();
   const now = new Date();
+  const createdBy = user ? user.email : String(data.collectedByEmail || "").trim().toLowerCase();
+  const collectedBy = user ? user.name : String(data.collectedBy || "").trim();
   const values = {
     "Enquiry ID":"BJ"+Utilities.formatDate(now,TIME_ZONE,"yyyyMMddHHmmss")+Utilities.getUuid().substring(0,4).toUpperCase(),
     "Academic Year":data.academicYear || "",
@@ -122,22 +135,24 @@ function saveNewEnquiry_(data) {
     "Student Name":data.studentName || "",
     "Class Applied For":data.classApplying || "",
     "Age":data.age || "",
+    "Date of Birth":data.dob || "",
+    "Gender":data.gender || "",
     "Father's Name":data.fatherName || "",
     "Mother's Name":data.motherName || "",
     "Primary Mobile":data.mobile || "",
     "WhatsApp Number":data.whatsapp || "",
+    "Parent Email":data.parentEmail || "",
     "Address Line":data.address || "",
-    "Annual Family Income":data.annualIncome || "",
     "Admission Interest":data.admissionInterest || "",
     "Enquiry Source":data.leadSource || "",
-    "Collected By":data.collectedBy || "",
-    "Created By":data.collectedByEmail || "",
+    "Collected By":collectedBy,
+    "Created By":createdBy,
     "Enquiry Status":"New",
     "Current Stage":"New Enquiry",
     "Record Remarks":data.remarks || ""
   };
   appendMappedRow_(sheet, values);
-  return jsonResponse_({success:true,message:"Enquiry submitted successfully.",enquiryId:values["Enquiry ID"]});
+  return {success:true,message:"Enquiry added successfully.",enquiryId:values["Enquiry ID"]};
 }
 
 function listEnquiriesObject_(p) {
