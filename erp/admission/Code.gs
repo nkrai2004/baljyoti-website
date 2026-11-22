@@ -66,7 +66,13 @@ function admissionBridgeHtml_() {
   return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
   <body><script>
   (function(){
-    var PARENT_ORIGIN="https://baljyoti.com";
+    var PARENT_ORIGIN=(function(){
+      try {
+        var u=new URL(document.referrer);
+        if(u.protocol==="https:"&&(u.hostname==="baljyoti.com"||u.hostname==="www.baljyoti.com"))return u.origin;
+      } catch(e) {}
+      return "https://baljyoti.com";
+    })();
     function send(data){window.parent.postMessage(data,PARENT_ORIGIN);}
     window.addEventListener("message",function(event){
       if(event.source!==window.parent||event.origin!==PARENT_ORIGIN)return;
