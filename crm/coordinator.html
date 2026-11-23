@@ -29,7 +29,7 @@ dialog{border:0;border-radius:18px;padding:0;width:min(540px,calc(100% - 24px));
 <main class="wrap">
  <div class="notice"><b>Local prototype:</b> Changes are saved in this browser only. This version does not yet sync across coordinators or teachers. Add your actual staff directory before assigning duties.</div>
  <section class="metrics" aria-label="Overview"><div class="metric"><b id="staffCount">0</b><span>Staff registered</span></div><div class="metric"><b id="lessonCount">0</b><span>Lesson allocations</span></div><div class="metric"><b id="dutyCount">0</b><span>Duty assignments</span></div></section>
- <nav class="tabs" aria-label="Coordinator sections"><button class="active" data-tab="overview">Overview</button><button data-tab="timetable">Timetable</button><button data-tab="duties">Duties</button><button data-tab="staff">Staff directory</button><button data-tab="import">Data import & templates</button><button data-tab="checks">Conflict checks</button><button data-tab="absence">Absence cover</button><button data-tab="monitor">Live monitoring</button></nav>
+ <nav class="tabs" aria-label="Coordinator sections"><button class="active" data-tab="overview">Overview</button><button data-tab="timetable">Timetable</button><button data-tab="duties">Duties</button><button data-tab="staff">Staff directory</button><button data-tab="checks">Conflict checks</button><button data-tab="absence">Absence cover</button><button data-tab="monitor">Live monitoring</button></nav>
  <section class="panel active" id="overview">
   <div class="heading"><div><h2>Coordinator overview</h2><p>At-a-glance planning and daily control</p></div><span class="tag amber" id="publishState">DRAFT</span></div>
   <div class="card"><div class="heading" style="margin-top:0"><div><h2 style="font-size:15px">Quick actions</h2><p>Start with staff, then allocate lessons and duties</p></div></div><div class="filters"><button class="btn" data-go="staff">＋ Add staff</button><button class="btn secondary" data-go="timetable">＋ Add lesson</button><button class="btn secondary" data-go="duties">＋ Assign duty</button><button class="btn secondary" data-go="checks">Run conflict check</button></div></div>
@@ -40,39 +40,46 @@ dialog{border:0;border-radius:18px;padding:0;width:min(540px,calc(100% - 24px));
   <div class="heading"><div><h2>Class timetable</h2><p>Build the weekly class / teacher / room plan</p></div><button class="btn" id="addLessonBtn">＋ Lesson</button></div>
   <div class="filters"><div class="field"><label for="ttDay">Day</label><select id="ttDay"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option></select></div><div class="field"><label for="ttClass">Class / section</label><input id="ttClass" placeholder="e.g. Class 5 A"></div></div>
   <div id="lessonList" class="card"></div>
+  <div class="card">
+   <div class="heading" style="margin-top:0"><div><h2 style="font-size:15px">Timetable — CSV tools</h2><p>Download, complete and upload class / teacher / room allocations.</p></div></div>
+   <div class="filters">
+    <button class="btn secondary" type="button" data-download-template="lessons">↓ Download template</button>
+    <button class="btn secondary" type="button" data-export-csv="lessons">↓ Export current data</button>
+   </div>
+   <div class="field"><label>Upload completed timetable CSV</label><input type="file" accept=".csv,text/csv" data-csv-upload="lessons"></div>
+   <div data-import-result="lessons" style="margin-top:10px" aria-live="polite"></div>
+  </div>
   <p style="font-size:11px;color:var(--muted)">Period times follow the current teacher dashboard. Edit times in the data setup before adopting a different school shift.</p>
  </section>
  <section class="panel" id="duties">
   <div class="heading"><div><h2>Duty assignments</h2><p>Morning, assembly, lunch, dispersal and transport</p></div><button class="btn" id="addDutyBtn">＋ Duty</button></div>
   <div class="filters"><div class="field"><label for="dutyDay">Day</label><select id="dutyDay"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option></select></div><div class="field"><label for="dutyTypeFilter">Duty type</label><select id="dutyTypeFilter"><option value="">All duties</option><option>Arrival</option><option>Assembly</option><option>Lunch</option><option>Gate</option><option>Corridor</option><option>Transport</option><option>Departure</option><option>Other</option></select></div></div>
   <div id="dutyList" class="card"></div>
+  <div class="card">
+   <div class="heading" style="margin-top:0"><div><h2 style="font-size:15px">Duties — CSV tools</h2><p>Download, complete and upload duty assignments.</p></div></div>
+   <div class="filters">
+    <button class="btn secondary" type="button" data-download-template="duties">↓ Download template</button>
+    <button class="btn secondary" type="button" data-export-csv="duties">↓ Export current data</button>
+   </div>
+   <div class="field"><label>Upload completed duties CSV</label><input type="file" accept=".csv,text/csv" data-csv-upload="duties"></div>
+   <div data-import-result="duties" style="margin-top:10px" aria-live="polite"></div>
+  </div>
  </section>
  <section class="panel" id="staff">
   <div class="heading"><div><h2>Staff directory</h2><p>Enter your school's real staff list</p></div><button class="btn" id="addStaffBtn">＋ Staff</button></div>
   <div class="field" style="margin-bottom:10px"><label for="staffSearch">Search staff</label><input id="staffSearch" placeholder="Search by name or staff code"></div>
   <div id="staffList" class="card"></div>
+  <div class="card">
+   <div class="heading" style="margin-top:0"><div><h2 style="font-size:15px">Staff directory — CSV tools</h2><p>Download, complete and upload staff records. Staff codes are used by timetable and duty imports.</p></div></div>
+   <div class="filters">
+    <button class="btn secondary" type="button" data-download-template="staff">↓ Download template</button>
+    <button class="btn secondary" type="button" data-export-csv="staff">↓ Export current data</button>
+   </div>
+   <div class="field"><label>Upload completed staff directory CSV</label><input type="file" accept=".csv,text/csv" data-csv-upload="staff"></div>
+   <div data-import-result="staff" style="margin-top:10px" aria-live="polite"></div>
+  </div>
  </section>
 
- <section class="panel" id="import">
-  <div class="heading"><div><h2>Data import & templates</h2><p>Download a blank template, fill it in, then upload the completed CSV</p></div></div>
-  <div class="notice">Use the matching template headers exactly. Staff codes connect timetable and duty rows to your staff directory. CSV imports are validated before any records are saved.</div>
-  <div class="card">
-   <div class="field"><label for="importType">Choose data type</label><select id="importType"><option value="staff">Staff directory</option><option value="lessons">Class timetable</option><option value="duties">Duty assignments</option></select></div>
-   <div class="filters" style="margin-top:12px">
-    <button class="btn secondary" id="downloadTemplateBtn">↓ Download CSV template</button>
-    <button class="btn secondary" id="exportCsvBtn">↓ Export current CSV</button>
-   </div>
-   <div class="field" style="margin-top:8px"><label for="csvUpload">Upload completed CSV</label><input id="csvUpload" type="file" accept=".csv,text/csv"></div>
-   <p style="font-size:11px;color:var(--muted);margin:8px 0 0">Supported columns: Staff — name, staff_code, role. Timetable — day, class, subject, teacher_code, start, end, room. Duties — day, duty_type, duty_name, staff_code, start, end, location.</p>
-   <div id="importResult" style="margin-top:12px" aria-live="polite"></div>
-  </div>
-  <div class="card">
-   <div class="heading" style="margin-top:0"><div><h2 style="font-size:15px">Restore full backup</h2><p>Restore a previously exported BJPS JSON backup</p></div></div>
-   <div class="field"><label for="jsonUpload">Choose coordinator backup (.json)</label><input id="jsonUpload" type="file" accept=".json,application/json"></div>
-   <button class="btn danger" id="restoreBackupBtn" style="margin-top:10px">Restore JSON backup</button>
-   <p style="font-size:11px;color:var(--muted)">Restoring replaces the current data in this browser. Export a fresh backup first if you need to keep the existing data.</p>
-  </div>
- </section>
 
  <section class="panel" id="absence"><div class="heading"><div><h2>Teacher absence & cover plan</h2><p>Record an absence and generate all affected classes and duties</p></div></div><div class="card"><div class="formgrid"><div class="field"><label for="absenceDate">Absence date</label><input id="absenceDate" type="date" required></div><div class="field"><label for="absentTeacher">Absent teacher</label><select id="absentTeacher" required><option value="">Select teacher</option></select></div><div class="field full"><label for="absenceReason">Reason / note (optional)</label><input id="absenceReason" placeholder="Leave, illness, official work…"></div></div><button class="btn" id="createAbsenceBtn" style="margin-top:12px;width:100%">Create cover requirements</button></div><div class="heading"><div><h2>Absence records</h2><p>Classes and duties requiring a substitute</p></div></div><div id="absenceList" class="card"></div></section>
  <section class="panel" id="monitor"><div class="heading"><div><h2>Class & duty monitoring</h2><p>Track whether substitute teachers have taken up assigned work</p></div><button class="btn secondary" id="refreshMonitorBtn">Refresh</button></div><div class="notice">Update each assignment when the substitute takes charge, completes the period or reports that the class/duty was not taken. These updates are currently stored in this browser.</div><div id="monitorSummary" class="card"></div><div id="monitorList" class="card"></div></section>
@@ -81,7 +88,7 @@ dialog{border:0;border-radius:18px;padding:0;width:min(540px,calc(100% - 24px));
   <div id="checkSummary" class="card"></div><div id="checkList" class="card"></div>
  </section>
 </main>
-<nav class="bottom" aria-label="Quick navigation"><button class="active" data-tab="overview"><span>⌂</span>Home</button><button data-tab="timetable"><span>▦</span>Timetable</button><button data-tab="duties"><span>✓</span>Duties</button><button data-tab="staff"><span>♙</span>Staff</button><button data-tab="import"><span>⇅</span>Import</button><button data-tab="checks"><span>⚑</span>Checks</button><button data-tab="absence"><span>↔</span>Cover</button><button data-tab="monitor"><span>◉</span>Monitor</button></nav>
+<nav class="bottom" aria-label="Quick navigation"><button class="active" data-tab="overview"><span>⌂</span>Home</button><button data-tab="timetable"><span>▦</span>Timetable</button><button data-tab="duties"><span>✓</span>Duties</button><button data-tab="staff"><span>♙</span>Staff</button><button data-tab="checks"><span>⚑</span>Checks</button><button data-tab="absence"><span>↔</span>Cover</button><button data-tab="monitor"><span>◉</span>Monitor</button></nav>
 <dialog id="editDialog"><form id="editForm"><div class="modalhead"><h3 id="dialogTitle">Add allocation</h3><button type="button" class="iconbtn" id="closeDialog">✕</button></div><div class="modalbody"><div id="formConflict" class="conflict"></div><div id="formFields" class="formgrid"></div></div><div class="modalfoot"><button type="button" class="btn secondary" id="cancelDialog">Cancel</button><button class="btn" type="submit">Save allocation</button></div></form></dialog>
 <script>
 const KEY="bjps_coordinator_v1";
@@ -278,10 +285,9 @@ function importCsvText(text,type){
  }
  db.published=false;save();return valid.length;
 }
-el("downloadTemplateBtn").onclick=()=>{const type=el("importType").value;downloadCsv("bjps-"+type+"-template.csv",CSV_SCHEMAS[type].headers,[])};
-el("exportCsvBtn").onclick=()=>{const type=el("importType").value;downloadCsv("bjps-"+type+"-export.csv",CSV_SCHEMAS[type].headers,CSV_SCHEMAS[type].rows())};
-el("csvUpload").onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const count=importCsvText(await file.text(),el("importType").value);el("importResult").innerHTML='<span class="tag green">Import complete</span><p style="font-size:12px">'+count+' row(s) imported or updated successfully.</p>'}catch(err){el("importResult").innerHTML='<span class="tag amber">Import not applied</span><p style="font-size:12px;white-space:pre-line;color:#991b1b">'+esc(err.message)+'</p>'}finally{e.target.value=""}};
-el("restoreBackupBtn").onclick=async()=>{const file=el("jsonUpload").files[0];if(!file){alert("Choose a JSON backup file first.");return}if(!confirm("This will replace all coordinator data currently stored in this browser. Continue?"))return;try{const parsed=JSON.parse(await file.text());for(const key of ["staff","lessons","duties","absences","coverages"]){if(parsed[key]!==undefined&&!Array.isArray(parsed[key]))throw new Error("Invalid backup: "+key+" must be a list.");}if(!Array.isArray(parsed.staff)||!Array.isArray(parsed.lessons)||!Array.isArray(parsed.duties))throw new Error("This does not look like a BJPS coordinator backup.");db={staff:parsed.staff,lessons:parsed.lessons,duties:parsed.duties,absences:parsed.absences||[],coverages:parsed.coverages||[],published:!!parsed.published};save();el("importResult").innerHTML='<span class="tag green">Backup restored</span><p style="font-size:12px">Coordinator data has been restored.</p>'}catch(err){alert("Could not restore backup: "+err.message)}};
+document.querySelectorAll("[data-download-template]").forEach(b=>b.onclick=()=>{const type=b.dataset.downloadTemplate;downloadCsv("bjps-"+type+"-template.csv",CSV_SCHEMAS[type].headers,[])});
+document.querySelectorAll("[data-export-csv]").forEach(b=>b.onclick=()=>{const type=b.dataset.exportCsv;downloadCsv("bjps-"+type+"-export.csv",CSV_SCHEMAS[type].headers,CSV_SCHEMAS[type].rows())});
+document.querySelectorAll("[data-csv-upload]").forEach(input=>input.onchange=async e=>{const file=e.target.files[0];if(!file)return;const type=input.dataset.csvUpload,result=document.querySelector('[data-import-result="'+type+'"]');try{const count=importCsvText(await file.text(),type);result.innerHTML='<span class="tag green">Import complete</span><p style="font-size:12px">'+count+' row(s) imported or updated successfully.</p>'}catch(err){result.innerHTML='<span class="tag amber">Import not applied</span><p style="font-size:12px;white-space:pre-line;color:#991b1b">'+esc(err.message)+'</p>'}finally{e.target.value=""}});
 el("absenceDate").value=new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Kolkata"});el("createAbsenceBtn").onclick=createAbsence;el("refreshMonitorBtn").onclick=()=>renderMonitor();
 el("ttDay").onchange=renderLessons;el("ttClass").oninput=renderLessons;el("dutyDay").onchange=renderDuties;el("dutyTypeFilter").onchange=renderDuties;el("staffSearch").oninput=renderStaff;
 el("addStaffBtn").onclick=()=>openEditor("staff");el("addLessonBtn").onclick=()=>openEditor("lesson");el("addDutyBtn").onclick=()=>openEditor("duty");
