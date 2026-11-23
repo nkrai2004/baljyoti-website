@@ -159,14 +159,15 @@ function render(){renderSchedule();renderOtherTasks()}
 function updateBiometric(){
  const data=window.BJPS_BIOMETRIC_ATTENDANCE||{};
  const today=nowParts().date,valid=data.date===today;
- const inValue=valid&&data.inTime?String(data.inTime):"—";
- const outValue=valid&&data.outTime?String(data.outTime):"—";
+ const inValue=valid&&data.inTime?String(data.inTime):"8:00 AM";
+ const outValue=valid&&data.outTime?String(data.outTime):"3:00 PM";
+ const sample=!(valid&&data.inTime)&&!(valid&&data.outTime);
  document.getElementById("biometricIn").textContent=inValue;
  document.getElementById("biometricOut").textContent=outValue;
- document.getElementById("biometricInMeta").textContent=inValue==="—"?"No IN punch received for today":"Biometric attendance · "+today;
- document.getElementById("biometricOutMeta").textContent=outValue==="—"?"No OUT punch received for today":"Biometric attendance · "+today;
- document.getElementById("biometricInState").textContent=inValue==="—"?"Awaiting punch":"Punch received";
- document.getElementById("biometricOutState").textContent=outValue==="—"?"Awaiting punch":"Punch received";
+ document.getElementById("biometricInMeta").textContent=sample?"Sample time · awaiting SalaryBox API":"SalaryBox biometric attendance · "+today;
+ document.getElementById("biometricOutMeta").textContent=sample?"Sample time · awaiting SalaryBox API":"SalaryBox biometric attendance · "+today;
+ document.getElementById("biometricInState").textContent=sample?"Sample":"Punch received";
+ document.getElementById("biometricOutState").textContent=sample?"Sample":"Punch received";
 }
 window.addEventListener("bjps-biometric-attendance",updateBiometric);
 
