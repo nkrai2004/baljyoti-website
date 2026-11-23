@@ -97,7 +97,7 @@ button,a,input{touch-action:manipulation}button:focus-visible,a:focus-visible,in
 </div>
 <script>
 const groups={
- schoolTasks:[["Departure Duty","School duty · timing not specified in winter timetable"],["Incharge","Assigned responsibility"],["Activity Incharge","Assigned responsibility"],["Class Teacher","Class responsibility"],["Co Class Teacher","Class responsibility"]],
+ schoolTasks:[["Incharge","Assigned responsibility"],["Activity Incharge","Assigned responsibility"],["Class Teacher","Class responsibility"],["Co Class Teacher","Class responsibility"]],
  academicTasks:[["Lesson Plan","Academic work"],["Lesson Notes","Academic work"],["Examination","Academic work"],["Syllabus Completion","Academic work"],["Notebook Checking","Academic work"],["Remedial Teaching","Academic work"]],
  adminTasks:[["Student Attendance & Follow-up","Student support"],["Parent Communication / PTM","Student support"],["Fees Status","Administration"],["Admission Activity & Data Collection","Collect admission enquiries, activity details and applicant information"],["Admission Calling & Follow-up","Call interested parents and follow up on enquiries"],["Registration & Admission Register Update","Update registration details and admission registers"],["Discipline & Classroom","School support"],["Events & Monthly Reports","School support"]]
 };
@@ -114,7 +114,8 @@ const schedule=[
  ["Period 5","11:40","12:15"],
  ["Period 6","12:15","12:50"],
  ["Period 7","12:50","13:20"],
- ["Diary Checking","13:20","13:30"]
+ ["Diary Checking","13:20","13:30"],
+ ["Departure Duty","13:30","23:59"]
 ];
 const states=["Pending","In Progress","Done"],classes=["pending","progress","done"],colors=["var(--pending)","var(--progress)","var(--done)"];
 const zone="Asia/Kolkata";
@@ -143,7 +144,7 @@ function renderSchedule(){
   else{state="Pending";kind="past"}
   if(kind==="focus"||(i===currentIndex&&done))focusText=name;
   const row=document.createElement("div");row.className="slot "+kind+(kind==="focus"?" focus":"");
-  const time=document.createElement("div");time.className="time";time.textContent=timeLabel(from)+" – "+timeLabel(to);
+  const time=document.createElement("div");time.className="time";time.textContent=name==="Departure Duty"?"From "+timeLabel(from):timeLabel(from)+" – "+timeLabel(to);
   const info=document.createElement("div");info.className="taskinfo";
   const title=document.createElement("b");title.textContent=name;
   const sub=document.createElement("small");sub.textContent=kind==="focus"?"Happening now · Your current focus":kind==="past"?"Time passed · Mark complete if finished":kind==="future"?"Scheduled next · Not due yet":"Completed";
