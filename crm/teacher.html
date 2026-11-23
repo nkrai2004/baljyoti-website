@@ -16,6 +16,8 @@ main{padding:16px 16px 0}.sectionhead{display:flex;align-items:center;justify-co
 .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:-2px}.metric{background:#fff;border:1px solid var(--line);border-radius:15px;padding:13px 12px}.metric b{display:block;font-size:23px}.metric span{font-size:11px;color:var(--muted)}.metric.red b{color:var(--pending)}.metric.amber b{color:#a66b00}.metric.green b{color:var(--done)}
 .quick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.tile{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px;min-height:74px}.tile .ico{width:39px;height:39px;border-radius:12px;background:#fff0f0;color:var(--brand);display:grid;place-items:center;font-size:19px}.tile b{display:block;font-size:13px}.tile small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
 .tasklist{display:grid;gap:9px}.task{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}.dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}.taskinfo{flex:1;min-width:0}.taskinfo b{display:block;font-size:13px}.taskinfo small{display:block;font-size:11px;color:var(--muted);margin-top:2px}.status{border:0;border-radius:20px;padding:7px 10px;font-size:11px;font-weight:700;min-width:94px;cursor:pointer}.status.pending{background:#ffebee;color:var(--pending)}.status.progress{background:#fff4d6;color:#8a5b00}.status.done{background:#e8f5e9;color:var(--done)}
+
+.timeline{display:grid;gap:9px}.slot{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;position:relative}.slot.focus{border:2px solid var(--progress);background:#fffaf0;box-shadow:0 5px 18px #ffb30022}.slot.past{opacity:.92}.slot.future{background:#fafbfc}.slot .time{width:91px;flex:0 0 91px;font-size:11px;font-weight:700;color:#555e70}.slot .taskinfo{flex:1;min-width:0}.slot .taskinfo b{font-size:13px}.slot .taskinfo small{font-size:11px;color:var(--muted);display:block}.slot .status{min-width:88px}.slot.future .status{background:#eef1f5;color:#657084}.slot.focus .status{background:#fff0c2;color:#865900}.focusbanner{background:#fff4d6;border:1px solid #f5d477;border-radius:15px;padding:14px;margin:0 0 12px}.focusbanner small{font-size:10px;font-weight:800;letter-spacing:.08em;color:#8a5b00}.focusbanner b{display:block;font-size:17px;margin:3px 0}.focusbanner span{font-size:12px;color:#6d5a2d}.emptyfocus{background:#eef7ee;border:1px solid #cfe7d0;border-radius:15px;padding:14px;font-size:13px;color:#28632d}
 .legend{display:flex;gap:13px;flex-wrap:wrap;color:var(--muted);font-size:11px}.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}.note{font-size:11px;color:var(--muted);margin:14px 3px 0}
 @media(min-width:600px){main{padding-left:22px;padding-right:22px}.quick{grid-template-columns:repeat(3,minmax(0,1fr))}header{padding-left:24px;padding-right:24px}}
 </style>
@@ -45,26 +47,92 @@ main{padding:16px 16px 0}.sectionhead{display:flex;align-items:center;justify-co
   <a class="tile" href="#student-work"><span class="ico">👥</span><span><b>Student & Fees</b><small>Attendance, fees, admission</small></span></a>
   <a class="tile" href="#tasks"><span class="ico">▤</span><span><b>My Day</b><small>Review today's progress</small></span></a>
  </div>
- <div class="sectionhead" id="tasks"><h2>My Tasks</h2><small>Tap status to update</small></div>
- <div class="legend"><span><i style="background:var(--pending)"></i>Pending</span><span><i style="background:var(--progress)"></i>In Progress</span><span><i style="background:var(--done)"></i>Done</span></div>
- <div class="sectionhead" id="school-duties"><h2>School Responsibilities</h2></div>
+ <div class="sectionhead" id="tasks"><h2>Today's Schedule</h2><small>Winter timetable · From 12 Nov 2026</small></div>
+ <div id="focusArea"></div>
+ <div class="legend"><span><i style="background:var(--pending)"></i>Overdue / Pending</span><span><i style="background:var(--progress)"></i>Current focus</span><span><i style="background:var(--done)"></i>Completed</span><span><i style="background:#aab2bf"></i>Upcoming</span></div>
+ <div class="timeline" id="scheduleList"></div>
+ <div class="sectionhead" id="school-duties"><h2>Other Responsibilities</h2><small>Not time-slotted</small></div>
  <div class="tasklist" id="schoolTasks"></div>
  <div class="sectionhead" id="academic"><h2>Academic Work</h2></div>
  <div class="tasklist" id="academicTasks"></div>
  <div class="sectionhead" id="student-work"><h2>Student & Administration</h2></div>
  <div class="tasklist" id="adminTasks"></div>
- <p class="note">Demo workspace · Task updates are saved in this browser on this device. Google Classroom opens separately; live class sync requires school account authorization and backend integration.</p>
+ <p class="note">Demo workspace · Timetable status is saved in this browser per school date; current focus and overdue/upcoming states update automatically using India Standard Time. Google Classroom opens separately; live class sync requires school account authorization and backend integration.</p>
 </main>
 </div>
 <script>
 const groups={
- schoolTasks:[["Morning Duty","School duty"],["Assembly Duty","School duty"],["Lunch Duty","School duty"],["Departure Duty","School duty"],["Incharge","Assigned responsibility"],["Activity Incharge","Assigned responsibility"],["Class Teacher","Class responsibility"],["Co Class Teacher","Class responsibility"]],
+ schoolTasks:[["Incharge","Assigned responsibility"],["Activity Incharge","Assigned responsibility"],["Class Teacher","Class responsibility"],["Co Class Teacher","Class responsibility"]],
  academicTasks:[["Lesson Plan","Academic work"],["Lesson Notes","Academic work"],["Examination","Academic work"],["Syllabus Completion","Academic work"],["Notebook Checking","Academic work"],["Remedial Teaching","Academic work"]],
  adminTasks:[["Student Attendance & Follow-up","Student support"],["Parent Communication / PTM","Student support"],["Fees Status","Administration"],["Admission Data & Calling","Administration"],["Discipline & Classroom","School support"],["Events & Monthly Reports","School support"]]
 };
-const key="bjps_teacher_tasks_v1",saved=JSON.parse(localStorage.getItem(key)||"{}");
+// School's published winter timetable. All times are Asia/Kolkata.
+const schedule=[
+ ["Students Arrival / Morning Duty","08:20","08:30"],
+ ["Assembly Duty","08:30","08:55"],
+ ["0 Period","08:55","09:00"],
+ ["Period 1","09:00","09:35"],
+ ["Period 2","09:35","10:10"],
+ ["Period 3","10:10","10:45"],
+ ["Lunch Break / Lunch Duty","10:45","11:05"],
+ ["Period 4","11:05","11:40"],
+ ["Period 5","11:40","12:15"],
+ ["Period 6","12:15","12:50"],
+ ["Period 7","12:50","13:20"],
+ ["Diary Checking","13:20","13:30"]
+];
 const states=["Pending","In Progress","Done"],classes=["pending","progress","done"],colors=["var(--pending)","var(--progress)","var(--done)"];
-function render(){
+const zone="Asia/Kolkata";
+function nowParts(){
+ const p=new Intl.DateTimeFormat("en-GB",{timeZone:zone,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hourCycle:"h23"}).formatToParts(new Date());
+ const o={};p.forEach(x=>o[x.type]=x.value);
+ return {date:o.year+"-"+o.month+"-"+o.day,minute:Number(o.hour)*60+Number(o.minute),time:o.hour+":"+o.minute};
+}
+function mins(s){const [h,m]=s.split(":").map(Number);return h*60+m}
+function timeLabel(s){const [h,m]=s.split(":").map(Number);return new Date(2000,0,1,h,m).toLocaleTimeString("en-IN",{hour:"numeric",minute:"2-digit",hour12:true})}
+function store(){return JSON.parse(localStorage.getItem("bjps_teacher_schedule_v2")||"{}")}
+function save(data){localStorage.setItem("bjps_teacher_schedule_v2",JSON.stringify(data))}
+function renderSchedule(){
+ const now=nowParts(),data=store(),day=data[now.date]||{},root=document.getElementById("scheduleList");
+ root.innerHTML="";
+ let currentIndex=schedule.findIndex(x=>now.minute>=mins(x[1])&&now.minute<mins(x[2]));
+ let focusText="";
+ schedule.forEach((item,i)=>{
+  const [name,from,to]=item,k="slot-"+i,done=day[k]==="Done";
+  let state,kind;
+  if(done){state="Done";kind="done"}
+  else if(now.minute<mins(from)){state="Upcoming";kind="future"}
+  else if(now.minute<mins(to)){state="In Progress";kind="focus"}
+  else{state="Pending";kind="past"}
+  if(kind==="focus")focusText=name;
+  const row=document.createElement("div");row.className="slot "+kind+(kind==="focus"?" focus":"");
+  const time=document.createElement("div");time.className="time";time.textContent=timeLabel(from)+" – "+timeLabel(to);
+  const info=document.createElement("div");info.className="taskinfo";
+  const title=document.createElement("b");title.textContent=name;
+  const sub=document.createElement("small");sub.textContent=kind==="focus"?"Happening now · Your current focus":kind==="past"?"Time passed · Mark complete if finished":kind==="future"?"Scheduled next · Not due yet":"Completed";
+  info.append(title,sub);
+  const btn=document.createElement("button");btn.className="status "+(kind==="future"?"future":kind==="focus"?"progress":kind==="done"?"done":"pending");btn.textContent=state;
+  btn.disabled=kind==="future";
+  if(!btn.disabled)btn.addEventListener("click",()=>{const latest=store(),d=latest[now.date]||{};if(d[k]==="Done")delete d[k];else d[k]="Done";latest[now.date]=d;save(latest);render()});
+  row.append(time,info,btn);root.append(row);
+ });
+ const focus=document.getElementById("focusArea");
+ if(focusText){
+  const item=schedule[currentIndex];focus.innerHTML='<div class="focusbanner"><small>CURRENT TASK · FOCUS NOW</small><b>'+item[0]+'</b><span>'+timeLabel(item[1])+' – '+timeLabel(item[2])+' · Status: In Progress unless marked Done</span></div>';
+ }else if(now.minute<mins(schedule[0][1])){
+  focus.innerHTML='<div class="emptyfocus">School schedule has not started yet. First focus: Students Arrival / Morning Duty at 8:20 AM.</div>';
+ }else if(now.minute>=mins(schedule[schedule.length-1][2])){
+  focus.innerHTML='<div class="emptyfocus">The scheduled student day is complete. Review any red pending items above and finish remaining responsibilities.</div>';
+ }else{
+  focus.innerHTML='<div class="emptyfocus">No active timetable slot at this moment.</div>';
+ }
+ const all=schedule.map((x,i)=>{const k="slot-"+i;return day[k]==="Done"?"Done":now.minute<mins(x[1])?"Upcoming":now.minute<mins(x[2])?"In Progress":"Pending"});
+ document.getElementById("pendingCount").textContent=all.filter(x=>x==="Pending").length;
+ document.getElementById("progressCount").textContent=all.filter(x=>x==="In Progress").length;
+ document.getElementById("doneCount").textContent=all.filter(x=>x==="Done").length;
+}
+function renderOtherTasks(){
+ const saved=JSON.parse(localStorage.getItem("bjps_teacher_other_v1")||"{}");
  Object.entries(groups).forEach(([id,tasks])=>{
   const root=document.getElementById(id);root.innerHTML="";
   tasks.forEach(([name,desc],i)=>{
@@ -72,18 +140,20 @@ function render(){
    const dot=document.createElement("span");dot.className="dot";dot.style.background=colors[st];
    const info=document.createElement("div");info.className="taskinfo";
    const title=document.createElement("b");title.textContent=name;const sub=document.createElement("small");sub.textContent=desc;info.append(title,sub);
-   const btn=document.createElement("button");btn.className="status "+classes[st];btn.textContent=states[st];btn.setAttribute("aria-label","Change "+name+" status");
-   btn.addEventListener("click",()=>{saved[k]=states[(states.indexOf(saved[k]||"Pending")+1)%3];localStorage.setItem(key,JSON.stringify(saved));render()});
+   const btn=document.createElement("button");btn.className="status "+classes[st];btn.textContent=states[st];
+   btn.addEventListener("click",()=>{saved[k]=states[(states.indexOf(saved[k]||"Pending")+1)%3];localStorage.setItem("bjps_teacher_other_v1",JSON.stringify(saved));renderOtherTasks()});
    el.append(dot,info,btn);root.append(el);
   });
  });
- const all=Object.entries(groups).flatMap(([id,tasks])=>tasks.map((_,i)=>saved[id+"-"+i]||"Pending"));
- document.getElementById("pendingCount").textContent=all.filter(x=>x==="Pending").length;
- document.getElementById("progressCount").textContent=all.filter(x=>x==="In Progress").length;
- document.getElementById("doneCount").textContent=all.filter(x=>x==="Done").length;
 }
-function tick(){const n=new Date();document.getElementById("date").textContent=n.toLocaleDateString("en-IN",{weekday:"long",day:"2-digit",month:"short",year:"numeric"});document.getElementById("clock").textContent=n.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit"});}
-render();tick();setInterval(tick,1000);
+function render(){renderSchedule();renderOtherTasks()}
+function tick(){
+ const n=new Date();
+ document.getElementById("date").textContent=new Intl.DateTimeFormat("en-IN",{timeZone:zone,weekday:"long",day:"2-digit",month:"short",year:"numeric"}).format(n);
+ document.getElementById("clock").textContent=new Intl.DateTimeFormat("en-IN",{timeZone:zone,hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true}).format(n);
+ renderSchedule();
+}
+render();tick();setInterval(tick,15000);
 </script>
 </body>
 </html>
