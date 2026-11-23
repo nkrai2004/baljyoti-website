@@ -161,14 +161,14 @@ function render(){renderSchedule();renderOtherTasks()}
 
 function updateBiometric(){
  const data=window.BJPS_BIOMETRIC_ATTENDANCE||{};
- const today=nowParts().date,valid=data.date===today;
+ const chosen=selectedDay(),valid=data.date===chosen;
  const inValue=valid&&data.inTime?String(data.inTime):"8:00 AM";
  const outValue=valid&&data.outTime?String(data.outTime):"3:00 PM";
  const sampleIn=!(valid&&data.inTime),sampleOut=!(valid&&data.outTime);
  document.getElementById("biometricIn").textContent=inValue;
  document.getElementById("biometricOut").textContent=outValue;
- document.getElementById("biometricInMeta").textContent=sampleIn?"Sample time · awaiting SalaryBox API":"SalaryBox biometric attendance · "+now.date;
- document.getElementById("biometricOutMeta").textContent=sampleOut?"Sample time · awaiting SalaryBox API":"SalaryBox biometric attendance · "+today;
+ document.getElementById("biometricInMeta").textContent=sampleIn?"Sample time · awaiting SalaryBox API":"SalaryBox biometric attendance · "+chosen;
+ document.getElementById("biometricOutMeta").textContent=sampleOut?"Sample time · awaiting SalaryBox API":"SalaryBox biometric attendance · "+chosen;
  document.getElementById("biometricInState").textContent=sampleIn?"Sample":"Punch received";
  document.getElementById("biometricOutState").textContent=sampleOut?"Sample":"Punch received";
 }
