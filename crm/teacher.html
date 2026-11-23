@@ -62,7 +62,7 @@ main{padding:16px 16px 0}.sectionhead{display:flex;align-items:center;justify-co
 </div>
 <script>
 const groups={
- schoolTasks:[["Incharge","Assigned responsibility"],["Activity Incharge","Assigned responsibility"],["Class Teacher","Class responsibility"],["Co Class Teacher","Class responsibility"]],
+ schoolTasks:[["Departure Duty","School duty · timing not specified in winter timetable"],["Incharge","Assigned responsibility"],["Activity Incharge","Assigned responsibility"],["Class Teacher","Class responsibility"],["Co Class Teacher","Class responsibility"]],
  academicTasks:[["Lesson Plan","Academic work"],["Lesson Notes","Academic work"],["Examination","Academic work"],["Syllabus Completion","Academic work"],["Notebook Checking","Academic work"],["Remedial Teaching","Academic work"]],
  adminTasks:[["Student Attendance & Follow-up","Student support"],["Parent Communication / PTM","Student support"],["Fees Status","Administration"],["Admission Data & Calling","Administration"],["Discipline & Classroom","School support"],["Events & Monthly Reports","School support"]]
 };
@@ -104,7 +104,7 @@ function renderSchedule(){
   else if(now.minute<mins(from)){state="Upcoming";kind="future"}
   else if(now.minute<mins(to)){state="In Progress";kind="focus"}
   else{state="Pending";kind="past"}
-  if(kind==="focus")focusText=name;
+  if(kind==="focus"||(i===currentIndex&&done))focusText=name;
   const row=document.createElement("div");row.className="slot "+kind+(kind==="focus"?" focus":"");
   const time=document.createElement("div");time.className="time";time.textContent=timeLabel(from)+" – "+timeLabel(to);
   const info=document.createElement("div");info.className="taskinfo";
@@ -118,7 +118,8 @@ function renderSchedule(){
  });
  const focus=document.getElementById("focusArea");
  if(focusText){
-  const item=schedule[currentIndex];focus.innerHTML='<div class="focusbanner"><small>CURRENT TASK · FOCUS NOW</small><b>'+item[0]+'</b><span>'+timeLabel(item[1])+' – '+timeLabel(item[2])+' · Status: In Progress unless marked Done</span></div>';
+  const item=schedule[currentIndex],isDone=day["slot-"+currentIndex]==="Done";
+  focus.innerHTML='<div class="focusbanner"><small>'+(isDone?"CURRENT SLOT · COMPLETED":"CURRENT TASK · FOCUS NOW")+'</small><b>'+item[0]+'</b><span>'+timeLabel(item[1])+' – '+timeLabel(item[2])+' · Status: '+(isDone?"Done":"In Progress")+'</span></div>';
  }else if(now.minute<mins(schedule[0][1])){
   focus.innerHTML='<div class="emptyfocus">School schedule has not started yet. First focus: Students Arrival / Morning Duty at 8:20 AM.</div>';
  }else if(now.minute>=mins(schedule[schedule.length-1][2])){
