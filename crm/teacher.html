@@ -60,18 +60,18 @@ button,a,input{touch-action:manipulation}button:focus-visible,a:focus-visible,in
   <div class="brand"><img src="https://www.baljyoti.com/logo.png" alt="Bal Jyoti logo" onerror="this.style.display='none'"><div><strong>Bal Jyoti Public School</strong><small>BJPS · ERP</small></div></div>
   <div class="header-actions"><button type="button" id="languageToggle" class="language-toggle">हिन्दी</button><div class="avatar" title="Teacher profile">T</div></div>
  </div>
- <div class="welcome"><small>TEACHER WORKSPACE</small><h1>Good day, Teacher</h1><div class="dateclock"><span id="date">Loading date…</span><span id="clock">--:--:--</span></div></div>
+ <div class="welcome"><small data-en="TEACHER WORKSPACE" data-hi="शिक्षक कार्यक्षेत्र">TEACHER WORKSPACE</small><h1 data-en="Good day, Teacher" data-hi="नमस्ते, शिक्षक">Good day, Teacher</h1><div class="dateclock"><span id="date">Loading date…</span><span id="clock">--:--:--</span></div></div>
 </header>
 <main>
- <div class="date-select-wrap"><label for="selectedDate">📅 Choose a Day</label><input type="date" id="selectedDate" aria-label="Select dashboard date"></div>
+ <div class="date-select-wrap"><label for="selectedDate" data-en="📅 Choose a Day" data-hi="📅 तारीख चुनें">📅 Choose a Day</label><input type="date" id="selectedDate" aria-label="Select dashboard date"></div>
  <div class="attendance-card in"><div><div class="attendance-label">IN TIME · BIOMETRIC</div><div class="attendance-time" id="biometricIn">—</div><div class="attendance-meta" id="biometricInMeta">Waiting for attendance punch</div></div><span class="attendance-state" id="biometricInState">Not synced</span></div>
- <div class="sectionhead" id="my-tasks"><h2>Your Day</h2><small>Live task status</small></div>
+ <div class="sectionhead" id="my-tasks"><h2 data-en="Your Day" data-hi="आपका दिन">Your Day</h2><small data-en="Task status" data-hi="काम की स्थिति">Task status</small></div>
  <div class="summary">
-  <div class="metric red"><b id="pendingCount">0</b><span>Pending</span></div>
-  <div class="metric amber"><b id="progressCount">0</b><span>In Progress</span></div>
-  <div class="metric green"><b id="doneCount">0</b><span>Done</span></div>
+  <div class="metric red"><b id="pendingCount">0</b><span data-en="Pending" data-hi="बाकी">Pending</span></div>
+  <div class="metric amber"><b id="progressCount">0</b><span data-en="In Progress" data-hi="जारी">In Progress</span></div>
+  <div class="metric green"><b id="doneCount">0</b><span data-en="Done" data-hi="पूरा">Done</span></div>
  </div>
- <div class="sectionhead"><h2>Open a Page</h2></div>
+ <div class="sectionhead"><h2 data-en="Quick Links" data-hi="ज़रूरी लिंक">Quick Links</h2></div>
  <div class="quick">
   <a class="tile" href="#tasks"><span class="ico">✓</span><span><b>My Tasks</b><small>Daily responsibilities</small></span></a>
   <a class="tile" href="https://classroom.google.com/" target="_blank" rel="noopener"><span class="ico">▣</span><span><b>Google Classroom</b><small>Classes & assignments</small></span></a>
@@ -80,18 +80,18 @@ button,a,input{touch-action:manipulation}button:focus-visible,a:focus-visible,in
   <a class="tile" href="#student-work"><span class="ico">👥</span><span><b>Student & Fees</b><small>Attendance, fees, admission</small></span></a>
   <a class="tile" href="#tasks"><span class="ico">▤</span><span><b>My Day</b><small>Review today's progress</small></span></a>
  </div>
- <div class="sectionhead" id="tasks"><h2>School Time Table</h2><small>Winter timetable · From 12 Nov 2026</small></div>
+ <div class="sectionhead" id="tasks"><h2 data-en="School Time Table" data-hi="स्कूल समय-सारणी">School Time Table</h2><small data-en="Winter timetable · From 12 Nov 2026" data-hi="शीतकालीन समय-सारणी · 12 नवम्बर 2026 से">Winter timetable · From 12 Nov 2026</small></div>
  <div id="focusArea"></div>
  <div class="legend"><span><i style="background:var(--pending)"></i>Overdue / Pending</span><span><i style="background:var(--progress)"></i>Current focus</span><span><i style="background:var(--done)"></i>Completed</span><span><i style="background:#aab2bf"></i>Upcoming</span></div>
  <div class="timeline" id="scheduleList"></div>
- <div class="sectionhead" id="school-duties"><h2>Your Other Duties</h2><small>Not time-slotted</small></div>
+ <div class="sectionhead" id="school-duties"><h2 data-en="Your Other Duties" data-hi="आपकी अन्य ज़िम्मेदारियाँ">Your Other Duties</h2><small data-en="No fixed time" data-hi="समय तय नहीं">No fixed time</small></div>
  <div class="tasklist" id="schoolTasks"></div>
- <div class="sectionhead" id="academic"><h2>Academic Work</h2></div>
+ <div class="sectionhead" id="academic"><h2 data-en="Academic Work" data-hi="पढ़ाई से जुड़े काम">Academic Work</h2></div>
  <div class="tasklist" id="academicTasks"></div>
- <div class="sectionhead" id="student-work"><h2>Student & Office Work</h2></div>
+ <div class="sectionhead" id="student-work"><h2 data-en="Student & Office Work" data-hi="विद्यार्थी और कार्यालय के काम">Student & Office Work</h2></div>
  <div class="tasklist" id="adminTasks"></div>
- <p class="note">Demo workspace · Timetable status is saved in this browser per school date; current focus and overdue/upcoming states update automatically using India Standard Time. Google Classroom opens separately; live class sync requires school account authorization and backend integration.</p>
- <div class="sectionhead"><h2>Attendance Punch Out</h2><small>End of day</small></div>
+ <p class="note" data-en="Demo workspace · Status is saved only in this browser. Live attendance and shared school records need backend integration." data-hi="डेमो पेज · स्थिति केवल इसी ब्राउज़र में सेव होती है। लाइव उपस्थिति और साझा स्कूल रिकॉर्ड के लिए बैकएंड कनेक्शन ज़रूरी है।">Demo workspace · Status is saved only in this browser. Live attendance and shared school records need backend integration.</p>
+ <div class="sectionhead"><h2 data-en="Attendance Punch Out" data-hi="छुट्टी का बायोमेट्रिक समय">Attendance Punch Out</h2><small data-en="End of day" data-hi="दिन के अंत में">End of day</small></div>
  <div class="attendance-card out"><div><div class="attendance-label">OUT TIME · BIOMETRIC</div><div class="attendance-time" id="biometricOut">—</div><div class="attendance-meta" id="biometricOutMeta">Waiting for attendance punch</div></div><span class="attendance-state" id="biometricOutState">Not synced</span></div>
 </main>
 </div>
