@@ -24,6 +24,33 @@ main{padding:16px 16px 0}.sectionhead{display:flex;align-items:center;justify-co
 .timeline{display:grid;gap:9px}.slot{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;position:relative}.slot.focus{border:2px solid var(--progress);background:#fffaf0;box-shadow:0 5px 18px #ffb30022}.slot.past{opacity:.92}.slot.future{background:#fafbfc}.slot .time{width:91px;flex:0 0 91px;font-size:11px;font-weight:700;color:#555e70}.slot .taskinfo{flex:1;min-width:0}.slot .taskinfo b{font-size:13px}.slot .taskinfo small{font-size:11px;color:var(--muted);display:block}.slot .status{min-width:88px}.slot.future .status{background:#eef1f5;color:#657084}.slot.focus .status{background:#fff0c2;color:#865900}.focusbanner{background:#fff4d6;border:1px solid #f5d477;border-radius:15px;padding:14px;margin:0 0 12px}.focusbanner small{font-size:10px;font-weight:800;letter-spacing:.08em;color:#8a5b00}.focusbanner b{display:block;font-size:17px;margin:3px 0}.focusbanner span{font-size:12px;color:#6d5a2d}.emptyfocus{background:#eef7ee;border:1px solid #cfe7d0;border-radius:15px;padding:14px;font-size:13px;color:#28632d}
 .legend{display:flex;gap:13px;flex-wrap:wrap;color:var(--muted);font-size:11px}.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}.note{font-size:11px;color:var(--muted);margin:14px 3px 0}
 @media(min-width:600px){main{padding-left:22px;padding-right:22px}.quick{grid-template-columns:repeat(3,minmax(0,1fr))}header{padding-left:24px;padding-right:24px}}
+/* Friendly, touch-first teacher interface */
+:root{--brand:#c62828;--pending:#b71c1c;--progress:#ffb300;--done:#2e7d32;--ink:#172033;--muted:#596579;--line:#e1e6ee;--bg:#f3f6fb}
+body{font-family:Arial,Roboto,sans-serif;font-size:17px;line-height:1.5;background:var(--bg)}
+.app{max-width:680px;padding-bottom:92px;background:#f7f8fc}
+header{padding:calc(18px + env(safe-area-inset-top)) 18px 24px;border-radius:0 0 22px 22px}
+.brand img{width:48px;height:48px}.brand strong{font-size:17px}.brand small{font-size:13px}
+.avatar{width:48px;height:48px;font-size:18px}
+.welcome{margin-top:18px}.welcome h1{font-size:27px;line-height:1.2}.welcome small{font-size:12px;font-weight:700;letter-spacing:.05em}
+.dateclock span{font-size:14px;padding:8px 12px}
+main{padding:14px 14px 0}
+.sectionhead{margin:23px 2px 12px;align-items:flex-end}.sectionhead h2{font-size:20px;line-height:1.25}.sectionhead small{font-size:12px;text-align:right}
+.date-select-wrap{display:block;padding:14px;margin-bottom:12px}.date-select-wrap label{display:block;font-size:15px;margin-bottom:7px}.date-select-wrap input{width:100%;max-width:none;min-height:48px;font-size:16px;padding:10px 12px}
+.attendance-card{min-height:94px;padding:16px;border-radius:17px}.attendance-label{font-size:12px;letter-spacing:.04em}.attendance-time{font-size:28px}.attendance-meta{font-size:12px}.attendance-state{font-size:12px;padding:8px 11px}
+.summary{gap:8px}.metric{border-radius:16px;padding:15px 10px;text-align:center}.metric b{font-size:28px}.metric span{font-size:13px;font-weight:700}
+.quick{grid-template-columns:1fr 1fr;gap:10px}.tile{min-height:96px;border-radius:17px;padding:14px;gap:10px;box-shadow:0 2px 7px #18243a0a}.tile .ico{width:44px;height:44px;flex:0 0 44px;font-size:22px}.tile b{font-size:15px;line-height:1.25}.tile small{font-size:12px;line-height:1.3}
+.tasklist,.timeline{gap:10px}.task,.slot{min-height:76px;border-radius:16px;padding:13px;gap:10px}.taskinfo b,.slot .taskinfo b{font-size:15px;line-height:1.25}.taskinfo small,.slot .taskinfo small{font-size:12px;line-height:1.35}
+.status{min-width:104px;min-height:44px;padding:10px 12px;font-size:13px;border-radius:13px;font-weight:800}
+.slot .time{width:88px;flex-basis:88px;font-size:12px;line-height:1.35}
+.slot .status{min-width:96px}.slot.future .status{background:#e9edf3;color:#465267}
+.focusbanner{padding:17px;border-radius:17px;margin-bottom:12px}.focusbanner small{font-size:12px}.focusbanner b{font-size:21px}.focusbanner span{font-size:14px}
+.emptyfocus{padding:16px;border-radius:16px;font-size:15px;line-height:1.45}
+.legend{gap:10px 14px;font-size:12px}.legend i{width:10px;height:10px}
+.note{font-size:12px;line-height:1.5;padding:0 4px}
+button,a,input{touch-action:manipulation}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #2459c4;outline-offset:3px}
+.tile:active,.status:active{transform:scale(.98)}
+@media(max-width:370px){.quick{grid-template-columns:1fr}.tile{min-height:76px}.slot{flex-wrap:wrap}.slot .time{width:100%;flex-basis:100%}.slot .status{margin-left:auto}}
+@media(min-width:600px){main{padding-left:22px;padding-right:22px}.quick{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
