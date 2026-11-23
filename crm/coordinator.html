@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#b91c1c">
+<title>BJPS | Coordinator Workspace</title>
+<style>
+:root{--red:#b91c1c;--red2:#991b1b;--ink:#172033;--muted:#667085;--line:#e6e9ef;--bg:#f4f6fa;--card:#fff;--green:#15803d;--amber:#a16207;--blue:#1d4ed8;--shadow:0 5px 18px #1720330a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #2563eb;outline-offset:2px}
+.top{background:linear-gradient(125deg,var(--red2),var(--red));color:white;padding:calc(14px + env(safe-area-inset-top)) 16px 18px;position:sticky;top:0;z-index:5;box-shadow:0 3px 12px #0002}.toprow{display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:10px}.brand img{width:42px;height:42px;background:#fff;border-radius:12px;padding:3px;object-fit:contain}.brand strong{display:block;font-size:15px}.brand small{font-size:11px;opacity:.85}.top h1{font-size:23px;margin:15px 0 3px}.top p{margin:0;font-size:12px;opacity:.88}.top-actions{display:flex;gap:7px}.top-actions button{background:#ffffff18;border:1px solid #ffffff66;color:#fff;border-radius:10px;padding:9px 11px;font-size:12px;font-weight:700;min-height:40px}
+.wrap{max-width:1050px;margin:auto;padding:14px 13px 100px}.notice{background:#fff8e6;border:1px solid #f4d58a;color:#704d0b;padding:11px 13px;border-radius:13px;font-size:12px;margin-bottom:13px}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.metric{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow)}.metric b{display:block;font-size:22px}.metric span{font-size:11px;color:var(--muted)}
+.tabs{display:flex;gap:7px;overflow:auto;padding:3px 1px 10px;margin:12px 0 4px;scrollbar-width:none}.tabs button{white-space:nowrap;border:1px solid var(--line);background:#fff;color:#475467;border-radius:999px;padding:10px 14px;font-size:13px;font-weight:700;min-height:42px}.tabs button.active{background:var(--red);border-color:var(--red);color:#fff}
+.panel{display:none}.panel.active{display:block}.heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:16px 1px 10px}.heading h2{font-size:18px;margin:0}.heading p{font-size:11px;color:var(--muted);margin:3px 0 0}.btn{border:0;border-radius:11px;background:var(--red);color:white;padding:11px 14px;font-size:13px;font-weight:800;min-height:43px}.btn.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn.small{padding:8px 10px;min-height:36px;font-size:12px}.btn.danger{background:#fff1f2;color:#b91c1c;border:1px solid #fecdd3}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);margin-bottom:10px}.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.field label{display:block;font-size:11px;font-weight:800;color:#475467;margin:0 0 5px}.field input,.field select{width:100%;min-height:44px;border:1px solid #d8dee8;border-radius:10px;padding:9px 10px;background:#fff;color:var(--ink);font-size:14px}.field.full{grid-column:1/-1}.empty{text-align:center;padding:25px 16px;color:var(--muted);font-size:13px}.empty b{display:block;color:var(--ink);font-size:15px;margin-bottom:4px}
+.item{display:flex;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #eef0f4}.item:last-child{border-bottom:0;padding-bottom:0}.item:first-child{padding-top:0}.itemmain{min-width:0;flex:1}.itemmain b{display:block;font-size:14px}.itemmain small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.tag{display:inline-flex;align-items:center;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:800;background:#f1f5f9;color:#475569}.tag.green{background:#dcfce7;color:#166534}.tag.amber{background:#fef3c7;color:#92400e}.tag.blue{background:#dbeafe;color:#1e40af}.actions{display:flex;gap:6px}.iconbtn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 9px;font-size:12px;color:#344054}
+.gridtable{display:grid;gap:7px}.period{display:grid;grid-template-columns:68px 1fr;gap:9px;align-items:stretch}.periodtime{font-size:10px;font-weight:800;color:#475467;display:flex;align-items:center;justify-content:center;text-align:center;background:#edf1f6;border-radius:10px;padding:8px 4px}.periodbody{border:1px solid var(--line);border-radius:12px;background:#fff;padding:10px;min-width:0}.periodbody b{font-size:13px}.periodbody small{display:block;color:var(--muted);font-size:11px;margin-top:2px}.periodbody .actions{margin-top:7px}
+.staffrow{display:flex;align-items:center;gap:10px}.avatar{width:38px;height:38px;border-radius:12px;background:#fee2e2;color:#991b1b;display:grid;place-items:center;font-weight:900;flex:0 0 auto}
+dialog{border:0;border-radius:18px;padding:0;width:min(540px,calc(100% - 24px));max-height:88dvh;box-shadow:0 20px 70px #10182855}dialog::backdrop{background:#10182888}.modalhead{padding:16px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modalhead h3{margin:0;font-size:17px}.modalbody{padding:16px;overflow:auto;max-height:calc(88dvh - 130px)}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.modalfoot{padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}.conflict{background:#fff1f2;border:1px solid #fecdd3;color:#991b1b;padding:10px 12px;border-radius:11px;font-size:12px;margin-bottom:10px;display:none}.bottom{position:fixed;bottom:0;left:0;right:0;background:#ffffffed;backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:space-around;z-index:4}.bottom button{border:0;background:transparent;color:#667085;font-size:10px;font-weight:700;display:grid;gap:3px;justify-items:center;min-width:58px;padding:5px}.bottom button span{font-size:19px}.bottom button.active{color:var(--red)}
+@media(min-width:760px){.top{padding-left:max(24px,calc((100% - 1000px)/2));padding-right:max(24px,calc((100% - 1000px)/2))}.top h1{font-size:27px}.wrap{padding:22px 22px 40px}.metrics{grid-template-columns:repeat(3,1fr)}.tabs{display:flex;flex-wrap:wrap}.bottom{display:none}.filters{grid-template-columns:repeat(4,1fr)}.gridtable{grid-template-columns:1fr 1fr}.period{grid-template-columns:74px 1fr}}
+@media(max-width:380px){.metrics{gap:5px}.metric{padding:10px 8px}.metric b{font-size:19px}.metric span{font-size:10px}.filters{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="toprow"><div class="brand"><img src="https://www.baljyoti.com/logo.png" alt="BJPS" onerror="this.style.display='none'"><div><strong>Bal Jyoti Public School</strong><small>COORDINATOR WORKSPACE</small></div></div><div class="top-actions"><button id="exportBtn" type="button">Export backup</button></div></div>
+ <h1>Timetable & Duty Desk</h1><p id="todayLine">Plan, assign, review and publish school schedules</p>
+</header>
+<main class="wrap">
+ <div class="notice"><b>Local prototype:</b> Changes are saved in this browser only. This version does not yet sync across coordinators or teachers. Add your actual staff directory before assigning duties.</div>
+ <section class="metrics" aria-label="Overview"><div class="metric"><b id="staffCount">0</b><span>Staff registered</span></div><div class="metric"><b id="lessonCount">0</b><span>Lesson allocations</span></div><div class="metric"><b id="dutyCount">0</b><span>Duty assignments</span></div></section>
+ <nav class="tabs" aria-label="Coordinator sections"><button class="active" data-tab="overview">Overview</button><button data-tab="timetable">Timetable</button><button data-tab="duties">Duties</button><button data-tab="staff">Staff directory</button><button data-tab="checks">Conflict checks</button></nav>
+ <section class="panel active" id="overview">
+  <div class="heading"><div><h2>Coordinator overview</h2><p>At-a-glance planning and daily control</p></div><span class="tag amber" id="publishState">DRAFT</span></div>
+  <div class="card"><div class="heading" style="margin-top:0"><div><h2 style="font-size:15px">Quick actions</h2><p>Start with staff, then allocate lessons and duties</p></div></div><div class="filters"><button class="btn" data-go="staff">＋ Add staff</button><button class="btn secondary" data-go="timetable">＋ Add lesson</button><button class="btn secondary" data-go="duties">＋ Assign duty</button><button class="btn secondary" data-go="checks">Run conflict check</button></div></div>
+  <div class="card"><div class="heading" style="margin-top:0"><div><h2 style="font-size:15px">School day structure</h2><p>Existing winter-day timings from the teacher dashboard</p></div><span class="tag blue">Reference</span></div><div id="daySummary"></div></div>
+  <div class="card"><div class="heading" style="margin-top:0"><div><h2 style="font-size:15px">Publishing workflow</h2><p>Keep draft edits separate from the current live timetable</p></div></div><p style="font-size:12px;color:var(--muted)">Review the conflict report before publishing. In this prototype, publishing is a local status marker only; no teacher notifications are sent.</p><button class="btn" id="publishBtn">Mark plan as published</button></div>
+ </section>
+ <section class="panel" id="timetable">
+  <div class="heading"><div><h2>Class timetable</h2><p>Build the weekly class / teacher / room plan</p></div><button class="btn" id="addLessonBtn">＋ Lesson</button></div>
+  <div class="filters"><div class="field"><label for="ttDay">Day</label><select id="ttDay"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option></select></div><div class="field"><label for="ttClass">Class / section</label><input id="ttClass" placeholder="e.g. Class 5 A"></div></div>
+  <div id="lessonList" class="card"></div>
+  <p style="font-size:11px;color:var(--muted)">Period times follow the current teacher dashboard. Edit times in the data setup before adopting a different school shift.</p>
+ </section>
+ <section class="panel" id="duties">
+  <div class="heading"><div><h2>Duty assignments</h2><p>Morning, assembly, lunch, dispersal and transport</p></div><button class="btn" id="addDutyBtn">＋ Duty</button></div>
+  <div class="filters"><div class="field"><label for="dutyDay">Day</label><select id="dutyDay"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option></select></div><div class="field"><label for="dutyTypeFilter">Duty type</label><select id="dutyTypeFilter"><option value="">All duties</option><option>Arrival</option><option>Assembly</option><option>Lunch</option><option>Gate</option><option>Corridor</option><option>Transport</option><option>Departure</option><option>Other</option></select></div></div>
+  <div id="dutyList" class="card"></div>
+ </section>
+ <section class="panel" id="staff">
+  <div class="heading"><div><h2>Staff directory</h2><p>Enter your school's real staff list</p></div><button class="btn" id="addStaffBtn">＋ Staff</button></div>
+  <div class="field" style="margin-bottom:10px"><label for="staffSearch">Search staff</label><input id="staffSearch" placeholder="Search by name or staff code"></div>
+  <div id="staffList" class="card"></div>
+ </section>
+ <section class="panel" id="checks">
+  <div class="heading"><div><h2>Conflict & workload checks</h2><p>Check teacher, class, room and duty overlaps</p></div><button class="btn" id="runChecksBtn">Run checks</button></div>
+  <div id="checkSummary" class="card"></div><div id="checkList" class="card"></div>
+ </section>
+</main>
+<nav class="bottom" aria-label="Quick navigation"><button class="active" data-tab="overview"><span>⌂</span>Home</button><button data-tab="timetable"><span>▦</span>Timetable</button><button data-tab="duties"><span>✓</span>Duties</button><button data-tab="staff"><span>♙</span>Staff</button><button data-tab="checks"><span>⚑</span>Checks</button></nav>
+<dialog id="editDialog"><form id="editForm"><div class="modalhead"><h3 id="dialogTitle">Add allocation</h3><button type="button" class="iconbtn" id="closeDialog">✕</button></div><div class="modalbody"><div id="formConflict" class="conflict"></div><div id="formFields" class="formgrid"></div></div><div class="modalfoot"><button type="button" class="btn secondary" id="cancelDialog">Cancel</button><button class="btn" type="submit">Save allocation</button></div></form></dialog>
+<script>
+const KEY="bjps_coordinator_v1";
+const PERIODS=[["Transport duty","06:30","08:20"],["Students arrival / morning duty","08:20","08:30"],["Assembly","08:30","08:55"],["0 Period","08:55","09:00"],["Period 1","09:00","09:35"],["Period 2","09:35","10:10"],["Period 3","10:10","10:45"],["Lunch break / lunch duty","10:45","11:05"],["Period 4","11:05","11:40"],["Period 5","11:40","12:15"],["Period 6","12:15","12:50"],["Period 7","12:50","13:20"],["Diary checking","13:20","13:30"],["Departure duty","13:30","13:45"],["Transport duty","13:45","15:00"]];
+const DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const DUTY_TYPES=["Arrival","Assembly","Lunch","Gate","Corridor","Transport","Departure","Other"];
+let db=load(),editType="",editId="";
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{staff:[],lessons:[],duties:[],published:false}}catch(e){return {staff:[],lessons:[],duties:[],published:false}}}
+function save(){localStorage.setItem(KEY,JSON.stringify(db));render()}
+function id(){return "x"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function el(id){return document.getElementById(id)}
+function time(n){return n}
+function mins(s){if(!s)return -1;let [h,m]=s.split(":").map(Number);return h*60+m}
+function staffName(id){return db.staff.find(x=>x.id===id)?.name||"Staff not selected"}
+function setTab(tab){document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===tab));document.querySelectorAll("[data-tab]").forEach(x=>x.classList.toggle("active",x.dataset.tab===tab));window.scrollTo({top:0,behavior:"smooth"})}
+document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.tab)));
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.go)));
+function render(){
+ el("staffCount").textContent=db.staff.length;el("lessonCount").textContent=db.lessons.length;el("dutyCount").textContent=db.duties.length;
+ el("publishState").textContent=db.published?"PUBLISHED":"DRAFT";el("publishState").className="tag "+(db.published?"green":"amber");
+ el("daySummary").innerHTML=PERIODS.map(p=>'<div class="item"><div class="itemmain"><b>'+esc(p[0])+'</b><small>'+esc(p[1])+' – '+esc(p[2])+'</small></div></div>').join("");
+ renderLessons();renderDuties();renderStaff();renderChecks();
+}
+function renderLessons(){
+ const day=el("ttDay").value,cls=el("ttClass").value.trim().toLowerCase();
+ const list=db.lessons.filter(x=>x.day===day&&(!cls||x.className.toLowerCase().includes(cls))).sort((a,b)=>a.start.localeCompare(b.start));
+ el("lessonList").innerHTML=list.length?list.map(x=>'<div class="period"><div class="periodtime">'+esc(x.start)+'<br>–<br>'+esc(x.end)+'</div><div class="periodbody"><b>'+esc(x.className)+' · '+esc(x.subject)+'</b><small>'+esc(staffName(x.teacherId))+(x.room?' · '+esc(x.room):'')+'</small><div class="actions"><button class="iconbtn" data-edit-lesson="'+x.id+'">Edit</button><button class="iconbtn" data-delete-lesson="'+x.id+'">Delete</button></div></div></div>').join(""):'<div class="empty"><b>No lessons added for '+esc(day)+'</b>Add class, subject, teacher and period allocations to build the timetable.</div>';
+ el("lessonList").querySelectorAll("[data-edit-lesson]").forEach(b=>b.onclick=()=>openEditor("lesson",b.dataset.editLesson));
+ el("lessonList").querySelectorAll("[data-delete-lesson]").forEach(b=>b.onclick=()=>removeItem("lessons",b.dataset.deleteLesson));
+}
+function renderDuties(){
+ const day=el("dutyDay").value,type=el("dutyTypeFilter").value;
+ const list=db.duties.filter(x=>x.day===day&&(!type||x.type===type)).sort((a,b)=>a.start.localeCompare(b.start));
+ el("dutyList").innerHTML=list.length?list.map(x=>'<div class="item"><div class="itemmain"><b>'+esc(x.title)+' <span class="tag blue">'+esc(x.type)+'</span></b><small>'+esc(x.start)+'–'+esc(x.end)+' · '+esc(staffName(x.teacherId))+(x.location?' · '+esc(x.location):'')+'</small></div><div class="actions"><button class="iconbtn" data-edit-duty="'+x.id+'">Edit</button><button class="iconbtn" data-delete-duty="'+x.id+'">Delete</button></div></div>').join(""):'<div class="empty"><b>No duties assigned for '+esc(day)+'</b>Assign a teacher to each required duty and time slot.</div>';
+ el("dutyList").querySelectorAll("[data-edit-duty]").forEach(b=>b.onclick=()=>openEditor("duty",b.dataset.editDuty));
+ el("dutyList").querySelectorAll("[data-delete-duty]").forEach(b=>b.onclick=()=>removeItem("duties",b.dataset.deleteDuty));
+}
+function renderStaff(){
+ const q=el("staffSearch").value.toLowerCase(),list=db.staff.filter(x=>(x.name+" "+(x.code||"")+" "+(x.role||"")).toLowerCase().includes(q));
+ el("staffList").innerHTML=list.length?list.map(x=>'<div class="item"><div class="avatar">'+esc(x.name.slice(0,1).toUpperCase())+'</div><div class="itemmain"><b>'+esc(x.name)+'</b><small>'+esc(x.code||"No staff code")+' · '+esc(x.role||"Teacher")+'</small></div><div class="actions"><button class="iconbtn" data-edit-staff="'+x.id+'">Edit</button><button class="iconbtn" data-delete-staff="'+x.id+'">Delete</button></div></div>').join(""):'<div class="empty"><b>No staff records yet</b>Add your real teachers and staff. No names have been pre-filled.</div>';
+ el("staffList").querySelectorAll("[data-edit-staff]").forEach(b=>b.onclick=()=>openEditor("staff",b.dataset.editStaff));
+ el("staffList").querySelectorAll("[data-delete-staff]").forEach(b=>b.onclick=()=>{const used=db.lessons.some(x=>x.teacherId===b.dataset.deleteStaff)||db.duties.some(x=>x.teacherId===b.dataset.deleteStaff);if(used){alert("This staff member has allocations. Reassign or delete those first.");return}removeItem("staff",b.dataset.deleteStaff)});
+}
+function getConflicts(candidate,kind,ignoreId){
+ const errors=[],start=mins(candidate.start),end=mins(candidate.end);
+ if(start<0||end<=start)errors.push("End time must be later than start time.");
+ if(candidate.teacherId){
+  const all=[...db.lessons.map(x=>({...x,kind:"lesson"})),...db.duties.map(x=>({...x,kind:"duty"}))];
+  all.filter(x=>x.id!==ignoreId&&x.day===candidate.day&&x.teacherId===candidate.teacherId&&start<mins(x.end)&&end>mins(x.start)).forEach(x=>errors.push("Teacher clash: "+staffName(candidate.teacherId)+" is already assigned to "+(x.subject||x.title||"another task")+" ("+x.start+"–"+x.end+")."));
+ }
+ if(kind==="lesson"){
+  db.lessons.filter(x=>x.id!==ignoreId&&x.day===candidate.day&&x.className.toLowerCase()===candidate.className.toLowerCase()&&start<mins(x.end)&&end>mins(x.start)).forEach(x=>errors.push("Class clash: "+candidate.className+" already has "+x.subject+" at this time."));
+  if(candidate.room)db.lessons.filter(x=>x.id!==ignoreId&&x.day===candidate.day&&x.room.toLowerCase()===candidate.room.toLowerCase()&&start<mins(x.end)&&end>mins(x.start)).forEach(x=>errors.push("Room clash: "+candidate.room+" is already booked."));
+ }
+ return [...new Set(errors)];
+}
+function openEditor(kind,recordId=""){
+ editType=kind;editId=recordId;const old=recordId?db[kind==="lesson"?"lessons":kind==="duty"?"duties":"staff"].find(x=>x.id===recordId):{};
+ el("dialogTitle").textContent=(recordId?"Edit ":"Add ")+(kind==="lesson"?"lesson":kind==="duty"?"duty assignment":"staff member");
+ let fields="";
+ const staffOpts='<option value="">Select staff member</option>'+db.staff.map(x=>'<option value="'+x.id+'">'+esc(x.name)+(x.code?' · '+esc(x.code):'')+'</option>').join("");
+ const select=(label,name,opts,value,full=false)=>'<div class="field '+(full?'full':'')+'"><label>'+label+'</label><select name="'+name+'" required>'+opts+'</select></div>';
+ const input=(label,name,value="",type="text",placeholder="",full=false)=>'<div class="field '+(full?'full':'')+'"><label>'+label+'</label><input name="'+name+'" type="'+type+'" value="'+esc(value)+'" placeholder="'+esc(placeholder)+'" required></div>';
+ if(kind==="staff")fields=input("Full name","name",old.name,"text","Teacher name")+input("Staff code (optional)","code",old.code||"","text","e.g. T014",false).replace(' required>','>')+select("Role","role",["Teacher","Coordinator","Transport","Support","Admin"].map(x=>'<option>'+x+'</option>').join(""),old.role||"Teacher");
+ if(kind==="lesson")fields=select("Day","day",DAYS.map(x=>'<option>'+x+'</option>').join(""),old.day||el("ttDay").value)+input("Class / section","className",old.className,"text","e.g. Class 5 A")+input("Subject","subject",old.subject,"text","e.g. Mathematics")+select("Teacher","teacherId",staffOpts,old.teacherId)+input("Start time","start",old.start||"09:00","time")+input("End time","end",old.end||"09:35","time")+input("Room (optional)","room",old.room||"","text","Room / lab",false).replace(' required>','>');
+ if(kind==="duty")fields=select("Day","day",DAYS.map(x=>'<option>'+x+'</option>').join(""),old.day||el("dutyDay").value)+select("Duty type","type",DUTY_TYPES.map(x=>'<option>'+x+'</option>').join(""),old.type||"Arrival")+input("Duty name","title",old.title||"","text","e.g. Main gate")+select("Assigned staff","teacherId",staffOpts,old.teacherId)+input("Start time","start",old.start||"08:20","time")+input("End time","end",old.end||"08:30","time")+input("Location (optional)","location",old.location||"","text","e.g. Main gate",false).replace(' required>','>');
+ el("formFields").innerHTML=fields;
+ el("formFields").querySelectorAll("select").forEach(s=>{if(s.name==="day")s.value=old.day||((kind==="lesson"?el("ttDay"):el("dutyDay")).value);else if(old[s.name])s.value=old[s.name]});
+ el("formConflict").style.display="none";el("editDialog").showModal();
+}
+function removeItem(collection,recordId){if(!confirm("Delete this record?"))return;db[collection]=db[collection].filter(x=>x.id!==recordId);db.published=false;save()}
+el("editForm").addEventListener("submit",e=>{
+ e.preventDefault();const data=Object.fromEntries(new FormData(e.currentTarget).entries());
+ if(editType==="staff"){
+  if(db.staff.some(x=>x.id!==editId&&x.name.trim().toLowerCase()===data.name.trim().toLowerCase())){alert("A staff member with this name already exists.");return}
+  const rec={...data,id:editId||id()};if(editId)db.staff=db.staff.map(x=>x.id===editId?rec:x);else db.staff.push(rec);
+ }else{
+  const errors=getConflicts(data,editType,editId);
+  if(errors.length){el("formConflict").innerHTML=errors.map(esc).join("<br>");el("formConflict").style.display="block";return}
+  const collection=editType==="lesson"?"lessons":"duties",rec={...data,id:editId||id()};
+  db[collection]=editId?db[collection].map(x=>x.id===editId?rec:x):[...db[collection],rec];
+ }
+ db.published=false;el("editDialog").close();save();
+});
+function runChecks(){
+ const issues=[];
+ [...db.lessons.map(x=>({...x,kind:"lesson"})),...db.duties.map(x=>({...x,kind:"duty"}))].forEach(x=>{
+  getConflicts(x,x.kind,x.id).forEach(msg=>issues.push({msg,day:x.day}));
+ });
+ const unassigned=[...db.lessons,...db.duties].filter(x=>!x.teacherId||!db.staff.some(s=>s.id===x.teacherId)).length;
+ el("checkSummary").innerHTML='<div class="metrics"><div class="metric"><b>'+issues.length+'</b><span>Scheduling conflicts</span></div><div class="metric"><b>'+unassigned+'</b><span>Unassigned records</span></div><div class="metric"><b>'+db.staff.length+'</b><span>Staff available</span></div></div>';
+ el("checkList").innerHTML=issues.length?issues.map(x=>'<div class="item"><span class="tag amber">'+esc(x.day)+'</span><div class="itemmain"><b style="color:#991b1b">Conflict detected</b><small>'+esc(x.msg)+'</small></div></div>').join(""):'<div class="empty"><b>No timetable conflicts detected</b>Teacher, class and room overlaps are clear for the current allocations.</div>';
+ if(unassigned)el("checkList").innerHTML+='<p style="font-size:12px;color:#92400e">There are '+unassigned+' allocations without a valid staff member.</p>';
+}
+function renderChecks(){runChecks()}
+el("ttDay").onchange=renderLessons;el("ttClass").oninput=renderLessons;el("dutyDay").onchange=renderDuties;el("dutyTypeFilter").onchange=renderDuties;el("staffSearch").oninput=renderStaff;
+el("addStaffBtn").onclick=()=>openEditor("staff");el("addLessonBtn").onclick=()=>openEditor("lesson");el("addDutyBtn").onclick=()=>openEditor("duty");
+el("closeDialog").onclick=el("cancelDialog").onclick=()=>el("editDialog").close();el("runChecksBtn").onclick=runChecks;
+el("publishBtn").onclick=()=>{runChecks();const count=el("checkSummary").querySelector(".metric b").textContent;if(Number(count)>0){alert("Resolve all conflicts before publishing.");setTab("checks");return}if(!db.staff.length||!db.lessons.length&&!db.duties.length){alert("Add staff and at least one allocation before publishing.");return}db.published=true;save();alert("Marked as published on this browser. Shared publishing and staff notifications require backend integration.")};
+el("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),...db},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="bjps-coordinator-backup.json";a.click();URL.revokeObjectURL(a.href)};
+el("todayLine").textContent=new Intl.DateTimeFormat("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:"Asia/Kolkata"}).format(new Date())+" · Asia/Kolkata";
+render();
+</script>
+</body>
+</html>
