@@ -29,7 +29,7 @@ dialog{border:0;border-radius:18px;padding:0;width:min(540px,calc(100% - 24px));
 <main class="wrap">
  <div class="notice"><b>Local prototype:</b> Changes are saved in this browser only. This version does not yet sync across coordinators or teachers. Add your actual staff directory before assigning duties.</div>
  <section class="metrics" aria-label="Overview"><div class="metric"><b id="staffCount">0</b><span>Staff registered</span></div><div class="metric"><b id="lessonCount">0</b><span>Lesson allocations</span></div><div class="metric"><b id="dutyCount">0</b><span>Duty assignments</span></div></section>
- <nav class="tabs" aria-label="Coordinator sections"><button class="active" data-tab="overview">Overview</button><button data-tab="timetable">Timetable</button><button data-tab="duties">Duties</button><button data-tab="staff">Staff directory</button><button data-tab="checks">Conflict checks</button><button data-tab="absence">Arrangement</button><button data-tab="monitor">Live monitoring</button></nav>
+ <nav class="tabs" aria-label="Coordinator sections"><button class="active" data-tab="overview">Overview</button><button data-tab="timetable">Timetable</button><button data-tab="duties">Duties</button><button data-tab="staff">Staff directory</button><button data-tab="checks">Conflict checks</button><button data-tab="absence">Arrangement</button><button data-tab="monitor">Live monitoring</button><button data-tab="references">School references</button></nav>
  <section class="panel active" id="overview">
   <div class="heading"><div><h2>Coordinator overview</h2><p>At-a-glance planning and daily control</p></div><span class="tag amber" id="publishState">DRAFT</span></div>
   <div class="card">
@@ -88,6 +88,12 @@ dialog{border:0;border-radius:18px;padding:0;width:min(540px,calc(100% - 24px));
  </section>
 
 
+ <section class="panel" id="references">
+  <div class="heading"><div><h2>School reference data · Session 2026–27</h2><p>Read-only reference transcribed from the uploaded school workbooks. These records do not overwrite the operational timetable.</p></div></div>
+  <div class="notice"><b>Source handling:</b> Original teacher spellings, class labels and day-specific notes are retained where practical. The amendment timetable is the master reference; November arrangements remain date-specific. Confirm discrepancies before converting references into live allocations.</div>
+  <div class="filters"><div class="field"><label for="referenceType">Reference category</label><select id="referenceType"><option value="timetable">Master timetable</option><option value="duties">Weekly duty chart</option><option value="staff">Teacher workload & mapping</option><option value="classTeachers">Class teachers</option><option value="incharges">Incharge list</option><option value="lessonPlans">Lesson-plan examples</option></select></div><div class="field"><label for="referenceSearch">Search reference</label><input id="referenceSearch" placeholder="Search class, teacher, subject or duty"></div></div>
+  <div id="referenceSummary" class="metrics" style="margin-bottom:10px"></div><div id="referenceList" class="card"></div>
+ </section>
  <section class="panel" id="absence"><div class="heading"><div><h2>Teacher arrangement plan</h2><p>Record an arrangement and generate all affected classes and duties</p></div></div><div class="card"><div class="formgrid"><div class="field"><label for="absenceDate">Absence date</label><input id="absenceDate" type="date" required></div><div class="field"><label for="absentTeacher">Absent teacher</label><select id="absentTeacher" required><option value="">Select teacher</option></select></div><div class="field full"><label for="absenceReason">Reason / note (optional)</label><input id="absenceReason" placeholder="Leave, illness, official work…"></div></div><button class="btn" id="createAbsenceBtn" style="margin-top:12px;width:100%">Create arrangement requirements</button></div><div class="heading"><div><h2>Arrangement records</h2><p>Classes and duties requiring a substitute</p></div></div><div id="absenceList" class="card"></div></section>
  <section class="panel" id="monitor"><div class="heading"><div><h2>Class & duty monitoring</h2><p>Track whether substitute teachers have taken up assigned work</p></div><button class="btn secondary" id="refreshMonitorBtn">Refresh</button></div><div class="notice">Update each assignment when the substitute takes charge, completes the period or reports that the class/duty was not taken. These updates are currently stored in this browser.</div><div id="monitorSummary" class="card"></div><div id="monitorList" class="card"></div></section>
  <section class="panel" id="checks">
@@ -103,6 +109,64 @@ const PERIODS=[["Transport duty","06:30","08:20"],["Students arrival / morning d
 const DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const DUTY_TYPES=["Arrival","Assembly","Lunch","Gate","Corridor","Transport","Departure","Other"];
 let db=load(),editType="",editId="";
+
+const SCHOOL_REFERENCE={
+ timetable:[
+ ["Period 1","09:00–09:35","Class I: ENGLISH SHAZIA. ALI; II: ENGLISH SONAM YADAV; III: HINDI SONIA JAIN; IV: MATHS RINKI SHARMA; V: EVS NEELAM; VI: HINDI KAPILA; VII: SST VIPRA MALIK; VIII: Science SAPNA; IX: Science RAJNI TIWARI; XA: COMPUTER SHRESTH GUPTA; XB: MATHS-POONAM; XI SCI: MATHS ANKUR SIR / BIOLOGY SONALI MAM; XI COM: ENGLISH PREETI SINGH"],
+ ["Period 2","09:35–10:10","I: HINDI SHAZIA ALI; II: HINDI SONIA JAIN; III: MATHS VIPRA MALIK; IV: EVS NEELAM; V: ENGLISH SONAM YADAV; VI: ENGLISH PREETI SINGH; VII: HINDI KAPILA; VIII: Maths RAJNI TIWARI; IX: Computer SHRESTH GUPTA; XA: MATHS POONAM TIWARI; XB: HINDI ARTI SHARMA; XI SCI: ENGLISH AYUSH SINGH; XI COM: ECONOMICS RINKI MAM"],
+ ["Period 3","10:10–10:45","I: EVS SHAZIA ALI; II: MATHS VIPRA MALIK; III: ENGLISH SONAM YADAV; IV: HINDI SONIA JAIN; V: MATHS RINKI SHARMA; VI: MATHS RAJNI TIWARI; VII: ENGLISH SHIVANGI SHARMA; VIII: HINDI KAPILA; IX: MATHS ANKUR SINGH; XA: HINDI ARTI SHARMA; XB: ENGLISH PREETI SINGH; XI SCI: CHEMISTRY SAPNA MISHRA; XI COM: BST ADITI"],
+ ["Period 4","11:05–11:40","I: MATHS RINKI SHARMA; II: EVS NEELAM; III: GK/ART RENU SHARMA (Mon–Wed) / COMPUTER POONAM TIWARI (Thu–Sat); IV: ENGLISH SONAM YADAV; V: HINDI KAPILA; VI: SCIENCE SAPNA; VII: MATHS RAJNI TIWARI; VIII: SST VIPRA MALIK; IX: ENGLISH PREETI SINGH; XA: SCIENCE SONALI YADAV; XB: SST DEVENDRA MISHRA; XI SCI: COMPUTER SHRESTH SIR; XI COM: MATHS ANKUR SIR"],
+ ["Period 5","11:40–12:15","I: GAMES; II: GAMES SONALI YADAV; III: EVS NEELAM; IV–V: GK/ART and COMPUTER rotations; VI: SST VIPRA MALIK; VII: SCIENCE SAPNA; VIII: ENGLISH SHIVANGI SHARMA; IX: HINDI SONIA JAIN; XA: HINDI ARTI SHARMA; XB: COMPUTER SHRESTH GUPTA; XI SCI: PHYSICAL EDUCATION ANKIT KUMAR; XI COM: PHYSICAL EDUCATION RAHUL SIR"],
+ ["Period 6","12:15–12:50","I–II: GK/ART and COMPUTER rotations; III: GAMES KAPILA; IV–V: Reading/Translation and Games rotations; VI–VIII: Sanskrit, GK/ART and Computer rotations; IX: SST DEVENDRA MISHRA; XA: ENGLISH PREETI SINGH; XB: SCIENCE SONALI YADAV; XI SCI: PHYSICS VIPIN SIR; XI COM: ACCOUNT ADITI"]
+ ],
+ duties:[
+ ["Morning Gate Duties · 08:10–08:40","Gate no 1","Ms Poonam","Mrs Sonam","Ms Sonali","Ms Poonam","Ms Sonali","Mrs Meenakshi"],
+ ["Morning Gate Duties · 08:10–08:40","Bags checking","Mr SHRESTH / Mrs Preeti Singh","Mr Shresth","Ms Aditi / Mrs Preeti Singh","Mr Shresth / Ms Aditi","Ms Aditi / Mr Shresth","Mr Shresth / Mrs Preeti Singh"],
+ ["Morning Gate Duties · 08:10–08:40","Late commers","Ms Aditi","Mrs Preeti Singh","Ms Poonam","Ms Poonam","Ms Poonam","Mrs Poonam"],
+ ["Morning Gate Duties · 08:10–08:40","Jai Shree Krishna Blessings duty","Mrs Sonam","Mrs Sonam","Mrs Sonam","Mrs Sonam","Ms Sonali","Mrs Sonam"],
+ ["Morning Gate Duties · 08:10–08:40","Near swing","Mrs Sushma","Mr Ankur","Mrs Sushma","Mrs Sushma","Mr Ankur","Mrs Sushma"],
+ ["Morning Gate Duties · 08:10–08:40","Sr.corridor ground (B1)","Mr Rajeev","Ms Aditi","Mr Ankur","Mr Ankur","Mrs Meenakshi","Mr Ankur"],
+ ["Morning Gate Duties · 08:10–08:40","Transport","Mr Ankit Kumar","Mr Rajeev Ranjan","Mr Rajeev","Mr Ankit / Mr Rajeev","Mr Rajeev","Mr Rajeev / Mr Ankit"],
+ ["Morning Gate Duties · 08:10–08:40","Uniform checking","Mr Devendra","Mrs Rajni","Mr Devendra","Mrs Rajni","Mrs Rajni","Mrs Rajni"],
+ ["Morning Gate Duties · 08:10–08:40","Jr.corridor ground (A1)","Mrs Kapila","Mrs Kapila","Mrs Kapila","Mrs Vipra","Mrs Sushma","Ms Aditi"],
+ ["Morning Gate Duties · 08:10–08:40","Jr. corridor 1st floor (A2)","Ms Shivangi","Ms Rinki","Mrs Shivangi","Mrs Sonia","Ms Rinki","Mrs Neelam"],
+ ["Morning Gate Duties · 08:10–08:40","Sr.corridor 1st floor (B2)","Mr Ankur","Ms Sonali","Mrs Rajni","Ms Sonali","Mrs Neelam","Ms Sonali"],
+ ["Morning Gate Duties · 08:10–08:40","Discipline / Round","Mr Rahul","Mr Rahul / Mr Rajeev Ranjan","Mr Rahul","Mr Rahul","Mr Rahul","Mr Rahul"],
+ ["Morning Gate Duties · 08:10–08:40","Assembly","Mrs Arti Sharma","Mrs Arti Sharma","Mrs Arti Sharma","Mrs Arti Sharma","Mrs Arti Sharma","Mrs Arti Sharma"]
+ ],
+ staff:[
+ ["ARTI MISHRA","6","30","MOTHER TEACHER"],["MEENAKSHI JAIN","6","30","MOTHER TEACHER"],["PARVITA SAINI","6","30","MOTHER TEACHER"],["SHAZIA ALI","4","24","English, Hindi, EVS, Art, GK, Computer"],["SONAM YADAV","5","30","English"],["SONIA JAIN","4","24","Hindi"],["RINKI SHARMA","5","30","Maths and Economics (XI and XII)"],["SUSHMA SHARMA","—","—","—"],["KAPILA","5","30","Hindi, Games"],["PREETI SINGH","5","24","English"],["SHIVANGI","2","12","English"],["RAJNI TIWARI","5","30","Science and Maths"],["POONAM TIWARI","4","24","Maths (XA and XB), Computer (III to VIII)"],["SONALI YADAV","5","30","Biology (XI and XII), Games II, XA and XB science"],["DEVENDRA MISHRA","6","30","History and Political Science"],["ANKUR","5","30","Maths XI and XII and IX"],["ADITI","4","24","Business Studies XI/XII, Accountancy"],["VIPIN KUMAR","2","12","Physics XI and XII"],["RAHUL BISHT (PET)","5","30","Physical Education"]
+ ],
+ classTeachers:[
+ ["Pre-nursery","Mrs Arti Mishra"],["Nursery","Mrs Meenakshi"],["KG","Ms Parvita"],["1st","Mrs Shazia"],["2nd","Mrs Sonam"],["3rd","Mrs Sonia"],["4th","Mrs Rinki"],["5th","Mrs Neelam"],["6th","Mrs Kapila"],["7th","Mrs Vipra"],["8th","Mrs Shivangi"],["9th","Mrs Rajni","Ms Aditi"],["10th A","Ms Poonam"],["10th B","Mr Shresth"],["11th com","Mrs Preeti Singh","Mr Rahul"],["11th Hum","Mr Devendra"],["11th sci","Ms Sonali","Mr Ayush"],["12th com","Ms Sapna","Mr Shresth"],["12th Hum","Mrs Arti Sharma","Mr Shresth"],["12th Sci","Mr Ankur Singh","Ankit"]
+ ],
+ incharges:[
+ ["Physics Lab","VIPIN","SAPNA MAM","13:30"],["Chemistry Lab","Ayush Sir","Sapna ma'am","12:30"],["Biology Lab","Sonali ma'am","Sapna ma'am","13:30"],["Computer Lab","Shresth Gupta Sir","Poonam Tiwari ma'am","07:40 / 13:30"],["Jr. Staff Room","Shazia ma'am","Sonia ma'am","07:45"],["Sr. Staff Room","Sonali ma'am","Preeti Singh mam","07:45"],["Projector Room","Shresth Sir","Ayush Sir","07:45"],["Sports Room","Rahul Sir","Ankit Sir","07:45 / 13:30"],["Bag checking","Kapila ma'am","Aditi ma'am","08:15"],["Canteen","Vipra Mam","Devendra Sir","10:30"],["Store Room","Mamta Mam","Renu Mam","07:45"],["Drinking Water","Preeti Singh mam","Rajeev Sir","07:45 / 10:45"],["Furniture & School Property","Ankur Sir","Rahul Sir","14:00"],["External Register","Anil Sharma Sir","Vipin Sir","13:30"],["Examination","Himanshu Sir","Shazia Mam","Exam time"],["Camera","Rahul Sir","Ankit Sir","14:00"],["Period Bell","Rinki mam","Neelam Mam","07:50"],["Discipline","Ankit Kr Sir","Rajeev Sir","13:45"],["Transport","Ankit Sir","Anil Sir","06:00 / arrival attendance / 14:30 report"],["Electricity","Ankur Sir","Shreshth Sir","07:45"],["Decoration Incharge","Renu ma'am","Meenakshi ma'am / Sonia ma'am","13:30"],["Morning Reports On Time","Shivangi Mam","Sapna ma'am","Before 14:00"],["House Duties","Sonali ma'am","Sonam ma'am","07:45"],["Copies Checking","Arti Sharma ma'am","Ankur Sir","14:00"],["Sound / Microphone","Rahul Sir","Ankit Sir","07:30"],["Attendance Register","Shivangi mam","Poonam mam","08:20 / 14:30"],["Internet","Rajini ma'am","Rinki ma'am","07:30"],["Photography","Ankit Sir","Rahul Sir","Occasionally"],["Jai Shree Krishna wishing group","Sonam ma'am","Aditi ma'am","07:55 / 13:00"],["Activity Incharge","Renu Mam","Meenakshi ma'am","07:40"],["Uniform Incharge","Devendra Sir","Rajni ma'am","08:15"],["Assembly Incharge","Arti ma'am","Rahul Sir","08:15"],["Traffic Belt group","Rahul Sir","Rajeev Sir","07:50 / 13:15"],["Cultural Activities","Arti ma'am","Sonam ma'am","Occasionally"],["I Card Incharge","Shazia ma'am","Shivangi ma'am","08:15"],["Potluck Incharge","Shivangi mam","Rajni Mam","Monthly"],["Birthday Incharge","Rinki mam","Sonali ma'am","One day before / 07:45"]
+ ],
+ lessonPlans:[
+ ["Class I","DATE, DAY, PERIOD, SUBJECT, TEACHER, Chapter Name, planned topic, delivered topic, Activity, STATUS"],
+ ["Class IX","Example: Maths — Poonam Tiwari — Ch.11 Area related to circle — Ex.11.1 Q 1 to 7"],
+ ["Class XI SCI","Example: Biology / Maths / Hindi — Sonali / Ankur / Arti — Cell Cycle and Cell division — Cell Division / ch 10.2"],
+ ["Class XI COM","Example: English — Preeti Singh — Birth ch-5 — Explanation"],
+ ["Class XII SCI","Example: Physical Education — Ankit Kumar — Ch-8 Biomechanics and Sports — Introduction"]
+ ]
+};
+function renderReferences(){
+ const type=el("referenceType").value,q=el("referenceSearch").value.trim().toLowerCase(),box=el("referenceList");
+ const names={timetable:"Master timetable",duties:"Weekly duty chart",staff:"Teacher workload",classTeachers:"Class teachers and co-teachers",incharges:"Incharge list",lessonPlans:"Lesson-plan reference"};
+ let rows=SCHOOL_REFERENCE[type]||[];
+ let html="";
+ if(type==="timetable")html=rows.map(r=>({title:r[0]+" · "+r[1],body:r[2]}));
+ if(type==="duties")html=rows.map(r=>({title:r[1]+" · "+r[0],body:"Mon: "+r[2]+" · Tue: "+r[3]+" · Wed: "+r[4]+" · Thu: "+r[5]+" · Fri: "+r[6]+" · Sat: "+r[7]}));
+ if(type==="staff")html=rows.map(r=>({title:r[0],body:"Daily workload: "+r[1]+" · Weekly workload: "+r[2]+" · Subjects: "+r[3]}));
+ if(type==="classTeachers")html=rows.map(r=>({title:r[0]+" — "+r[1],body:r[2]?"Co-teacher: "+r[2]:"No co-teacher listed"}));
+ if(type==="incharges")html=rows.map(r=>({title:r[0],body:"Incharge: "+r[1]+" · Co-incharge: "+r[2]+" · Sharing time: "+r[3]}));
+ if(type==="lessonPlans")html=rows.map(r=>({title:r[0],body:r[1]}));
+ html=html.filter(x=>(x.title+" "+x.body).toLowerCase().includes(q));
+ el("referenceSummary").innerHTML='<div class="metric"><b>'+html.length+'</b><span>'+names[type]+' entries shown</span></div><div class="metric"><b>2026–27</b><span>Source session</span></div><div class="metric"><b>Read only</b><span>Reference, not live allocations</span></div>';
+ box.innerHTML=html.length?html.map(x=>'<div class="item"><div class="itemmain"><b>'+esc(x.title)+'</b><small style="white-space:normal">'+esc(x.body)+'</small></div></div>').join(""):'<div class="empty">No matching reference records.</div>';
+}
+
 function load(){try{const d=JSON.parse(localStorage.getItem(KEY))||{};return {...d,staff:d.staff||[],lessons:d.lessons||[],duties:d.duties||[],absences:d.absences||[],coverages:d.coverages||[],dailyStatuses:d.dailyStatuses||{},published:!!d.published}}catch(e){return {staff:[],lessons:[],duties:[],absences:[],coverages:[],dailyStatuses:{},published:false}}}
 function save(){localStorage.setItem(KEY,JSON.stringify(db));render()}
 function id(){return "x"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
@@ -336,7 +400,7 @@ el("addStaffBtn").onclick=()=>openEditor("staff");el("addLessonBtn").onclick=()=
 el("closeDialog").onclick=el("cancelDialog").onclick=()=>el("editDialog").close();el("runChecksBtn").onclick=runChecks;
 el("publishBtn").onclick=()=>{runChecks();const count=el("checkSummary").querySelector(".metric b").textContent;if(Number(count)>0){alert("Resolve all conflicts before publishing.");setTab("checks");return}if(!db.staff.length||!db.lessons.length&&!db.duties.length){alert("Add staff and at least one allocation before publishing.");return}db.published=true;save();alert("Marked as published on this browser. Shared publishing and staff notifications require backend integration.")};
 el("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),...db},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="bjps-coordinator-backup.json";a.click();URL.revokeObjectURL(a.href)};
-el("todayLine").textContent=new Intl.DateTimeFormat("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:"Asia/Kolkata"}).format(new Date())+" · Asia/Kolkata";
+el("referenceType").onchange=renderReferences;el("referenceSearch").oninput=renderReferences;\nel("todayLine").textContent=new Intl.DateTimeFormat("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:"Asia/Kolkata"}).format(new Date())+" · Asia/Kolkata";
 render();
 </script>
   <script src="/commit-status.js" defer></script>
