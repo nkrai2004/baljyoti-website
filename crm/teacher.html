@@ -814,6 +814,7 @@ render();tick();updateBiometric();applyLanguage(localStorage.getItem("bjps_teach
     function renderQuickLinks() {
 
       const grid = $("quickLinksGrid");
+      if (!grid) return;
 
       grid.innerHTML = "";
 
