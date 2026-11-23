@@ -29,7 +29,7 @@ dialog{border:0;border-radius:18px;padding:0;width:min(540px,calc(100% - 24px));
 <main class="wrap">
  <div class="notice"><b>Local prototype:</b> Changes are saved in this browser only. This version does not yet sync across coordinators or teachers. Add your actual staff directory before assigning duties.</div>
  <section class="metrics" aria-label="Overview"><div class="metric"><b id="staffCount">0</b><span>Staff registered</span></div><div class="metric"><b id="lessonCount">0</b><span>Lesson allocations</span></div><div class="metric"><b id="dutyCount">0</b><span>Duty assignments</span></div></section>
- <nav class="tabs" aria-label="Coordinator sections"><button class="active" data-tab="overview">Overview</button><button data-tab="timetable">Timetable</button><button data-tab="duties">Duties</button><button data-tab="staff">Staff directory</button><button data-tab="checks">Conflict checks</button></nav>
+ <nav class="tabs" aria-label="Coordinator sections"><button class="active" data-tab="overview">Overview</button><button data-tab="timetable">Timetable</button><button data-tab="duties">Duties</button><button data-tab="staff">Staff directory</button><button data-tab="checks">Conflict checks</button><button data-tab="absence">Absence cover</button><button data-tab="monitor">Live monitoring</button></nav>
  <section class="panel active" id="overview">
   <div class="heading"><div><h2>Coordinator overview</h2><p>At-a-glance planning and daily control</p></div><span class="tag amber" id="publishState">DRAFT</span></div>
   <div class="card"><div class="heading" style="margin-top:0"><div><h2 style="font-size:15px">Quick actions</h2><p>Start with staff, then allocate lessons and duties</p></div></div><div class="filters"><button class="btn" data-go="staff">＋ Add staff</button><button class="btn secondary" data-go="timetable">＋ Add lesson</button><button class="btn secondary" data-go="duties">＋ Assign duty</button><button class="btn secondary" data-go="checks">Run conflict check</button></div></div>
@@ -52,12 +52,12 @@ dialog{border:0;border-radius:18px;padding:0;width:min(540px,calc(100% - 24px));
   <div class="field" style="margin-bottom:10px"><label for="staffSearch">Search staff</label><input id="staffSearch" placeholder="Search by name or staff code"></div>
   <div id="staffList" class="card"></div>
  </section>
- <section class="panel" id="checks">
+ <section class="panel" id="absence"><div class="heading"><div><h2>Teacher absence & cover plan</h2><p>Record an absence and generate all affected classes and duties</p></div></div><div class="card"><div class="formgrid"><div class="field"><label for="absenceDate">Absence date</label><input id="absenceDate" type="date" required></div><div class="field"><label for="absentTeacher">Absent teacher</label><select id="absentTeacher" required><option value="">Select teacher</option></select></div><div class="field full"><label for="absenceReason">Reason / note (optional)</label><input id="absenceReason" placeholder="Leave, illness, official work…"></div></div><button class="btn" id="createAbsenceBtn" style="margin-top:12px;width:100%">Create cover requirements</button></div><div class="heading"><div><h2>Absence records</h2><p>Classes and duties requiring a substitute</p></div></div><div id="absenceList" class="card"></div></section>\n <section class="panel" id="monitor"><div class="heading"><div><h2>Class & duty monitoring</h2><p>Track whether substitute teachers have taken up assigned work</p></div><button class="btn secondary" id="refreshMonitorBtn">Refresh</button></div><div class="notice">Update each assignment when the substitute takes charge, completes the period or reports that the class/duty was not taken. These updates are currently stored in this browser.</div><div id="monitorSummary" class="card"></div><div id="monitorList" class="card"></div></section>\n <section class="panel" id="checks">
   <div class="heading"><div><h2>Conflict & workload checks</h2><p>Check teacher, class, room and duty overlaps</p></div><button class="btn" id="runChecksBtn">Run checks</button></div>
   <div id="checkSummary" class="card"></div><div id="checkList" class="card"></div>
  </section>
 </main>
-<nav class="bottom" aria-label="Quick navigation"><button class="active" data-tab="overview"><span>⌂</span>Home</button><button data-tab="timetable"><span>▦</span>Timetable</button><button data-tab="duties"><span>✓</span>Duties</button><button data-tab="staff"><span>♙</span>Staff</button><button data-tab="checks"><span>⚑</span>Checks</button></nav>
+<nav class="bottom" aria-label="Quick navigation"><button class="active" data-tab="overview"><span>⌂</span>Home</button><button data-tab="timetable"><span>▦</span>Timetable</button><button data-tab="duties"><span>✓</span>Duties</button><button data-tab="absence"><span>↔</span>Cover</button><button data-tab="monitor"><span>◉</span>Monitor</button></nav>
 <dialog id="editDialog"><form id="editForm"><div class="modalhead"><h3 id="dialogTitle">Add allocation</h3><button type="button" class="iconbtn" id="closeDialog">✕</button></div><div class="modalbody"><div id="formConflict" class="conflict"></div><div id="formFields" class="formgrid"></div></div><div class="modalfoot"><button type="button" class="btn secondary" id="cancelDialog">Cancel</button><button class="btn" type="submit">Save allocation</button></div></form></dialog>
 <script>
 const KEY="bjps_coordinator_v1";
@@ -65,7 +65,7 @@ const PERIODS=[["Transport duty","06:30","08:20"],["Students arrival / morning d
 const DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const DUTY_TYPES=["Arrival","Assembly","Lunch","Gate","Corridor","Transport","Departure","Other"];
 let db=load(),editType="",editId="";
-function load(){try{return JSON.parse(localStorage.getItem(KEY))||{staff:[],lessons:[],duties:[],published:false}}catch(e){return {staff:[],lessons:[],duties:[],published:false}}}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY))||{};return {...d,staff:d.staff||[],lessons:d.lessons||[],duties:d.duties||[],absences:d.absences||[],coverages:d.coverages||[],published:!!d.published}}catch(e){return {staff:[],lessons:[],duties:[],absences:[],coverages:[],published:false}}}
 function save(){localStorage.setItem(KEY,JSON.stringify(db));render()}
 function id(){return "x"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -80,7 +80,7 @@ function render(){
  el("staffCount").textContent=db.staff.length;el("lessonCount").textContent=db.lessons.length;el("dutyCount").textContent=db.duties.length;
  el("publishState").textContent=db.published?"PUBLISHED":"DRAFT";el("publishState").className="tag "+(db.published?"green":"amber");
  el("daySummary").innerHTML=PERIODS.map(p=>'<div class="item"><div class="itemmain"><b>'+esc(p[0])+'</b><small>'+esc(p[1])+' – '+esc(p[2])+'</small></div></div>').join("");
- renderLessons();renderDuties();renderStaff();renderChecks();
+ renderLessons();renderDuties();renderStaff();renderChecks();renderAbsences();renderMonitor();populateAbsentTeachers();
 }
 function renderLessons(){
  const day=el("ttDay").value,cls=el("ttClass").value.trim().toLowerCase();
@@ -154,7 +154,48 @@ function runChecks(){
  if(unassigned)el("checkList").innerHTML+='<p style="font-size:12px;color:#92400e">There are '+unassigned+' allocations without a valid staff member.</p>';
 }
 function renderChecks(){runChecks()}
-el("ttDay").onchange=renderLessons;el("ttClass").oninput=renderLessons;el("dutyDay").onchange=renderDuties;el("dutyTypeFilter").onchange=renderDuties;el("staffSearch").oninput=renderStaff;
+function populateAbsentTeachers(){
+ const s=el("absentTeacher"),old=s.value;
+ s.innerHTML='<option value="">Select teacher</option>'+db.staff.filter(x=>!x.role||x.role==="Teacher"||x.role==="Coordinator").map(x=>'<option value="'+x.id+'">'+esc(x.name)+'</option>').join("");
+ if(db.staff.some(x=>x.id===old))s.value=old;
+}
+function dateDay(date){return new Date(date+"T12:00:00").toLocaleDateString("en-US",{weekday:"long"})}
+function createAbsence(){
+ const date=el("absenceDate").value,teacherId=el("absentTeacher").value,reason=el("absenceReason").value.trim();
+ if(!date||!teacherId){alert("Choose an absence date and teacher.");return}
+ if(db.absences.some(x=>x.date===date&&x.teacherId===teacherId)){alert("An absence record already exists for this teacher and date.");return}
+ const day=dateDay(date),absence={id:id(),date,day,teacherId,reason,createdAt:new Date().toISOString()};
+ const affected=[
+  ...db.lessons.filter(x=>x.day===day&&x.teacherId===teacherId).map(x=>({kind:"Class",sourceId:x.id,title:x.className+" · "+x.subject,start:x.start,end:x.end,room:x.room||""})),
+  ...db.duties.filter(x=>x.day===day&&x.teacherId===teacherId).map(x=>({kind:"Duty",sourceId:x.id,title:x.title,start:x.start,end:x.end,room:x.location||""}))
+ ];
+ absence.coverageIds=[];
+ affected.forEach(x=>{const cover={...x,id:id(),absenceId:absence.id,date,day,absentTeacherId:teacherId,substituteId:"",status:"Awaiting substitute",note:"",updatedAt:""};db.coverages.push(cover);absence.coverageIds.push(cover.id)});
+ db.absences.push(absence);db.published=false;save();
+ el("absenceReason").value="";
+ alert(affected.length+" cover requirement(s) created. Assign substitutes in the monitoring section.");
+ setTab("monitor");
+}
+function renderAbsences(){
+ const list=[...db.absences].sort((a,b)=>b.date.localeCompare(a.date));
+ el("absenceList").innerHTML=list.length?list.map(a=>{const covers=db.coverages.filter(x=>x.absenceId===a.id),done=covers.filter(x=>x.status==="Completed").length;return '<div class="item"><div class="itemmain"><b>'+esc(staffName(a.teacherId))+' · '+esc(a.date)+' <span class="tag amber">Absent</span></b><small>'+esc(a.day)+' · '+covers.length+' cover item(s) · '+done+' completed'+(a.reason?' · '+esc(a.reason):'')+'</small></div><button class="iconbtn" data-view-absence="'+a.id+'">View cover</button></div>'}).join(""):'<div class="empty"><b>No absences recorded</b>Record an absent teacher to generate cover requirements from the existing timetable and duty roster.</div>';
+ el("absenceList").querySelectorAll("[data-view-absence]").forEach(b=>b.onclick=()=>{setTab("monitor");renderMonitor(b.dataset.viewAbsence)});
+}
+function updateCoverage(idValue,field,value){
+ const x=db.coverages.find(c=>c.id===idValue);if(!x)return;
+ x[field]=value;x.updatedAt=new Date().toISOString();if(field==="substituteId"&&value&&x.status==="Awaiting substitute")x.status="Assigned";
+ db.published=false;localStorage.setItem(KEY,JSON.stringify(db));renderMonitor();
+}
+function renderMonitor(filterAbsence=""){
+ const list=db.coverages.filter(x=>!filterAbsence||x.absenceId===filterAbsence).sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start));
+ const statuses=["Awaiting substitute","Assigned","Taken up","Completed","Not taken"];
+ const counts=statuses.map(s=>list.filter(x=>x.status===s).length);
+ el("monitorSummary").innerHTML='<div class="metrics">'+statuses.slice(1).map((s,i)=>'<div class="metric"><b>'+counts[i+1]+'</b><span>'+s+'</span></div>').join("")+'</div>';
+ el("monitorList").innerHTML=list.length?list.map(x=>'<div class="item" style="align-items:flex-start"><div class="itemmain"><b>'+esc(x.title)+' <span class="tag '+(x.status==="Completed"?"green":x.status==="Taken up"?"blue":x.status==="Not taken"?"amber":"")+'">'+esc(x.status)+'</span></b><small>'+esc(x.date)+' · '+esc(x.day)+' · '+esc(x.start)+'–'+esc(x.end)+' · '+esc(x.kind)+'<br>Original teacher: '+esc(staffName(x.absentTeacherId))+'</small><div class="field" style="margin-top:8px"><label>Substitute teacher</label><select data-cover-teacher="'+x.id+'"><option value="">Select substitute</option>'+db.staff.filter(s=>s.id!==x.absentTeacherId).map(s=>'<option value="'+s.id+'">'+esc(s.name)+'</option>').join("")+'</select></div><div class="field" style="margin-top:7px"><label>Take-up / completion status</label><select data-cover-status="'+x.id+'">'+statuses.map(s=>'<option>'+s+'</option>').join("")+'</select></div><div class="field" style="margin-top:7px"><label>Monitoring note</label><input data-cover-note="'+x.id+'" placeholder="e.g. Took class, lesson completed…" value="'+esc(x.note)+'"></div></div></div>').join(""):'<div class="empty"><b>No cover assignments yet</b>Record teacher absence to create classes and duties that need coverage.</div>';
+ list.forEach(x=>{const t=document.querySelector('[data-cover-teacher="'+x.id+'"]'),s=document.querySelector('[data-cover-status="'+x.id+'"]'),n=document.querySelector('[data-cover-note="'+x.id+'"]');if(t)t.value=x.substituteId;if(s)s.value=x.status;if(t)t.onchange=()=>updateCoverage(x.id,"substituteId",t.value);if(s)s.onchange=()=>updateCoverage(x.id,"status",s.value);if(n)n.onchange=()=>updateCoverage(x.id,"note",n.value)});
+}
+
+el("absenceDate").value=new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Kolkata"});el("createAbsenceBtn").onclick=createAbsence;el("refreshMonitorBtn").onclick=()=>renderMonitor();\nel("ttDay").onchange=renderLessons;el("ttClass").oninput=renderLessons;el("dutyDay").onchange=renderDuties;el("dutyTypeFilter").onchange=renderDuties;el("staffSearch").oninput=renderStaff;
 el("addStaffBtn").onclick=()=>openEditor("staff");el("addLessonBtn").onclick=()=>openEditor("lesson");el("addDutyBtn").onclick=()=>openEditor("duty");
 el("closeDialog").onclick=el("cancelDialog").onclick=()=>el("editDialog").close();el("runChecksBtn").onclick=runChecks;
 el("publishBtn").onclick=()=>{runChecks();const count=el("checkSummary").querySelector(".metric b").textContent;if(Number(count)>0){alert("Resolve all conflicts before publishing.");setTab("checks");return}if(!db.staff.length||!db.lessons.length&&!db.duties.length){alert("Add staff and at least one allocation before publishing.");return}db.published=true;save();alert("Marked as published on this browser. Shared publishing and staff notifications require backend integration.")};
