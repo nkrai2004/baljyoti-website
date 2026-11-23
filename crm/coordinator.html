@@ -22,6 +22,7 @@ dialog{border:0;border-radius:18px;padding:0;width:min(540px,calc(100% - 24px));
 @media(max-width:380px){.date-control{grid-template-columns:1fr 1fr}.date-control .field{grid-column:1/-1;grid-row:1}.date-control #overviewToday{grid-column:1/-1}.overview-alerts{grid-template-columns:1fr 1fr}}
 @media(max-width:380px){.metrics{gap:5px}.metric{padding:10px 8px}.metric b{font-size:19px}.metric span{font-size:10px}.filters{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}}
 .time-focus{border:1px solid #fecaca;background:linear-gradient(120deg,#fff7f7,#fff);border-radius:14px;padding:13px;margin:0 0 13px}.time-focus small{display:block;color:#991b1b;font-size:10px;font-weight:900;letter-spacing:.05em}.time-focus b{display:block;font-size:18px;margin:4px 0}.time-focus span{font-size:12px;color:#475467}.time-focus.neutral{border-color:var(--line);background:#f8fafc}.time-focus.neutral small{color:#475467}.day-monitor-row.is-current{background:#fff7f7;border:1px solid #fca5a5;border-radius:13px;padding:10px;margin:5px -2px}.tag.past{background:#e2e8f0;color:#475569}.tag.future{background:#eff6ff;color:#1d4ed8}.tag.focus{background:#fee2e2;color:#991b1b}
+.day-block{display:grid;grid-template-columns:94px minmax(0,1fr);gap:11px;padding:12px 0;border-bottom:1px solid #e9edf3}.day-block:last-child{border-bottom:0}.day-block.is-current{background:#fff7f7;border:1px solid #fca5a5;border-radius:14px;padding:12px;margin:5px -2px}.day-block-time{background:#edf1f6;border-radius:11px;padding:9px 6px;text-align:center;align-self:start}.day-block-time b{display:block;font-size:13px}.day-block-time span,.day-block-time small{display:block;color:#667085;font-size:10px;margin-top:3px}.day-block-title{display:flex;align-items:center;justify-content:space-between;gap:7px;flex-wrap:wrap;margin-bottom:7px}.day-block-title>b{font-size:14px}.allocation-row{padding:9px 0;border-top:1px solid #eef0f4}.allocation-row:first-of-type{border-top:0}.allocation-row>b{display:block;font-size:13px;margin-top:5px}.allocation-row>small{display:block;color:#667085;font-size:11px;margin-top:3px}.allocation-head{display:flex;gap:5px;flex-wrap:wrap}.block-empty{background:#f8fafc;border:1px dashed #d8dee8;border-radius:10px;padding:10px;color:#667085;font-size:11px}@media(max-width:380px){.day-block{grid-template-columns:76px minmax(0,1fr);gap:8px}.day-block-time{padding:8px 3px}}
 </style>
 </head>
 <body>
@@ -241,27 +242,32 @@ function selectedSchoolContext(date){
 function dayStatusKey(date,kind,sourceId){return date+"|"+kind+"|"+sourceId}
 function renderWholeDay(){
  const dateInput=el("monitorDate");if(!dateInput.value)dateInput.value=localToday();
- const date=dateInput.value;if(!date){el("wholeDayList").innerHTML='<div class="empty">Choose a date to view the school day.</div>';return}
- const day=dateDay(date);
+ const date=dateInput.value;
+ if(!date){el("wholeDayList").innerHTML='<div class="empty">Choose a date to view the school day.</div>';return}
+ const day=dateDay(date),context=selectedSchoolContext(date);
  const lessons=db.lessons.filter(x=>x.day===day).map(x=>({...x,kind:"Class",label:x.className+" · "+x.subject,place:x.room||""}));
  const duties=db.duties.filter(x=>x.day===day).map(x=>({...x,kind:"Duty",label:x.title,place:x.location||""}));
  const items=[...lessons,...duties].sort((a,b)=>a.start.localeCompare(b.start));
- const context=selectedSchoolContext(date),currentIndex=items.findIndex(x=>context.minute>=mins(x.start)&&context.minute<mins(x.end));
- const active=currentIndex>=0?items[currentIndex]:null;
- const focus=el("liveSchoolFocus");
- if(active){
-  focus.className="time-focus";
-  focus.innerHTML='<small>LIVE SCHOOL FOCUS · '+esc(context.now.time)+' IST</small><b>'+esc(active.label)+'</b><span>'+esc(active.kind)+' · '+esc(timeText(active.start))+' – '+esc(timeText(active.end))+' · Happening now</span>';
- }else{
-  const next=items.find(x=>context.minute<mins(x.start));
-  focus.className="time-focus neutral";
-  const message=date<context.now.date?"Selected day has ended":date>context.now.date?"Future school day · Schedule preview":next?"School day has not started · Next: "+next.label:"No active timetable slot at this moment";
-  focus.innerHTML='<small>'+(context.isToday?"LIVE SCHOOL CLOCK · "+esc(context.now.time)+" IST":"DATE-BASED SCHEDULE VIEW")+'</small><b>'+esc(message)+'</b><span>'+(next&&context.isToday?"Next slot: "+esc(timeText(next.start))+" – "+esc(timeText(next.end)):"All times follow Asia/Kolkata")+'</span>';
- }
  const arrangements=db.coverages.filter(x=>x.date===date);
- const rows=items.map((x,index)=>{
-  const isCurrent=index===currentIndex;
-  const timeState=isCurrent?'<span class="tag focus">In Progress</span>':context.minute<mins(x.start)?'<span class="tag future">Upcoming</span>':'<span class="tag past">Time Passed</span>';
+ const blocks=PERIODS.map((p,index)=>{
+  const [name,from,to]=p;
+  const contained=items.filter(x=>mins(x.start)<mins(to)&&mins(x.end)>mins(from));
+  return {name,from,to,index,items:contained};
+ });
+ const extra=items.filter(x=>!PERIODS.some(p=>mins(x.start)<mins(p[2])&&mins(x.end)>mins(p[1])));
+ extra.forEach(x=>blocks.push({name:"Additional allocation",from:x.start,to:x.end,index:blocks.length,items:[x]}));
+ const currentBlock=blocks.find(b=>context.minute>=mins(b.from)&&context.minute<mins(b.to));
+ const nextBlock=blocks.find(b=>context.minute<mins(b.from));
+ const focus=el("liveSchoolFocus");
+ if(currentBlock){
+  focus.className="time-focus";
+  focus.innerHTML='<small>LIVE SCHOOL FOCUS · '+esc(context.now.time)+' IST</small><b>'+esc(currentBlock.name)+'</b><span>'+esc(timeText(currentBlock.from))+' – '+esc(timeText(currentBlock.to))+' · '+currentBlock.items.length+' linked allocation(s)</span>';
+ }else{
+  focus.className="time-focus neutral";
+  const message=date<context.now.date?"Selected day has ended":date>context.now.date?"Future school day · Full-day schedule preview":nextBlock?"School day has not started · Next: "+nextBlock.name:"School day completed";
+  focus.innerHTML='<small>'+(context.isToday?"LIVE SCHOOL CLOCK · "+esc(context.now.time)+" IST":"DATE-BASED SCHEDULE VIEW")+'</small><b>'+esc(message)+'</b><span>'+(nextBlock&&context.isToday?"Next block: "+esc(timeText(nextBlock.from))+" – "+esc(timeText(nextBlock.to)):"School day: 6:30 AM – 3:00 PM · Asia/Kolkata")+'</span>';
+ }
+ const recordRow=x=>{
   const cover=arrangements.find(c=>c.sourceId===x.id);
   const assigned=!!x.teacherId&&db.staff.some(st=>st.id===x.teacherId);
   const assignment=cover?'<span class="tag amber">Arrangement</span>':assigned?'<span class="tag blue">Assigned</span>':'<span class="tag">Not Assigned</span>';
@@ -269,17 +275,23 @@ function renderWholeDay(){
   const key=dayStatusKey(date,x.kind,x.id),updated=!!db.dailyStatuses[key]?.updatedAt,note=db.dailyStatuses[key]?.note||"";
   const monitor=updated?'<span class="tag green">Status Updated</span>':'<span class="tag amber">Monitoring Pending</span>';
   const coverInfo=cover?'<small>Original teacher: '+esc(staffName(cover.absentTeacherId))+' · Arrangement status: '+esc(cover.status)+'</small>':'';
-  return '<article class="item day-monitor-row '+(isCurrent?'is-current':'')+'" style="align-items:flex-start;gap:12px"><div class="periodtime" style="min-width:66px">'+esc(x.start)+'<br>–<br>'+esc(x.end)+'</div><div class="itemmain"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span class="tag '+(x.kind==="Duty"?"blue":"")+'">'+x.kind+'</span>'+timeState+assignment+monitor+'</div><b style="margin-top:5px">'+esc(x.label)+'</b><small>'+esc(person)+(x.place?' · '+esc(x.place):'')+'</small>'+coverInfo+'<div class="field" style="margin-top:8px"><label>Monitoring note</label><input data-day-note="'+esc(key)+'" value="'+esc(note)+'" placeholder="Enter observation / update"></div><div class="actions" style="margin-top:7px"><button class="btn small '+(updated?"secondary":"")+'" type="button" data-mark-day="'+esc(key)+'" data-date="'+esc(date)+'">'+(updated?"Reopen status":"Mark status updated")+'</button></div></div></article>';
+  return '<div class="allocation-row"><div class="allocation-head"><span class="tag '+(x.kind==="Duty"?"blue":"")+'">'+x.kind+'</span>'+assignment+monitor+'</div><b>'+esc(x.label)+'</b><small>'+esc(timeText(x.start))+' – '+esc(timeText(x.end))+' · '+esc(person)+(x.place?' · '+esc(x.place):'')+'</small>'+coverInfo+'<div class="field" style="margin-top:7px"><label>Monitoring note</label><input data-day-note="'+esc(key)+'" value="'+esc(note)+'" placeholder="Enter observation / update"></div><div class="actions" style="margin-top:6px"><button class="btn small '+(updated?"secondary":"")+'" type="button" data-mark-day="'+esc(key)+'">'+(updated?"Reopen status":"Mark status updated")+'</button></div></div>';
+ };
+ el("wholeDayList").innerHTML=blocks.map((b,i)=>{
+  const isCurrent=b===currentBlock,isFuture=context.minute<mins(b.from),isPast=context.minute>=mins(b.to);
+  const state=isCurrent?'<span class="tag focus">NOW · IN PROGRESS</span>':isFuture?'<span class="tag future">UPCOMING</span>':'<span class="tag past">TIME PASSED</span>';
+  const content=b.items.length?b.items.map(recordRow).join(""):'<div class="block-empty">No individual class or duty allocation entered for this time block. The school-day period remains part of the operating schedule.</div>';
+  return '<article class="day-block '+(isCurrent?'is-current':'')+'"><div class="day-block-time"><b>'+esc(timeText(b.from))+'</b><span>to '+esc(timeText(b.to))+'</span><small>'+esc(b.from)+'–'+esc(b.to)+'</small></div><div class="day-block-main"><div class="day-block-title"><b>'+esc(b.name)+'</b>'+state+'</div>'+content+'</div></article>';
  }).join("");
- const total=items.length,notAssigned=items.filter(x=>!x.teacherId||!db.staff.some(st=>st.id===x.teacherId)).length,arranged=arrangements.filter(c=>items.some(x=>x.id===c.sourceId)).length,updated=items.filter(x=>db.dailyStatuses[dayStatusKey(date,x.kind,x.id)]?.updatedAt).length,pending=total-updated;
- const inProgress=items.filter(x=>context.minute>=mins(x.start)&&context.minute<mins(x.end)).length,upcoming=items.filter(x=>context.minute<mins(x.start)).length,elapsed=items.length-inProgress-upcoming;
- el("dayMetrics").innerHTML=[[""+inProgress,"In Progress"],[""+upcoming,"Upcoming"],[""+elapsed,"Time Passed"],[""+notAssigned,"Not Assigned"],[""+arranged,"Arrangements"],[""+pending,"Monitoring Pending"],[""+updated,"Status Updated"]].map(m=>'<div class="metric"><b>'+m[0]+'</b><span>'+m[1]+'</span></div>').join("");
- el("wholeDayList").innerHTML=rows||'<div class="empty"><b>No scheduled classes or duties for '+esc(day)+'</b>There are no timetable or duty records for this weekday yet.</div>';
+ const totalBlocks=blocks.length,inProgress=blocks.filter(b=>context.minute>=mins(b.from)&&context.minute<mins(b.to)).length,upcoming=blocks.filter(b=>context.minute<mins(b.from)).length,elapsed=totalBlocks-inProgress-upcoming;
+ const notAssigned=items.filter(x=>!x.teacherId||!db.staff.some(st=>st.id===x.teacherId)).length;
+ const arranged=arrangements.filter(c=>items.some(x=>x.id===x.sourceId)).length;
+ const updated=items.filter(x=>db.dailyStatuses[dayStatusKey(date,x.kind,x.id)]?.updatedAt).length,pending=items.length-updated;
+ el("dayMetrics").innerHTML=[[""+inProgress,"Current time block"],[""+upcoming,"Upcoming blocks"],[""+elapsed,"Blocks passed"],[""+items.length,"Class & duty allocations"],[""+notAssigned,"Not Assigned"],[""+arranged,"Arrangements"],[""+pending,"Monitoring Pending"],[""+updated,"Status Updated"]].map(m=>'<div class="metric"><b>'+m[0]+'</b><span>'+m[1]+'</span></div>').join("");
  el("wholeDayList").querySelectorAll("[data-mark-day]").forEach(btn=>btn.onclick=()=>{
   const key=btn.dataset.markDay,current=db.dailyStatuses[key]||{},noteInput=el("wholeDayList").querySelector('[data-day-note="'+key+'"]');
-  if(current.updatedAt)db.dailyStatuses[key]={...current,updatedAt:""};
+  if(current.updatedAt)db.dailyStatuses[key]={...current,updatedAt:"",note:noteInput?.value.trim()||current.note||""};
   else db.dailyStatuses[key]={note:noteInput?.value.trim()||"",updatedAt:new Date().toISOString()};
-  if(current.updatedAt&&noteInput)db.dailyStatuses[key].note=noteInput.value.trim();
   localStorage.setItem(KEY,JSON.stringify(db));renderWholeDay();
  });
  el("wholeDayList").querySelectorAll("[data-day-note]").forEach(input=>input.onchange=()=>{
