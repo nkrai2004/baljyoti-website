@@ -10,7 +10,7 @@
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,Roboto,"Segoe UI",Arial,sans-serif}
 button,input{font:inherit}.app{max-width:760px;margin:auto;min-height:100dvh;background:var(--bg);padding-bottom:34px}
 header{background:var(--brand);color:#fff;padding:calc(16px + env(safe-area-inset-top)) 18px 22px;border-radius:0 0 24px 24px}
-.top{display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{display:flex;align-items:center;gap:10px}.brand img{width:43px;height:43px;object-fit:contain;background:#fff;border-radius:12px;padding:3px}.brand strong{display:block;font-size:15px}.brand small{opacity:.85;font-size:12px}.avatar{border:1px solid #ffffff80;border-radius:50%;width:42px;height:42px;display:grid;place-items:center;font-weight:700}
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{display:flex;align-items:center;gap:10px}.brand img{width:43px;height:43px;object-fit:contain;background:#fff;border-radius:12px;padding:3px}.brand strong{display:block;font-size:15px}.brand small{opacity:.85;font-size:12px}.header-actions{display:flex;align-items:center;gap:9px}.language-toggle{border:1px solid #ffffffaa;background:#ffffff18;color:#fff;border-radius:22px;padding:9px 12px;font-weight:700;min-height:42px}.avatar{border:1px solid #ffffff80;border-radius:50%;width:42px;height:42px;display:grid;place-items:center;font-weight:700}
 .welcome{margin-top:22px}.welcome small{opacity:.85}.welcome h1{font-size:24px;margin:3px 0 12px}.dateclock{display:flex;gap:8px;flex-wrap:wrap}.dateclock span{font-size:12px;border:1px solid #ffffff55;background:#ffffff16;padding:6px 10px;border-radius:30px}
 main{padding:16px 16px 0}.sectionhead{display:flex;align-items:center;justify-content:space-between;margin:18px 2px 10px}.sectionhead h2{font-size:16px;margin:0}.sectionhead small{color:var(--muted)}
 .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:-2px}.metric{background:#fff;border:1px solid var(--line);border-radius:15px;padding:13px 12px}.metric b{display:block;font-size:23px}.metric span{font-size:11px;color:var(--muted)}.metric.red b{color:var(--pending)}.metric.amber b{color:#a66b00}.metric.green b{color:var(--done)}
@@ -58,14 +58,14 @@ button,a,input{touch-action:manipulation}button:focus-visible,a:focus-visible,in
 <header>
  <div class="top">
   <div class="brand"><img src="https://www.baljyoti.com/logo.png" alt="Bal Jyoti logo" onerror="this.style.display='none'"><div><strong>Bal Jyoti Public School</strong><small>BJPS · ERP</small></div></div>
-  <div class="avatar" title="Teacher profile">T</div>
+  <div class="header-actions"><button type="button" id="languageToggle" class="language-toggle">हिन्दी</button><div class="avatar" title="Teacher profile">T</div></div>
  </div>
  <div class="welcome"><small>TEACHER WORKSPACE</small><h1>Good day, Teacher</h1><div class="dateclock"><span id="date">Loading date…</span><span id="clock">--:--:--</span></div></div>
 </header>
 <main>
  <div class="date-select-wrap"><label for="selectedDate">📅 Choose a Day</label><input type="date" id="selectedDate" aria-label="Select dashboard date"></div>
  <div class="attendance-card in"><div><div class="attendance-label">IN TIME · BIOMETRIC</div><div class="attendance-time" id="biometricIn">—</div><div class="attendance-meta" id="biometricInMeta">Waiting for attendance punch</div></div><span class="attendance-state" id="biometricInState">Not synced</span></div>
- <div class="sectionhead"><h2>Your Day</h2><small>Live task status</small></div>
+ <div class="sectionhead" id="my-tasks"><h2>Your Day</h2><small>Live task status</small></div>
  <div class="summary">
   <div class="metric red"><b id="pendingCount">0</b><span>Pending</span></div>
   <div class="metric amber"><b id="progressCount">0</b><span>In Progress</span></div>
@@ -165,6 +165,8 @@ function renderSchedule(){
   focus.innerHTML='<div class="emptyfocus">No active timetable slot at this moment.</div>';
  }
  const all=schedule.map((x,i)=>{const k="slot-"+i;return day[k]==="Done"?"Done":now.minute<mins(x[1])?"Upcoming":now.minute<mins(x[2])?"In Progress":"Pending"});
+ const other=JSON.parse(localStorage.getItem("bjps_teacher_other_v1")||"{}");
+ Object.entries(groups).forEach(([group,tasks])=>tasks.forEach((_,i)=>all.push(other[group+"-"+i]||"Pending")));
  document.getElementById("pendingCount").textContent=all.filter(x=>x==="Pending").length;
  document.getElementById("progressCount").textContent=all.filter(x=>x==="In Progress").length;
  document.getElementById("doneCount").textContent=all.filter(x=>x==="Done").length;
@@ -179,7 +181,7 @@ function renderOtherTasks(){
    const info=document.createElement("div");info.className="taskinfo";
    const title=document.createElement("b");title.textContent=name;const sub=document.createElement("small");sub.textContent=desc;info.append(title,sub);
    const btn=document.createElement("button");btn.className="status "+classes[st];btn.textContent=states[st];
-   btn.addEventListener("click",()=>{saved[k]=states[(states.indexOf(saved[k]||"Pending")+1)%3];localStorage.setItem("bjps_teacher_other_v1",JSON.stringify(saved));renderOtherTasks()});
+   btn.addEventListener("click",()=>{saved[k]=states[(states.indexOf(saved[k]||"Pending")+1)%3];localStorage.setItem("bjps_teacher_other_v1",JSON.stringify(saved));renderOtherTasks();renderSchedule()});
    el.append(dot,info,btn);root.append(el);
   });
  });
@@ -189,18 +191,21 @@ function render(){renderSchedule();renderOtherTasks()}
 function updateBiometric(){
  const data=window.BJPS_BIOMETRIC_ATTENDANCE||{};
  const chosen=selectedDay(),valid=data.date===chosen;
- const inValue=valid&&data.inTime?String(data.inTime):"8:00 AM";
- const outValue=valid&&data.outTime?String(data.outTime):"3:00 PM";
+ const inValue=valid&&data.inTime?String(data.inTime):"—";
+ const outValue=valid&&data.outTime?String(data.outTime):"—";
  const sampleIn=!(valid&&data.inTime),sampleOut=!(valid&&data.outTime);
  document.getElementById("biometricIn").textContent=inValue;
  document.getElementById("biometricOut").textContent=outValue;
- document.getElementById("biometricInMeta").textContent=sampleIn?"Sample time · awaiting SalaryBox API":"SalaryBox biometric attendance · "+chosen;
- document.getElementById("biometricOutMeta").textContent=sampleOut?"Sample time · awaiting SalaryBox API":"SalaryBox biometric attendance · "+chosen;
- document.getElementById("biometricInState").textContent=sampleIn?"Sample":"Punch received";
- document.getElementById("biometricOutState").textContent=sampleOut?"Sample":"Punch received";
+ document.getElementById("biometricInMeta").textContent=sampleIn?"No biometric punch received for this date":"Biometric attendance · "+chosen;
+ document.getElementById("biometricOutMeta").textContent=sampleOut?"No biometric punch received for this date":"Biometric attendance · "+chosen;
+ document.getElementById("biometricInState").textContent=sampleIn?"Not synced":"Punch received";
+ document.getElementById("biometricOutState").textContent=sampleOut?"Not synced":"Punch received";
 }
 window.addEventListener("bjps-biometric-attendance",updateBiometric);
 
+
+function applyLanguage(lang){document.documentElement.lang=lang==="hi"?"hi":"en";document.querySelectorAll("[data-en][data-hi]").forEach(el=>el.textContent=lang==="hi"?el.dataset.hi:el.dataset.en);const b=document.getElementById("languageToggle");b.textContent=lang==="hi"?"English":"हिन्दी";localStorage.setItem("bjps_teacher_language",lang);}
+document.getElementById("languageToggle").addEventListener("click",()=>applyLanguage(localStorage.getItem("bjps_teacher_language")==="hi"?"en":"hi"));
 function tick(){
  const n=new Date();
  document.getElementById("date").textContent=new Intl.DateTimeFormat("en-IN",{timeZone:zone,weekday:"long",day:"2-digit",month:"short",year:"numeric"}).format(n);
@@ -210,7 +215,7 @@ function tick(){
 const picker=document.getElementById("selectedDate");
 picker.value=nowParts().date;
 picker.addEventListener("change",()=>{render();updateBiometric();});
-render();tick();updateBiometric();setInterval(tick,15000);setInterval(updateBiometric,15000);
+render();tick();updateBiometric();applyLanguage(localStorage.getItem("bjps_teacher_language")||"en");setInterval(tick,15000);setInterval(updateBiometric,15000);
 </script>
 </body>
 </html>
