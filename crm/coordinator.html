@@ -38,7 +38,7 @@ dialog{border:0;border-radius:18px;padding:0;width:min(560px,calc(100% - 22px));
 </header>
 <main>
 <div class="notice"><b>Local workspace:</b> Changes are saved in this browser only. Shared staff updates and live alerts need backend integration.</div>
-<nav class="nav" aria-label="Main navigation"><button class="active" data-view="dashboard">🏠 Today</button><button data-view="timetable">🗓 Timetable</button><button data-view="duties">✓ Duties & Activities</button><button data-view="staff">👥 Staff</button><button data-view="settings">⚙ Data</button></nav>
+<nav class="nav" aria-label="Main navigation"><button class="active" data-view="dashboard">🏠 Today</button><button data-view="arrangements">🔄 Arrangements</button><button data-view="timetable">🗓 Master Timetable</button><button data-view="duties">📍 Morning Duties</button><button data-view="staff">👥 Staff</button><button data-view="settings">⚙ Data</button></nav>
 
 <section class="view active" id="dashboard">
  <div class="summary"><div class="metric"><b id="planCount">0</b><span>Plan checks due</span></div><div class="metric"><b id="monitorCount">0</b><span>Monitoring due</span></div><div class="metric"><b id="verifyCount">0</b><span>Post checks due</span></div></div>
@@ -49,15 +49,25 @@ dialog{border:0;border-radius:18px;padding:0;width:min(560px,calc(100% - 22px));
  <div id="followUps" class="list"></div>
 </section>
 
+<section class="view" id="arrangements">
+ <div class="sectionhead"><div><h2>Daily Arrangements</h2><small>Mark absence and arrange each affected period</small></div></div>
+ <div class="card"><h3>Mark teacher absent</h3><div class="formgrid" style="margin-top:10px">
+ <div class="field"><label for="absenceDate">Date</label><input id="absenceDate" type="date"></div>
+ <div class="field"><label for="absentTeacher">Absent teacher</label><select id="absentTeacher"><option value="">Select teacher</option></select></div>
+ <div class="field full"><label for="absenceReason">Reason / note</label><input id="absenceReason" placeholder="Leave, absent, official duty…"></div></div>
+ <button class="btn" id="addAbsence" style="margin-top:11px">Find affected periods</button></div>
+ <div class="sectionhead"><h2>Periods to cover</h2><small id="absenceDateLabel">Select date</small></div><div id="absenceBoard" class="list"></div>
+ <div class="sectionhead"><h2>Daily cover summary</h2></div><div id="coverSummary" class="card muted">No arrangements for this date.</div>
+</section>
 <section class="view" id="timetable">
- <div class="sectionhead"><div><h2>Class & Period Timetable</h2><small>See each class in each time slot</small></div><button class="btn" id="addLesson">＋ Add</button></div>
+ <div class="sectionhead"><div><h2>Master Timetable</h2><small>Regular weekly class, subject and teacher plan</small></div><button class="btn" id="addLesson">＋ Add</button></div>
  <div class="toolbar"><input id="classFilter" placeholder="Search class / subject / teacher" aria-label="Search timetable"><select id="dayFilter" aria-label="Select day"><option value="">All days</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option></select></div>
  <div id="timetableList" class="list"></div>
 </section>
 
 <section class="view" id="duties">
- <div class="sectionhead"><div><h2>Duties & Activities</h2><small>Plan · Monitor · Check status</small></div><button class="btn" id="addDuty">＋ Add</button></div>
- <div class="toolbar"><input id="dutyFilter" placeholder="Search duty or activity" aria-label="Search duties"><select id="dutyDayFilter"><option value="">All days</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option></select></div>
+ <div class="sectionhead"><div><h2>Morning Duty Roster</h2><small>Assign staff, location and exact time</small></div><button class="btn" id="addDuty">＋ Add</button></div>
+ <div class="card"><p class="muted">A teacher assigned to a duty is not free for a class period that overlaps the duty time. Enter the correct start and end time for every duty.</p></div><div class="toolbar"><input id="dutyFilter" placeholder="Search duty or activity" aria-label="Search duties"><select id="dutyDayFilter"><option value="">All days</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option></select></div>
  <div id="dutiesList" class="list"></div>
 </section>
 
@@ -107,9 +117,9 @@ const SCHEDULE=[
 const $=id=>document.getElementById(id);
 const safe=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const uid=()=>"r"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
-const blank=()=>({staff:[],lessons:[],duties:[],checks:{}});
+const blank=()=>({staff:[],lessons:[],duties:[],checks:{},absences:[],arrangements:[]});
 let db=blank(),editor={type:"",id:""},activeSlot="";
-try{const x=JSON.parse(localStorage.getItem(KEY)||"null");if(x&&Array.isArray(x.staff)&&Array.isArray(x.lessons)&&Array.isArray(x.duties))db={...blank(),...x,checks:x.checks&&typeof x.checks==="object"?x.checks:{}}}catch(e){}
+try{const x=JSON.parse(localStorage.getItem(KEY)||"null");if(x&&Array.isArray(x.staff)&&Array.isArray(x.lessons)&&Array.isArray(x.duties))db={...blank(),...x,checks:x.checks&&typeof x.checks==="object"?x.checks:{},absences:Array.isArray(x.absences)?x.absences:[],arrangements:Array.isArray(x.arrangements)?x.arrangements:[]}}catch(e){}
 const zone="Asia/Kolkata";
 function parts(date=new Date()){const p=new Intl.DateTimeFormat("en-GB",{timeZone:zone,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",weekday:"long",hourCycle:"h23"}).formatToParts(date),o={};p.forEach(x=>o[x.type]=x.value);return o}
 function todayKey(){const p=parts();return p.year+"-"+p.month+"-"+p.day}
@@ -151,21 +161,70 @@ if(type==="lessons"){title=id?"Edit class timetable":"Add class timetable";html=
 if(type==="duties"){title=id?"Edit duty / activity":"Add duty / activity";html=field("Day","day",old.day||dayName(),"select",true,DAYS.map(x=>({value:x,label:x})))+field("Duty / activity name","title",old.title||"")+field("Responsible staff","teacherId",old.teacherId||"","select",true,[{value:"",label:"Select staff"},...db.staff.map(x=>({value:x.id,label:x.name}))])+field("Start time","start",old.start||"08:20","time")+field("End time","end",old.end||"08:30","time")+field("Location","location",old.location||"","text",false)+field("Instructions (optional)","instructions",old.instructions||"","text",false)}
 if((type==="lessons"||type==="duties")&&!db.staff.length){alert("Add staff first, then assign a teacher or responsible person.");setView("staff");return}
 $("editorTitle").textContent=title;$("editorFields").innerHTML=html;$("formError").textContent="";$("editor").showModal()}
-$("editorForm").addEventListener("submit",e=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.currentTarget).entries());if((editor.type==="lessons"||editor.type==="duties")&&data.end<=data.start){$("formError").textContent="End time must be later than start time.";return}if(editor.type==="staff"&&!data.name.trim()){$("formError").textContent="Enter a staff name.";return}const old=editor.id?db[editor.type].find(x=>x.id===editor.id):null;const rec={...data,id:editor.id||uid(),createdAt:old?.createdAt||new Date().toISOString()};if(editor.id)db[editor.type]=db[editor.type].map(x=>x.id===editor.id?rec:x);else db[editor.type].unshift(rec);$("editor").close();persist()});
+$("editorForm").addEventListener("submit",e=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.currentTarget).entries());if((editor.type==="lessons"||editor.type==="duties")&&data.end<=data.start){$("formError").textContent="End time must be later than start time.";return} if(editor.type==="lessons"){const clash=db.lessons.find(x=>x.id!==editor.id&&x.day===data.day&&x.start<data.end&&x.end>data.start&&(x.teacherId===data.teacherId||x.className.toLowerCase()===data.className.toLowerCase()||(data.room&&x.room&&x.room.toLowerCase()===data.room.toLowerCase())));if(clash){$("formError").textContent="Clash: this teacher, class or room is already booked in this time.";return}}if(editor.type==="staff"&&!data.name.trim()){$("formError").textContent="Enter a staff name.";return}const old=editor.id?db[editor.type].find(x=>x.id===editor.id):null;const rec={...data,id:editor.id||uid(),createdAt:old?.createdAt||new Date().toISOString()};if(editor.id)db[editor.type]=db[editor.type].map(x=>x.id===editor.id?rec:x);else db[editor.type].unshift(rec);$("editor").close();persist()});
 function record(type,x,title,sub){return '<div class="record"><div class="record-main"><b>'+safe(title)+'</b><small>'+safe(sub)+'</small></div><div class="actions"><button class="btn light small" data-edit="'+type+":"+x.id+'">Edit</button><button class="btn danger small" data-delete="'+type+":"+x.id+'">Delete</button></div></div>'}
 function bindRecords(){document.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>{const [t,id]=b.dataset.edit.split(":");openEditor(t,id)});document.querySelectorAll("[data-delete]").forEach(b=>b.onclick=()=>{const [t,id]=b.dataset.delete.split(":");if(confirm("Delete this record?")){db[t]=db[t].filter(x=>x.id!==id);persist()}})}
 function renderTimetable(){const q=$("classFilter").value.toLowerCase(),day=$("dayFilter").value;const list=db.lessons.filter(x=>(!day||x.day===day)&&(x.className+" "+x.subject+" "+staffName(x.teacherId)).toLowerCase().includes(q)).sort((a,b)=>(a.day+a.start+a.className).localeCompare(b.day+b.start+b.className));$("timetableList").innerHTML=list.length?list.map(x=>record("lessons",x,x.className+" · "+x.subject,x.day+" · "+x.start+"–"+x.end+" · "+staffName(x.teacherId)+(x.room?" · "+x.room:""))).join(""):'<div class="empty"><b>No class timetable added</b>Add class, subject, teacher and period time.</div>';bindRecords()}
 function renderDuties(){const q=$("dutyFilter").value.toLowerCase(),day=$("dutyDayFilter").value;const list=db.duties.filter(x=>(!day||x.day===day)&&(x.title+" "+staffName(x.teacherId)+" "+(x.location||"")).toLowerCase().includes(q)).sort((a,b)=>(a.day+a.start).localeCompare(b.day+b.start));$("dutiesList").innerHTML=list.length?list.map(x=>record("duties",x,x.title,x.day+" · "+x.start+"–"+x.end+" · "+staffName(x.teacherId)+(x.location?" · "+x.location:""))).join(""):'<div class="empty"><b>No duties or activities added</b>Add the activity, responsible person and due time.</div>';bindRecords()}
 function renderStaff(){const q=$("staffFilter").value.toLowerCase(),list=db.staff.filter(x=>(x.name+" "+x.role+" "+(x.code||"")).toLowerCase().includes(q));$("staffList").innerHTML=list.length?list.map(x=>record("staff",x,x.name,x.role+(x.code?" · "+x.code:""))).join(""):'<div class="empty"><b>No staff added</b>Add staff before making allocations.</div>';bindRecords()}
 function render(){const p=parts();$("todayDate").textContent=new Intl.DateTimeFormat("en-IN",{timeZone:zone,weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(new Date());$("liveClock").textContent=clock();renderDashboard()}
-function exportData(){const blob=new Blob([JSON.stringify({format:"BJPS-COORDINATOR-V3",exportedAt:new Date().toISOString(),...db},null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="bjps-coordinator-backup.json";a.click();URL.revokeObjectURL(url)}
+function exportData(){const blob=new Blob([JSON.stringify({format:"BJPS-COORDINATOR-V4",exportedAt:new Date().toISOString(),...db},null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="bjps-coordinator-backup.json";a.click();URL.revokeObjectURL(url)}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-slot]");if(b){openSlot(b.dataset.slot);return}const c=e.target.closest("[data-check]");if(c){const [id,stage]=c.dataset.check.split(":");const slot=SCHEDULE.find(x=>x.id===id);openCheck(id,stage,slot?.name||"Checkpoint")}});
 $("addStaff").onclick=()=>openEditor("staff");$("addLesson").onclick=()=>openEditor("lessons");$("addDuty").onclick=()=>openEditor("duties");
 ["classFilter","dayFilter"].forEach(id=>$(id).addEventListener("input",renderTimetable));["dutyFilter","dutyDayFilter"].forEach(id=>$(id).addEventListener("input",renderDuties));$("staffFilter").addEventListener("input",renderStaff);
 $("closeEditor").onclick=$("cancelEditor").onclick=()=>$("editor").close();$("closeSlot").onclick=$("closeSlot2").onclick=()=>$("slotDialog").close();$("closeCheck").onclick=$("cancelCheck").onclick=()=>$("checkDialog").close();
 $("exportTop").onclick=$("exportData").onclick=exportData;
-$("restoreData").onclick=async()=>{const f=$("backupFile").files[0];if(!f){$("restoreMessage").textContent="Choose a backup file first.";return}if(!confirm("Replace current coordinator data with this backup?"))return;try{const x=JSON.parse(await f.text());if(!Array.isArray(x.staff)||!Array.isArray(x.lessons)||!Array.isArray(x.duties))throw Error("This is not a compatible BJPS backup.");db={...blank(),staff:x.staff,lessons:x.lessons,duties:x.duties,checks:x.checks||{}};persist();$("restoreMessage").textContent="Backup restored."}catch(err){$("restoreMessage").textContent="Restore failed: "+err.message}};
+$("restoreData").onclick=async()=>{const f=$("backupFile").files[0];if(!f){$("restoreMessage").textContent="Choose a backup file first.";return}if(!confirm("Replace current coordinator data with this backup?"))return;try{const x=JSON.parse(await f.text());if(!Array.isArray(x.staff)||!Array.isArray(x.lessons)||!Array.isArray(x.duties))throw Error("This is not a compatible BJPS backup.");db={...blank(),staff:x.staff,lessons:x.lessons,duties:x.duties,checks:x.checks||{},absences:x.absences||[],arrangements:x.arrangements||[]};persist();$("restoreMessage").textContent="Backup restored."}catch(err){$("restoreMessage").textContent="Restore failed: "+err.message}};
 $("clearData").onclick=()=>{if(confirm("Clear all coordinator data stored in this browser?")){db=blank();persist()}};
+function overlap(a,b,c,d){return a<d&&b>c}
+function dateDay(date){return new Intl.DateTimeFormat("en-US",{weekday:"long",timeZone:zone}).format(new Date(date+"T12:00:00+05:30"))}
+function affectedLessons(abs){return db.lessons.filter(x=>x.day===dateDay(abs.date)&&x.teacherId===abs.teacherId).sort((a,b)=>a.start.localeCompare(b.start))}
+function absentOn(id,date){return db.absences.some(x=>x.teacherId===id&&x.date===date)}
+function busyFor(id,date,start,end){
+ const day=dateDay(date);
+ if(absentOn(id,date))return true;
+ if(db.lessons.some(x=>x.day===day&&x.teacherId===id&&overlap(x.start,x.end,start,end)))return true;
+ if(db.duties.some(x=>x.day===day&&x.teacherId===id&&overlap(x.start,x.end,start,end)))return true;
+ if(db.arrangements.some(x=>x.date===date&&x.substituteTeacherId===id&&x.status!=="cancelled"&&(()=>{const l=db.lessons.find(y=>y.id===x.lessonId);return l&&overlap(l.start,l.end,start,end)})()))return true;
+ return false;
+}
+function suggestions(abs,lesson){
+ const today=db.arrangements.filter(x=>x.date===abs.date&&x.substituteTeacherId);
+ return db.staff.filter(t=>t.id!==abs.teacherId&&!busyFor(t.id,abs.date,lesson.start,lesson.end))
+ .map(t=>({t,covers:today.filter(x=>x.substituteTeacherId===t.id).length,load:db.lessons.filter(x=>x.day===dateDay(abs.date)&&x.teacherId===t.id).length}))
+ .sort((a,b)=>a.covers-b.covers||a.load-b.load||a.t.name.localeCompare(b.t.name));
+}
+function coverFor(abs,lesson){return db.arrangements.find(x=>x.date===abs.date&&x.lessonId===lesson.id&&x.absentTeacherId===abs.teacherId)}
+function renderArrangements(){
+ const date=$("absenceDate").value||todayKey();$("absenceDateLabel").textContent=date;
+ const prev=$("absentTeacher").value;
+ $("absentTeacher").innerHTML='<option value="">Select teacher</option>'+db.staff.filter(x=>x.role==="Teacher").map(x=>'<option value="'+x.id+'" '+(x.id===prev?"selected":"")+'>'+safe(x.name)+'</option>').join("");
+ const rows=db.absences.filter(x=>x.date===date).flatMap(a=>affectedLessons(a).map(l=>({a,l,cover:coverFor(a,l)})));
+ $("absenceBoard").innerHTML=rows.length?rows.map(({a,l,cover})=>{
+ const opts=suggestions(a,l);
+ return '<div class="card"><div class="eyebrow">'+safe(l.start)+' – '+safe(l.end)+'</div><h3>'+safe(l.className)+' · '+safe(l.subject)+'</h3><p class="muted">Absent: '+safe(staffName(a.teacherId))+(l.room?' · '+safe(l.room):'')+'</p>'+(cover?'<span class="pill green">Covered by '+safe(staffName(cover.substituteTeacherId))+'</span> <button class="btn light small" data-uncover="'+cover.id+'">Remove</button>':'<span class="pill red">Needs cover</span><div class="formgrid" style="margin-top:10px"><div class="field"><label>Available teacher</label><select id="candidate-'+l.id+'"><option value="">Select free teacher</option>'+opts.map(o=>'<option value="'+o.t.id+'">'+safe(o.t.name)+' · '+o.covers+' covers today</option>').join("")+'</select></div><div style="display:flex;align-items:end"><button class="btn" data-cover="'+a.id+':'+l.id+'">Assign</button></div></div>'+(opts.length?'':'<p class="muted">No free teacher found. Coordinator must resolve this period.</p>'))+'</div>';
+ }).join(""):'<div class="empty"><b>No affected periods</b>Mark a teacher absent to see their classes for this day.</div>';
+ const open=rows.filter(x=>!x.cover).length;$("coverSummary").innerHTML='<b>'+(rows.length-open)+' covered · '+open+' still open</b><p class="muted">Suggestions exclude absent teachers, regular classes, assigned duties and other cover periods. Free teachers are ranked to spread the workload.</p>';
+}
+function addAbsence(){
+ const date=$("absenceDate").value||todayKey(),teacherId=$("absentTeacher").value,reason=$("absenceReason").value.trim();
+ if(!teacherId){alert("Select the absent teacher.");return}
+ if(db.absences.some(x=>x.date===date&&x.teacherId===teacherId)){alert("This teacher is already marked absent for this date.");return}
+ db.absences.push({id:uid(),date,teacherId,reason,createdAt:new Date().toISOString()});$("absenceReason").value="";persist();
+}
+function assignCover(absenceId,lessonId){
+ const abs=db.absences.find(x=>x.id===absenceId),lesson=db.lessons.find(x=>x.id===lessonId),sel=$("candidate-"+lessonId);
+ if(!abs||!lesson||!sel?.value)return;
+ if(busyFor(sel.value,abs.date,lesson.start,lesson.end)){alert("This teacher is no longer free in this period. Choose another.");renderArrangements();return}
+ if(coverFor(abs,lesson)){alert("This period already has a cover teacher.");return}
+ db.arrangements.push({id:uid(),date:abs.date,lessonId,absentTeacherId:abs.teacherId,substituteTeacherId:sel.value,status:"assigned",createdAt:new Date().toISOString()});persist();
+}
+document.addEventListener("click",e=>{
+ const b=e.target.closest("[data-cover]");if(b){const [a,l]=b.dataset.cover.split(":");assignCover(a,l);return}
+ const u=e.target.closest("[data-uncover]");if(u){if(confirm("Remove this cover assignment?")){db.arrangements=db.arrangements.filter(x=>x.id!==u.dataset.uncover);persist()}return}
+});
+$("absenceDate").value=todayKey();$("absenceDate").addEventListener("change",renderArrangements);$("addAbsence").onclick=addAbsence;
+const baseRender=render;render=function(){baseRender();renderArrangements()};
 render();setInterval(render,15000);
 })();
 </script>
