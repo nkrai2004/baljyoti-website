@@ -342,15 +342,18 @@ const CSV_SCHEMAS={
  lessons:{headers:["day","class","subject","teacher_code","start","end","room"],rows:()=>db.lessons.map(x=>[x.day,x.className,x.subject,db.staff.find(s=>s.id===x.teacherId)?.code||db.staff.find(s=>s.id===x.teacherId)?.name||"",x.start,x.end,x.room||""])},
  duties:{headers:["day","duty_type","duty_name","staff_code","start","end","location"],rows:()=>db.duties.map(x=>[x.day,x.type,x.title,db.staff.find(s=>s.id===x.teacherId)?.code||db.staff.find(s=>s.id===x.teacherId)?.name||"",x.start,x.end,x.location||""])}
 };
-function csvCell(v){const s=String(v??"");return /[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
-function downloadCsv(filename,headers,rows){const csv=[headers,...rows].map(r=>r.map(csvCell).join(",")).join("\r\n");const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url)}
+function csvCell(v){const s=String(v??"");return /[",
+\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
+function downloadCsv(filename,headers,rows){const csv=[headers,...rows].map(r=>r.map(csvCell).join(",")).join("\r
+");const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url)}
 function parseCsv(text){
  const rows=[];let row=[],cell="",quoted=false;
  for(let i=0;i<text.length;i++){const ch=text[i],next=text[i+1];
   if(quoted){if(ch==='"'&&next==='"'){cell+='"';i++}else if(ch==='"')quoted=false;else cell+=ch}
   else if(ch==='"')quoted=true;
   else if(ch===","){row.push(cell);cell=""}
-  else if(ch==="\n"){row.push(cell.replace(/\r$/,""));if(row.some(v=>v.trim()))rows.push(row);row=[];cell=""}
+  else if(ch==="
+"){row.push(cell.replace(/\r$/,""));if(row.some(v=>v.trim()))rows.push(row);row=[];cell=""}
   else cell+=ch;
  }
  if(quoted)throw new Error("CSV contains an unclosed quoted field.");
@@ -380,7 +383,9 @@ function importCsvText(text,type){
    if(day&&staff&&r.start&&r.end&&mins(r.end)>mins(r.start)&&((type==="lessons"&&r.class&&r.subject)||(type==="duties"&&DUTY_TYPES.includes(r.duty_type)&&r.duty_name)))valid.push({...r,day,teacherId:staff.id});
   }
  });
- if(errors.length)throw new Error(errors.slice(0,12).join("\n")+(errors.length>12?"\n…and "+(errors.length-12)+" more issue(s).":""));
+ if(errors.length)throw new Error(errors.slice(0,12).join("
+")+(errors.length>12?"
+…and "+(errors.length-12)+" more issue(s).":""));
  if(type==="staff"){
   valid.forEach(r=>{const code=r.staff_code.toLowerCase();let old=db.staff.find(s=>(code&&String(s.code||"").toLowerCase()===code)||s.name.toLowerCase()===r.name.toLowerCase());const item={id:old?.id||id(),name:r.name,code:r.staff_code,role:r.role||"Teacher"};if(old)db.staff=db.staff.map(s=>s.id===old.id?item:s);else db.staff.push(item)});
  }else if(type==="lessons"){
@@ -400,7 +405,8 @@ el("addStaffBtn").onclick=()=>openEditor("staff");el("addLessonBtn").onclick=()=
 el("closeDialog").onclick=el("cancelDialog").onclick=()=>el("editDialog").close();el("runChecksBtn").onclick=runChecks;
 el("publishBtn").onclick=()=>{runChecks();const count=el("checkSummary").querySelector(".metric b").textContent;if(Number(count)>0){alert("Resolve all conflicts before publishing.");setTab("checks");return}if(!db.staff.length||!db.lessons.length&&!db.duties.length){alert("Add staff and at least one allocation before publishing.");return}db.published=true;save();alert("Marked as published on this browser. Shared publishing and staff notifications require backend integration.")};
 el("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),...db},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="bjps-coordinator-backup.json";a.click();URL.revokeObjectURL(a.href)};
-el("referenceType").onchange=renderReferences;el("referenceSearch").oninput=renderReferences;\nel("todayLine").textContent=new Intl.DateTimeFormat("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:"Asia/Kolkata"}).format(new Date())+" · Asia/Kolkata";
+el("referenceType").onchange=renderReferences;el("referenceSearch").oninput=renderReferences;
+el("todayLine").textContent=new Intl.DateTimeFormat("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:"Asia/Kolkata"}).format(new Date())+" · Asia/Kolkata";
 render();renderReferences();
 </script>
   <script src="/commit-status.js" defer></script>
