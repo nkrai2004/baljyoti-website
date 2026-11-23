@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#c62828">
+<title>BJPS ERP | Teacher Home</title>
+<style>
+:root{--brand:#c62828;--pending:#b71c1c;--progress:#ffb300;--done:#2e7d32;--ink:#202535;--muted:#727989;--line:#eceef2;--surface:#fff;--bg:#f5f6f9}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,Roboto,"Segoe UI",Arial,sans-serif}
+button,input{font:inherit}.app{max-width:760px;margin:auto;min-height:100dvh;background:var(--bg);padding-bottom:34px}
+header{background:var(--brand);color:#fff;padding:calc(16px + env(safe-area-inset-top)) 18px 22px;border-radius:0 0 24px 24px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{display:flex;align-items:center;gap:10px}.brand img{width:43px;height:43px;object-fit:contain;background:#fff;border-radius:12px;padding:3px}.brand strong{display:block;font-size:15px}.brand small{opacity:.85;font-size:12px}.avatar{border:1px solid #ffffff80;border-radius:50%;width:42px;height:42px;display:grid;place-items:center;font-weight:700}
+.welcome{margin-top:22px}.welcome small{opacity:.85}.welcome h1{font-size:24px;margin:3px 0 12px}.dateclock{display:flex;gap:8px;flex-wrap:wrap}.dateclock span{font-size:12px;border:1px solid #ffffff55;background:#ffffff16;padding:6px 10px;border-radius:30px}
+main{padding:16px 16px 0}.sectionhead{display:flex;align-items:center;justify-content:space-between;margin:18px 2px 10px}.sectionhead h2{font-size:16px;margin:0}.sectionhead small{color:var(--muted)}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:-2px}.metric{background:#fff;border:1px solid var(--line);border-radius:15px;padding:13px 12px}.metric b{display:block;font-size:23px}.metric span{font-size:11px;color:var(--muted)}.metric.red b{color:var(--pending)}.metric.amber b{color:#a66b00}.metric.green b{color:var(--done)}
+.quick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.tile{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px;min-height:74px}.tile .ico{width:39px;height:39px;border-radius:12px;background:#fff0f0;color:var(--brand);display:grid;place-items:center;font-size:19px}.tile b{display:block;font-size:13px}.tile small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.tasklist{display:grid;gap:9px}.task{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}.dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}.taskinfo{flex:1;min-width:0}.taskinfo b{display:block;font-size:13px}.taskinfo small{display:block;font-size:11px;color:var(--muted);margin-top:2px}.status{border:0;border-radius:20px;padding:7px 10px;font-size:11px;font-weight:700;min-width:94px;cursor:pointer}.status.pending{background:#ffebee;color:var(--pending)}.status.progress{background:#fff4d6;color:#8a5b00}.status.done{background:#e8f5e9;color:var(--done)}
+.legend{display:flex;gap:13px;flex-wrap:wrap;color:var(--muted);font-size:11px}.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}.note{font-size:11px;color:var(--muted);margin:14px 3px 0}
+@media(min-width:600px){main{padding-left:22px;padding-right:22px}.quick{grid-template-columns:repeat(3,minmax(0,1fr))}header{padding-left:24px;padding-right:24px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="top">
+  <div class="brand"><img src="https://www.baljyoti.com/logo.png" alt="Bal Jyoti logo" onerror="this.style.display='none'"><div><strong>Bal Jyoti Public School</strong><small>BJPS · ERP</small></div></div>
+  <div class="avatar" title="Teacher profile">T</div>
+ </div>
+ <div class="welcome"><small>TEACHER WORKSPACE</small><h1>Good day, Teacher</h1><div class="dateclock"><span id="date">Loading date…</span><span id="clock">--:--:--</span></div></div>
+</header>
+<main>
+ <div class="sectionhead"><h2>Today's Overview</h2><small>Live task status</small></div>
+ <div class="summary">
+  <div class="metric red"><b id="pendingCount">0</b><span>Pending</span></div>
+  <div class="metric amber"><b id="progressCount">0</b><span>In Progress</span></div>
+  <div class="metric green"><b id="doneCount">0</b><span>Done</span></div>
+ </div>
+ <div class="sectionhead"><h2>Quick Access</h2></div>
+ <div class="quick">
+  <a class="tile" href="#tasks"><span class="ico">✓</span><span><b>My Tasks</b><small>Daily responsibilities</small></span></a>
+  <a class="tile" href="https://classroom.google.com/" target="_blank" rel="noopener"><span class="ico">▣</span><span><b>Google Classroom</b><small>Classes & assignments</small></span></a>
+  <a class="tile" href="#academic"><span class="ico">📚</span><span><b>Academic Work</b><small>Lesson plans & exams</small></span></a>
+  <a class="tile" href="#school-duties"><span class="ico">🏫</span><span><b>School Duties</b><small>Duty & incharge roles</small></span></a>
+  <a class="tile" href="#student-work"><span class="ico">👥</span><span><b>Student & Fees</b><small>Attendance, fees, admission</small></span></a>
+  <a class="tile" href="#tasks"><span class="ico">▤</span><span><b>My Day</b><small>Review today's progress</small></span></a>
+ </div>
+ <div class="sectionhead" id="tasks"><h2>My Tasks</h2><small>Tap status to update</small></div>
+ <div class="legend"><span><i style="background:var(--pending)"></i>Pending</span><span><i style="background:var(--progress)"></i>In Progress</span><span><i style="background:var(--done)"></i>Done</span></div>
+ <div class="sectionhead" id="school-duties"><h2>School Responsibilities</h2></div>
+ <div class="tasklist" id="schoolTasks"></div>
+ <div class="sectionhead" id="academic"><h2>Academic Work</h2></div>
+ <div class="tasklist" id="academicTasks"></div>
+ <div class="sectionhead" id="student-work"><h2>Student & Administration</h2></div>
+ <div class="tasklist" id="adminTasks"></div>
+ <p class="note">Demo workspace · Task updates are saved in this browser on this device. Google Classroom opens separately; live class sync requires school account authorization and backend integration.</p>
+</main>
+</div>
+<script>
+const groups={
+ schoolTasks:[["Morning Duty","School duty"],["Assembly Duty","School duty"],["Lunch Duty","School duty"],["Departure Duty","School duty"],["Incharge","Assigned responsibility"],["Activity Incharge","Assigned responsibility"],["Class Teacher","Class responsibility"],["Co Class Teacher","Class responsibility"]],
+ academicTasks:[["Lesson Plan","Academic work"],["Lesson Notes","Academic work"],["Examination","Academic work"],["Syllabus Completion","Academic work"],["Notebook Checking","Academic work"],["Remedial Teaching","Academic work"]],
+ adminTasks:[["Student Attendance & Follow-up","Student support"],["Parent Communication / PTM","Student support"],["Fees Status","Administration"],["Admission Data & Calling","Administration"],["Discipline & Classroom","School support"],["Events & Monthly Reports","School support"]]
+};
+const key="bjps_teacher_tasks_v1",saved=JSON.parse(localStorage.getItem(key)||"{}");
+const states=["Pending","In Progress","Done"],classes=["pending","progress","done"],colors=["var(--pending)","var(--progress)","var(--done)"];
+function render(){
+ Object.entries(groups).forEach(([id,tasks])=>{
+  const root=document.getElementById(id);root.innerHTML="";
+  tasks.forEach(([name,desc],i)=>{
+   const k=id+"-"+i,st=states.indexOf(saved[k]||"Pending"),el=document.createElement("div");el.className="task";
+   const dot=document.createElement("span");dot.className="dot";dot.style.background=colors[st];
+   const info=document.createElement("div");info.className="taskinfo";
+   const title=document.createElement("b");title.textContent=name;const sub=document.createElement("small");sub.textContent=desc;info.append(title,sub);
+   const btn=document.createElement("button");btn.className="status "+classes[st];btn.textContent=states[st];btn.setAttribute("aria-label","Change "+name+" status");
+   btn.addEventListener("click",()=>{saved[k]=states[(states.indexOf(saved[k]||"Pending")+1)%3];localStorage.setItem(key,JSON.stringify(saved));render()});
+   el.append(dot,info,btn);root.append(el);
+  });
+ });
+ const all=Object.entries(groups).flatMap(([id,tasks])=>tasks.map((_,i)=>saved[id+"-"+i]||"Pending"));
+ document.getElementById("pendingCount").textContent=all.filter(x=>x==="Pending").length;
+ document.getElementById("progressCount").textContent=all.filter(x=>x==="In Progress").length;
+ document.getElementById("doneCount").textContent=all.filter(x=>x==="Done").length;
+}
+function tick(){const n=new Date();document.getElementById("date").textContent=n.toLocaleDateString("en-IN",{weekday:"long",day:"2-digit",month:"short",year:"numeric"});document.getElementById("clock").textContent=n.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit"});}
+render();tick();setInterval(tick,1000);
+</script>
+</body>
+</html>
