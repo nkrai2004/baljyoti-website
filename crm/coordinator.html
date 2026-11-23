@@ -29,7 +29,7 @@ dialog{border:0;border-radius:18px;padding:0;width:min(540px,calc(100% - 24px));
 <main class="wrap">
  <div class="notice"><b>Local prototype:</b> Changes are saved in this browser only. This version does not yet sync across coordinators or teachers. Add your actual staff directory before assigning duties.</div>
  <section class="metrics" aria-label="Overview"><div class="metric"><b id="staffCount">0</b><span>Staff registered</span></div><div class="metric"><b id="lessonCount">0</b><span>Lesson allocations</span></div><div class="metric"><b id="dutyCount">0</b><span>Duty assignments</span></div></section>
- <nav class="tabs" aria-label="Coordinator sections"><button class="active" data-tab="overview">Overview</button><button data-tab="timetable">Timetable</button><button data-tab="duties">Duties</button><button data-tab="staff">Staff directory</button><button data-tab="checks">Conflict checks</button><button data-tab="absence">Absence cover</button><button data-tab="monitor">Live monitoring</button></nav>
+ <nav class="tabs" aria-label="Coordinator sections"><button class="active" data-tab="overview">Overview</button><button data-tab="timetable">Timetable</button><button data-tab="duties">Duties</button><button data-tab="staff">Staff directory</button><button data-tab="import">Data import & templates</button><button data-tab="checks">Conflict checks</button><button data-tab="absence">Absence cover</button><button data-tab="monitor">Live monitoring</button></nav>
  <section class="panel active" id="overview">
   <div class="heading"><div><h2>Coordinator overview</h2><p>At-a-glance planning and daily control</p></div><span class="tag amber" id="publishState">DRAFT</span></div>
   <div class="card"><div class="heading" style="margin-top:0"><div><h2 style="font-size:15px">Quick actions</h2><p>Start with staff, then allocate lessons and duties</p></div></div><div class="filters"><button class="btn" data-go="staff">＋ Add staff</button><button class="btn secondary" data-go="timetable">＋ Add lesson</button><button class="btn secondary" data-go="duties">＋ Assign duty</button><button class="btn secondary" data-go="checks">Run conflict check</button></div></div>
@@ -52,7 +52,28 @@ dialog{border:0;border-radius:18px;padding:0;width:min(540px,calc(100% - 24px));
   <div class="field" style="margin-bottom:10px"><label for="staffSearch">Search staff</label><input id="staffSearch" placeholder="Search by name or staff code"></div>
   <div id="staffList" class="card"></div>
  </section>
- <section class="panel" id="absence"><div class="heading"><div><h2>Teacher absence & cover plan</h2><p>Record an absence and generate all affected classes and duties</p></div></div><div class="card"><div class="formgrid"><div class="field"><label for="absenceDate">Absence date</label><input id="absenceDate" type="date" required></div><div class="field"><label for="absentTeacher">Absent teacher</label><select id="absentTeacher" required><option value="">Select teacher</option></select></div><div class="field full"><label for="absenceReason">Reason / note (optional)</label><input id="absenceReason" placeholder="Leave, illness, official work…"></div></div><button class="btn" id="createAbsenceBtn" style="margin-top:12px;width:100%">Create cover requirements</button></div><div class="heading"><div><h2>Absence records</h2><p>Classes and duties requiring a substitute</p></div></div><div id="absenceList" class="card"></div></section>\n <section class="panel" id="monitor"><div class="heading"><div><h2>Class & duty monitoring</h2><p>Track whether substitute teachers have taken up assigned work</p></div><button class="btn secondary" id="refreshMonitorBtn">Refresh</button></div><div class="notice">Update each assignment when the substitute takes charge, completes the period or reports that the class/duty was not taken. These updates are currently stored in this browser.</div><div id="monitorSummary" class="card"></div><div id="monitorList" class="card"></div></section>\n <section class="panel" id="checks">
+
+ <section class="panel" id="import">
+  <div class="heading"><div><h2>Data import & templates</h2><p>Download a blank template, fill it in, then upload the completed CSV</p></div></div>
+  <div class="notice">Use the matching template headers exactly. Staff codes connect timetable and duty rows to your staff directory. CSV imports are validated before any records are saved.</div>
+  <div class="card">
+   <div class="field"><label for="importType">Choose data type</label><select id="importType"><option value="staff">Staff directory</option><option value="lessons">Class timetable</option><option value="duties">Duty assignments</option></select></div>
+   <div class="filters" style="margin-top:12px">
+    <button class="btn secondary" id="downloadTemplateBtn">↓ Download CSV template</button>
+    <button class="btn secondary" id="exportCsvBtn">↓ Export current CSV</button>
+   </div>
+   <div class="field" style="margin-top:8px"><label for="csvUpload">Upload completed CSV</label><input id="csvUpload" type="file" accept=".csv,text/csv"></div>
+   <p style="font-size:11px;color:var(--muted);margin:8px 0 0">Supported columns: Staff — name, staff_code, role. Timetable — day, class, subject, teacher_code, start, end, room. Duties — day, duty_type, duty_name, staff_code, start, end, location.</p>
+   <div id="importResult" style="margin-top:12px" aria-live="polite"></div>
+  </div>
+  <div class="card">
+   <div class="heading" style="margin-top:0"><div><h2 style="font-size:15px">Restore full backup</h2><p>Restore a previously exported BJPS JSON backup</p></div></div>
+   <div class="field"><label for="jsonUpload">Choose coordinator backup (.json)</label><input id="jsonUpload" type="file" accept=".json,application/json"></div>
+   <button class="btn danger" id="restoreBackupBtn" style="margin-top:10px">Restore JSON backup</button>
+   <p style="font-size:11px;color:var(--muted)">Restoring replaces the current data in this browser. Export a fresh backup first if you need to keep the existing data.</p>
+  </div>
+ </section>
+\n <section class="panel" id="absence"><div class="heading"><div><h2>Teacher absence & cover plan</h2><p>Record an absence and generate all affected classes and duties</p></div></div><div class="card"><div class="formgrid"><div class="field"><label for="absenceDate">Absence date</label><input id="absenceDate" type="date" required></div><div class="field"><label for="absentTeacher">Absent teacher</label><select id="absentTeacher" required><option value="">Select teacher</option></select></div><div class="field full"><label for="absenceReason">Reason / note (optional)</label><input id="absenceReason" placeholder="Leave, illness, official work…"></div></div><button class="btn" id="createAbsenceBtn" style="margin-top:12px;width:100%">Create cover requirements</button></div><div class="heading"><div><h2>Absence records</h2><p>Classes and duties requiring a substitute</p></div></div><div id="absenceList" class="card"></div></section>\n <section class="panel" id="monitor"><div class="heading"><div><h2>Class & duty monitoring</h2><p>Track whether substitute teachers have taken up assigned work</p></div><button class="btn secondary" id="refreshMonitorBtn">Refresh</button></div><div class="notice">Update each assignment when the substitute takes charge, completes the period or reports that the class/duty was not taken. These updates are currently stored in this browser.</div><div id="monitorSummary" class="card"></div><div id="monitorList" class="card"></div></section>\n <section class="panel" id="checks">
   <div class="heading"><div><h2>Conflict & workload checks</h2><p>Check teacher, class, room and duty overlaps</p></div><button class="btn" id="runChecksBtn">Run checks</button></div>
   <div id="checkSummary" class="card"></div><div id="checkList" class="card"></div>
  </section>
@@ -200,7 +221,65 @@ function renderMonitor(filterAbsence=""){
  list.forEach(x=>{const t=document.querySelector('[data-cover-teacher="'+x.id+'"]'),s=document.querySelector('[data-cover-status="'+x.id+'"]'),n=document.querySelector('[data-cover-note="'+x.id+'"]');if(t)t.value=x.substituteId;if(s)s.value=x.status;if(t)t.onchange=()=>updateCoverage(x.id,"substituteId",t.value);if(s)s.onchange=()=>updateCoverage(x.id,"status",s.value);if(n)n.onchange=()=>updateCoverage(x.id,"note",n.value)});
 }
 
-el("absenceDate").value=new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Kolkata"});el("createAbsenceBtn").onclick=createAbsence;el("refreshMonitorBtn").onclick=()=>renderMonitor();\nel("ttDay").onchange=renderLessons;el("ttClass").oninput=renderLessons;el("dutyDay").onchange=renderDuties;el("dutyTypeFilter").onchange=renderDuties;el("staffSearch").oninput=renderStaff;
+
+const CSV_SCHEMAS={
+ staff:{headers:["name","staff_code","role"],rows:()=>db.staff.map(x=>[x.name,x.code||"",x.role||"Teacher"])},
+ lessons:{headers:["day","class","subject","teacher_code","start","end","room"],rows:()=>db.lessons.map(x=>[x.day,x.className,x.subject,db.staff.find(s=>s.id===x.teacherId)?.code||db.staff.find(s=>s.id===x.teacherId)?.name||"",x.start,x.end,x.room||""])},
+ duties:{headers:["day","duty_type","duty_name","staff_code","start","end","location"],rows:()=>db.duties.map(x=>[x.day,x.type,x.title,db.staff.find(s=>s.id===x.teacherId)?.code||db.staff.find(s=>s.id===x.teacherId)?.name||"",x.start,x.end,x.location||""])}
+};
+function csvCell(v){const s=String(v??"");return /[",\\n\\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
+function downloadCsv(filename,headers,rows){const csv=[headers,...rows].map(r=>r.map(csvCell).join(",")).join("\\r\\n");const blob=new Blob(["\\uFEFF"+csv],{type:"text/csv;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url)}
+function parseCsv(text){
+ const rows=[];let row=[],cell="",quoted=false;
+ for(let i=0;i<text.length;i++){const ch=text[i],next=text[i+1];
+  if(quoted){if(ch==='"'&&next==='"'){cell+='"';i++}else if(ch==='"')quoted=false;else cell+=ch}
+  else if(ch==='"')quoted=true;
+  else if(ch===","){row.push(cell);cell=""}
+  else if(ch==="\\n"){row.push(cell.replace(/\\r$/,""));if(row.some(v=>v.trim()))rows.push(row);row=[];cell=""}
+  else cell+=ch;
+ }
+ if(quoted)throw new Error("CSV contains an unclosed quoted field.");
+ if(cell.length||row.length){row.push(cell.replace(/\\r$/,""));if(row.some(v=>v.trim()))rows.push(row)}
+ return rows;
+}
+function importCsvText(text,type){
+ const rows=parseCsv(text);if(rows.length<2)throw new Error("The CSV must contain a header and at least one data row.");
+ const headers=rows[0].map(x=>x.trim().toLowerCase().replace(/^\\uFEFF/,""));
+ const schema=CSV_SCHEMAS[type],missing=schema.headers.filter(h=>!headers.includes(h));
+ if(missing.length)throw new Error("Missing required column(s): "+missing.join(", "));
+ const records=rows.slice(1).map((r,i)=>{const o={};schema.headers.forEach(h=>o[h]=(r[headers.indexOf(h)]||"").trim());o._row=i+2;return o});
+ const errors=[],valid=[];
+ records.forEach(r=>{
+  const row=r._row;
+  if(type==="staff"){
+   if(!r.name)errors.push("Row "+row+": name is required.");
+   else valid.push(r);
+  }else{
+   const day=DAYS.find(d=>d.toLowerCase()===r.day.toLowerCase());
+   if(!day)errors.push("Row "+row+": day must be Monday to Saturday.");
+   if(!r.start||!r.end||mins(r.end)<=mins(r.start))errors.push("Row "+row+": enter valid start and end times.");
+   const staff=db.staff.find(s=>(s.code||"").toLowerCase()===r.teacher_code.toLowerCase()||s.name.toLowerCase()===r.teacher_code.toLowerCase());
+   if(!staff)errors.push("Row "+row+": staff_code '"+r.teacher_code+"' was not found in the staff directory.");
+   if(type==="lessons"&&(!r.class||!r.subject))errors.push("Row "+row+": class and subject are required.");
+   if(type==="duties"&&(!r.duty_type||!DUTY_TYPES.includes(r.duty_type)||!r.duty_name))errors.push("Row "+row+": valid duty_type and duty_name are required.");
+   if(day&&staff&&r.start&&r.end&&mins(r.end)>mins(r.start)&&((type==="lessons"&&r.class&&r.subject)||(type==="duties"&&DUTY_TYPES.includes(r.duty_type)&&r.duty_name)))valid.push({...r,day,teacherId:staff.id});
+  }
+ });
+ if(errors.length)throw new Error(errors.slice(0,12).join("\\n")+(errors.length>12?"\\n…and "+(errors.length-12)+" more issue(s).":""));
+ if(type==="staff"){
+  valid.forEach(r=>{const code=r.staff_code.toLowerCase();let old=db.staff.find(s=>(code&&String(s.code||"").toLowerCase()===code)||s.name.toLowerCase()===r.name.toLowerCase());const item={id:old?.id||id(),name:r.name,code:r.staff_code,role:r.role||"Teacher"};if(old)db.staff=db.staff.map(s=>s.id===old.id?item:s);else db.staff.push(item)});
+ }else if(type==="lessons"){
+  valid.forEach(r=>{const old=db.lessons.find(x=>x.day===r.day&&x.className.toLowerCase()===r.class.toLowerCase()&&x.start===r.start&&x.end===r.end);const item={id:old?.id||id(),day:r.day,className:r.class,subject:r.subject,teacherId:r.teacherId,start:r.start,end:r.end,room:r.room};if(old)db.lessons=db.lessons.map(x=>x.id===old.id?item:x);else db.lessons.push(item)});
+ }else{
+  valid.forEach(r=>{const old=db.duties.find(x=>x.day===r.day&&x.title.toLowerCase()===r.duty_name.toLowerCase()&&x.start===r.start&&x.end===r.end);const item={id:old?.id||id(),day:r.day,type:r.duty_type,title:r.duty_name,teacherId:r.teacherId,start:r.start,end:r.end,location:r.location};if(old)db.duties=db.duties.map(x=>x.id===old.id?item:x);else db.duties.push(item)});
+ }
+ db.published=false;save();return valid.length;
+}
+el("downloadTemplateBtn").onclick=()=>{const type=el("importType").value;downloadCsv("bjps-"+type+"-template.csv",CSV_SCHEMAS[type].headers,[])};
+el("exportCsvBtn").onclick=()=>{const type=el("importType").value;downloadCsv("bjps-"+type+"-export.csv",CSV_SCHEMAS[type].headers,CSV_SCHEMAS[type].rows())};
+el("csvUpload").onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const count=importCsvText(await file.text(),el("importType").value);el("importResult").innerHTML='<span class="tag green">Import complete</span><p style="font-size:12px">'+count+' row(s) imported or updated successfully.</p>'}catch(err){el("importResult").innerHTML='<span class="tag amber">Import not applied</span><p style="font-size:12px;white-space:pre-line;color:#991b1b">'+esc(err.message)+'</p>'}finally{e.target.value=""}};
+el("restoreBackupBtn").onclick=async()=>{const file=el("jsonUpload").files[0];if(!file){alert("Choose a JSON backup file first.");return}if(!confirm("This will replace all coordinator data currently stored in this browser. Continue?"))return;try{const parsed=JSON.parse(await file.text());for(const key of ["staff","lessons","duties","absences","coverages"]){if(parsed[key]!==undefined&&!Array.isArray(parsed[key]))throw new Error("Invalid backup: "+key+" must be a list.");}if(!Array.isArray(parsed.staff)||!Array.isArray(parsed.lessons)||!Array.isArray(parsed.duties))throw new Error("This does not look like a BJPS coordinator backup.");db={staff:parsed.staff,lessons:parsed.lessons,duties:parsed.duties,absences:parsed.absences||[],coverages:parsed.coverages||[],published:!!parsed.published};save();el("importResult").innerHTML='<span class="tag green">Backup restored</span><p style="font-size:12px">Coordinator data has been restored.</p>'}catch(err){alert("Could not restore backup: "+err.message)}};
+\nel("absenceDate").value=new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Kolkata"});el("createAbsenceBtn").onclick=createAbsence;el("refreshMonitorBtn").onclick=()=>renderMonitor();\nel("ttDay").onchange=renderLessons;el("ttClass").oninput=renderLessons;el("dutyDay").onchange=renderDuties;el("dutyTypeFilter").onchange=renderDuties;el("staffSearch").oninput=renderStaff;
 el("addStaffBtn").onclick=()=>openEditor("staff");el("addLessonBtn").onclick=()=>openEditor("lesson");el("addDutyBtn").onclick=()=>openEditor("duty");
 el("closeDialog").onclick=el("cancelDialog").onclick=()=>el("editDialog").close();el("runChecksBtn").onclick=runChecks;
 el("publishBtn").onclick=()=>{runChecks();const count=el("checkSummary").querySelector(".metric b").textContent;if(Number(count)>0){alert("Resolve all conflicts before publishing.");setTab("checks");return}if(!db.staff.length||!db.lessons.length&&!db.duties.length){alert("Add staff and at least one allocation before publishing.");return}db.published=true;save();alert("Marked as published on this browser. Shared publishing and staff notifications require backend integration.")};
