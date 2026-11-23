@@ -185,7 +185,7 @@ function updateCoverage(idValue,field,value){
  const x=db.coverages.find(c=>c.id===idValue);if(!x)return;
  if(field==="status"&&["Taken up","Completed"].includes(value)&&!x.substituteId){alert("Assign a substitute teacher before marking this class or duty as taken up.");renderMonitor();return}
  if(field==="substituteId"&&value){
-  const clashes=[...db.lessons.map(a=>({...a,kind:"Class",label:a.className+" · "+a.subject})),...db.duties.map(a=>({...a,kind:"Duty",label:a.title})),...db.coverages.filter(a=>a.id!==x.id&&a.substituteId===value&&a.date===x.date).map(a=>({...a,kind:a.kind,label:a.title}))].filter(a=>a.id!==x.sourceId&&a.teacherId===value&&a.day===x.day&&mins(x.start)<mins(a.end)&&mins(x.end)>mins(a.start));
+  const clashes=[...db.lessons.map(a=>({...a,kind:"Class",label:a.className+" · "+a.subject})),...db.duties.map(a=>({...a,kind:"Duty",label:a.title})),...db.coverages.filter(a=>a.id!==x.id&&a.substituteId===value&&a.date===x.date).map(a=>({...a,kind:a.kind,label:a.title}))].filter(a=>a.id!==x.sourceId&&(a.teacherId===value||a.substituteId===value)&&a.day===x.day&&(!a.date||a.date===x.date)&&mins(x.start)<mins(a.end)&&mins(x.end)>mins(a.start));
   if(clashes.length){alert("This substitute already has a class or duty during that time: "+clashes.map(a=>a.label+" ("+a.start+"–"+a.end+")").join(", "));renderMonitor();return}
  }
  x[field]=value;x.updatedAt=new Date().toISOString();if(field==="substituteId"&&value&&x.status==="Awaiting substitute")x.status="Assigned";
