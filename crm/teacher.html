@@ -51,6 +51,13 @@ button,a,input{touch-action:manipulation}button:focus-visible,a:focus-visible,in
 .tile:active,.status:active{transform:scale(.98)}
 @media(max-width:370px){.quick{grid-template-columns:1fr}.tile{min-height:76px}.slot{flex-wrap:wrap}.slot .time{width:100%;flex-basis:100%}.slot .status{margin-left:auto}}
 @media(min-width:600px){main{padding-left:22px;padding-right:22px}.quick{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.date-nav{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px}
+.date-nav button,.today-date-btn{border:1px solid #d9e0ea;background:#f7f8fb;color:#263247;border-radius:11px;min-height:46px;padding:9px 11px;font-size:13px;font-weight:800;cursor:pointer}
+.date-nav input{min-width:0;width:100%;min-height:48px;border:2px solid #c62828;border-radius:11px;background:#fff;padding:9px 10px;font-size:16px;font-weight:700;color:#172033}
+.today-date-btn{margin-top:9px;min-height:40px;background:#fff0f0;color:#a51f25;border-color:#f1c6c8}
+.selected-date-label{margin-top:8px;color:#596579;font-size:12px;font-weight:700}
+.date-nav button:active,.today-date-btn:active{transform:scale(.98)}
+@media(max-width:370px){.date-nav{grid-template-columns:1fr 1.3fr 1fr}.date-nav button{padding:8px 5px;font-size:12px}}
 </style>
 </head>
 <body>
@@ -63,7 +70,16 @@ button,a,input{touch-action:manipulation}button:focus-visible,a:focus-visible,in
  <div class="welcome"><small data-en="TEACHER WORKSPACE" data-hi="शिक्षक कार्यक्षेत्र">TEACHER WORKSPACE</small><h1 data-en="Good day, Teacher" data-hi="नमस्ते, शिक्षक">Good day, Teacher</h1><div class="dateclock"><span id="date">Loading date…</span><span id="clock">--:--:--</span></div></div>
 </header>
 <main>
- <div class="date-select-wrap"><label for="selectedDate" data-en="📅 Choose a Day" data-hi="📅 तारीख चुनें">📅 Choose a Day</label><input type="date" id="selectedDate" aria-label="Select dashboard date"></div>
+ <div class="date-select-wrap" aria-label="Choose dashboard date">
+  <label for="selectedDate" data-en="📅 Select a date" data-hi="📅 तारीख चुनें">📅 Select a date</label>
+  <div class="date-nav">
+   <button type="button" id="previousDate" class="date-nav-btn" aria-label="Previous day">‹ <span data-en="Previous" data-hi="पिछला">Previous</span></button>
+   <input type="date" id="selectedDate" aria-label="Select dashboard date">
+   <button type="button" id="nextDate" class="date-nav-btn" aria-label="Next day"><span data-en="Next" data-hi="अगला">Next</span> ›</button>
+  </div>
+  <button type="button" id="todayDate" class="today-date-btn" data-en="Today" data-hi="आज">Today</button>
+  <div id="selectedDateLabel" class="selected-date-label" aria-live="polite"></div>
+ </div>
  <div class="attendance-card in"><div><div class="attendance-label">IN TIME · BIOMETRIC</div><div class="attendance-time" id="biometricIn">—</div><div class="attendance-meta" id="biometricInMeta">Waiting for attendance punch</div></div><span class="attendance-state" id="biometricInState">Not synced</span></div>
  <div class="sectionhead" id="my-tasks"><h2 data-en="Your Day" data-hi="आपका दिन">Your Day</h2><small data-en="Task status" data-hi="काम की स्थिति">Task status</small></div>
  <div class="summary">
@@ -131,6 +147,16 @@ function mins(s){const [h,m]=s.split(":").map(Number);return h*60+m}
 function timeLabel(s){const [h,m]=s.split(":").map(Number);return new Date(2000,0,1,h,m).toLocaleTimeString("en-IN",{hour:"numeric",minute:"2-digit",hour12:true})}
 function store(){return JSON.parse(localStorage.getItem("bjps_teacher_schedule_v2")||"{}")}
 function selectedDay(){return document.getElementById("selectedDate").value||nowParts().date}
+function updateSelectedDateLabel(){
+ const chosen=selectedDay(),parts=chosen.split("-").map(Number);
+ const date=new Date(parts[0],parts[1]-1,parts[2],12);
+ document.getElementById("selectedDateLabel").textContent=new Intl.DateTimeFormat("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(date);
+}
+function shiftSelectedDate(days){
+ const parts=selectedDay().split("-").map(Number),date=new Date(parts[0],parts[1]-1,parts[2]+days,12);
+ picker.value=[date.getFullYear(),String(date.getMonth()+1).padStart(2,"0"),String(date.getDate()).padStart(2,"0")].join("-");
+ render();updateBiometric();updateSelectedDateLabel();
+}
 function selectedContext(){const today=nowParts(),chosen=selectedDay();return {date:chosen,minute:chosen<today.date?1440:chosen>today.date?-1:today.minute,isToday:chosen===today.date}}
 function save(data){localStorage.setItem("bjps_teacher_schedule_v2",JSON.stringify(data))}
 function renderSchedule(){
@@ -218,8 +244,11 @@ function tick(){
 }
 const picker=document.getElementById("selectedDate");
 picker.value=nowParts().date;
-picker.addEventListener("change",()=>{render();updateBiometric();});
-render();tick();updateBiometric();applyLanguage(localStorage.getItem("bjps_teacher_language")||"en");setInterval(tick,15000);setInterval(updateBiometric,15000);
+picker.addEventListener("change",()=>{render();updateBiometric();updateSelectedDateLabel();});
+document.getElementById("previousDate").addEventListener("click",()=>shiftSelectedDate(-1));
+document.getElementById("nextDate").addEventListener("click",()=>shiftSelectedDate(1));
+document.getElementById("todayDate").addEventListener("click",()=>{picker.value=nowParts().date;render();updateBiometric();updateSelectedDateLabel();});
+render();tick();updateBiometric();updateSelectedDateLabel();applyLanguage(localStorage.getItem("bjps_teacher_language")||"en");setInterval(tick,15000);setInterval(updateBiometric,15000);
 </script>
   <script src="/commit-status.js" defer></script>
 </body>
