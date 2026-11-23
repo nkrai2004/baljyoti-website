@@ -18,7 +18,7 @@ main{padding:16px 16px 0}.sectionhead{display:flex;align-items:center;justify-co
 .tasklist{display:grid;gap:9px}.task{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}.dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}.taskinfo{flex:1;min-width:0}.taskinfo b{display:block;font-size:13px}.taskinfo small{display:block;font-size:11px;color:var(--muted);margin-top:2px}.status{border:0;border-radius:20px;padding:7px 10px;font-size:11px;font-weight:700;min-width:94px;cursor:pointer}.status.pending{background:#ffebee;color:var(--pending)}.status.progress{background:#fff4d6;color:#8a5b00}.status.done{background:#e8f5e9;color:var(--done)}
 
 
-.attendance-card{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px 15px;margin:0 0 12px}
+.date-select-wrap{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px 13px;margin:0 0 14px}.date-select-wrap label{font-size:12px;font-weight:700}.date-select-wrap input{border:1px solid var(--line);border-radius:9px;padding:8px 9px;color:var(--ink);background:#fff;max-width:155px;font-size:13px}.attendance-card{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px 15px;margin:0 0 12px}
 .attendance-card.in{border-left:4px solid var(--done)}.attendance-card.out{border-left:4px solid var(--brand)}
 .attendance-label{font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--muted)}.attendance-time{font-size:22px;font-weight:800;margin-top:3px;font-variant-numeric:tabular-nums}.attendance-meta{font-size:10px;color:var(--muted);margin-top:2px}.attendance-state{font-size:10px;font-weight:700;border-radius:20px;padding:6px 9px;background:#f0f2f5;color:#687386}
 .timeline{display:grid;gap:9px}.slot{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;position:relative}.slot.focus{border:2px solid var(--progress);background:#fffaf0;box-shadow:0 5px 18px #ffb30022}.slot.past{opacity:.92}.slot.future{background:#fafbfc}.slot .time{width:91px;flex:0 0 91px;font-size:11px;font-weight:700;color:#555e70}.slot .taskinfo{flex:1;min-width:0}.slot .taskinfo b{font-size:13px}.slot .taskinfo small{font-size:11px;color:var(--muted);display:block}.slot .status{min-width:88px}.slot.future .status{background:#eef1f5;color:#657084}.slot.focus .status{background:#fff0c2;color:#865900}.focusbanner{background:#fff4d6;border:1px solid #f5d477;border-radius:15px;padding:14px;margin:0 0 12px}.focusbanner small{font-size:10px;font-weight:800;letter-spacing:.08em;color:#8a5b00}.focusbanner b{display:block;font-size:17px;margin:3px 0}.focusbanner span{font-size:12px;color:#6d5a2d}.emptyfocus{background:#eef7ee;border:1px solid #cfe7d0;border-radius:15px;padding:14px;font-size:13px;color:#28632d}
@@ -36,6 +36,7 @@ main{padding:16px 16px 0}.sectionhead{display:flex;align-items:center;justify-co
  <div class="welcome"><small>TEACHER WORKSPACE</small><h1>Good day, Teacher</h1><div class="dateclock"><span id="date">Loading date…</span><span id="clock">--:--:--</span></div></div>
 </header>
 <main>
+ <div class="date-select-wrap"><label for="selectedDate">📅 Dashboard date</label><input type="date" id="selectedDate" aria-label="Select dashboard date"></div>
  <div class="attendance-card in"><div><div class="attendance-label">IN TIME · BIOMETRIC</div><div class="attendance-time" id="biometricIn">—</div><div class="attendance-meta" id="biometricInMeta">Waiting for attendance punch</div></div><span class="attendance-state" id="biometricInState">Not synced</span></div>
  <div class="sectionhead"><h2>Today's Overview</h2><small>Live task status</small></div>
  <div class="summary">
@@ -98,9 +99,11 @@ function nowParts(){
 function mins(s){const [h,m]=s.split(":").map(Number);return h*60+m}
 function timeLabel(s){const [h,m]=s.split(":").map(Number);return new Date(2000,0,1,h,m).toLocaleTimeString("en-IN",{hour:"numeric",minute:"2-digit",hour12:true})}
 function store(){return JSON.parse(localStorage.getItem("bjps_teacher_schedule_v2")||"{}")}
+function selectedDay(){return document.getElementById("selectedDate").value||nowParts().date}
+function selectedContext(){const today=nowParts(),chosen=selectedDay();return {date:chosen,minute:chosen<today.date?1440:chosen>today.date?-1:today.minute,isToday:chosen===today.date}}
 function save(data){localStorage.setItem("bjps_teacher_schedule_v2",JSON.stringify(data))}
 function renderSchedule(){
- const now=nowParts(),data=store(),day=data[now.date]||{},root=document.getElementById("scheduleList");
+ const now=selectedContext(),data=store(),day=data[now.date]||{},root=document.getElementById("scheduleList");
  root.innerHTML="";
  let currentIndex=schedule.findIndex(x=>now.minute>=mins(x[1])&&now.minute<mins(x[2]));
  let focusText="";
@@ -164,7 +167,7 @@ function updateBiometric(){
  const sampleIn=!(valid&&data.inTime),sampleOut=!(valid&&data.outTime);
  document.getElementById("biometricIn").textContent=inValue;
  document.getElementById("biometricOut").textContent=outValue;
- document.getElementById("biometricInMeta").textContent=sampleIn?"Sample time · awaiting SalaryBox API":"SalaryBox biometric attendance · "+today;
+ document.getElementById("biometricInMeta").textContent=sampleIn?"Sample time · awaiting SalaryBox API":"SalaryBox biometric attendance · "+now.date;
  document.getElementById("biometricOutMeta").textContent=sampleOut?"Sample time · awaiting SalaryBox API":"SalaryBox biometric attendance · "+today;
  document.getElementById("biometricInState").textContent=sampleIn?"Sample":"Punch received";
  document.getElementById("biometricOutState").textContent=sampleOut?"Sample":"Punch received";
@@ -177,6 +180,9 @@ function tick(){
  document.getElementById("clock").textContent=new Intl.DateTimeFormat("en-IN",{timeZone:zone,hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true}).format(n);
  renderSchedule();
 }
+const picker=document.getElementById("selectedDate");
+picker.value=nowParts().date;
+picker.addEventListener("change",()=>{render();updateBiometric();});
 render();tick();updateBiometric();setInterval(tick,15000);setInterval(updateBiometric,15000);
 </script>
 </body>
