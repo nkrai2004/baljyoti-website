@@ -401,7 +401,7 @@ el("closeDialog").onclick=el("cancelDialog").onclick=()=>el("editDialog").close(
 el("publishBtn").onclick=()=>{runChecks();const count=el("checkSummary").querySelector(".metric b").textContent;if(Number(count)>0){alert("Resolve all conflicts before publishing.");setTab("checks");return}if(!db.staff.length||!db.lessons.length&&!db.duties.length){alert("Add staff and at least one allocation before publishing.");return}db.published=true;save();alert("Marked as published on this browser. Shared publishing and staff notifications require backend integration.")};
 el("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),...db},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="bjps-coordinator-backup.json";a.click();URL.revokeObjectURL(a.href)};
 el("referenceType").onchange=renderReferences;el("referenceSearch").oninput=renderReferences;\nel("todayLine").textContent=new Intl.DateTimeFormat("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:"Asia/Kolkata"}).format(new Date())+" · Asia/Kolkata";
-render();
+render();renderReferences();
 </script>
   <script src="/commit-status.js" defer></script>
 </body>
