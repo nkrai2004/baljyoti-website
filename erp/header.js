@@ -158,4 +158,9 @@
   });
 
   window.updateAuthHeader = updateAuthHeader;
+
+  const commitStatusScript = document.createElement("script");
+  commitStatusScript.src = "/commit-status.js";
+  commitStatusScript.defer = true;
+  document.head.appendChild(commitStatusScript);
 })();

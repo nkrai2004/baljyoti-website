@@ -221,5 +221,6 @@ picker.value=nowParts().date;
 picker.addEventListener("change",()=>{render();updateBiometric();});
 render();tick();updateBiometric();applyLanguage(localStorage.getItem("bjps_teacher_language")||"en");setInterval(tick,15000);setInterval(updateBiometric,15000);
 </script>
+  <script src="/commit-status.js" defer></script>
 </body>
 </html>
