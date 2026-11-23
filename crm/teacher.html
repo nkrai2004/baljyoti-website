@@ -63,32 +63,32 @@ button,a,input{touch-action:manipulation}button:focus-visible,a:focus-visible,in
  <div class="welcome"><small>TEACHER WORKSPACE</small><h1>Good day, Teacher</h1><div class="dateclock"><span id="date">Loading date…</span><span id="clock">--:--:--</span></div></div>
 </header>
 <main>
- <div class="date-select-wrap"><label for="selectedDate">📅 Dashboard date</label><input type="date" id="selectedDate" aria-label="Select dashboard date"></div>
+ <div class="date-select-wrap"><label for="selectedDate">📅 Choose a Day</label><input type="date" id="selectedDate" aria-label="Select dashboard date"></div>
  <div class="attendance-card in"><div><div class="attendance-label">IN TIME · BIOMETRIC</div><div class="attendance-time" id="biometricIn">—</div><div class="attendance-meta" id="biometricInMeta">Waiting for attendance punch</div></div><span class="attendance-state" id="biometricInState">Not synced</span></div>
- <div class="sectionhead"><h2>Today's Overview</h2><small>Live task status</small></div>
+ <div class="sectionhead"><h2>Your Day</h2><small>Live task status</small></div>
  <div class="summary">
   <div class="metric red"><b id="pendingCount">0</b><span>Pending</span></div>
   <div class="metric amber"><b id="progressCount">0</b><span>In Progress</span></div>
   <div class="metric green"><b id="doneCount">0</b><span>Done</span></div>
  </div>
- <div class="sectionhead"><h2>Quick Access</h2></div>
+ <div class="sectionhead"><h2>Open a Page</h2></div>
  <div class="quick">
   <a class="tile" href="#tasks"><span class="ico">✓</span><span><b>My Tasks</b><small>Daily responsibilities</small></span></a>
   <a class="tile" href="https://classroom.google.com/" target="_blank" rel="noopener"><span class="ico">▣</span><span><b>Google Classroom</b><small>Classes & assignments</small></span></a>
-  <a class="tile" href="#academic"><span class="ico">📚</span><span><b>Academic Work</b><small>Lesson plans & exams</small></span></a>
+  <a class="tile" href="#academic"><span class="ico">📚</span><span><b>Class Work</b><small>Lesson plans & exams</small></span></a>
   <a class="tile" href="#school-duties"><span class="ico">🏫</span><span><b>School Duties</b><small>Duty & incharge roles</small></span></a>
   <a class="tile" href="#student-work"><span class="ico">👥</span><span><b>Student & Fees</b><small>Attendance, fees, admission</small></span></a>
   <a class="tile" href="#tasks"><span class="ico">▤</span><span><b>My Day</b><small>Review today's progress</small></span></a>
  </div>
- <div class="sectionhead" id="tasks"><h2>Today's Schedule</h2><small>Winter timetable · From 12 Nov 2026</small></div>
+ <div class="sectionhead" id="tasks"><h2>School Time Table</h2><small>Winter timetable · From 12 Nov 2026</small></div>
  <div id="focusArea"></div>
  <div class="legend"><span><i style="background:var(--pending)"></i>Overdue / Pending</span><span><i style="background:var(--progress)"></i>Current focus</span><span><i style="background:var(--done)"></i>Completed</span><span><i style="background:#aab2bf"></i>Upcoming</span></div>
  <div class="timeline" id="scheduleList"></div>
- <div class="sectionhead" id="school-duties"><h2>Other Responsibilities</h2><small>Not time-slotted</small></div>
+ <div class="sectionhead" id="school-duties"><h2>Your Other Duties</h2><small>Not time-slotted</small></div>
  <div class="tasklist" id="schoolTasks"></div>
  <div class="sectionhead" id="academic"><h2>Academic Work</h2></div>
  <div class="tasklist" id="academicTasks"></div>
- <div class="sectionhead" id="student-work"><h2>Student & Administration</h2></div>
+ <div class="sectionhead" id="student-work"><h2>Student & Office Work</h2></div>
  <div class="tasklist" id="adminTasks"></div>
  <p class="note">Demo workspace · Timetable status is saved in this browser per school date; current focus and overdue/upcoming states update automatically using India Standard Time. Google Classroom opens separately; live class sync requires school account authorization and backend integration.</p>
  <div class="sectionhead"><h2>Attendance Punch Out</h2><small>End of day</small></div>
